@@ -97,7 +97,7 @@ task cutadapt {
         ${read1} ${read2}
     }
     output{
-        File report = file(stdout())
+        File report = stdout()
         File cutRead1 = read1output
         File? cutRead2 = read2output
         File? tooLongOutput=tooLongOutputPath

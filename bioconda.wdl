@@ -20,5 +20,6 @@ task installPrefix {
     }
     output {
         File condaEnvPath=prefix
+        File condaJson=stdout()
     }
  }

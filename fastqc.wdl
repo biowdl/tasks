@@ -39,7 +39,7 @@ task fastqc {
     }
 
     output {
-        String reportDir = outdirPath + "/" + sub(basename(seqFile),"\..*$","_fastqc")
+        String reportDir = outdirPath + "/" + sub(basename(seqFile), "..*$", "_fastqc")
         File rawReport = reportDir + "/fastqc_data.txt"
         File htmlReport = reportDir + "fastqc_report.html"
         File summary = reportDir + "/summary.txt"
