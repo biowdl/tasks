@@ -21,7 +21,7 @@ task fastqc {
     ${"source activate " + condaEnv}
     mkdir -p ${outdirPath}
     fastqc \
-    ${"--outdir " + outdirPath}
+    ${"--outdir " + outdirPath} \
     ${true="--casava" false="" casava} \
     ${true="--nano" false="" nano} \
     ${true="--nofilter" false="" noFilter} \
@@ -55,21 +55,24 @@ task fastqc {
     }
 
     runtime {
-        cpu: select_first(threads)
+        cpu: select_first([threads])
     }
 }
 
 task extractAdapters {
     File extractAdaptersFastqcJar
     File inputFile
-    String? adapterOutputFilePath
-    String? contamsOutputFilePath
+    String outputDir
+    String? adapterOutputFilePath = outputDir + "/adapter.list"
+    String? contamsOutputFilePath = outputDir + "/contaminations.list"
     Boolean? skipContams
     File? knownContamFile
     File? knownAdapterFile
     Float? adapterCutoff
     Boolean? outputAsFasta
     command {
+    set -e
+    mkdir -p ${outputDir}
     java -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
@@ -82,7 +85,9 @@ task extractAdapters {
     }
 
     output {
-        File? adapterOutputFile = adapterOutputFilePath
-        File? contamsOutputFile = contamsOutputFilePath
+        File adapterOutputFile = select_first([adapterOutputFilePath])
+        File contamsOutputFile = select_first([contamsOutputFilePath])
+        Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
+        Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
     }
 }

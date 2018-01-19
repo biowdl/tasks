@@ -111,6 +111,6 @@ task cutadapt {
         File? wildcardFile=wildcardFilePath
     }
     runtime {
-        cpu: select_first(cores)
+        cpu: select_first([cores])
     }
 }
