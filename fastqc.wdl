@@ -58,3 +58,31 @@ task fastqc {
         cpu: select_first(threads)
     }
 }
+
+task extractAdapters {
+    File extractAdaptersFastqcJar
+    File inputFile
+    String? adapterOutputFilePath
+    String? contamsOutputFilePath
+    Boolean? skipContams
+    File? knownContamFile
+    File? knownAdapterFile
+    Float? adapterCutoff
+    Boolean? outputAsFasta
+    command {
+    java -jar ${extractAdaptersFastqcJar} \
+    --inputFile ${inputFile} \
+    ${"--adapterOutputFile " + adapterOutputFilePath } \
+    ${"--contamsOutputFile " + contamsOutputFilePath } \
+    ${"--knownContamFile " + knownContamFile} \
+    ${"--knownAdapterFile " + knownAdapterFile} \
+    ${"--adapterCutoff " + adapterCutoff} \
+    ${true="--skipContams" false="" skipContams} \
+    ${true="--outputAsFasta" false="" outputAsFasta}
+    }
+
+    output {
+        File? adapterOutputFile = adapterOutputFilePath
+        File? contamsOutputFile = contamsOutputFilePath
+    }
+}
