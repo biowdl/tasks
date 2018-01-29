@@ -60,9 +60,12 @@ task cutadapt {
         ${"source activate " + condaEnv}
         cutadapt \
         ${"--cores=" + cores} \
-        ${sep="-a " "-a " + adapter} ${"-A " + adapterRead2} \
-        ${"-g" + front} ${"-G" + frontRead2} \
-        ${"-b " + anywhere} ${"-B" + anywhereRead2} \
+        ${true="-a " false="" defined(adapter)} ${sep=" -a " adapter} \
+        ${true="-A " false="" defined(adapterRead2)} ${sep=" -A " adapterRead2} \
+        ${true="-g " false="" defined(front)} ${sep=" -g " front} \
+        ${true="-G " false="" defined(frontRead2)} ${sep=" -G " frontRead2} \
+        ${true="-b " false="" defined(anywhere)} ${sep=" -a " anywhere} \
+        ${true="-B " false="" defined(anywhereRead2)} ${sep=" -B " anywhereRead2} \
         --output ${read1output} ${"--paired-output " + read2output} \
         ${"--to-short-output " + tooShortOutputPath} ${"--to-short-paired-output " + tooShortPairedOutputPath} \
         ${"--to-long-output " + tooLongOutputPath} ${"--to-long-paired-output " + tooLongPairedOutputPath} \
