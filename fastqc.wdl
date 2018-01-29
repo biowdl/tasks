@@ -36,12 +36,16 @@ task fastqc {
     ${"--kmers " + kmers} \
     ${"--dir " + dir} \
     ${seqFile}
+
     }
 
     output {
-        String reportDir = outdirPath + "/" + sub(basename(seqFile), "..*$", "_fastqc")
+        # Apparently, the escape character needs to be escaped in regexes.
+        # This regex chops of the extension and replaces it with _fastqc for the reportdir.
+        # Just as fastqc does it.
+        String reportDir = outdirPath + "/" + sub(basename(seqFile), "\\.[^\\.]*$", "_fastqc")
         File rawReport = reportDir + "/fastqc_data.txt"
-        File htmlReport = reportDir + "fastqc_report.html"
+        File htmlReport = reportDir + "/fastqc_report.html"
         File summary = reportDir + "/summary.txt"
         File adapterContent = reportDir + "/Images/adapter_content.png"
         File duplicationLevels = reportDir + "/Images/duplication_levels.png"
