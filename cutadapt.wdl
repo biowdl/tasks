@@ -54,6 +54,7 @@ task cutadapt {
     Boolean? bwa
     Boolean? zeroCap
     Boolean? noZeroCap
+    String? reportPath
 
     command {
         set -e -o pipefail
@@ -98,10 +99,10 @@ task cutadapt {
         ${true="--colorspace" false="" colorspace} ${true="--double-encode" false="" doubleEncode} \
         ${true="--strip-f3" false="" stripF3} ${true="--maq" false="" maq} ${true="--bwa" false="" bwa} \
         ${true="--zero-cap" false="" zeroCap} ${true="--no-zero-cap" false="" noZeroCap} \
-        ${read1} ${read2}
+        ${read1} ${read2} ${"> " + reportPath}
     }
     output{
-        File report = stdout()
+        File report = if defined(reportPath) then select_first([reportPath]) else stdout()
         File cutRead1 = read1output
         File? cutRead2 = read2output
         File? tooLongOutput=tooLongOutputPath
