@@ -6,7 +6,7 @@ task download {
     String libraryPath
     Array[String]? domain
     String? executable = "centrifuge-download"
-    File? condaEnvironment
+    String? preCommand
     String? seqTaxMapPath
     String? database = "refseq"
     String? assemblyLevel
@@ -22,11 +22,12 @@ task download {
     # The bash statement at the beginning is to make sure
     # the directory for the SeqTaxMapPath exists.
     command {
+        set -e -o pipefail
+        ${preCommand}
         ${'if [ ! -f ' + seqTaxMapPath +
         ' ]; then mkdir -p ' + seqTaxMapPath +
         '; rm -d ' + seqTaxMapPath +
         '; fi' }
-        ${"source activate " + condaEnvironment}
         ${executable} \
         -o ${libraryPath} \
         ${true='-d ' false='' defined(domain)}${sep=','  domain} \
@@ -50,9 +51,10 @@ task download {
 task downloadTaxonomy {
     String centrifugeTaxonomyDir
     String? executable = "centrifuge-download"
-    File? condaEnvironment
+    String? preCommand
     command {
-        ${"source activate " + condaEnvironment}
+        set -e -o pipefail
+        ${preCommand}
         ${executable} \
         -o ${centrifugeTaxonomyDir} \
         taxonomy
@@ -69,7 +71,7 @@ task build {
     File taxonomyTree
     File inputFasta
     String centrifugeIndexBase
-    File? condaEnvironment
+    String? preCommand
     String? centrifugeBuildExecutable = "centrifuge-build"
     #Boolean? c = false
     Boolean? largeIndex = false
@@ -88,9 +90,10 @@ task build {
     Int? kmerCount
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         mkdir -p  ${centrifugeIndexBase}
         rm -d ${centrifugeIndexBase}
-        ${"source activate " + condaEnvironment}
         ${centrifugeBuildExecutable} \
         ${true='--large-index' false='' largeIndex} \
         ${true='--noauto' false='' noAuto} \

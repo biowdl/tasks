@@ -1,7 +1,7 @@
 task fastqc {
     File seqFile
     String outdirPath
-    String? condaEnv
+    String? preCommand
     Boolean? casava
     Boolean? nano
     Boolean? noFilter
@@ -18,7 +18,7 @@ task fastqc {
 
     command {
     set -e -o pipefail
-    ${"source activate " + condaEnv}
+    ${preCommand}
     mkdir -p ${outdirPath}
     fastqc \
     ${"--outdir " + outdirPath} \

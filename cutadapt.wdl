@@ -4,7 +4,7 @@ task cutadapt {
     String read1output
     String? read2output
     String? format
-    String? condaEnv
+    String? preCommand
     Int? cores = 1
     Array[String]? adapter
     Array[String]? front
@@ -57,7 +57,7 @@ task cutadapt {
 
     command {
         set -e -o pipefail
-        ${"source activate " + condaEnv}
+        ${preCommand}
         cutadapt \
         ${"--cores=" + cores} \
         ${true="-a " false="" defined(adapter)} ${sep=" -a " adapter} \
