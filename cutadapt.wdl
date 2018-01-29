@@ -57,6 +57,7 @@ task cutadapt {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ${read1output})
         ${preCommand}
         cutadapt \
         ${"--cores=" + cores} \
