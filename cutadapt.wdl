@@ -6,6 +6,7 @@ task cutadapt {
     String? format
     String? preCommand
     Int? cores = 1
+    String? memory = "4G"
     Array[String]? adapter
     Array[String]? front
     Array[String]? anywhere
@@ -117,5 +118,6 @@ task cutadapt {
     }
     runtime {
         cpu: select_first([cores])
+        memory: select_first([memory])
     }
 }
