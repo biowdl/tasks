@@ -14,11 +14,11 @@ task genomeDownload {
     String? domain = "all"
 
     String? executable = "ncbi-genome-download"
-    File? condaEnvironment
+    String? preCommand
 
     command {
         set -e -o pipefail
-        ${"source activate " + condaEnvironment}
+        ${preCommand}
         ${executable} \
         ${"--section " + section} \
         ${"--format " + format} \
