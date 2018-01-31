@@ -1,7 +1,7 @@
 task getContigMostCoverage {
     String? preCommand
     File bamFile
-    String? outputFilePath = "output.bam"
+    String? outputFilePath = "mostCoveredContig.bam"
     command <<<
         set -e -o pipefail
         ${preCommand}
@@ -15,6 +15,10 @@ task getContigMostCoverage {
         > ${outputFilePath}
         samtools index ${outputFilePath}
     >>>
+
+    output {
+        File contig = outputFilePath
+    }
 
     parameter_meta {
         preCommand: "This command is run before running the samtools command. Can be used to set up environments such as conda."
