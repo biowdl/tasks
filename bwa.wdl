@@ -2,7 +2,7 @@ task mem {
     File read1
     File referenceFile
     File? read2
-    String? outputFile
+    String? outputFile = "aligned.bam"
     String? preCommand
     Int? threads = 1
     String? memory = "4G"
@@ -78,10 +78,12 @@ task mem {
         ${true="-Y" false="" Y } \
         ${true="-M" false="" M } \
         ${"-I " + I } \
-        ${referenceFile} ${read1} ${read2}
+        ${referenceFile} ${read1} ${read2} \
+        | picard SortSam CREATE_INDEX=TRUE TMP_DIR=null \
+        INPUT=/dev/stdin OUTPUT=${outputFile}
     }
     output {
-        File samFile = if defined(outputFile) then select_first([outputFile]) else stdout()
+        File samFile = select_first([outputFile])
     }
     runtime {
         cpu: select_first([threads])
