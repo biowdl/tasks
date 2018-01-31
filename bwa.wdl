@@ -83,7 +83,7 @@ task mem {
         INPUT=/dev/stdin OUTPUT=${outputFile}
     }
     output {
-        File samFile = select_first([outputFile])
+        File alignedFile = select_first([outputFile])
     }
     runtime {
         cpu: select_first([threads])
