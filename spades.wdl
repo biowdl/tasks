@@ -63,7 +63,7 @@ task spades {
         ${"--phred-offset " + phredOffset }
     }
     output {
-        Array[File] correctedReads = glob_wildcard(outputDir + "/corrected/*.fastq*")
+        Array[File] correctedReads = glob(outputDir + "/corrected/*.fastq*")
         File scaffolds = outputDir + "/scaffolds.fasta"
         File contigs = outputDir + "/contigs.fasta"
         File assemblyGraphGfa = outputDir + "/assembly_graph.gfa"

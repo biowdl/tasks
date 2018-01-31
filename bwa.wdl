@@ -81,7 +81,7 @@ task mem {
         ${referenceFile} ${read1} ${read2}
     }
     output {
-        File samFile = if defined(outputFile) then outputFile else stdout()
+        File samFile = if defined(outputFile) then select_first([outputFile]) else stdout()
     }
     runtime {
         cpu: select_first([threads])
