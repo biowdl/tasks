@@ -55,7 +55,7 @@ task fastqc {
         File perBaseSequenceContent = reportDir + "/Images/per_base_sequence_content.png"
         File perSequenceGCContent = reportDir + "/Images/per_sequence_gc_content.png"
         File perSequenceQuality = reportDir + "/Images/per_sequence_quality.png"
-        File perTileQuality = reportDir + "/Images/per_tile_quality.png"
+        #File perTileQuality = reportDir + "/Images/per_tile_quality.png"
         File sequenceLengthDistribution = reportDir + "/Images/sequence_length_distribution.png"
     }
 
