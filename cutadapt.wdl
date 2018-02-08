@@ -7,12 +7,12 @@ task cutadapt {
     String? preCommand
     Int? cores = 1
     String? memory = "4G"
-    Array[String]? adapter
-    Array[String]? front
-    Array[String]? anywhere
-    Array[String]? adapterRead2
-    Array[String]? frontRead2
-    Array[String]? anywhereRead2
+    Array[String]+? adapter
+    Array[String]+? front
+    Array[String]+? anywhere
+    Array[String]+? adapterRead2
+    Array[String]+? frontRead2
+    Array[String]+? anywhereRead2
     Boolean? interleaved
     String? pairFilter
     Float? errorRate
