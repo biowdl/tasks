@@ -81,7 +81,7 @@ task mem {
         ${"-I " + I } \
         ${referenceFile} ${read1} ${read2} \
         | picard SortSam CREATE_INDEX=TRUE TMP_DIR=null \
-        INPUT=/dev/stdin OUTPUT=${outputFile}
+        INPUT=/dev/stdin SORT_ORDER=coordinate OUTPUT=${outputFile}
     }
     output {
         File alignedFile = select_first([outputFile])
@@ -90,4 +90,34 @@ task mem {
         cpu: select_first([threads])
         memory: select_first([memory])
         }
+}
+
+task index {
+    File fasta
+    String? preCommand
+    String? constructionAlgorithm
+    Int? blockSize
+    String? outputDir
+    String fastaFilename = basename(fasta)
+
+    command {
+        set -e -o pipefail
+        ${"mkdir -p " + outputDir}
+        ${preCommand}
+        ln -sf ${fasta} ${outputDir + "/"}${fastaFilename}
+        bwa index \
+        ${"-a " + constructionAlgorithm} \
+        ${"-b" + blockSize} \
+        ${outputDir + "/"}${fastaFilename}
+    }
+
+    output {
+        File indexedFasta = if (defined(outputDir)) then select_first([outputDir]) + "/" + fastaFilename else fastaFilename
+    }
+    parameter_meta {
+        fasta: "Fasta file to be indexed"
+        constructionAlgorithm: "-a STR    BWT construction algorithm: bwtsw, is or rb2 [auto]"
+        blockSize: "-b INT    block size for the bwtsw algorithm (effective with -a bwtsw) [10000000]"
+        outputDir: "index will be created in this output directory"
+    }
 }
