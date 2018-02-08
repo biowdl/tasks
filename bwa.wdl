@@ -88,7 +88,8 @@ task mem {
         INPUT=/dev/stdin SORT_ORDER=coordinate OUTPUT=${outputFile}
     }
     output {
-        File alignedFile = select_first([outputFile])
+        File bamFile = select_first([outputFile])
+        File bamIndex = sub(bamFile, ".bam$", ".bai")
     }
     runtime {
         cpu: select_first([threads])
