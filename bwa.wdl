@@ -1,6 +1,7 @@
 task mem {
     File read1
-    File referenceFile
+    File indexBase
+    Array[File] indexFiles # Not used by the command, but needed so cromwell does provide the proper links.
     File? read2
     String? outputFile = "aligned.bam"
     String? preCommand
@@ -39,6 +40,9 @@ task mem {
     Boolean? Y
     Boolean? M
     String? I
+    parameter_meta {
+        referenceFiles: "Should contain all the index files from the index task"
+    }
     command {
         set -e -o pipefail
         ${"mkdir -p $(dirname " + outputFile + ")"}
@@ -79,7 +83,7 @@ task mem {
         ${true="-Y" false="" Y } \
         ${true="-M" false="" M } \
         ${"-I " + I } \
-        ${referenceFile} ${read1} ${read2} \
+        ${indexBase} ${read1} ${read2} \
         | picard SortSam CREATE_INDEX=TRUE TMP_DIR=null \
         INPUT=/dev/stdin SORT_ORDER=coordinate OUTPUT=${outputFile}
     }
@@ -112,7 +116,9 @@ task index {
     }
 
     output {
-        File indexedFasta = if (defined(outputDir)) then select_first([outputDir]) + "/" + fastaFilename else fastaFilename
+        File indexBase = if (defined(outputDir)) then select_first([outputDir]) + "/" + fastaFilename else fastaFilename
+        File indexedFasta = indexBase
+        Array[File] indexFiles = [indexBase + ".bwt",indexBase + ".pac",indexBase + ".sa",indexBase + ".amb",indexBase + ".ann"]
     }
     parameter_meta {
         fasta: "Fasta file to be indexed"
