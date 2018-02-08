@@ -1,6 +1,6 @@
 task sample {
     File sequenceFile
-    File? outFilePath = "subsampledReads"
+    String? outFilePath = "subsampledReads"
     String? preCommand
     Int? seed
     Boolean? twoPassMode

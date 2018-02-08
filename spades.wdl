@@ -40,7 +40,6 @@ task spades {
         ${true="--plasmid" false="" plasmid} \
         ${true="--iontorrent" false="" ionTorrent} \
         ${"--12 " + interlacedReads }
-        ${"--threads " + threads } \
         ${"-1 " + read1 } \
         ${"-2 " + read2 } \
         ${"-s " + singleRead } \
