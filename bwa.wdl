@@ -70,7 +70,6 @@ task mem {
         ${true="-p " false="" smartPairing} \
         ${"-r " + readGroupHeaderLine} \
         ${"-H " + H } \
-        ${"-o " + outputFile } \
         ${true="-j" false="" j } \
         ${true="-5" false="" five } \
         ${true="-q" false="" q } \
@@ -86,10 +85,12 @@ task mem {
         ${indexBase} ${read1} ${read2} \
         | picard SortSam CREATE_INDEX=TRUE TMP_DIR=null \
         INPUT=/dev/stdin SORT_ORDER=coordinate OUTPUT=${outputFile}
+        ln -s $(basename ${outputFile} | sed 's/.bam$/.bai/') ${outputFile}.bai
     }
     output {
         File bamFile = select_first([outputFile])
-        File bamIndex = sub(bamFile, ".bam$", ".bai")
+        File bamIndexPicard = sub(bamFile, ".bam$", ".bai")
+        File bamIndexSamtools = select_first([outputFile]) + ".bai"
     }
     runtime {
         cpu: select_first([threads])
