@@ -39,8 +39,7 @@ task spades {
         ${true="--rna" false="" rna} \
         ${true="--plasmid" false="" plasmid} \
         ${true="--iontorrent" false="" ionTorrent} \
-        ${"--12 " + interlacedReads }
-        ${"--threads " + threads } \
+        ${"--12 " + interlacedReads } \
         ${"-1 " + read1 } \
         ${"-2 " + read2 } \
         ${"-s " + singleRead } \
@@ -66,12 +65,12 @@ task spades {
         Array[File] correctedReads = glob(outputDir + "/corrected/*.fastq*")
         File scaffolds = outputDir + "/scaffolds.fasta"
         File contigs = outputDir + "/contigs.fasta"
-        File assemblyGraphGfa = outputDir + "/assembly_graph.gfa"
-        File assemblyGraphFastg = outputDir + "/assembly_graph.fastq"
+        File assemblyGraphWithScaffoldsGfa = outputDir + "/assembly_graph_with_scaffolds.gfa"
+        File assemblyGraphFastg = outputDir + "/assembly_graph.fastg"
         File contigsPaths = outputDir + "/contigs.paths"
         File scaffoldsPaths = outputDir + "/scaffolds.paths"
         File params = outputDir + "/params.txt"
-        File log = outputDir + "/spades/log"
+        File log = outputDir + "/spades.log"
     }
     runtime {
         cpu: select_first([threads])

@@ -35,7 +35,7 @@ task concatenateTextFiles {
     Boolean? unzip=false
     command {
         set -e -o pipefail
-        mkdir $(dirname ${combinedFilePath})
+        ${"mkdir -p $(dirname " + combinedFilePath + ")"}
         ${true='zcat' false= 'cat' unzip} ${sep=' ' fileList} \
         > ${combinedFilePath}
     }

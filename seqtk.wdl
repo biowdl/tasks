@@ -1,12 +1,12 @@
 task sample {
     File sequenceFile
-    File? outFilePath = "subsampledReads"
+    String? outFilePath = "subsampledReads.fq.gz"
     String? preCommand
     Int? seed
     Boolean? twoPassMode
     Float? fraction
     Int? number
-    Boolean? zip
+    Boolean? zip = true
 
     command {
     set -e -o pipefail
@@ -20,6 +20,6 @@ task sample {
     ${"> " + outFilePath}
     }
     output {
-        File subsampledReads=select_first([outFilePath])
+        File subsampledReads= select_first([outFilePath])
     }
 }

@@ -41,6 +41,7 @@ task mem {
     String? I
     command {
         set -e -o pipefail
+        ${"mkdir -p $(dirname " + outputFile + ")"}
         ${preCommand}
         bwa mem \
         ${"-t " + threads } \

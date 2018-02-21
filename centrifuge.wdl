@@ -24,10 +24,7 @@ task download {
     command {
         set -e -o pipefail
         ${preCommand}
-        ${'if [ ! -f ' + seqTaxMapPath +
-        ' ]; then mkdir -p ' + seqTaxMapPath +
-        '; rm -d ' + seqTaxMapPath +
-        '; fi' }
+        ${"mkdir -p $(dirname " + seqTaxMapPath + ")"}
         ${executable} \
         -o ${libraryPath} \
         ${true='-d ' false='' defined(domain)}${sep=','  domain} \
@@ -92,8 +89,7 @@ task build {
     command {
         set -e -o pipefail
         ${preCommand}
-        mkdir -p  ${centrifugeIndexBase}
-        rm -d ${centrifugeIndexBase}
+        ${"mkdir -p $(dirname " + centrifugeIndexBase + ")"}
         ${centrifugeBuildExecutable} \
         ${true='--large-index' false='' largeIndex} \
         ${true='--noauto' false='' noAuto} \
