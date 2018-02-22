@@ -95,6 +95,9 @@ task extractAdapters {
         Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
         Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
     }
+    runtime {
+        memory: "8G"
+    }
 }
 
 task getConfiguration {
