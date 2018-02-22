@@ -96,7 +96,7 @@ task extractAdapters {
         Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
     }
     runtime {
-        memory: "8G"
+        memory: 8
     }
 }
 
