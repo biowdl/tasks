@@ -56,7 +56,7 @@ task spades {
         ${true="--disable-rr" false="" disableRepeatResolution } \
         ${"--dataset " + dataset } \
         ${"--threads " + threads } \
-        ${"--memory " + memoryGb } \
+        ${"--memory " + memoryGb * threads } \
         ${"-k " + k } \
         ${"--cov-cutoff " + covCutoff } \
         ${"--phred-offset " + phredOffset }
