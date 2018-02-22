@@ -6,7 +6,7 @@ task mem {
     String? outputFile = "aligned.bam"
     String? preCommand
     Int? threads = 1
-    String? memory = "4G"
+    Int? memory = 4
     Int? minimumSeedLength
     Int? w
     Int? d

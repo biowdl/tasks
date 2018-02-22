@@ -74,6 +74,6 @@ task spades {
     }
     runtime {
         cpu: select_first([threads])
-        memory: select_first([memoryGb]) + "G"
+        memory: select_first([memoryGb])
     }
 }

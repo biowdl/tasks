@@ -6,7 +6,7 @@ task cutadapt {
     String? format
     String? preCommand
     Int? cores = 1
-    String? memory = "4G"
+    Int? memory = 4
     Array[String]+? adapter
     Array[String]+? front
     Array[String]+? anywhere
