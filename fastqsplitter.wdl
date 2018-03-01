@@ -5,6 +5,7 @@ task FastqSplitter {
     File toolJar
 
     command {
+    mkdir -p ${sep=' ' outputPath + "/chunk_" + range(numberChunks)}
     ${if (numberChunks > 1) then ("java -jar " + toolJar + " -i " + inputFastq + write_lines(prefix("-o ", range(numberChunks))))
     else ("ln -s " + inputFastq + " " + outputPath + "/chunk_0/" + basename(inputFastq))}
     }
