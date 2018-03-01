@@ -1,4 +1,4 @@
-task SamtoolsIndex {
+task Index {
     String bamFilePath
 
     command {
@@ -10,15 +10,15 @@ task SamtoolsIndex {
     }
 }
 
-task SamtoolsMerge {
-    Array[File] bamFiles
+task Merge {
+    Array[File]+ bamFiles
     String outputBamPath
 
     command {
-        samtools merge ${outputBamPath} ${bamFiles}
+        samtools merge ${outputBamPath} ${sep=' ' bamFiles}
     }
 
     output {
-        File bamFile = outputBamPath
+        File outputBam = outputBamPath
     }
 }
