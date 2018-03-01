@@ -48,15 +48,7 @@ task fastqc {
         File rawReport = reportDir + "/fastqc_data.txt"
         File htmlReport = reportDir + "/fastqc_report.html"
         File summary = reportDir + "/summary.txt"
-        File adapterContent = reportDir + "/Images/adapter_content.png"
-        File duplicationLevels = reportDir + "/Images/duplication_levels.png"
-        File perBaseNContent = reportDir + "/Images/per_base_n_content.png"
-        File perBaseQuality = reportDir + "/Images/per_base_quality.png"
-        File perBaseSequenceContent = reportDir + "/Images/per_base_sequence_content.png"
-        File perSequenceGCContent = reportDir + "/Images/per_sequence_gc_content.png"
-        File perSequenceQuality = reportDir + "/Images/per_sequence_quality.png"
-        File perTileQuality = reportDir + "/Images/per_tile_quality.png"
-        File sequenceLengthDistribution = reportDir + "/Images/sequence_length_distribution.png"
+        Array[File] images = glob(outdirPath + "/*/Images/*.png")
     }
 
     runtime {
