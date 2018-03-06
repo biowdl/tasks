@@ -1,5 +1,5 @@
 task fastq {
-    Array[File]+ files
+    Array[String]+ files # Array[String]+ instead of Array[File]+ to allow for globs
     String outputFile
     String? preCommand
     String? type
