@@ -1,5 +1,5 @@
 task fastq {
-    Array[String]+ files # Array[String]+ instead of Array[File]+ to allow for globs
+    Array[File]+ files # Files should exist! Also accepts multiple directories (unlike poretools).
     String outputFile
     String? preCommand
     String? type
@@ -16,16 +16,22 @@ task fastq {
     mkdir -p $(dirname ${outputFile})
     ${preCommand}
 
-    poretools fastq \
-    ${"--type " + type} \
-    ${"--start " + start } \
-    ${"--end " + end } \
-    ${"--min-length " + minLength } \
-    ${"--max-length " + maxLength } \
-    ${true="--high-quality" false="" highQuality} \
-    ${true="--normal-quality" false="" normalQuality} \
-    ${"--group " + group} \
-    ${sep=" " files} ${true="| gzip " false="" gzip}> ${outputFile}
+    (
+    # Allow for multiple directory input by looping over files
+    for file in ${sep=" " files}
+    do
+        poretools fastq \
+        ${"--type " + type} \
+        ${"--start " + start } \
+        ${"--end " + end } \
+        ${"--min-length " + minLength } \
+        ${"--max-length " + maxLength } \
+        ${true="--high-quality" false="" highQuality} \
+        ${true="--normal-quality" false="" normalQuality} \
+        ${"--group " + group} \
+        $file
+    done
+    ) ${true="| gzip " false="" gzip}> ${outputFile}
     }
 
     output {
