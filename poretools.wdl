@@ -22,10 +22,10 @@ task fastq {
     ${"--end " + end } \
     ${"--min-length " + minLength } \
     ${"--max-length " + maxLength } \
-    ${if highQuality then "--high-quality" else ""} \
-    ${if normalQuality then "--normal-quality" else ""} \
+    ${true="--high-quality" false="" highQuality} \
+    ${true="--normal-quality" false="" normalQuality} \
     ${"--group " + group} \
-    ${sep=" " files} ${if gzip then "| gzip " else ""}> ${outputFile}
+    ${sep=" " files} ${true="| gzip " false="" gzip}> ${outputFile}
     }
 
     output {
