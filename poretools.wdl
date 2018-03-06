@@ -1,5 +1,5 @@
 task fastq {
-    Array[File] files
+    Array[File]+ files
     String outputFile
     String? preCommand
     String? type
@@ -10,6 +10,7 @@ task fastq {
     Boolean? highQuality
     Boolean? normalQuality
     String? group
+    Boolean? gzip = true
     command {
     set -e -o pipefail
     mkdir -p $(dirname ${outputFile})
@@ -24,7 +25,7 @@ task fastq {
     ${if highQuality then "--high-quality" else ""} \
     ${if normalQuality then "--normal-quality" else ""} \
     ${"--group " + group} \
-    ${sep=" " files} > ${outputFile}
+    ${sep=" " files} ${if gzip then "| gzip " else ""}> ${outputFile}
     }
 
     output {
