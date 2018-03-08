@@ -12,7 +12,7 @@ task BaseRecalibrator {
     File ref_fasta_index
 
     command {
-        java -Xms4000m -jar ${gatk_jar} \
+        java -Xms4G -jar ${gatk_jar} \
           BaseRecalibrator \
           -R ${ref_fasta} \
           -I ${input_bam} \
@@ -39,7 +39,7 @@ task ApplyBQSR {
     Int? compression_level
 
     command {
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xms4000m -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} -Xms4G -jar ${gatk_jar} \
           ApplyBQSR \
           --create-output-bam-md5 \
           --add-output-sam-program-record \
@@ -64,7 +64,7 @@ task GatherBqsrReports {
     String output_report_filepath
 
     command {
-        java -Xms3000m -jar ${gatk_jar} \
+        java -Xms3G -jar ${gatk_jar} \
         GatherBQSRReports \
         -I ${sep=' -I ' input_bqsr_reports} \
         -O ${output_report_filepath}

@@ -29,7 +29,7 @@ task GatherBamFiles {
   String picard_jar
 
   command {
-    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx6000 -jar ${picard_jar} \
+    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
       GatherBamFiles \
       INPUT=${sep=' INPUT=' input_bams} \
       OUTPUT=${output_bam_path} \
@@ -60,7 +60,7 @@ task MarkDuplicates {
  # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
  # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
   command {
-    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4000 -jar ${picard_jar} \
+    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
       MarkDuplicates \
       INPUT=${sep=' INPUT=' input_bams} \
       OUTPUT=${output_bam_path} \
