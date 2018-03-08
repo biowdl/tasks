@@ -40,9 +40,9 @@ task fastqc {
     }
 
     output {
-        File rawReport = outdirPath + "/*/fastqc_data.txt"
-        File htmlReport = outdirPath + "/*/fastqc_report.html"
-        File summary = outdirPath + "/*/summary.txt"
+        File rawReport = select_first(glob(outdirPath + "/*/fastqc_data.txt"))
+        File htmlReport = select_first(glob(outdirPath + "/*/fastqc_report.html"))
+        File summary = select_first(glob(outdirPath + "/*/summary.txt"))
         Array[File] images = glob(outdirPath + "/*/Images/*.png")
     }
 
