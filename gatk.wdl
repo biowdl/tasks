@@ -46,7 +46,7 @@ task ApplyBQSR {
           -R ${ref_fasta} \
           -I ${input_bam} \
           --use-original-qualities \
-          -O ${output_bam_path}.bam \
+          -O ${output_bam_path} \
           -bqsr ${recalibration_report} \
           --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 \
           -L ${sep=" -L " sequence_group_interval}
