@@ -3,10 +3,11 @@ task FastqSplitter {
     String outputPath
     Int numberChunks
     File tool_jar
+    Array[Int] chunks = range(numberChunks)
 
     command {
-    mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", range(numberChunks))}
-    ${if (numberChunks > 1) then ("java -jar " + tool_jar + " -I " + inputFastq + write_lines(prefix("-o ", range(numberChunks))))
+    mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
+    ${if (numberChunks > 1) then ("java -jar " + tool_jar + " -I " + inputFastq + " " + write_lines(prefix("-o ", chunks)))
     else ("ln -sf " + inputFastq + " " + outputPath + "/chunk_0/" + basename(inputFastq))}
     }
 
