@@ -5,8 +5,8 @@ task BaseRecalibrator {
     String input_bam_index
     String recalibration_report_filename
     Array[File]+ sequence_group_interval
-    Array[File] known_indels_sites_VCFs
-    Array[File] known_indels_sites_indices
+    Array[File]+ known_indels_sites_VCFs
+    Array[File]+ known_indels_sites_indices
     File ref_dict
     File ref_fasta
     File ref_fasta_index
