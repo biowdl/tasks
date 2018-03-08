@@ -68,7 +68,6 @@ task MarkDuplicates {
       VALIDATION_STRINGENCY=SILENT \
       ${"READ_NAME_REGEX=" + read_name_regex} \
       OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
-      ASSUME_SORT_ORDER="queryname" \
       CLEAR_DT="false" \
       CREATE_INDEX=true \
       ADD_PG_TAG_TO_READS=false
