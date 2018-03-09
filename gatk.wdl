@@ -162,7 +162,7 @@ task CombineGVCFs {
 
     if [ ${length(gvcf_files)} -gt 1 ]; then
         java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
-         GenotypeGVCFs \
+         CombineGVCFs \
          -R ${ref_fasta} \
          -O ${output_basename + ".vcf.gz"} \
          -V ${sep=' -V ' gvcf_files} \
