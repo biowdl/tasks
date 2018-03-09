@@ -11,6 +11,7 @@ task FastqSplitter {
         java -jar ${tool_jar} -I ${inputFastq} -o ${sep=' -o ' chunks}
     else
         ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
+    fi
     }
 
     output {
