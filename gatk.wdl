@@ -102,3 +102,42 @@ task HaplotypeCallerGvcf {
     File output_gvcf_index = "${gvcf_basename}.vcf.gz.tbi"
   }
 }
+
+task GenotypeGVCFs {
+  Array[File]+ gvcf_files
+  Array[File]+ gvcf_file_indexes
+  Array[File]+ intervals
+
+  String output_basename
+
+  String gatk_jar
+
+  File ref_fasta
+  File ref_fasta_index
+  File ref_dict
+
+  File dbsnp_vcf
+  File dbsnp_vcf_index
+
+  Int? compression_level
+
+  command <<<
+    set -e -p pipefail
+
+    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+     GenotypeGVCFs \
+     -R ${ref_fasta} \
+     -O ${output_basename + ".vcf.gz"} \
+     -D ${dbsnp_vcf} \
+     -G StandardAnnotation \
+     --only-output-calls-starting-in-intervals \
+     -new-qual \
+     -V ${sep=' -V ' gvcf_files} \
+     -L ${sep=' -L ' intervals}
+  >>>
+
+  output {
+    File output_vcf = output_basename + ".vcf.gz"
+    File output_vcf_index = output_basename + ".vcf.gz.tbi"
+  }
+}
