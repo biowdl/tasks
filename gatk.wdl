@@ -91,7 +91,7 @@ task HaplotypeCallerGvcf {
     java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
       HaplotypeCaller \
       -R ${ref_fasta} \
-      -o ${gvcf_basename}.vcf.gz \
+      -O ${gvcf_basename}.vcf.gz \
       -I ${sep=" -I " input_bams} \
       -L ${sep=' -L ' interval_list} \
       -ERC GVCF \
