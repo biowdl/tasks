@@ -94,11 +94,8 @@ task HaplotypeCallerGvcf {
       -O ${gvcf_basename}.vcf.gz \
       -I ${sep=" -I " input_bams} \
       -L ${sep=' -L ' interval_list} \
-      -ERC GVCF \
-      -variant_index_parameter 128000 \
-      -variant_index_type LINEAR \
       -contamination ${default=0 contamination} \
-      --read_filter OverclippedRead
+      -ERC GVCF
   }
   output {
     File output_gvcf = "${gvcf_basename}.vcf.gz"
