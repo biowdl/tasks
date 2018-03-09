@@ -104,8 +104,8 @@ task HaplotypeCallerGvcf {
 }
 
 task GenotypeGVCFs {
-  Array[File]+ gvcf_files
-  Array[File]+ gvcf_file_indexes
+  File gvcf_files
+  File gvcf_file_indexes
   Array[File]+ intervals
 
   String output_basename
@@ -132,12 +132,51 @@ task GenotypeGVCFs {
      -G StandardAnnotation \
      --only-output-calls-starting-in-intervals \
      -new-qual \
-     -V ${sep=' -V ' gvcf_files} \
+     -V ${gvcf_files} \
      -L ${sep=' -L ' intervals}
   >>>
 
   output {
     File output_vcf = output_basename + ".vcf.gz"
     File output_vcf_index = output_basename + ".vcf.gz.tbi"
+  }
+}
+
+task CombineGVCFs {
+  Array[File]+ gvcf_files
+  Array[File]+ gvcf_file_indexes
+  Array[File]+ intervals
+
+  String output_basename
+
+  String gatk_jar
+
+  File ref_fasta
+  File ref_fasta_index
+  File ref_dict
+
+  Int? compression_level
+
+  command <<<
+    set -e -p pipefail
+
+    if [ ${length(gvcf_files)} -gt 1 ]; then
+        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+         GenotypeGVCFs \
+         -R ${ref_fasta} \
+         -O ${output_basename + ".vcf.gz"} \
+         -V ${sep=' -V ' gvcf_files} \
+         -L ${sep=' -L ' intervals}
+    else
+        ln -sf ${select_first(gvcf_files)} ${output_basename + ".vcf.gz"}
+        ln -sf ${select_first(gvcf_files)}.tbi ${output_basename + ".vcf.gz.tbi"}
+    fi
+
+
+  >>>
+
+  output {
+    File output_gvcf = output_basename + ".vcf.gz"
+    File output_gvcf_index = output_basename + ".vcf.gz.tbi"
   }
 }
