@@ -73,3 +73,35 @@ task GatherBqsrReports {
         File output_bqsr_report = "${output_report_filepath}"
     }
 }
+
+# Call variants on a single sample with HaplotypeCaller to produce a GVCF
+task HaplotypeCallerGvcf {
+  Array[File]+ input_bams
+  Array[File]+ input_bams_index
+  Array[File]+ interval_list
+  String gvcf_basename
+  File ref_dict
+  File ref_fasta
+  File ref_fasta_index
+  Float? contamination
+  Int? compression_level
+  String gatk_jar
+
+  command {
+    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+      -T HaplotypeCaller \
+      -R ${ref_fasta} \
+      -o ${gvcf_basename}.vcf.gz \
+      -I ${sep=" -I " input_bams} \
+      -L ${sep=' -L ' interval_list} \
+      -ERC GVCF \
+      -variant_index_parameter 128000 \
+      -variant_index_type LINEAR \
+      -contamination ${default=0 contamination} \
+      --read_filter OverclippedRead
+  }
+  output {
+    File output_gvcf = "${gvcf_basename}.vcf.gz"
+    File output_gvcf_index = "${gvcf_basename}.vcf.gz.tbi"
+  }
+}

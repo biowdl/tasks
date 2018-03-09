@@ -80,3 +80,25 @@ task MarkDuplicates {
         File duplicate_metrics = metrics_path
     }
 }
+
+# Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
+task MergeVCFs {
+  Array[File] input_vcfs
+  Array[File] input_vcfs_indexes
+  String output_vcf_path
+  Int? compression_level
+  String picard_jar
+
+  # Using MergeVcfs instead of GatherVcfs so we can create indices
+  # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
+  command {
+    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
+      MergeVcfs \
+      INPUT=${sep=' INPUT=' input_vcfs} \
+      OUTPUT=${output_vcf_path}
+  }
+  output {
+    File output_vcf = output_vcf_path
+    File output_vcf_index = output_vcf_path + ".tbi"
+  }
+}
