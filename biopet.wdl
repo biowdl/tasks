@@ -8,7 +8,7 @@ task FastqSplitter {
     command {
     mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
     if [ ${numberChunks} -gt 1 ]; then
-        java -jar ${tool_jar} -I ${inputFastq} -o ${sep=' -o ' outputPath + "/chunk_" + chunks + "/" + basename(inputFastq)}
+        java -jar ${tool_jar} -I ${inputFastq} -o ${sep='/${basename(inputFastq)} -o ' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
     else
         ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
     fi
