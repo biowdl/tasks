@@ -2,7 +2,7 @@ task FastqSplitter {
     File inputFastq
     String outputPath
     Int numberChunks
-    File tool_jar
+    String tool_jar
     Array[Int] chunks = range(numberChunks)
 
     command {
@@ -24,7 +24,7 @@ task ScatterRegions {
     File ref_fasta
     File ref_dict
     String outputDirPath
-    File tool_jar
+    String tool_jar
     Int? scatterSize
     File? regions
 
@@ -43,7 +43,7 @@ task ScatterRegions {
 }
 
 task SampleConfig {
-    File tool_jar
+    String tool_jar
     Array[File]+ inputFiles
     String? sample
     String? library
@@ -71,7 +71,7 @@ task SampleConfig {
 }
 
 task DownloadSampleConfig {
-    File? inputJar
+    String? inputJar
     String? version = "0.1"
 
     command {
