@@ -1,10 +1,10 @@
 task unicycler {
     String? preCommand
-    File short1
-    File short2
+    File? short1
+    File? short2
     File? unpaired
     File? long
-    String out,
+    String out
     Int? verbosity
     Int? minFastaLength
     Int? keep
