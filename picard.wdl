@@ -1,10 +1,12 @@
 task ScatterIntervalList {
+    String? preCommand
     File interval_list
     Int scatter_count
     String picard_jar
 
-    command <<<
+    command {
         set -e -o pipefail
+        ${preCommand}
         mkdir scatter_list
         java -Xmx4G -jar ${picard_jar} \
           IntervalListTools \
@@ -14,7 +16,7 @@ task ScatterIntervalList {
           SORT=true \
           INPUT=${interval_list} \
           OUTPUT=scatter_list
-    >>>
+    }
     output {
         Array[File] out = glob("scatter_list/*/*.interval_list")
         Int interval_count = read_int(stdout())
@@ -23,28 +25,32 @@ task ScatterIntervalList {
 
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
 task GatherBamFiles {
-  Array[File]+ input_bams
-  String output_bam_path
-  Int? compression_level
-  String picard_jar
+    String? preCommand
+    Array[File]+ input_bams
+    String output_bam_path
+    Int? compression_level
+    String picard_jar
 
-  command {
-    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
-      GatherBamFiles \
-      INPUT=${sep=' INPUT=' input_bams} \
-      OUTPUT=${output_bam_path} \
-      CREATE_INDEX=true \
-      CREATE_MD5_FILE=true
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
+          GatherBamFiles \
+          INPUT=${sep=' INPUT=' input_bams} \
+          OUTPUT=${output_bam_path} \
+          CREATE_INDEX=true \
+          CREATE_MD5_FILE=true
     }
-  output {
-    File output_bam = "${output_bam_path}"
-    File output_bam_index = sub(output_bam_path, ".bam$", ".bai")
-    File output_bam_md5 = "${output_bam_path}.md5"
-  }
+    output {
+        File output_bam = "${output_bam_path}"
+        File output_bam_index = sub(output_bam_path, ".bam$", ".bai")
+        File output_bam_md5 = "${output_bam_path}.md5"
+    }
 }
 
 # Mark duplicate reads to avoid counting non-independent observations
 task MarkDuplicates {
+    String? preCommand
     Array[File] input_bams
     String output_bam_path
     String metrics_path
@@ -61,6 +67,7 @@ task MarkDuplicates {
     # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
     command {
         set -e -o pipefail
+        ${preCommand}
         mkdir -p $(dirname ${output_bam_path})
         java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
           MarkDuplicates \
@@ -83,22 +90,25 @@ task MarkDuplicates {
 
 # Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
 task MergeVCFs {
-  Array[File] input_vcfs
-  Array[File] input_vcfs_indexes
-  String output_vcf_path
-  Int? compression_level
-  String picard_jar
+    String? preCommand
+    Array[File] input_vcfs
+    Array[File] input_vcfs_indexes
+    String output_vcf_path
+    Int? compression_level
+    String picard_jar
 
-  # Using MergeVcfs instead of GatherVcfs so we can create indices
-  # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
-  command {
-    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
-      MergeVcfs \
-      INPUT=${sep=' INPUT=' input_vcfs} \
-      OUTPUT=${output_vcf_path}
-  }
-  output {
-    File output_vcf = output_vcf_path
-    File output_vcf_index = output_vcf_path + ".tbi"
-  }
+    # Using MergeVcfs instead of GatherVcfs so we can create indices
+    # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
+          MergeVcfs \
+          INPUT=${sep=' INPUT=' input_vcfs} \
+          OUTPUT=${output_vcf_path}
+    }
+    output {
+        File output_vcf = output_vcf_path
+        File output_vcf_index = output_vcf_path + ".tbi"
+    }
 }

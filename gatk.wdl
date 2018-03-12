@@ -1,5 +1,6 @@
 # Generate Base Quality Score Recalibration (BQSR) model
 task BaseRecalibrator {
+    String? preCommand
     String gatk_jar
     String input_bam
     String input_bam_index
@@ -12,6 +13,8 @@ task BaseRecalibrator {
     File ref_fasta_index
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         java -Xms4G -jar ${gatk_jar} \
           BaseRecalibrator \
           -R ${ref_fasta} \
@@ -28,6 +31,7 @@ task BaseRecalibrator {
 
 # Apply Base Quality Score Recalibration (BQSR) model
 task ApplyBQSR {
+    String? preCommand
     String gatk_jar
     String input_bam
     String output_bam_path
@@ -39,6 +43,8 @@ task ApplyBQSR {
     Int? compression_level
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} -Xms4G -jar ${gatk_jar} \
           ApplyBQSR \
           --create-output-bam-md5 \
@@ -59,11 +65,14 @@ task ApplyBQSR {
 
 # Combine multiple recalibration tables from scattered BaseRecalibrator runs
 task GatherBqsrReports {
+    String? preCommand
     String gatk_jar
     Array[File] input_bqsr_reports
     String output_report_filepath
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         java -Xms3G -jar ${gatk_jar} \
         GatherBQSRReports \
         -I ${sep=' -I ' input_bqsr_reports} \
@@ -76,107 +85,112 @@ task GatherBqsrReports {
 
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
 task HaplotypeCallerGvcf {
-  Array[File]+ input_bams
-  Array[File]+ input_bams_index
-  Array[File]+ interval_list
-  String gvcf_basename
-  File ref_dict
-  File ref_fasta
-  File ref_fasta_index
-  Float? contamination
-  Int? compression_level
-  String gatk_jar
+    String? preCommand
+    Array[File]+ input_bams
+    Array[File]+ input_bams_index
+    Array[File]+ interval_list
+    String gvcf_basename
+    File ref_dict
+    File ref_fasta
+    File ref_fasta_index
+    Float? contamination
+    Int? compression_level
+    String gatk_jar
 
-  command {
-    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
-      HaplotypeCaller \
-      -R ${ref_fasta} \
-      -O ${gvcf_basename}.vcf.gz \
-      -I ${sep=" -I " input_bams} \
-      -L ${sep=' -L ' interval_list} \
-      -contamination ${default=0 contamination} \
-      -ERC GVCF
-  }
-  output {
-    File output_gvcf = "${gvcf_basename}.vcf.gz"
-    File output_gvcf_index = "${gvcf_basename}.vcf.gz.tbi"
-  }
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+          HaplotypeCaller \
+          -R ${ref_fasta} \
+          -O ${gvcf_basename}.vcf.gz \
+          -I ${sep=" -I " input_bams} \
+          -L ${sep=' -L ' interval_list} \
+          -contamination ${default=0 contamination} \
+          -ERC GVCF
+    }
+    output {
+        File output_gvcf = "${gvcf_basename}.vcf.gz"
+        File output_gvcf_index = "${gvcf_basename}.vcf.gz.tbi"
+    }
 }
 
 task GenotypeGVCFs {
-  File gvcf_files
-  File gvcf_file_indexes
-  Array[File]+ intervals
+    String? preCommand
+    File gvcf_files
+    File gvcf_file_indexes
+    Array[File]+ intervals
 
-  String output_basename
+    String output_basename
 
-  String gatk_jar
+    String gatk_jar
 
-  File ref_fasta
-  File ref_fasta_index
-  File ref_dict
+    File ref_fasta
+    File ref_fasta_index
+    File ref_dict
 
-  File dbsnp_vcf
-  File dbsnp_vcf_index
+    File dbsnp_vcf
+    File dbsnp_vcf_index
 
-  Int? compression_level
+    Int? compression_level
 
-  command <<<
-    set -e -p pipefail
+    command {
+        set -e -o pipefail
+        ${preCommand}
 
-    java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
-     GenotypeGVCFs \
-     -R ${ref_fasta} \
-     -O ${output_basename + ".vcf.gz"} \
-     -D ${dbsnp_vcf} \
-     -G StandardAnnotation \
-     --only-output-calls-starting-in-intervals \
-     -new-qual \
-     -V ${gvcf_files} \
-     -L ${sep=' -L ' intervals}
-  >>>
+        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+         GenotypeGVCFs \
+         -R ${ref_fasta} \
+         -O ${output_basename + ".vcf.gz"} \
+         -D ${dbsnp_vcf} \
+         -G StandardAnnotation \
+         --only-output-calls-starting-in-intervals \
+         -new-qual \
+         -V ${gvcf_files} \
+         -L ${sep=' -L ' intervals}
+    }
 
-  output {
-    File output_vcf = output_basename + ".vcf.gz"
-    File output_vcf_index = output_basename + ".vcf.gz.tbi"
-  }
+    output {
+        File output_vcf = output_basename + ".vcf.gz"
+        File output_vcf_index = output_basename + ".vcf.gz.tbi"
+    }
 }
 
 task CombineGVCFs {
-  Array[File]+ gvcf_files
-  Array[File]+ gvcf_file_indexes
-  Array[File]+ intervals
+    String? preCommand
+    Array[File]+ gvcf_files
+    Array[File]+ gvcf_file_indexes
+    Array[File]+ intervals
 
-  String output_basename
+    String output_basename
 
-  String gatk_jar
+    String gatk_jar
 
-  File ref_fasta
-  File ref_fasta_index
-  File ref_dict
+    File ref_fasta
+    File ref_fasta_index
+    File ref_dict
 
-  Int? compression_level
+    Int? compression_level
 
-  command <<<
-    set -e -p pipefail
+    command {
+        set -e -o pipefail
+        ${preCommand}
 
-    if [ ${length(gvcf_files)} -gt 1 ]; then
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
-         CombineGVCFs \
-         -R ${ref_fasta} \
-         -O ${output_basename + ".vcf.gz"} \
-         -V ${sep=' -V ' gvcf_files} \
-         -L ${sep=' -L ' intervals}
-    else
-        ln -sf ${select_first(gvcf_files)} ${output_basename + ".vcf.gz"}
-        ln -sf ${select_first(gvcf_files)}.tbi ${output_basename + ".vcf.gz.tbi"}
-    fi
+        if [ ${length(gvcf_files)} -gt 1 ]; then
+            java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+             CombineGVCFs \
+             -R ${ref_fasta} \
+             -O ${output_basename + ".vcf.gz"} \
+             -V ${sep=' -V ' gvcf_files} \
+             -L ${sep=' -L ' intervals}
+        else
+            ln -sf ${select_first(gvcf_files)} ${output_basename + ".vcf.gz"}
+            ln -sf ${select_first(gvcf_files)}.tbi ${output_basename + ".vcf.gz.tbi"}
+        fi
+    }
 
-
-  >>>
-
-  output {
-    File output_gvcf = output_basename + ".vcf.gz"
-    File output_gvcf_index = output_basename + ".vcf.gz.tbi"
-  }
+    output {
+        File output_gvcf = output_basename + ".vcf.gz"
+        File output_gvcf_index = output_basename + ".vcf.gz.tbi"
+    }
 }

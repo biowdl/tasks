@@ -1,4 +1,5 @@
 task FastqSplitter {
+    String? preCommand
     File inputFastq
     String outputPath
     Int numberChunks
@@ -6,13 +7,15 @@ task FastqSplitter {
     Array[Int] chunks = range(numberChunks)
 
     command {
-    mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
-    if [ ${numberChunks} -gt 1 ]; then
-        SEP="/${basename(inputFastq)} -o "
-        java -jar ${tool_jar} -I ${inputFastq} -o ${sep='$SEP' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
-    else
-        ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
-    fi
+        set -e -o pipefail
+        ${preCommand}
+        mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
+        if [ ${numberChunks} -gt 1 ]; then
+            SEP="/${basename(inputFastq)} -o "
+            java -jar ${tool_jar} -I ${inputFastq} -o ${sep='$SEP' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
+        else
+            ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
+        fi
     }
 
     output {
@@ -21,6 +24,7 @@ task FastqSplitter {
 }
 
 task ScatterRegions {
+    String? preCommand
     File ref_fasta
     File ref_dict
     String outputDirPath
@@ -29,6 +33,8 @@ task ScatterRegions {
     File? regions
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         mkdir -p ${outputDirPath}
         java -Xmx2G -jar ${tool_jar} \
           -R ${ref_fasta} \
@@ -43,6 +49,7 @@ task ScatterRegions {
 }
 
 task SampleConfig {
+    String? preCommand
     String tool_jar
     Array[File]+ inputFiles
     String? sample
@@ -52,6 +59,8 @@ task SampleConfig {
     String? tsvOutputPath
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         mkdir -p . $(dirname ${jsonOutputPath}) $(dirname ${tsvOutputPath})
         java -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
@@ -67,18 +76,5 @@ task SampleConfig {
         File? jsonOutput = jsonOutputPath
         File? tsvOutput = tsvOutputPath
         Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
-    }
-}
-
-task DownloadSampleConfig {
-    String? inputJar
-    String? version = "0.1"
-
-    command {
-        ${if defined(inputJar) then "echo ${inputJar}" else "wget https://github.com/biopet/sampleconfig/releases/download/v${version}/SampleConfig-assembly-${version}.jar"}
-    }
-
-    output {
-        File jar = if defined(inputJar) then select_first([inputJar]) else ("SampleConfig-assembly-" + version + ".jar")
     }
 }

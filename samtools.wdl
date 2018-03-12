@@ -1,7 +1,10 @@
 task Index {
+    String? preCommand
     String bamFilePath
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         samtools index ${bamFilePath}
     }
 
@@ -11,10 +14,13 @@ task Index {
 }
 
 task Merge {
+    String? preCommand
     Array[File]+ bamFiles
     String outputBamPath
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         samtools merge ${outputBamPath} ${sep=' ' bamFiles}
     }
 
@@ -24,10 +30,13 @@ task Merge {
 }
 
 task Markdup {
+    String? preCommand
     File inputBam
     String outputBamPath
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         samtools markdup ${inputBam} ${outputBamPath}
     }
 
@@ -37,10 +46,13 @@ task Markdup {
 }
 
 task Flagstat {
+    String? preCommand
     File inputBam
     String outputPath
 
     command {
+        set -e -o pipefail
+        ${preCommand}
         samtools flagstat ${inputBam} > ${outputPath}
     }
 
