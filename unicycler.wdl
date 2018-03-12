@@ -47,8 +47,8 @@ task unicycler {
         mkdir -p ${out}
         ${preCommand}
         unicycler \
-        --short1 ${short1} \
-        --short2 ${short2} \
+        ${"--short1 " + short1} \
+        ${"--short2 " + short2} \
         ${"--unpaired " + unpaired} \
         ${"--long " + long} \
         --out ${out} \
@@ -88,7 +88,11 @@ task unicycler {
         ${"--scores " + scores } \
         ${"--low_score " + lowScore }
     }
-
+    output {
+        File assemblyFasta = out + "/assembly.fasta"
+        File assemblyGfa = out + "/assembly.gfa"
+        File log = out + "/unicycler.log"
+    }
     runtime {
         cpu: threads
         memory: memory
