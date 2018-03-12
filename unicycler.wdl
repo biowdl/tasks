@@ -4,13 +4,13 @@ task unicycler {
     File short2
     File? unpaired
     File? long
-    String out
+    String out,
     Int? verbosity
     Int? minFastaLength
     Int? keep
     Boolean? vcf
-    Int? threads = 1
-    Int? memory = 4
+    Int threads
+    Int memory
     String? mode
     Float? minBridgeQual
     Int? linearSeqs
@@ -90,7 +90,7 @@ task unicycler {
     }
 
     runtime {
-        cpu: select_first([threads])
-        memory: select_first([memory])
+        cpu: threads
+        memory: memory
     }
 }

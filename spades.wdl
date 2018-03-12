@@ -22,8 +22,8 @@ task spades {
     Boolean? disableGzipOutput
     Boolean? disableRepeatResolution
     File? dataset
-    Int? threads = 1
-    Int? memoryGb = 4
+    Int threads
+    Int memoryGb
     File? tmpDir
     String? k
     Float? covCutoff
@@ -73,7 +73,7 @@ task spades {
         File log = outputDir + "/spades.log"
     }
     runtime {
-        cpu: select_first([threads])
-        memory: select_first([memoryGb])
+        cpu: threads
+        memory: memoryGb
     }
 }
