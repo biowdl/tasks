@@ -10,6 +10,7 @@ task sample {
 
     command {
     set -e -o pipefail
+    ${'mkdir -p $(dirname ' + outFilePath + ')'}
     ${preCommand}
     seqtk sample \
     ${"-s " + seed} \
