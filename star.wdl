@@ -1,8 +1,8 @@
 task Star {
     String? preCommand
 
-    File inputR1
-    File? inputR2
+    Array[File] inputR1
+    Array[File]? inputR2
     String genomeDir
     String outFileNamePrefix
 
@@ -11,16 +11,17 @@ task Star {
     Int? runThreadN
     String? outStd
     String? twopassMode
-    String? outSAMattrRGline
+    Array[String]? outSAMattrRGline
 
-    Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"} #needs to be extended for all possible values
+    #TODO needs to be extended for all possible output extensions
+    Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
     command {
         set -e -o pipefail
         mkdir -p ${sub(outFileNamePrefix, basename(outFileNamePrefix) + "$", "")}
         ${preCommand}
         STAR \
-        --readFilesIn ${inputR1} ${inputR2} \
+        --readFilesIn ${sep=',' inputR1} ${sep="," inputR2} \
         --outFileNamePrefix ${outFileNamePrefix} \
         --genomeDir ${genomeDir} \
         ${"--readFilesCommand " + readFilesCommand} \
@@ -28,10 +29,14 @@ task Star {
         ${"--runThreadN " + runThreadN} \
         ${"--outStd " + outStd} \
         ${"--twopassMode " + twopassMode} \
-        ${"--outSAMattrRGline " + outSAMattrRGline}
+        ${true="--outSAMattrRGline " false="" defined(outSAMattrRGline)} ${sep=" , " outSAMattrRGline}
     }
 
     output {
         File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames["${outSAMtype}"]
+    }
+
+    runtime {
+        threads: runThreadN
     }
 }
