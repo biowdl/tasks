@@ -24,7 +24,7 @@ task Stringtie {
 
     output {
         File assembledTranscripts = assembledTranscriptsFile
-        File geneAbundance = geneAbundanceFile
+        File? geneAbundance = geneAbundanceFile
     }
 
     runtime {
