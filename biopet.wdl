@@ -78,3 +78,60 @@ task SampleConfig {
         Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
     }
 }
+
+task BaseCounter {
+    String? preCommand
+    String tool_jar #Should this be of type File?
+    File bam
+    File refFlat
+    String outputDir
+    String? prefix
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        mkdir -p ${outputDir}
+        java -jar ${tool_jar} \
+        -b ${bam} \
+        -r ${refFlat} \
+        -o ${outputDir} \
+        ${"-p" + prefix}
+    }
+
+    output {
+        File exonAntisense = outputDir + "/" + prefix + ".base.exon.antisense.counts"
+        File exon = outputDir + "/" + prefix + ".base.exon.counts"
+        File exonMergeAntisense = outputDir + "/" + prefix + ".base.exon.merge.antisense.counts"
+        File exonMerge = outputDir + "/" + prefix + ".base.exon.merge.counts"
+        File exonMergeSense = outputDir + "/" + prefix + ".base.exon.merge.sense.counts"
+        File exonSense = outputDir + "/" + prefix + ".base.exon.sense.counts"
+        File geneAntisense = outputDir + "/" + prefix + ".base.gene.antisense.counts"
+        File gene = outputDir + "/" + prefix + ".base.gene.counts"
+        File geneExonicAntisense = outputDir + "/" + prefix + ".base.gene.exonic.antisense.counts"
+        File geneExonic = outputDir + "/" + prefix + ".base.gene.exonic.counts"
+        File geneExonicSense = outputDir + "/" + prefix + ".base.gene.exonic.sense.counts"
+        File geneIntronicAntisense = outputDir + "/" + prefix + ".base.gene.intronic.antisense.counts"
+        File geneIntronic = outputDir + "/" + prefix + ".base.gene.intronic.counts"
+        File geneIntronicSense = outputDir + "/" + prefix + ".base.gene.intronic.sense.counts"
+        File geneSense = outputDir + "/" + prefix + ".base.gene.sense.counts"
+        File intronAntisense = outputDir + "/" + prefix + ".base.intron.antisense.counts"
+        File intron = outputDir + "/" + prefix + ".base.intron.counts"
+        File intronMergeAntisense = outputDir + "/" + prefix + ".base.intron.merge.antisense.counts"
+        File intronMerge = outputDir + "/" + prefix + ".base.intron.merge.counts"
+        File intronMergeSense = outputDir + "/" + prefix + ".base.intron.merge.sense.counts"
+        File intronSense = outputDir + "/" + prefix + ".base.intron.sense.counts"
+        File metaExonsNonStranded = outputDir + "/" + prefix + ".base.metaexons.non_stranded.counts"
+        File metaExonsStrandedAntisense = outputDir + "/" + prefix + ".base.metaexons.stranded.antisense.counts"
+        File metaExonsStranded = outputDir + "/" + prefix + ".base.metaexons.stranded.counts"
+        File metaExonsStrandedSense = outputDir + "/" + prefix + ".base.metaexons.stranded.sense.counts"
+        File transcriptAntisense = outputDir + "/" + prefix + ".base.transcript.antisense.counts"
+        File transcript = outputDir + "/" + prefix + ".base.transcript.counts"
+        File transcriptExonicAntisense = outputDir + "/" + prefix + ".base.transcript.exonic.antisense.counts"
+        File transcriptExonic = outputDir + "/" + prefix + ".base.transcript.exonic.counts"
+        File transcriptExonicSense = outputDir + "/" + prefix + ".base.transcript.exonic.sense.counts"
+        File transcriptIntronicAntisense = outputDir + "/" + prefix + ".base.transcript.intronic.antisense.counts"
+        File transcriptIntronic = outputDir + "/" + prefix + ".base.transcript.intronic.counts"
+        File transcriptIntronicSense = outputDir + "/" + prefix + ".base.transcript.intronic.sense.counts"
+        File transcriptSense = outputDir + "/" + prefix + ".base.transcript.sense.counts"
+    }
+}
