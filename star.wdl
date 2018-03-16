@@ -6,8 +6,8 @@ task Star {
     String genomeDir
     String outFileNamePrefix
 
-    String? outSAMtype = "BAM SortedByCoordinate"
-    String? readFilesCommand = "zcat"
+    String? outSAMtype
+    String? readFilesCommand
     Int? runThreadN
     String? outStd
     String? twopassMode
@@ -24,8 +24,8 @@ task Star {
         --readFilesIn ${sep=',' inputR1} ${sep="," inputR2} \
         --outFileNamePrefix ${outFileNamePrefix} \
         --genomeDir ${genomeDir} \
-        ${"--readFilesCommand " + readFilesCommand} \
-        ${"--outSAMtype " + outSAMtype} \
+        --outSAMtype ${default="BAM SortedByCoordinate" outSAMtype} \
+        --readFilesCommand ${default="zcat" readFilesCommand} \
         ${"--runThreadN " + runThreadN} \
         ${"--outStd " + outStd} \
         ${"--twopassMode " + twopassMode} \
