@@ -4,6 +4,8 @@ task Stringtie {
     File? referenceGFF
     Int? threads
     String assembledTranscriptsFile
+    Boolean? firstStranded
+    Boolean? secondStranded
 
     command {
         set -e -o pipefail
@@ -11,6 +13,8 @@ task Stringtie {
         stringtie \
         ${"-p " + threads} \
         ${"-G " + referenceGFF} \
+        ${true="--rf" false="" firstStranded} \
+        ${true="fr" false="" secondStranded} \
         ${alignedReads} \
         > ${assembledTranscriptsFile}
     }
