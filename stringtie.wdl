@@ -6,6 +6,7 @@ task Stringtie {
     String assembledTranscriptsFile
     Boolean? firstStranded
     Boolean? secondStranded
+    String? geneAbundanceFile
 
     command {
         set -e -o pipefail
@@ -15,12 +16,15 @@ task Stringtie {
         ${"-G " + referenceGFF} \
         ${true="--rf" false="" firstStranded} \
         ${true="fr" false="" secondStranded} \
+        -o ${assembledTranscriptsFile} \
+        ${"-A " + geneAbundanceFile} \
         ${alignedReads} \
-        > ${assembledTranscriptsFile}
+
     }
 
     output {
         File assembledTranscripts = assembledTranscriptsFile
+        File geneAbundance = geneAbundanceFile
     }
 
     runtime {
