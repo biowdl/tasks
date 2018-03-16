@@ -1,12 +1,11 @@
 task HTSeqCount {
+    String? preCommand
     Array[File] alignmentFiles
     File gffFile
-
+    String outputTable
     String? format
     String? order
     String? stranded
-
-    String? preCommand
 
     command {
         set -e -o pipefail
@@ -16,10 +15,11 @@ task HTSeqCount {
         -r ${default="pos" order} \
         -s ${default="no" stranded} \
         ${sep=" " alignmentFiles} \
-        ${gffFile}
+        ${gffFile} \
+        > ${outputTable}
     }
 
     output {
-        File counts = stdout()
+        File counts = outputTable
     }
 }

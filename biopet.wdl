@@ -85,7 +85,7 @@ task BaseCounter {
     File bam
     File refFlat
     String outputDir
-    String? prefix
+    String prefix
 
     command {
         set -e -o pipefail
@@ -95,7 +95,7 @@ task BaseCounter {
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
-        ${"-p" + prefix}
+        -p ${prefix}
     }
 
     output {

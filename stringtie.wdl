@@ -3,6 +3,7 @@ task Stringtie {
     File alignedReads
     File? referenceGFF
     Int? threads
+    String assembledTranscripts
 
     command {
         set -e -o pipefail
@@ -10,11 +11,12 @@ task Stringtie {
         stringtie \
         ${"-p " + threads} \
         ${"-G " + referenceGFF} \
-        ${alignedReads}
+        ${alignedReads} \
+        > ${assembledTranscripts}
     }
 
     output {
-        File assembledTranscripts = stdout()
+        File assembledTranscripts = assembledTranscripts
     }
 
     runtime {
