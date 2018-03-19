@@ -194,3 +194,26 @@ task CombineGVCFs {
         File output_gvcf_index = output_basename + ".vcf.gz.tbi"
     }
 }
+
+task SplitNCigarReads {
+    String? preCommand
+
+    File input_bam
+    File ref_fasta
+    String output_bam
+    String gatk_jar
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        java -Xms4G -jar ${gatk_jar} \
+        -I ${input_bam} \
+        -R ${ref_fasta} \
+        -O ${output_bam} # might have to be -o depending on GATK version
+    }
+
+    output {
+        File bam = output_bam
+        File bam_index = output_bam + ".bai"
+    }
+}
