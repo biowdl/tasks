@@ -200,6 +200,8 @@ task SplitNCigarReads {
 
     File input_bam
     File ref_fasta
+    File ref_fasta_index
+    File ref_dict
     String output_bam
     String gatk_jar
 
