@@ -1,4 +1,6 @@
 task MergeCounts {
+    String? preCommand
+
     Array[File] inputFiles
     String outputFile
     String idVar
@@ -6,6 +8,8 @@ task MergeCounts {
 
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
     command <<<
+        set -e -o pipefail
+        ${preCommand}
         R --no-save --slave <<CODE > ${outputFile}
             library(dplyr)
             library(reshape2)
