@@ -204,6 +204,8 @@ task SplitNCigarReads {
     File ref_dict
     String output_bam
     String gatk_jar
+    Array[File]+ intervals
+
 
     command {
         set -e -o pipefail
@@ -211,7 +213,8 @@ task SplitNCigarReads {
         java -Xms4G -jar ${gatk_jar} \
         -I ${input_bam} \
         -R ${ref_fasta} \
-        -O ${output_bam} # might have to be -o depending on GATK version
+        -O ${output_bam} # might have to be -o depending on GATK version \
+        -L ${sep=' -L ' intervals}
     }
 
     output {
