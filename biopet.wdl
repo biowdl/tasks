@@ -134,4 +134,8 @@ task BaseCounter {
         File transcriptIntronicSense = outputDir + "/" + prefix + ".base.transcript.intronic.sense.counts"
         File transcriptSense = outputDir + "/" + prefix + ".base.transcript.sense.counts"
     }
+
+    runtime {
+        memory: 16
+    }
 }

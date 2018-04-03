@@ -17,9 +17,14 @@ task ScatterIntervalList {
           INPUT=${interval_list} \
           OUTPUT=scatter_list
     }
+
     output {
         Array[File] out = glob("scatter_list/*/*.interval_list")
         Int interval_count = read_int(stdout())
+    }
+
+    runtime {
+        memory: 6
     }
 }
 
@@ -41,10 +46,15 @@ task GatherBamFiles {
           CREATE_INDEX=true \
           CREATE_MD5_FILE=true
     }
+
     output {
         File output_bam = "${output_bam_path}"
         File output_bam_index = sub(output_bam_path, ".bam$", ".bai")
         File output_bam_md5 = "${output_bam_path}.md5"
+    }
+
+    runtime {
+        memory: 6
     }
 }
 
@@ -81,10 +91,15 @@ task MarkDuplicates {
           CREATE_INDEX=true \
           ADD_PG_TAG_TO_READS=false
     }
+
     output {
         File output_bam = output_bam_path
         File output_bam_index = sub(output_bam_path, ".bam$", ".bai")
         File duplicate_metrics = metrics_path
+    }
+
+    runtime {
+        memory: 6
     }
 }
 
@@ -107,8 +122,13 @@ task MergeVCFs {
           INPUT=${sep=' INPUT=' input_vcfs} \
           OUTPUT=${output_vcf_path}
     }
+
     output {
         File output_vcf = output_vcf_path
         File output_vcf_index = output_vcf_path + ".tbi"
+    }
+
+    runtime {
+        memory: 6
     }
 }

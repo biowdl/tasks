@@ -37,6 +37,7 @@ task Star {
     }
 
     runtime {
-        threads: runThreadN
+        threads: select_first([runThreadN])
+        memory: 10
     }
 }

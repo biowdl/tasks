@@ -87,15 +87,21 @@ task extractAdapters {
 task getConfiguration {
     String? preCommand
     String? fastqcDirFile = "fastqcDir.txt"
+
     command {
         set -e -o pipefail
         ${preCommand}
         echo $(dirname $(readlink -f $(which fastqc))) > ${fastqcDirFile}
     }
+
     output {
         String fastqcDir = read_string(fastqcDirFile)
         File adapterList = fastqcDir + "/Configuration/adapter_list.txt"
         File contaminantList = fastqcDir + "/Configuration/contaminant_list.txt"
         File limits = fastqcDir + "/Configuration/limits.txt"
+    }
+
+    runtime {
+        memory: 1
     }
 }

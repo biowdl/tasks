@@ -22,4 +22,8 @@ task HTSeqCount {
     output {
         File counts = outputTable
     }
+
+    runtime {
+        memory: 3
+    }
 }

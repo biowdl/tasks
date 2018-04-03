@@ -32,4 +32,8 @@ task MergeCounts {
     output {
         File mergedCounts = outputFile
     }
+
+    runtime {
+        memory: 4 + (2*length(inputFiles))
+    }
 }
