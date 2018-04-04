@@ -62,10 +62,14 @@ task extractAdapters {
     File? knownAdapterFile
     Float? adapterCutoff
     Boolean? outputAsFasta
+
+    Float? memory
+    Float? memoryMultiplier
+
     command {
     set -e
     mkdir -p ${outputDir}
-    java -Xmx4G -jar ${extractAdaptersFastqcJar} \
+    java -Xmx${default=4 memory}G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \
@@ -84,7 +88,7 @@ task extractAdapters {
     }
 
     runtime {
-        memory: 6
+        memory: (if defined(memory) then memory else 4) * (if defined(memoryMultiplier) then memoryMultiplier else 1.5)
     }
 }
 

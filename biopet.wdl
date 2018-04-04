@@ -58,11 +58,14 @@ task SampleConfig {
     String? jsonOutputPath
     String? tsvOutputPath
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx3G -jar ${tool_jar} \
+        java -Xmx${default=3 memory}G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
@@ -79,7 +82,7 @@ task SampleConfig {
     }
 
     runtime {
-        memory: 6
+        memory: selectFirst([memory, 3]) * selectFirst([memoryMultiplier, 1.5])
     }
 }
 
@@ -91,11 +94,14 @@ task BaseCounter {
     String outputDir
     String prefix
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDir}
-        java -jar ${tool_jar} \
+        java -Xmx${default=12 memory}-jar ${tool_jar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -140,6 +146,6 @@ task BaseCounter {
     }
 
     runtime {
-        memory: 16
+        memory: selectFirst([memory, 12]) * selectFirst([memoryMultiplier, 1.5])
     }
 }
