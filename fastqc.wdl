@@ -65,7 +65,7 @@ task extractAdapters {
     command {
     set -e
     mkdir -p ${outputDir}
-    java -Xmx3G -jar ${extractAdaptersFastqcJar} \
+    java -Xmx4G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \

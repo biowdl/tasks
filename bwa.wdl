@@ -22,7 +22,7 @@ task BwaMem {
         File bamFile = outputPath
     }
     runtime{
-        threads: select_first([threads])
+        threads: if defined(threads) then threads else 1
         memory: if defined(memory) then memory else 8
     }
 }
