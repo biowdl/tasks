@@ -88,7 +88,7 @@ task extractAdapters {
     }
 
     runtime {
-        memory: (if defined(memory) then memory else 4) * (if defined(memoryMultiplier) then memoryMultiplier else 1.5)
+        memory: select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5])
     }
 }
 

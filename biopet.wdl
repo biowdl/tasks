@@ -82,7 +82,7 @@ task SampleConfig {
     }
 
     runtime {
-        memory: select_first([memory, 3]) * select_first([memoryMultiplier, 1.5])
+        memory: select_first([memory, 3.0]) * select_first([memoryMultiplier, 1.5])
     }
 }
 
@@ -101,7 +101,7 @@ task BaseCounter {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDir}
-        java -Xmx${default=12 memory}-jar ${tool_jar} \
+        java -Xmx${default=12 memory}G -jar ${tool_jar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -146,6 +146,6 @@ task BaseCounter {
     }
 
     runtime {
-        memory: select_first([memory, 12]) * select_first([memoryMultiplier, 1.5])
+        memory: select_first([memory, 12.0]) * select_first([memoryMultiplier, 1.5])
     }
 }
