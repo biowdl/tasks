@@ -65,7 +65,7 @@ task extractAdapters {
     command {
     set -e
     mkdir -p ${outputDir}
-    java -jar ${extractAdaptersFastqcJar} \
+    java -Xmx3G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \
@@ -81,6 +81,10 @@ task extractAdapters {
         File contamsOutputFile = select_first([contamsOutputFilePath])
         Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
         Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
+    }
+
+    runtime {
+        memory: 6
     }
 }
 
