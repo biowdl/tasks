@@ -61,7 +61,7 @@ task SampleConfig {
     command {
         set -e -o pipefail
         ${preCommand}
-        mkdir -p . $(dirname ${jsonOutputPath}) $(dirname ${tsvOutputPath})
+        mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
         java -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
