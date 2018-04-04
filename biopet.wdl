@@ -62,7 +62,7 @@ task SampleConfig {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -jar ${tool_jar} \
+        java -Xmx2G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
