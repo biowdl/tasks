@@ -82,7 +82,7 @@ task SampleConfig {
     }
 
     runtime {
-        memory: selectFirst([memory, 3]) * selectFirst([memoryMultiplier, 1.5])
+        memory: select_first([memory, 3]) * select_first([memoryMultiplier, 1.5])
     }
 }
 
@@ -146,6 +146,6 @@ task BaseCounter {
     }
 
     runtime {
-        memory: selectFirst([memory, 12]) * selectFirst([memoryMultiplier, 1.5])
+        memory: select_first([memory, 12]) * select_first([memoryMultiplier, 1.5])
     }
 }
