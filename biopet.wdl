@@ -65,7 +65,7 @@ task SampleConfig {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx${true=""+memory false="3" defined(memory)}G -jar ${tool_jar} \
+        java -Xmx${true=""+memory false="4" defined(memory)}G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
@@ -82,7 +82,7 @@ task SampleConfig {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 3.0]) * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 2.0]))
     }
 }
 

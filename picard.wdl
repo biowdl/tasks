@@ -4,11 +4,14 @@ task ScatterIntervalList {
     Int scatter_count
     String picard_jar
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir scatter_list
-        java -Xmx4G -jar ${picard_jar} \
+        java -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
           IntervalListTools \
           SCATTER_COUNT=${scatter_count} \
           SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -24,7 +27,7 @@ task ScatterIntervalList {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -36,10 +39,14 @@ task GatherBamFiles {
     Int? compression_level
     String picard_jar
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
           GatherBamFiles \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -54,7 +61,7 @@ task GatherBamFiles {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -66,6 +73,9 @@ task MarkDuplicates {
     String metrics_path
     Int? compression_level
     String picard_jar
+
+    Float? memory
+    Float? memoryMultiplier
 
     # The program default for READ_NAME_REGEX is appropriate in nearly every case.
     # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -79,7 +89,8 @@ task MarkDuplicates {
         set -e -o pipefail
         ${preCommand}
         mkdir -p $(dirname ${output_bam_path})
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
           MarkDuplicates \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -99,7 +110,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -112,12 +123,16 @@ task MergeVCFs {
     Int? compression_level
     String picard_jar
 
+    Float? memory
+    Float? memoryMultiplier
+
     # Using MergeVcfs instead of GatherVcfs so we can create indices
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${picard_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
           MergeVcfs \
           INPUT=${sep=' INPUT=' input_vcfs} \
           OUTPUT=${output_vcf_path}
@@ -129,6 +144,6 @@ task MergeVCFs {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }

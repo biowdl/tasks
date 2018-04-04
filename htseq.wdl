@@ -7,6 +7,8 @@ task HTSeqCount {
     String? order
     String? stranded
 
+    Int? memory
+
     command {
         set -e -o pipefail
         ${preCommand}
@@ -24,6 +26,6 @@ task HTSeqCount {
     }
 
     runtime {
-        memory: 3
+        memory: select_first([memory, 3])
     }
 }

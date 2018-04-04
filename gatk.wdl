@@ -33,7 +33,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 2]))
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -50,10 +50,14 @@ task ApplyBQSR {
     File ref_fasta_index
     Int? compression_level
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xms4G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xms${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
           ApplyBQSR \
           --create-output-bam-md5 \
           --add-output-sam-program-record \
@@ -72,7 +76,7 @@ task ApplyBQSR {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -83,10 +87,13 @@ task GatherBqsrReports {
     Array[File] input_bqsr_reports
     String output_report_filepath
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms3G -jar ${gatk_jar} \
+        java -Xms${true=memory false="3" defined(memory)}G -jar ${gatk_jar} \
         GatherBQSRReports \
         -I ${sep=' -I ' input_bqsr_reports} \
         -O ${output_report_filepath}
@@ -97,7 +104,7 @@ task GatherBqsrReports {
     }
 
     runtime {
-        memory: 4
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -115,10 +122,14 @@ task HaplotypeCallerGvcf {
     Int? compression_level
     String gatk_jar
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xmx${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
           HaplotypeCaller \
           -R ${ref_fasta} \
           -O ${gvcf_basename}.vcf.gz \
@@ -134,7 +145,7 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -156,12 +167,15 @@ task GenotypeGVCFs {
     File dbsnp_vcf_index
 
     Int? compression_level
+    Float? memory
+    Float? memoryMultiplier
 
     command {
         set -e -o pipefail
         ${preCommand}
 
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xmx${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
          GenotypeGVCFs \
          -R ${ref_fasta} \
          -O ${output_basename + ".vcf.gz"} \
@@ -179,7 +193,7 @@ task GenotypeGVCFs {
     }
 
     runtime{
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -198,13 +212,16 @@ task CombineGVCFs {
     File ref_dict
 
     Int? compression_level
+    Float? memory
+    Float? memoryMultiplier
 
     command {
         set -e -o pipefail
         ${preCommand}
 
         if [ ${length(gvcf_files)} -gt 1 ]; then
-            java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+            java ${"-Dsamjdk.compression_level=" + compression_level} \
+            -Xmx${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
              CombineGVCFs \
              -R ${ref_fasta} \
              -O ${output_basename + ".vcf.gz"} \
@@ -222,7 +239,7 @@ task CombineGVCFs {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -237,11 +254,13 @@ task SplitNCigarReads {
     String gatk_jar
     Array[File]+ intervals
 
+    Float? memory
+    Float? memoryMultiplier
 
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms4G -jar ${gatk_jar} \
+        java -Xms${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
         -I ${input_bam} \
         -R ${ref_fasta} \
         -O ${output_bam} # might have to be -o depending on GATK version \
@@ -254,6 +273,6 @@ task SplitNCigarReads {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }

@@ -13,6 +13,8 @@ task Star {
     String? twopassMode
     Array[String]? outSAMattrRGline
 
+    Float? memory
+
     #TODO needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
@@ -37,7 +39,7 @@ task Star {
     }
 
     runtime {
-        threads: select_first([runThreadN])
-        memory: 10
+        threads: select_first([runThreadN, 1])
+        memory: select_first([memory, 10])
     }
 }
