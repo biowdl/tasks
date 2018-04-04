@@ -62,7 +62,7 @@ task SampleConfig {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx2G -jar ${tool_jar} \
+        java -Xmx4G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
@@ -76,6 +76,10 @@ task SampleConfig {
         File? jsonOutput = jsonOutputPath
         File? tsvOutput = tsvOutputPath
         Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
+    }
+
+    runtime {
+        memory: 6
     }
 }
 
