@@ -12,10 +12,13 @@ task BaseRecalibrator {
     File ref_fasta
     File ref_fasta_index
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms4G -jar ${gatk_jar} \
+        java -Xms${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
           BaseRecalibrator \
           -R ${ref_fasta} \
           -I ${input_bam} \
@@ -30,7 +33,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        memory: 6
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 2]))
     }
 }
 
