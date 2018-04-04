@@ -89,7 +89,7 @@ task extractAdapters {
     }
 
     runtime {
-        memory: select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5])
+        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
