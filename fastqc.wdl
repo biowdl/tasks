@@ -69,7 +69,7 @@ task extractAdapters {
     command {
     set -e
     mkdir -p ${outputDir}
-    java -Xmx${default=4 memory}G -jar ${extractAdaptersFastqcJar} \
+    java -Xmx${default=4.0 memory}G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \

@@ -65,7 +65,7 @@ task SampleConfig {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx${default=3 memory}G -jar ${tool_jar} \
+        java -Xmx${default=3.0 memory}G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
@@ -101,7 +101,7 @@ task BaseCounter {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDir}
-        java -Xmx${default=12 memory}G -jar ${tool_jar} \
+        java -Xmx${default=12.0 memory}G -jar ${tool_jar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
