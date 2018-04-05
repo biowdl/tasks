@@ -32,11 +32,14 @@ task ScatterRegions {
     Int? scatterSize
     File? regions
 
+    Float? memory
+    Float? memoryMultiplier
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDirPath}
-        java -Xmx2G -jar ${tool_jar} \
+        java -Xmx${true=memory false="2" defined(memory)}G -jar ${tool_jar} \
           -R ${ref_fasta} \
           -o ${outputDirPath} \
           ${"-s " + scatterSize} \
@@ -45,6 +48,10 @@ task ScatterRegions {
 
     output {
         Array[File] scatters = glob(outputDirPath + "/scatter-*.bed")
+    }
+
+    runtime {
+        memory: ceil(select_first([memory, 2.0]) * select_first([memoryMultiplier, 2.0]))
     }
 }
 
