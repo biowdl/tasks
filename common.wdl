@@ -103,3 +103,16 @@ task appendToStringArray {
         memory: 1
     }
 }
+
+task createLink {
+    File inputFile
+    String outputPath
+
+    command {
+        ln -sf ${inputFile} ${outputPath}
+    }
+
+    output {
+        File link = outputPath
+    }
+}

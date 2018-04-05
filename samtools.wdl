@@ -21,7 +21,12 @@ task Merge {
     command {
         set -e -o pipefail
         ${preCommand}
-        samtools merge ${outputBamPath} ${sep=' ' bamFiles}
+        if [ ${length(bamFiles)} -gt 1 ]
+          then
+            samtools merge ${outputBamPath} ${sep=' ' bamFiles}
+          else
+            ln -sf ${bamFiles} ${outputBamPath}
+        fi
     }
 
     output {
