@@ -90,7 +90,7 @@ task MarkDuplicates {
         ${preCommand}
         mkdir -p $(dirname ${output_bam_path})
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
+        -Xmx${true=memory false="8" defined(memory)}G -jar ${picard_jar} \
           MarkDuplicates \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -110,7 +110,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(select_first([memory, 8.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
