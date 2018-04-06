@@ -70,7 +70,7 @@ task extractAdapters {
     command {
     set -e
     mkdir -p ${outputDir}
-    java -Xmx${true=memory false="4" defined(memory)}G -jar ${extractAdaptersFastqcJar} \
+    java -Xmx${select_first([memory, 4])}G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \

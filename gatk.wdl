@@ -18,7 +18,7 @@ task BaseRecalibrator {
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
+        java -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
           BaseRecalibrator \
           -R ${ref_fasta} \
           -I ${input_bam} \
@@ -57,7 +57,7 @@ task ApplyBQSR {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xms${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
+        -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
           ApplyBQSR \
           --create-output-bam-md5 \
           --add-output-sam-program-record \
@@ -93,7 +93,7 @@ task GatherBqsrReports {
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${true=memory false="3" defined(memory)}G -jar ${gatk_jar} \
+        java -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
         GatherBQSRReports \
         -I ${sep=' -I ' input_bqsr_reports} \
         -O ${output_report_filepath}
@@ -129,7 +129,7 @@ task HaplotypeCallerGvcf {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
+        -Xmx${select_first([memory, 4])}G -jar ${gatk_jar} \
           HaplotypeCaller \
           -R ${ref_fasta} \
           -O ${gvcf_basename}.vcf.gz \
@@ -145,7 +145,7 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(select_first([memory, 4]) * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -175,7 +175,7 @@ task GenotypeGVCFs {
         ${preCommand}
 
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
+        -Xmx${select_first([memory, 4])}G -jar ${gatk_jar} \
          GenotypeGVCFs \
          -R ${ref_fasta} \
          -O ${output_basename + ".vcf.gz"} \
@@ -221,7 +221,7 @@ task CombineGVCFs {
 
         if [ ${length(gvcf_files)} -gt 1 ]; then
             java ${"-Dsamjdk.compression_level=" + compression_level} \
-            -Xmx${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
+            -Xmx${select_first([memory, 4])}G -jar ${gatk_jar} \
              CombineGVCFs \
              -R ${ref_fasta} \
              -O ${output_basename + ".vcf.gz"} \
@@ -260,7 +260,7 @@ task SplitNCigarReads {
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${true=memory false="4" defined(memory)}G -jar ${gatk_jar} \
+        java -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
         -I ${input_bam} \
         -R ${ref_fasta} \
         -O ${output_bam} # might have to be -o depending on GATK version \

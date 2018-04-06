@@ -39,7 +39,7 @@ task ScatterRegions {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDirPath}
-        java -Xmx${true=memory false="2" defined(memory)}G -jar ${tool_jar} \
+        java -Xmx${select_first([memory, 2])}G -jar ${tool_jar} \
           -R ${ref_fasta} \
           -o ${outputDirPath} \
           ${"-s " + scatterSize} \
@@ -72,7 +72,7 @@ task SampleConfig {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx${true=memory false="4" defined(memory)}G -jar ${tool_jar} \
+        java -Xmx${select_first([memory, 4])}G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
@@ -108,7 +108,7 @@ task BaseCounter {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDir}
-        java -Xmx${true=memory false="12" defined(memory)}G -jar ${tool_jar} \
+        java -Xmx${select_first([memory, 12])}G -jar ${tool_jar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -153,6 +153,6 @@ task BaseCounter {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 12.0]) * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(select_first([memory, 12.0]) * select_first([memoryMultiplier, 1.5]))
     }
 }

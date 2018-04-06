@@ -11,7 +11,7 @@ task ScatterIntervalList {
         set -e -o pipefail
         ${preCommand}
         mkdir scatter_list
-        java -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
+        java -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
           IntervalListTools \
           SCATTER_COUNT=${scatter_count} \
           SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -46,7 +46,7 @@ task GatherBamFiles {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
+        -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
           GatherBamFiles \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -90,7 +90,7 @@ task MarkDuplicates {
         ${preCommand}
         mkdir -p $(dirname ${output_bam_path})
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${true=memory false="8" defined(memory)}G -jar ${picard_jar} \
+        -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
           MarkDuplicates \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -132,7 +132,7 @@ task MergeVCFs {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${true=memory false="4" defined(memory)}G -jar ${picard_jar} \
+        -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
           MergeVcfs \
           INPUT=${sep=' INPUT=' input_vcfs} \
           OUTPUT=${output_vcf_path}
