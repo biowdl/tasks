@@ -66,11 +66,11 @@ task extractAdapters {
     Float? memory
     Float? memoryMultiplier
 
-
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
     set -e
     mkdir -p ${outputDir}
-    java -Xmx${select_first([memory, 4])}G -jar ${extractAdaptersFastqcJar} \
+    java -Xmx${mem}G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \
@@ -89,7 +89,7 @@ task extractAdapters {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 2.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
     }
 }
 

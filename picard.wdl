@@ -7,11 +7,12 @@ task ScatterIntervalList {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir scatter_list
-        java -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
+        java -Xmx${mem}G -jar ${picard_jar} \
           IntervalListTools \
           SCATTER_COUNT=${scatter_count} \
           SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -27,7 +28,7 @@ task ScatterIntervalList {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -42,11 +43,12 @@ task GatherBamFiles {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
+        -Xmx${mem}G -jar ${picard_jar} \
           GatherBamFiles \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -61,7 +63,7 @@ task GatherBamFiles {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -85,12 +87,13 @@ task MarkDuplicates {
     # Task is assuming query-sorted input so that the Secondary and Supplementary reads get marked correctly
     # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
     # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p $(dirname ${output_bam_path})
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
+        -Xmx${mem}G -jar ${picard_jar} \
           MarkDuplicates \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -110,7 +113,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 8.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -128,11 +131,12 @@ task MergeVCFs {
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${select_first([memory, 4])}G -jar ${picard_jar} \
+        -Xmx${mem}G -jar ${picard_jar} \
           MergeVcfs \
           INPUT=${sep=' INPUT=' input_vcfs} \
           OUTPUT=${output_vcf_path}
@@ -144,6 +148,6 @@ task MergeVCFs {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }

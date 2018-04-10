@@ -15,10 +15,11 @@ task BaseRecalibrator {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
+        java -Xms${mem}G -jar ${gatk_jar} \
           BaseRecalibrator \
           -R ${ref_fasta} \
           -I ${input_bam} \
@@ -33,7 +34,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -53,11 +54,12 @@ task ApplyBQSR {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
+        -Xms${mem}G -jar ${gatk_jar} \
           ApplyBQSR \
           --create-output-bam-md5 \
           --add-output-sam-program-record \
@@ -76,7 +78,7 @@ task ApplyBQSR {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -90,10 +92,11 @@ task GatherBqsrReports {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
+        java -Xms${mem}G -jar ${gatk_jar} \
         GatherBQSRReports \
         -I ${sep=' -I ' input_bqsr_reports} \
         -O ${output_report_filepath}
@@ -104,7 +107,7 @@ task GatherBqsrReports {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -125,11 +128,12 @@ task HaplotypeCallerGvcf {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${select_first([memory, 4])}G -jar ${gatk_jar} \
+        -Xmx${mem}G -jar ${gatk_jar} \
           HaplotypeCaller \
           -R ${ref_fasta} \
           -O ${gvcf_basename}.vcf.gz \
@@ -145,7 +149,7 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -170,12 +174,13 @@ task GenotypeGVCFs {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
 
         java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${select_first([memory, 4])}G -jar ${gatk_jar} \
+        -Xmx${mem}G -jar ${gatk_jar} \
          GenotypeGVCFs \
          -R ${ref_fasta} \
          -O ${output_basename + ".vcf.gz"} \
@@ -193,7 +198,7 @@ task GenotypeGVCFs {
     }
 
     runtime{
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -215,13 +220,14 @@ task CombineGVCFs {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
 
         if [ ${length(gvcf_files)} -gt 1 ]; then
             java ${"-Dsamjdk.compression_level=" + compression_level} \
-            -Xmx${select_first([memory, 4])}G -jar ${gatk_jar} \
+            -Xmx${mem}G -jar ${gatk_jar} \
              CombineGVCFs \
              -R ${ref_fasta} \
              -O ${output_basename + ".vcf.gz"} \
@@ -239,7 +245,7 @@ task CombineGVCFs {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -257,10 +263,11 @@ task SplitNCigarReads {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${select_first([memory, 4])}G -jar ${gatk_jar} \
+        java -Xms${mem}G -jar ${gatk_jar} \
         -I ${input_bam} \
         -R ${ref_fasta} \
         -O ${output_bam} # might have to be -o depending on GATK version \
@@ -273,6 +280,6 @@ task SplitNCigarReads {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }

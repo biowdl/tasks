@@ -35,11 +35,12 @@ task ScatterRegions {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDirPath}
-        java -Xmx${select_first([memory, 2])}G -jar ${tool_jar} \
+        java -Xmx${mem}G -jar ${tool_jar} \
           -R ${ref_fasta} \
           -o ${outputDirPath} \
           ${"-s " + scatterSize} \
@@ -51,7 +52,7 @@ task ScatterRegions {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 2.0]) * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
     }
 }
 
@@ -68,11 +69,12 @@ task SampleConfig {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx${select_first([memory, 4])}G -jar ${tool_jar} \
+        java -Xmx${mem}G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
@@ -89,7 +91,7 @@ task SampleConfig {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 4.0]) * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
     }
 }
 
@@ -104,11 +106,12 @@ task BaseCounter {
     Float? memory
     Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 12.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDir}
-        java -Xmx${select_first([memory, 12])}G -jar ${tool_jar} \
+        java -Xmx${mem}G -jar ${tool_jar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -153,6 +156,6 @@ task BaseCounter {
     }
 
     runtime {
-        memory: ceil(select_first([memory, 12.0]) * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
