@@ -13,7 +13,7 @@ task Star {
     String? twopassMode
     Array[String]? outSAMattrRGline
 
-    Float? memory
+    Int? memory
 
     #TODO needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
