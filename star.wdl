@@ -18,6 +18,9 @@ task Star {
     #TODO needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
+    # converts String? to String for use as key (for the Map above) in output
+    String key = select_first([outSAMtype, "BAM SortedByCoordinate"])
+
     command {
         set -e -o pipefail
         mkdir -p ${sub(outFileNamePrefix, basename(outFileNamePrefix) + "$", "")}
@@ -35,7 +38,7 @@ task Star {
     }
 
     output {
-        File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames["${outSAMtype}"]
+        File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames[key]
     }
 
     runtime {
