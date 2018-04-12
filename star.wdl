@@ -39,7 +39,7 @@ task Star {
     }
 
     runtime {
-        threads: select_first([runThreadN, 1])
+        cpu: select_first([runThreadN, 1])
         memory: select_first([memory, 10])
     }
 }

@@ -28,6 +28,6 @@ task Stringtie {
     }
 
     runtime {
-        threads: select_first([threads, 1])
+        cpu: select_first([threads, 1])
     }
 }
