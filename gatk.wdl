@@ -268,6 +268,7 @@ task SplitNCigarReads {
         set -e -o pipefail
         ${preCommand}
         java -Xms${mem}G -jar ${gatk_jar} \
+        SplitNCigarReads \
         -I ${input_bam} \
         -R ${ref_fasta} \
         -O ${output_bam} # might have to be -o depending on GATK version \
