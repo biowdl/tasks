@@ -62,10 +62,15 @@ task extractAdapters {
     File? knownAdapterFile
     Float? adapterCutoff
     Boolean? outputAsFasta
+
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
     set -e
     mkdir -p ${outputDir}
-    java -jar ${extractAdaptersFastqcJar} \
+    java -Xmx${mem}G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \
@@ -82,20 +87,30 @@ task extractAdapters {
         Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
         Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
     }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
+    }
 }
 
 task getConfiguration {
     String? preCommand
     String? fastqcDirFile = "fastqcDir.txt"
+
     command {
         set -e -o pipefail
         ${preCommand}
         echo $(dirname $(readlink -f $(which fastqc))) > ${fastqcDirFile}
     }
+
     output {
         String fastqcDir = read_string(fastqcDirFile)
         File adapterList = fastqcDir + "/Configuration/adapter_list.txt"
         File contaminantList = fastqcDir + "/Configuration/contaminant_list.txt"
         File limits = fastqcDir + "/Configuration/limits.txt"
+    }
+
+    runtime {
+        memory: 1
     }
 }

@@ -12,10 +12,14 @@ task BaseRecalibrator {
     File ref_fasta
     File ref_fasta_index
 
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms4G -jar ${gatk_jar} \
+        java -Xms${mem}G -jar ${gatk_jar} \
           BaseRecalibrator \
           -R ${ref_fasta} \
           -I ${input_bam} \
@@ -24,8 +28,13 @@ task BaseRecalibrator {
           --known-sites ${sep=" --known-sites " known_indels_sites_VCFs} \
           -L ${sep=" -L " sequence_group_interval}
     }
+
     output {
         File recalibration_report = "${recalibration_report_filename}"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -42,10 +51,15 @@ task ApplyBQSR {
     File ref_fasta_index
     Int? compression_level
 
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xms4G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xms${mem}G -jar ${gatk_jar} \
           ApplyBQSR \
           --create-output-bam-md5 \
           --add-output-sam-program-record \
@@ -57,9 +71,14 @@ task ApplyBQSR {
           --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 \
           -L ${sep=" -L " sequence_group_interval}
     }
+
     output {
         File recalibrated_bam = "${output_bam_path}"
         File recalibrated_bam_checksum = "${output_bam_path}.md5"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -70,16 +89,25 @@ task GatherBqsrReports {
     Array[File] input_bqsr_reports
     String output_report_filepath
 
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms3G -jar ${gatk_jar} \
+        java -Xms${mem}G -jar ${gatk_jar} \
         GatherBQSRReports \
         -I ${sep=' -I ' input_bqsr_reports} \
         -O ${output_report_filepath}
     }
+
     output {
         File output_bqsr_report = "${output_report_filepath}"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -97,10 +125,15 @@ task HaplotypeCallerGvcf {
     Int? compression_level
     String gatk_jar
 
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xmx${mem}G -jar ${gatk_jar} \
           HaplotypeCaller \
           -R ${ref_fasta} \
           -O ${gvcf_basename}.vcf.gz \
@@ -109,9 +142,14 @@ task HaplotypeCallerGvcf {
           -contamination ${default=0 contamination} \
           -ERC GVCF
     }
+
     output {
         File output_gvcf = "${gvcf_basename}.vcf.gz"
         File output_gvcf_index = "${gvcf_basename}.vcf.gz.tbi"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -133,12 +171,16 @@ task GenotypeGVCFs {
     File dbsnp_vcf_index
 
     Int? compression_level
+    Float? memory
+    Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
 
-        java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compression_level} \
+        -Xmx${mem}G -jar ${gatk_jar} \
          GenotypeGVCFs \
          -R ${ref_fasta} \
          -O ${output_basename + ".vcf.gz"} \
@@ -153,6 +195,10 @@ task GenotypeGVCFs {
     output {
         File output_vcf = output_basename + ".vcf.gz"
         File output_vcf_index = output_basename + ".vcf.gz.tbi"
+    }
+
+    runtime{
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
@@ -171,13 +217,17 @@ task CombineGVCFs {
     File ref_dict
 
     Int? compression_level
+    Float? memory
+    Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
 
         if [ ${length(gvcf_files)} -gt 1 ]; then
-            java ${"-Dsamjdk.compression_level=" + compression_level} -Xmx4G -jar ${gatk_jar} \
+            java ${"-Dsamjdk.compression_level=" + compression_level} \
+            -Xmx${mem}G -jar ${gatk_jar} \
              CombineGVCFs \
              -R ${ref_fasta} \
              -O ${output_basename + ".vcf.gz"} \
@@ -193,6 +243,10 @@ task CombineGVCFs {
         File output_gvcf = output_basename + ".vcf.gz"
         File output_gvcf_index = output_basename + ".vcf.gz.tbi"
     }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+    }
 }
 
 task SplitNCigarReads {
@@ -206,11 +260,15 @@ task SplitNCigarReads {
     String gatk_jar
     Array[File]+ intervals
 
+    Float? memory
+    Float? memoryMultiplier
 
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms4G -jar ${gatk_jar} \
+        java -Xms${mem}G -jar ${gatk_jar} \
+        SplitNCigarReads \
         -I ${input_bam} \
         -R ${ref_fasta} \
         -O ${output_bam} # might have to be -o depending on GATK version \
@@ -220,5 +278,9 @@ task SplitNCigarReads {
     output {
         File bam = output_bam
         File bam_index = output_bam + ".bai"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }

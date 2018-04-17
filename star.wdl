@@ -2,7 +2,7 @@ task Star {
     String? preCommand
 
     Array[File] inputR1
-    Array[File]? inputR2
+    Array[File?] inputR2
     String genomeDir
     String outFileNamePrefix
 
@@ -13,8 +13,13 @@ task Star {
     String? twopassMode
     Array[String]? outSAMattrRGline
 
+    Int? memory
+
     #TODO needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
+
+    # converts String? to String for use as key (for the Map above) in output
+    String key = select_first([outSAMtype, "BAM SortedByCoordinate"])
 
     command {
         set -e -o pipefail
@@ -33,10 +38,11 @@ task Star {
     }
 
     output {
-        File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames["${outSAMtype}"]
+        File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames[key]
     }
 
     runtime {
-        threads: runThreadN
+        cpu: select_first([runThreadN, 1])
+        memory: select_first([memory, 10])
     }
 }

@@ -1,7 +1,7 @@
 task Stringtie {
     String? preCommand
     File alignedReads
-    File? referenceGFF
+    File? referenceGtf
     Int? threads
     String assembledTranscriptsFile
     Boolean? firstStranded
@@ -13,7 +13,7 @@ task Stringtie {
         ${preCommand}
         stringtie \
         ${"-p " + threads} \
-        ${"-G " + referenceGFF} \
+        ${"-G " + referenceGtf} \
         ${true="--rf" false="" firstStranded} \
         ${true="fr" false="" secondStranded} \
         -o ${assembledTranscriptsFile} \
@@ -28,6 +28,6 @@ task Stringtie {
     }
 
     runtime {
-        threads: threads
+        cpu: select_first([threads, 1])
     }
 }

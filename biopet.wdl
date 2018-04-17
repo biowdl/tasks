@@ -32,11 +32,15 @@ task ScatterRegions {
     Int? scatterSize
     File? regions
 
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDirPath}
-        java -Xmx2G -jar ${tool_jar} \
+        java -Xmx${mem}G -jar ${tool_jar} \
           -R ${ref_fasta} \
           -o ${outputDirPath} \
           ${"-s " + scatterSize} \
@@ -45,6 +49,10 @@ task ScatterRegions {
 
     output {
         Array[File] scatters = glob(outputDirPath + "/scatter-*.bed")
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
     }
 }
 
@@ -58,11 +66,15 @@ task SampleConfig {
     String? jsonOutputPath
     String? tsvOutputPath
 
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
         set -e -o pipefail
         ${preCommand}
-        mkdir -p . $(dirname ${jsonOutputPath}) $(dirname ${tsvOutputPath})
-        java -jar ${tool_jar} \
+        mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
+        java -Xmx${mem}G -jar ${tool_jar} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
@@ -77,6 +89,10 @@ task SampleConfig {
         File? tsvOutput = tsvOutputPath
         Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
     }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+    }
 }
 
 task BaseCounter {
@@ -87,11 +103,15 @@ task BaseCounter {
     String outputDir
     String prefix
 
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 12.0]))
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDir}
-        java -jar ${tool_jar} \
+        java -Xmx${mem}G -jar ${tool_jar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -133,5 +153,9 @@ task BaseCounter {
         File transcriptIntronic = outputDir + "/" + prefix + ".base.transcript.intronic.counts"
         File transcriptIntronicSense = outputDir + "/" + prefix + ".base.transcript.intronic.sense.counts"
         File transcriptSense = outputDir + "/" + prefix + ".base.transcript.sense.counts"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
