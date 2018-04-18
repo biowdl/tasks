@@ -48,15 +48,7 @@ task fastqc {
         File rawReport = reportDir + "/fastqc_data.txt"
         File htmlReport = reportDir + "/fastqc_report.html"
         File summary = reportDir + "/summary.txt"
-        File adapterContent = reportDir + "/Images/adapter_content.png"
-        File duplicationLevels = reportDir + "/Images/duplication_levels.png"
-        File perBaseNContent = reportDir + "/Images/per_base_n_content.png"
-        File perBaseQuality = reportDir + "/Images/per_base_quality.png"
-        File perBaseSequenceContent = reportDir + "/Images/per_base_sequence_content.png"
-        File perSequenceGCContent = reportDir + "/Images/per_sequence_gc_content.png"
-        File perSequenceQuality = reportDir + "/Images/per_sequence_quality.png"
-        #File perTileQuality = reportDir + "/Images/per_tile_quality.png"
-        File sequenceLengthDistribution = reportDir + "/Images/sequence_length_distribution.png"
+        Array[File] images = glob(reportDir + "/Images/*.png")
     }
 
     runtime {
@@ -75,10 +67,15 @@ task extractAdapters {
     File? knownAdapterFile
     Float? adapterCutoff
     Boolean? outputAsFasta
+
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
     command {
     set -e
     mkdir -p ${outputDir}
-    java -jar ${extractAdaptersFastqcJar} \
+    java -Xmx${mem}G -jar ${extractAdaptersFastqcJar} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \
@@ -95,23 +92,30 @@ task extractAdapters {
         Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
         Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
     }
+
     runtime {
-        memory: 8
+        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
     }
 }
 
 task getConfiguration {
     String? preCommand
     String? fastqcDirFile = "fastqcDir.txt"
+
     command {
         set -e -o pipefail
         ${preCommand}
         echo $(dirname $(readlink -f $(which fastqc))) > ${fastqcDirFile}
     }
+
     output {
         String fastqcDir = read_string(fastqcDirFile)
         File adapterList = fastqcDir + "/Configuration/adapter_list.txt"
         File contaminantList = fastqcDir + "/Configuration/contaminant_list.txt"
         File limits = fastqcDir + "/Configuration/limits.txt"
+    }
+
+    runtime {
+        memory: 1
     }
 }
