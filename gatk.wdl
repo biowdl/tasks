@@ -271,7 +271,7 @@ task SplitNCigarReads {
         SplitNCigarReads \
         -I ${input_bam} \
         -R ${ref_fasta} \
-        -O ${output_bam} # might have to be -o depending on GATK version \
+        -O ${output_bam} \
         -L ${sep=' -L ' intervals}
     }
 
