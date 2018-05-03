@@ -9,8 +9,10 @@ task unicycler {
     Int? minFastaLength
     Int? keep
     Boolean? vcf
-    Int threads
-    Int memory
+    Int? threads
+    Int? memory
+    Int finalThreads = select_first(threads, 1)
+    Int finalMemory = select_first(memory, 4)
     String? mode
     Float? minBridgeQual
     Int? linearSeqs
@@ -55,7 +57,7 @@ task unicycler {
         ${"--min_fasta_length " + minFastaLength} \
         ${"--keep " + keep } \
         ${true="--vcf" false="" vcf } \
-        ${"--threads " + threads } \
+        ${"--threads " + finalThreads } \
         ${"--mode " + mode } \
         ${"--min_bridge_qual " + minBridgeQual } \
         ${"--linear_seqs " + linearSeqs } \
@@ -94,7 +96,7 @@ task unicycler {
         File log = out + "/unicycler.log"
     }
     runtime {
-        cpu: threads
-        memory: memory
+        cpu: finalThreads
+        memory: finalMemory
     }
 }

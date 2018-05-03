@@ -49,7 +49,7 @@ task spades {
         ${"--nanopore " + nanoporeReads } \
         ${"--tslr " + tslrContigs } \
         ${"--trusted-contigs " + trustedContigs } \
-        ${"--untrusted-contigs" + untrustedContigs } \
+        ${"--untrusted-contigs " + untrustedContigs } \
         ${true="--only-error-correction" false="" onlyErrorCorrection } \
         ${true="--only-assembler" false="" onlyAssembler } \
         ${true="--careful" false="" careful } \
