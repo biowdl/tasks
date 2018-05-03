@@ -1,9 +1,8 @@
 task spades {
     String outputDir
     String? preCommand
-    File? read1
+    File read1
     File? read2
-    File? singleRead
     File? interlacedReads
     File? sangerReads
     File? pacbioReads
@@ -22,12 +21,15 @@ task spades {
     Boolean? disableGzipOutput
     Boolean? disableRepeatResolution
     File? dataset
-    Int threads
-    Int memoryGb
+    Int? threads
+    Int? memoryGb
     File? tmpDir
     String? k
     Float? covCutoff
     Int? phredOffset
+    Int finalThreads = select_first([threads,1])
+    Int totalMemory = select_first([memoryGb, finalThreads * 16])
+    Int clusterMemory = totalMemory / finalThreads
 
     command {
         set -e -o pipefail
@@ -40,9 +42,8 @@ task spades {
         ${true="--plasmid" false="" plasmid} \
         ${true="--iontorrent" false="" ionTorrent} \
         ${"--12 " + interlacedReads } \
-        ${"-1 " + read1 } \
+        ${true="-1" false="-s" defined(read2)} ${read1}  \
         ${"-2 " + read2 } \
-        ${"-s " + singleRead } \
         ${"--sanger " + sangerReads } \
         ${"--pacbio " + pacbioReads } \
         ${"--nanopore " + nanoporeReads } \
@@ -55,8 +56,8 @@ task spades {
         ${true="--disable-gzip-output" false="" disableGzipOutput} \
         ${true="--disable-rr" false="" disableRepeatResolution } \
         ${"--dataset " + dataset } \
-        ${"--threads " + threads } \
-        ${"--memory " + memoryGb * threads } \
+        ${"--threads " + finalThreads} \
+        ${"--memory " + totalMemory } \
         ${"-k " + k } \
         ${"--cov-cutoff " + covCutoff } \
         ${"--phred-offset " + phredOffset }
@@ -73,7 +74,7 @@ task spades {
         File log = outputDir + "/spades.log"
     }
     runtime {
-        cpu: threads
-        memory: memoryGb
+        cpu: finalThreads
+        memory: clusterMemory
     }
 }
