@@ -97,6 +97,11 @@ task fastq {
         ${"--threads " + totalThreads} \
 
     }
+    output {
+        File read1 = outputRead1
+        File? read2 = outputRead2
+        File? read0 = outputRead0
+    }
     runtime {
         cpu: totalThreads
         memory: select_first([memory, 1])
