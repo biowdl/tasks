@@ -51,12 +51,13 @@ task concatenateTextFiles {
     Array[File] fileList
     String combinedFilePath
     Boolean? unzip=false
+    Boolean? zip=false
 
     command {
         set -e -o pipefail
         ${"mkdir -p $(dirname " + combinedFilePath + ")"}
         ${true='zcat' false= 'cat' unzip} ${sep=' ' fileList} \
-        > ${combinedFilePath}
+        ${true="| gzip -c" false="" zip} > ${combinedFilePath}
     }
 
     output {
