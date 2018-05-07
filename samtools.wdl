@@ -95,7 +95,7 @@ task fastq {
         ${true="-O" false="" outputQuality} \
         ${"-c " + compressionLevel} \
         ${"--threads " + totalThreads} \
-
+        ${inputBam}
     }
     output {
         File read1 = outputRead1
