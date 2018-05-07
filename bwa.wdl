@@ -40,7 +40,10 @@ task index {
         set -e -o pipefail
         ${"mkdir -p " + outputDir}
         ${preCommand}
-        ln -sf ${fasta} ${outputDir + "/"}${fastaFilename}
+        if [[ ! '${outputDir}' =  '' ]]
+        then
+            ln -sf ${fasta} ${outputDir + "/"}${fastaFilename}
+        fi
         bwa index \
         ${"-a " + constructionAlgorithm} \
         ${"-b" + blockSize} \
