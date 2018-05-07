@@ -151,3 +151,37 @@ task MergeVCFs {
         memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
+
+task SamToFastq {
+    String? preCommand
+    File inputBam
+    String outputRead1
+    String? outputRead2
+    String? outputUnpaired
+    String picard_jar
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        java \
+        -Xmx${mem}G \
+        -jar ${picard_jar} \
+        I=${inputBam} \
+        ${"FASTQ=" + outputRead1} \
+        ${"SECOND_END_FASTQ=" + outputRead2} \
+        ${"UNPAIRED_FASTQ=" + outputUnpaired}
+    }
+
+    output {
+        File read1 = outputRead1
+        File? read2 = outputRead2
+        File? unpairedRead = outputUnpaired
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+    }
+}
