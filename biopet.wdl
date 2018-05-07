@@ -90,6 +90,33 @@ task FastqSplitter {
     }
 }
 
+task FastqSync {
+    String? preCommand
+    File ref1
+    File ref2
+    File in1
+    File in2
+    String out1path
+    String out2path
+    File tool_jar
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        mkdir -p $(dirname ${out1path}) $(dirname ${out2path})
+        java -jar ${tool_jar} \
+        --in1 ${in1} \
+        --in2 ${in2} \
+        --ref1 ${ref1} \
+        --ref2 ${ref2} \
+        --out1 ${out1path} \
+        --out2 ${out2path}
+    }
+    output {
+        File out1 = out1path
+        File out2 = out2path
+    }
+}
+
 task SampleConfig {
     String? preCommand
     String tool_jar
