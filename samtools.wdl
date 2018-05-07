@@ -122,7 +122,7 @@ task view {
     String? preCommand
     File inFile
     File? referenceFasta
-    String? outputFileName
+    String outputFileName
     Boolean? outputBam
     Boolean? uncompressedBamOutput
     Int? includeFilter
@@ -143,5 +143,9 @@ task view {
     ${"-G " + excludeSpecificFilter} \
     ${"--threads " + threads - 1} \
     ${inFile}
+    }
+
+    output {
+        File outputFile = outputFileName
     }
 }
