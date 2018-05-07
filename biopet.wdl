@@ -1,100 +1,5 @@
-task FastqSplitter {
-    String? preCommand
-    File inputFastq
-    String outputPath
-    Int numberChunks
-    String tool_jar
-    Array[Int] chunks = range(numberChunks)
-
-    command {
-        set -e -o pipefail
-        ${preCommand}
-        mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
-        if [ ${numberChunks} -gt 1 ]; then
-            SEP="/${basename(inputFastq)} -o "
-            java -jar ${tool_jar} -I ${inputFastq} -o ${sep='$SEP' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
-        else
-            ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
-        fi
-    }
-
-    output {
-        Array[File] outputFastqFiles = glob(outputPath + "/chunk_*/" + basename(inputFastq))
-    }
-}
-
-task ScatterRegions {
-    String? preCommand
-    File ref_fasta
-    File ref_dict
-    String outputDirPath
-    String tool_jar
-    Int? scatterSize
-    File? regions
-
-    Float? memory
-    Float? memoryMultiplier
-
-    Int mem = ceil(select_first([memory, 4.0]))
-    command {
-        set -e -o pipefail
-        ${preCommand}
-        mkdir -p ${outputDirPath}
-        java -Xmx${mem}G -jar ${tool_jar} \
-          -R ${ref_fasta} \
-          -o ${outputDirPath} \
-          ${"-s " + scatterSize} \
-          ${"-L " + regions}
-    }
-
-    output {
-        Array[File] scatters = glob(outputDirPath + "/scatter-*.bed")
-    }
-
-    runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
-    }
-}
-
-task SampleConfig {
-    String? preCommand
-    String tool_jar
-    Array[File]+ inputFiles
-    String? sample
-    String? library
-    String? readgroup
-    String? jsonOutputPath
-    String? tsvOutputPath
-
-    Float? memory
-    Float? memoryMultiplier
-
-    Int mem = ceil(select_first([memory, 4.0]))
-    command {
-        set -e -o pipefail
-        ${preCommand}
-        mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx${mem}G -jar ${tool_jar} \
-        -i ${sep="-i " inputFiles} \
-        ${"--sample " + sample} \
-        ${"--library " + library} \
-        ${"--readgroup " + readgroup} \
-        ${"--jsonOutput " + jsonOutputPath} \
-        ${"--tsvOutput " + tsvOutputPath}
-    }
-
-    output {
-        Array[String] keys = read_lines(stdout())
-        File? jsonOutput = jsonOutputPath
-        File? tsvOutput = tsvOutputPath
-        Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
-    }
-
-    runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
-    }
-}
-
+# PLEASE ADD TASKS IN ALPHABETIC ORDER.
+# This makes searching a lot easier.
 task BaseCounter {
     String? preCommand
     String tool_jar #Should this be of type File?
@@ -159,3 +64,101 @@ task BaseCounter {
         memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
+
+task FastqSplitter {
+    String? preCommand
+    File inputFastq
+    String outputPath
+    Int numberChunks
+    String tool_jar
+    Array[Int] chunks = range(numberChunks)
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
+        if [ ${numberChunks} -gt 1 ]; then
+            SEP="/${basename(inputFastq)} -o "
+            java -jar ${tool_jar} -I ${inputFastq} -o ${sep='$SEP' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
+        else
+            ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
+        fi
+    }
+
+    output {
+        Array[File] outputFastqFiles = glob(outputPath + "/chunk_*/" + basename(inputFastq))
+    }
+}
+
+task SampleConfig {
+    String? preCommand
+    String tool_jar
+    Array[File]+ inputFiles
+    String? sample
+    String? library
+    String? readgroup
+    String? jsonOutputPath
+    String? tsvOutputPath
+
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
+        java -Xmx${mem}G -jar ${tool_jar} \
+        -i ${sep="-i " inputFiles} \
+        ${"--sample " + sample} \
+        ${"--library " + library} \
+        ${"--readgroup " + readgroup} \
+        ${"--jsonOutput " + jsonOutputPath} \
+        ${"--tsvOutput " + tsvOutputPath}
+    }
+
+    output {
+        Array[String] keys = read_lines(stdout())
+        File? jsonOutput = jsonOutputPath
+        File? tsvOutput = tsvOutputPath
+        Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+    }
+}
+
+task ScatterRegions {
+    String? preCommand
+    File ref_fasta
+    File ref_dict
+    String outputDirPath
+    String tool_jar
+    Int? scatterSize
+    File? regions
+
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        mkdir -p ${outputDirPath}
+        java -Xmx${mem}G -jar ${tool_jar} \
+          -R ${ref_fasta} \
+          -o ${outputDirPath} \
+          ${"-s " + scatterSize} \
+          ${"-L " + regions}
+    }
+
+    output {
+        Array[File] scatters = glob(outputDirPath + "/scatter-*.bed")
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+    }
+}
+
