@@ -8,8 +8,8 @@ task flash {
     Int? minOverlap
     Int? maxOverlap
     Boolean? compress = true
-    Int? threads = 1
-    Int? memory = 4
+    Int? threads
+    Int? memory
 
     command {
         set -e -o pipefail
@@ -35,8 +35,8 @@ task flash {
     }
 
     runtime {
-        cpu: select_first([threads])
-        memory: select_first([memory])
+        cpu: select_first([threads, 2])
+        memory: select_first([memory, 2])
     }
 
 }
