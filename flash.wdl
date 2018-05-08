@@ -1,17 +1,3 @@
-#workflow runFlash {
-#    String preCommand
-#    String outDirPath
-#    File R1
-#    File R2
-#
-#    call flash {
-#        input:
-#            preCommand = preCommand,
-#            outDirPath = outDirPath,
-#            inputR1 = R1,
-#            inputR2 = R2,
-#    }
-#}
 task flash {
     String? preCommand
     File inputR1
