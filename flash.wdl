@@ -16,9 +16,9 @@ task flash {
     String? preCommand
     File inputR1
     File inputR2
-    String outDirPath
+    String outdirPath
     String? outPrefix = "flash"
-    String? logPath = outDirPath + "/" + outPrefix + ".log"
+    String? logPath = outdirPath + "/" + outPrefix + ".log"
     Int? minOverlap
     Int? maxOverlap
     Boolean? compress = true
@@ -27,11 +27,11 @@ task flash {
 
     command {
         set -e -o pipefail
-        mkdir -p ${outDirPath}
+        mkdir -p ${outdirPath}
         ${preCommand}
         flash \
         ${"--threads=" + threads} \
-        ${"--output-directory=" + outDirPath} \
+        ${"--output-directory=" + outdirPath} \
         ${"--output-prefix=" + outPrefix} \
         ${true="--compress " false="" defined(compress)} \
         ${"--min-overlap=" + minOverlap} \
@@ -40,11 +40,11 @@ task flash {
     }
 
     output {
-        File extendedFrags = outDirPath + "/" + outPrefix + ".extendedFrags.fastq.gz"
-        File notCombined1 = outDirPath + "/" + outPrefix + ".notCombined_1.fastq.gz"
-        File notCombined2 = outDirPath + "/" + outPrefix + ".notCombined_2.fastq.gz"
-        File hist = outDirPath + "/" + outPrefix + ".hist"
-        File histogram = outDirPath + "/" + outPrefix + ".histogram"
+        File extendedFrags = outdirPath + "/" + outPrefix + ".extendedFrags.fastq.gz"
+        File notCombined1 = outdirPath + "/" + outPrefix + ".notCombined_1.fastq.gz"
+        File notCombined2 = outdirPath + "/" + outPrefix + ".notCombined_2.fastq.gz"
+        File hist = outdirPath + "/" + outPrefix + ".hist"
+        File histogram = outdirPath + "/" + outPrefix + ".histogram"
         String log = select_first([logPath])
     }
 
