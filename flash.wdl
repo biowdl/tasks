@@ -24,7 +24,6 @@ task flash {
     Boolean? compress = true
     Int? threads = 1
     Int? memory = 4
-    Int? cores = 1
 
     command {
         set -e -o pipefail
@@ -50,7 +49,7 @@ task flash {
     }
 
     runtime {
-        cpu: select_first([cores])
+        cpu: select_first([threads])
         memory: select_first([memory])
     }
 
