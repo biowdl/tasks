@@ -52,8 +52,7 @@ task index {
     }
 
     output {
-        File indexBase = if (defined(outputDir)) then select_first([outputDir]) + "/" + fastaFilename else fastaFilename
-        File indexedFasta = indexBase
+        File indexedFasta = outputFile
         Array[File] indexFiles = [indexBase + ".bwt",indexBase + ".pac",indexBase + ".sa",indexBase + ".amb",indexBase + ".ann"]
     }
     parameter_meta {
