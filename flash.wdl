@@ -4,7 +4,6 @@ task flash {
     File inputR2
     String outdirPath
     String? outPrefix = "flash"
-    String? logPath = outdirPath + "/" + outPrefix + ".log"
     Int? minOverlap
     Int? maxOverlap
     Boolean? compress = true
@@ -22,7 +21,7 @@ task flash {
         ${true="--compress " false="" defined(compress)} \
         ${"--min-overlap=" + minOverlap} \
         ${"--max-overlap=" + maxOverlap} \
-        ${inputR1} ${inputR2} 2>&1 | tee ${logPath}
+        ${inputR1} ${inputR2}
     }
 
     output {
@@ -31,7 +30,6 @@ task flash {
         File notCombined2 = outdirPath + "/" + outPrefix + ".notCombined_2.fastq.gz"
         File hist = outdirPath + "/" + outPrefix + ".hist"
         File histogram = outdirPath + "/" + outPrefix + ".histogram"
-        String log = select_first([logPath])
     }
 
     runtime {
