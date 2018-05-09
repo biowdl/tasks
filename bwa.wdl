@@ -35,6 +35,7 @@ task index {
     Int? blockSize
     String? outputDir
     String fastaFilename = basename(fasta)
+    String outputFile = if (defined(outputDir)) then outputDir + "/" + fastaFilename else fasta
 
     command {
         set -e -o pipefail
@@ -47,7 +48,7 @@ task index {
         bwa index \
         ${"-a " + constructionAlgorithm} \
         ${"-b" + blockSize} \
-        ${outputDir + "/"}${fastaFilename}
+        ${outputFile}
     }
 
     output {
