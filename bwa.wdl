@@ -2,7 +2,7 @@ task mem {
     String? preCommand
     File inputR1
     File? inputR2
-    String referenceFasta
+    File referenceFasta
     Array[File] indexFiles # These indexFiles need to be added, otherwise cromwell will not find them.
     String outputPath
     String? readgroup
