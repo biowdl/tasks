@@ -1,4 +1,4 @@
-task BwaMem {
+task mem {
     String? preCommand
     File inputR1
     File? inputR2
@@ -9,6 +9,7 @@ task BwaMem {
 
     Int? threads
     Int? memory
+
 
     command {
         set -e -o pipefail
@@ -23,8 +24,8 @@ task BwaMem {
         File bamFile = outputPath
     }
     runtime{
-        cpu: if defined(threads) then threads else 1
-        memory: if defined(memory) then memory else 8
+        cpu: select_first([threads,1])
+        memory: select_first([memory,8])
     }
 }
 
