@@ -169,6 +169,7 @@ task SamToFastq {
         java \
         -Xmx${mem}G \
         -jar ${picard_jar} \
+        SamToFastq \
         I=${inputBam} \
         ${"FASTQ=" + outputRead1} \
         ${"SECOND_END_FASTQ=" + outputRead2} \
