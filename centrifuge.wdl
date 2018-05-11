@@ -1,4 +1,4 @@
-# Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2017
+# Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2018
 #
 # Tasks from centrifuge
 task build {
