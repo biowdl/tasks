@@ -56,14 +56,16 @@ task build {
 
 task classify {
     String outputDir
+    Boolean compressOutput = true
     String? preCommand
     String indexPrefix
     File? unpairedReads
     File read1
     File? read2
     Boolean? fastaInput
-    String? outputFile = outputDir + "/centrifuge.out"
-    String? reportFile = outputDir + "/centrifuge_report.tsv"
+    String? outputFilePath = outputDir + "/centrifuge.out"
+    String? reportFilePath = outputDir + "/centrifuge_report.tsv"
+    String? metFilePath # If this is specified, the report file is empty
     Int? assignments
     Int? minHitLen
     Int? minTotalLen
@@ -84,17 +86,17 @@ task classify {
     ${true="-1 " false="-U " defined(read2)} ${read1} \
     ${"-2 " + read2} \
     ${"-U " + unpairedReads} \
-    ${"--report-file " + reportFile} \
+    ${"--report-file " + reportFilePath} \
     ${"--min-hitlen " + minHitLen} \
     ${"--min-totallen " + minTotalLen} \
     ${true="--host-taxids " false="" defined(hostTaxIds)} ${sep=',' hostTaxIds} \
     ${true="--exclude-taxids " false="" defined(excludeTaxIds)} ${sep=',' excludeTaxIds} \
-    ${"-S " + outputFile}
+    ${true="| gzip -c > " false="-S " compressOutput}${outputFilePath}${true=".gz" false="" compressOutput}
     }
 
     output {
-        File outFile = select_first([outputFile])
-        File reportFile = select_first([reportFile])
+        File classifiedReads = if (compressOutput) then select_first([outputFilePath + ".gz"]) else select_first([outputFilePath])
+        File reportFile = select_first([reportFilePath])
     }
 
     runtime {
@@ -163,3 +165,41 @@ task downloadTaxonomy {
     }
  }
 
+task kreport {
+    String? preCommand
+    String outputDir
+    File centrifugeOut
+    Boolean inputIsCompressed
+    String kreportPath=sub(centrifugeOut, "\\.out.*", "\\.kreport")
+    String indexPrefix
+    Boolean? onlyUnique
+    Boolean? showZeros
+    Boolean? isCountTable
+    Int? minScore
+    Int? minLength
+    Int? cores
+    Int? memory
+
+    command {
+    set -e -o pipefail
+    ${preCommand}
+    centrifuge-kreport \
+    -x ${indexPrefix} \
+    ${true="--only-unique" false="" onlyUnique} \
+    ${true="show-zeros" false="" showZeros} \
+    ${true="--is-count-table" false="" isCountTable} \
+    ${"--min-score " + minScore} \
+    ${"--min-length " + minLength} \
+    ${true="<(zcat " false="" inputIsCompressed}${centrifugeOut}${true=")" false="" inputIsCompressed} \
+    > ${kreportPath}
+    }
+
+    output {
+        File kreport = select_first([kreportPath])
+    }
+
+    runtime {
+        cpu: select_first([cores, 1])
+        memory: select_first([memory, 4])
+    }
+}
