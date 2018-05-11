@@ -75,23 +75,23 @@ task classify {
     Int? memory
 
     command {
-    set -e -o pipefail
-    mkdir -p ${outputDir}
-    ${preCommand}
-    centrifuge \
-    ${"-p " + threads} \
-    ${"-x " + indexPrefix} \
-    ${true="-f" false="" fastaInput} \
-    ${true="-k " false="" defined(assignments)} ${assignments} \
-    ${true="-1 " false="-U " defined(read2)} ${read1} \
-    ${"-2 " + read2} \
-    ${"-U " + unpairedReads} \
-    ${"--report-file " + reportFilePath} \
-    ${"--min-hitlen " + minHitLen} \
-    ${"--min-totallen " + minTotalLen} \
-    ${true="--host-taxids " false="" defined(hostTaxIds)} ${sep=',' hostTaxIds} \
-    ${true="--exclude-taxids " false="" defined(excludeTaxIds)} ${sep=',' excludeTaxIds} \
-    ${true="| gzip -c > " false="-S " compressOutput}${outputFilePath}${true=".gz" false="" compressOutput}
+        set -e -o pipefail
+        mkdir -p ${outputDir}
+        ${preCommand}
+        centrifuge \
+        ${"-p " + threads} \
+        ${"-x " + indexPrefix} \
+        ${true="-f" false="" fastaInput} \
+        ${true="-k " false="" defined(assignments)} ${assignments} \
+        ${true="-1 " false="-U " defined(read2)} ${read1} \
+        ${"-2 " + read2} \
+        ${"-U " + unpairedReads} \
+        ${"--report-file " + reportFilePath} \
+        ${"--min-hitlen " + minHitLen} \
+        ${"--min-totallen " + minTotalLen} \
+        ${true="--host-taxids " false="" defined(hostTaxIds)} ${sep=',' hostTaxIds} \
+        ${true="--exclude-taxids " false="" defined(excludeTaxIds)} ${sep=',' excludeTaxIds} \
+        ${true="| gzip -c > " false="-S " compressOutput}${outputFilePath}${true=".gz" false="" compressOutput}
     }
 
     output {
