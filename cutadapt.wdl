@@ -6,13 +6,13 @@ task cutadapt {
     String? format
     String? preCommand
     Int? cores = 1
-    String? memory = "4G"
-    Array[String]? adapter
-    Array[String]? front
-    Array[String]? anywhere
-    Array[String]? adapterRead2
-    Array[String]? frontRead2
-    Array[String]? anywhereRead2
+    Int? memory = 4
+    Array[String]+? adapter
+    Array[String]+? front
+    Array[String]+? anywhere
+    Array[String]+? adapterRead2
+    Array[String]+? frontRead2
+    Array[String]+? anywhereRead2
     Boolean? interleaved
     String? pairFilter
     Float? errorRate
@@ -59,7 +59,9 @@ task cutadapt {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname ${read1output})
+        ${"mkdir -p $(dirname " + read1output + ")"}
+        ${"mkdir -p $(dirname " + read2output + ")"}
+        ${"mkdir -p $(dirname " + reportPath + ")"}
         ${preCommand}
         cutadapt \
         ${"--cores=" + cores} \

@@ -15,7 +15,11 @@ task fastqc {
     File? limits
     Int? kmers
     String? dir
-
+    # Chops of the .gz extension if present.
+    String name = sub(seqFile, "\\.gz$","")
+    # This regex chops of the extension and replaces it with _fastqc for the reportdir.
+    # Just as fastqc does it.
+    String reportDir = outdirPath + "/" + sub(basename(name), "\\.[^\\.]*$", "_fastqc")
     command {
     set -e -o pipefail
     ${preCommand}
@@ -40,10 +44,10 @@ task fastqc {
     }
 
     output {
-        File rawReport = select_first(glob(outdirPath + "/*/fastqc_data.txt"))
-        File htmlReport = select_first(glob(outdirPath + "/*/fastqc_report.html"))
-        File summary = select_first(glob(outdirPath + "/*/summary.txt"))
-        Array[File] images = glob(outdirPath + "/*/Images/*.png")
+        File rawReport = reportDir + "/fastqc_data.txt"
+        File htmlReport = reportDir + "/fastqc_report.html"
+        File summary = reportDir + "/summary.txt"
+        Array[File] images = glob(reportDir + "/Images/*.png")
     }
 
     runtime {
