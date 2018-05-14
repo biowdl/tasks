@@ -22,7 +22,8 @@ task build {
     File? nameTable
     File? sizeTable
     Int? seed
-    Int? threads = 1
+    Int? threads
+    Int? memory
     Int? kmerCount
 
     command {
@@ -50,22 +51,25 @@ task build {
         ${centrifugeIndexBase}
     }
     runtime {
-        cpu: select_first([threads])
+        cpu: select_first([threads, 8])
+        memory: select_first([memory, 20])
     }
 }
 
 task classify {
     String outputDir
-    Boolean compressOutput = true
+    Boolean? compressOutput = true
     String? preCommand
     String indexPrefix
     File? unpairedReads
     File read1
     File? read2
     Boolean? fastaInput
-    String? outputFilePath = outputDir + "/centrifuge.out"
-    String? reportFilePath = outputDir + "/centrifuge_report.tsv"
-    String? metFilePath # If this is specified, the report file is empty
+    # Variables for handling output
+    String outputFileName = outputDir + "/centrifuge.out"
+    String reportFileName = outputDir + "/centrifuge_report.tsv"
+    String finalOutputName = if (compressOutput == true) then outputFileName + ".gz" else outputFileName
+    String? metFileName # If this is specified, the report file is empty
     Int? assignments
     Int? minHitLen
     Int? minTotalLen
@@ -86,17 +90,18 @@ task classify {
         ${true="-1 " false="-U " defined(read2)} ${read1} \
         ${"-2 " + read2} \
         ${"-U " + unpairedReads} \
-        ${"--report-file " + reportFilePath} \
+        ${"--report-file " + reportFileName} \
         ${"--min-hitlen " + minHitLen} \
         ${"--min-totallen " + minTotalLen} \
+        ${"--met-file " + metFileName} \
         ${true="--host-taxids " false="" defined(hostTaxIds)} ${sep=',' hostTaxIds} \
         ${true="--exclude-taxids " false="" defined(excludeTaxIds)} ${sep=',' excludeTaxIds} \
-        ${true="| gzip -c > " false="-S " compressOutput}${outputFilePath}${true=".gz" false="" compressOutput}
+        ${true="| gzip -c >" false="-S" compressOutput} ${finalOutputName}
     }
 
     output {
-        File classifiedReads = if (compressOutput) then select_first([outputFilePath + ".gz"]) else select_first([outputFilePath])
-        File reportFile = select_first([reportFilePath])
+        File classifiedReads = finalOutputName
+        File reportFile = reportFileName
     }
 
     runtime {
@@ -167,10 +172,9 @@ task downloadTaxonomy {
 
 task kreport {
     String? preCommand
-    String outputDir
     File centrifugeOut
     Boolean inputIsCompressed
-    String kreportPath=sub(centrifugeOut, "\\.out.*", "\\.kreport")
+    String kreportFileName=sub(centrifugeOut, "\\.out$|\\.out\\.gz$", "\\.kreport")
     String indexPrefix
     Boolean? onlyUnique
     Boolean? showZeros
@@ -181,21 +185,22 @@ task kreport {
     Int? memory
 
     command {
-    set -e -o pipefail
-    ${preCommand}
-    centrifuge-kreport \
-    -x ${indexPrefix} \
-    ${true="--only-unique" false="" onlyUnique} \
-    ${true="show-zeros" false="" showZeros} \
-    ${true="--is-count-table" false="" isCountTable} \
-    ${"--min-score " + minScore} \
-    ${"--min-length " + minLength} \
-    ${true="<(zcat " false="" inputIsCompressed}${centrifugeOut}${true=")" false="" inputIsCompressed} \
-    > ${kreportPath}
+        set -e -o pipefail
+        ${preCommand}
+        centrifuge-kreport \
+        -x ${indexPrefix} \
+        ${true="--only-unique" false="" onlyUnique} \
+        ${true="--show-zeros" false="" showZeros} \
+        ${true="--is-count-table" false="" isCountTable} \
+        ${"--min-score " + minScore} \
+        ${"--min-length " + minLength} \
+        ${true="<(zcat" false="" inputIsCompressed} ${centrifugeOut}\
+        ${true=")" false="" inputIsCompressed} \
+        > ${kreportFileName}
     }
 
     output {
-        File kreport = select_first([kreportPath])
+        File kreport = kreportFileName
     }
 
     runtime {
