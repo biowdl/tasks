@@ -22,7 +22,7 @@ task spades {
     Boolean? disableRepeatResolution
     File? dataset
     Int? threads
-    Int? memoryGb
+    Float? memoryGb
     File? tmpDir
     String? k
     Float? covCutoff
