@@ -129,6 +129,7 @@ task view {
     Int? excludeFilter
     Int? excludeSpecificFilter
     Int? threads
+    Int? memory
 
     command {
     set -e -o pipefail
@@ -147,5 +148,9 @@ task view {
 
     output {
         File outputFile = outputFileName
+    }
+    runtime {
+        cpu: select_first([threads, 1])
+        memory: select_first([memory, 1])
     }
 }
