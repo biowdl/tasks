@@ -161,7 +161,7 @@ task SamToFastq {
     String picard_jar
     Float? memory
     Float? memoryMultiplier
-    Int mem = ceil(select_first([memory, 4.0]))
+    Int mem = ceil(select_first([memory, 16.0])) # High memory default to avoid crashes.
 
     command {
         set -e -o pipefail
