@@ -28,7 +28,8 @@ task spades {
     Float? covCutoff
     Int? phredOffset
     Int finalThreads = select_first([threads,1])
-    Float totalMemory = select_first([memoryGb, finalThreads * 16])
+    Float totalMemory = select_first([memoryGb, finalThreads * 16.0])
+    Int finalMemory = ceil(totalMemory)
     Int clusterMemory = ceil(totalMemory / finalThreads)
 
     command {
@@ -57,7 +58,7 @@ task spades {
         ${true="--disable-rr" false="" disableRepeatResolution } \
         ${"--dataset " + dataset } \
         ${"--threads " + finalThreads} \
-        ${"--memory " + ceil(totalMemory) } \
+        ${"--memory " + finalMemory } \
         ${"-k " + k } \
         ${"--cov-cutoff " + covCutoff } \
         ${"--phred-offset " + phredOffset }
