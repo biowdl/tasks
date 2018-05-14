@@ -60,6 +60,7 @@ task SampleConfig {
     String? preCommand
     String tool_jar
     Array[File]+ inputFiles
+    String stdoutFile
     String? sample
     String? library
     String? readgroup
@@ -80,14 +81,14 @@ task SampleConfig {
         ${"--library " + library} \
         ${"--readgroup " + readgroup} \
         ${"--jsonOutput " + jsonOutputPath} \
-        ${"--tsvOutput " + tsvOutputPath}
+        ${"--tsvOutput " + tsvOutputPath} \
+        > ${stdoutFile}
     }
 
     output {
-        Array[String] keys = read_lines(stdout())
+        File keysFile = stdoutFile
         File? jsonOutput = jsonOutputPath
         File? tsvOutput = tsvOutputPath
-        Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
     }
 
     runtime {
