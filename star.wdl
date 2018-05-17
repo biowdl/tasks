@@ -12,6 +12,7 @@ task Star {
     String? outStd
     String? twopassMode
     Array[String]? outSAMattrRGline
+    Int? limitBAMsortRAM
 
     Int? memory
 
@@ -34,6 +35,7 @@ task Star {
         ${"--runThreadN " + runThreadN} \
         ${"--outStd " + outStd} \
         ${"--twopassMode " + twopassMode} \
+        ${"--limitBAMsortRAM " + limitBAMsortRAM} \
         ${true="--outSAMattrRGline " false="" defined(outSAMattrRGline)} ${sep=" , " outSAMattrRGline}
     }
 

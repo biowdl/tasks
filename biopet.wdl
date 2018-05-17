@@ -84,10 +84,9 @@ task SampleConfig {
     }
 
     output {
-        Array[String] keys = read_lines(stdout())
+        File keysFile = stdout()
         File? jsonOutput = jsonOutputPath
         File? tsvOutput = tsvOutputPath
-        Object values = if (defined(tsvOutput) && size(tsvOutput) > 0) then read_map(tsvOutput) else { "": "" }
     }
 
     runtime {
