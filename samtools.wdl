@@ -26,7 +26,7 @@ task Merge {
           then
             samtools merge ${outputBamPath} ${sep=' ' bamFiles}
           else
-            ln -sf ${bamFiles} ${outputBamPath}
+            ln -sf ${sep=' ' bamFiles} ${outputBamPath}
         fi
     }
 
