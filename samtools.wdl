@@ -1,6 +1,6 @@
 task Index {
     String? preCommand
-    String bamFilePath
+    File bamFilePath
 
     command {
         set -e -o pipefail
