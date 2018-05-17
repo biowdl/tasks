@@ -60,7 +60,6 @@ task SampleConfig {
     String? preCommand
     String tool_jar
     Array[File]+ inputFiles
-    String stdoutFile
     String? sample
     String? library
     String? readgroup
@@ -81,12 +80,11 @@ task SampleConfig {
         ${"--library " + library} \
         ${"--readgroup " + readgroup} \
         ${"--jsonOutput " + jsonOutputPath} \
-        ${"--tsvOutput " + tsvOutputPath} \
-        > ${stdoutFile}
+        ${"--tsvOutput " + tsvOutputPath}
     }
 
     output {
-        File keysFile = stdoutFile
+        File keysFile = stdout()
         File? jsonOutput = jsonOutputPath
         File? tsvOutput = tsvOutputPath
     }
