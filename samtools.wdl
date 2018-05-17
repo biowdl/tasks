@@ -2,14 +2,16 @@ task Index {
     String? preCommand
     File bamFilePath
 
+    String bamIndexPath = bamFilePath + ".bai"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        samtools index ${bamFilePath}
+        samtools index ${bamFilePath} ${bamIndexPath}
     }
 
     output {
-        File indexFile = bamFilePath + ".bai"
+        File indexFile = bamIndexPath
     }
 }
 
