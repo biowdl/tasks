@@ -253,6 +253,7 @@ task SplitNCigarReads {
     String? preCommand
 
     File input_bam
+    File input_bam_index
     File ref_fasta
     File ref_fasta_index
     File ref_dict
@@ -271,13 +272,13 @@ task SplitNCigarReads {
         SplitNCigarReads \
         -I ${input_bam} \
         -R ${ref_fasta} \
-        -O ${output_bam} # might have to be -o depending on GATK version \
+        -O ${output_bam} \
         -L ${sep=' -L ' intervals}
     }
 
     output {
         File bam = output_bam
-        File bam_index = output_bam + ".bai"
+        File bam_index = sub(output_bam, "\\.bam$", ".bai")
     }
 
     runtime {
