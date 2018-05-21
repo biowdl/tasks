@@ -117,3 +117,40 @@ task fastq {
 
     }
 }
+
+task view {
+    String? preCommand
+    File inFile
+    File? referenceFasta
+    String outputFileName
+    Boolean? outputBam
+    Boolean? uncompressedBamOutput
+    Int? includeFilter
+    Int? excludeFilter
+    Int? excludeSpecificFilter
+    Int? threads
+    Int? memory
+
+    command {
+    set -e -o pipefail
+    ${preCommand}
+    samtools view \
+    ${"-T " + referenceFasta} \
+    ${"-o " + outputFileName} \
+    ${true="-b " false="" outputBam} \
+    ${true="-u " false="" uncompressedBamOutput} \
+    ${"-f " + includeFilter} \
+    ${"-F " + excludeFilter} \
+    ${"-G " + excludeSpecificFilter} \
+    ${"--threads " + threads - 1} \
+    ${inFile}
+    }
+
+    output {
+        File outputFile = outputFileName
+    }
+    runtime {
+        cpu: select_first([threads, 1])
+        memory: select_first([memory, 1])
+    }
+}

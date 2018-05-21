@@ -1,14 +1,15 @@
-task BwaMem {
+task mem {
     String? preCommand
     File inputR1
     File? inputR2
-    String referenceFasta
+    File referenceFasta
     Array[File] indexFiles # These indexFiles need to be added, otherwise cromwell will not find them.
     String outputPath
     String? readgroup
 
     Int? threads
     Int? memory
+
 
     command {
         set -e -o pipefail
@@ -23,8 +24,8 @@ task BwaMem {
         File bamFile = outputPath
     }
     runtime{
-        cpu: if defined(threads) then threads else 1
-        memory: if defined(memory) then memory else 8
+        cpu: select_first([threads,1])
+        memory: select_first([memory,8])
     }
 }
 
@@ -35,6 +36,7 @@ task index {
     Int? blockSize
     String? outputDir
     String fastaFilename = basename(fasta)
+    String outputFile = if (defined(outputDir)) then outputDir + "/" + fastaFilename else fasta
 
     command {
         set -e -o pipefail
@@ -47,13 +49,12 @@ task index {
         bwa index \
         ${"-a " + constructionAlgorithm} \
         ${"-b" + blockSize} \
-        ${outputDir + "/"}${fastaFilename}
+        ${outputFile}
     }
 
     output {
-        File indexBase = if (defined(outputDir)) then select_first([outputDir]) + "/" + fastaFilename else fastaFilename
-        File indexedFasta = indexBase
-        Array[File] indexFiles = [indexBase + ".bwt",indexBase + ".pac",indexBase + ".sa",indexBase + ".amb",indexBase + ".ann"]
+        File indexedFasta = outputFile
+        Array[File] indexFiles = [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
     }
     parameter_meta {
         fasta: "Fasta file to be indexed"
