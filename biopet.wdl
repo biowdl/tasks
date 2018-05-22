@@ -2,8 +2,9 @@
 # This makes searching a lot easier.
 task BaseCounter {
     String? preCommand
-    String tool_jar #Should this be of type File?
+    String tool_jar
     File bam
+    File bamIndex
     File refFlat
     String outputDir
     String prefix
@@ -14,8 +15,8 @@ task BaseCounter {
     Int mem = ceil(select_first([memory, 12.0]))
     command {
         set -e -o pipefail
-        ${preCommand}
         mkdir -p ${outputDir}
+        ${preCommand}
         java -Xmx${mem}G -jar ${tool_jar} \
         -b ${bam} \
         -r ${refFlat} \
