@@ -22,14 +22,15 @@ task spades {
     Boolean? disableRepeatResolution
     File? dataset
     Int? threads
-    Int? memoryGb
+    Float? memoryGb
     File? tmpDir
     String? k
     Float? covCutoff
     Int? phredOffset
     Int finalThreads = select_first([threads,1])
-    Int totalMemory = select_first([memoryGb, finalThreads * 16])
-    Int clusterMemory = totalMemory / finalThreads
+    Float totalMemory = select_first([memoryGb, finalThreads * 16.0])
+    Int finalMemory = ceil(totalMemory)
+    Int clusterMemory = ceil(totalMemory / finalThreads)
 
     command {
         set -e -o pipefail
@@ -57,7 +58,7 @@ task spades {
         ${true="--disable-rr" false="" disableRepeatResolution } \
         ${"--dataset " + dataset } \
         ${"--threads " + finalThreads} \
-        ${"--memory " + totalMemory } \
+        ${"--memory " + finalMemory } \
         ${"-k " + k } \
         ${"--cov-cutoff " + covCutoff } \
         ${"--phred-offset " + phredOffset }
