@@ -9,6 +9,7 @@ task MergeCounts {
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
     command <<<
         set -e -o pipefail
+        mkdir -p ${sub(outputFile, basename(outputFile) + "$", "")}
         ${preCommand}
         R --no-save --slave <<CODE > ${outputFile}
             library(dplyr)
