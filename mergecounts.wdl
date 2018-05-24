@@ -12,7 +12,7 @@ task MergeCounts {
         set -e -o pipefail
         mkdir -p ${sub(outputFile, basename(outputFile) + "$", "")}
         ${preCommand}
-        R --no-save --slave <<CODE > ${outputFile}
+        R --no-save --slave <<CODE
             library(dplyr)
             library(reshape2)
 
@@ -23,7 +23,7 @@ task MergeCounts {
             header <- ${true="TRUE" false="FALSE" inputHasHeader}
 
             d <- do.call(rbind, lapply(listOfFiles, function(file){
-                d <- read.table(file, header=header, comment.char="#")
+                d <- read.table(file, sep="\t", header=header, comment.char="#")
 
                 splitPath <- strsplit(file, "/")[[1]]
                 colnames(d)[valueI] <- sub("\\\.[^\\\.]*$", "",
@@ -34,7 +34,7 @@ task MergeCounts {
             }))
 
             d <- d %>% dcast(feature ~ sample, value.var="count")
-            write.table(d, sep="\t", quote=FALSE, row.names=FALSE)
+            write.table(d, file="${outputFile}", sep="\t", quote=FALSE, row.names=FALSE)
         CODE
     >>>
 
