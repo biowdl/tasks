@@ -12,7 +12,7 @@ task MergeCounts {
         set -e -o pipefail
         mkdir -p ${sub(outputFile, basename(outputFile) + "$", "")}
         ${preCommand}
-        R --no-save --slave <<CODE
+        R --no-save <<CODE
             library(dplyr)
             library(reshape2)
 
