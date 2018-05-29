@@ -65,8 +65,8 @@ task BaseCounter {
     }
 }
 
-task extractAdapters {
-    File extractAdaptersFastqcJar
+task extractAdaptersFastqc {
+    File? toolJar
     File inputFile
     String outputDir
     String? adapterOutputFilePath = outputDir + "/adapter.list"
@@ -79,12 +79,16 @@ task extractAdapters {
 
     Float? memory
     Float? memoryMultiplier
-
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
+
     command {
     set -e
     mkdir -p ${outputDir}
-    java -Xmx${mem}G -jar ${extractAdaptersFastqcJar} \
+    ${toolCommand} \
     --inputFile ${inputFile} \
     ${"--adapterOutputFile " + adapterOutputFilePath } \
     ${"--contamsOutputFile " + contamsOutputFilePath } \
