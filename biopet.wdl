@@ -1,8 +1,9 @@
 # PLEASE ADD TASKS IN ALPHABETIC ORDER.
 # This makes searching a lot easier.
+
 task BaseCounter {
     String? preCommand
-    String tool_jar
+    File toolJar
     File bam
     File bamIndex
     File refFlat
@@ -17,7 +18,7 @@ task BaseCounter {
         set -e -o pipefail
         mkdir -p ${outputDir}
         ${preCommand}
-        java -Xmx${mem}G -jar ${tool_jar} \
+        java -Xmx${mem}G -jar ${toolJar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -62,7 +63,7 @@ task BaseCounter {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -187,7 +188,7 @@ task ScatterRegions {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
