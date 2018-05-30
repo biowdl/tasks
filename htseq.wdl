@@ -11,6 +11,7 @@ task HTSeqCount {
 
     command {
         set -e -o pipefail
+        mkdir -p ${sub(outputTable, basename(outputTable), "")}
         ${preCommand}
         htseq-count \
         -f ${default="bam" format} \

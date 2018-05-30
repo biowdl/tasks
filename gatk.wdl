@@ -34,7 +34,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -78,7 +78,7 @@ task ApplyBQSR {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -107,7 +107,7 @@ task GatherBqsrReports {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -149,7 +149,7 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -198,7 +198,7 @@ task GenotypeGVCFs {
     }
 
     runtime{
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -245,7 +245,7 @@ task CombineGVCFs {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -282,6 +282,6 @@ task SplitNCigarReads {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }

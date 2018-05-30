@@ -48,3 +48,18 @@ task Star {
         memory: select_first([memory, 10])
     }
 }
+
+task makeStarRGline {
+    String sample
+    String library
+    String? platform
+    String readgroup
+
+    command {
+        printf '"ID:${readgroup}" "LB:${library}" "PL:${default="ILLUMINA" platform}" "SM:${sample}"'
+    }
+
+    output {
+        String rgLine = read_string(stdout())
+    }
+}

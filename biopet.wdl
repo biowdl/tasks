@@ -1,9 +1,11 @@
 # PLEASE ADD TASKS IN ALPHABETIC ORDER.
 # This makes searching a lot easier.
+
 task BaseCounter {
     String? preCommand
-    String tool_jar #Should this be of type File?
+    File toolJar
     File bam
+    File bamIndex
     File refFlat
     String outputDir
     String prefix
@@ -14,9 +16,9 @@ task BaseCounter {
     Int mem = ceil(select_first([memory, 12.0]))
     command {
         set -e -o pipefail
-        ${preCommand}
         mkdir -p ${outputDir}
-        java -Xmx${mem}G -jar ${tool_jar} \
+        ${preCommand}
+        java -Xmx${mem}G -jar ${toolJar} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -61,7 +63,7 @@ task BaseCounter {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -121,6 +123,7 @@ task SampleConfig {
     String? preCommand
     String tool_jar
     Array[File]+ inputFiles
+    String keyFilePath
     String? sample
     String? library
     String? readgroup
@@ -141,11 +144,12 @@ task SampleConfig {
         ${"--library " + library} \
         ${"--readgroup " + readgroup} \
         ${"--jsonOutput " + jsonOutputPath} \
-        ${"--tsvOutput " + tsvOutputPath}
+        ${"--tsvOutput " + tsvOutputPath} \
+        > ${keyFilePath}
     }
 
     output {
-        File keysFile = stdout()
+        File keysFile = keyFilePath
         File? jsonOutput = jsonOutputPath
         File? tsvOutput = tsvOutputPath
     }
@@ -184,7 +188,7 @@ task ScatterRegions {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
