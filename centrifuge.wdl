@@ -92,7 +92,7 @@ task Classify {
         ${true="-k" false="" defined(assignments)} ${assignments} \
         ${true="-1" false="-U" defined(read2)} ${sep=',' read1} \
         ${true="-2" false="" defined(read2)} ${sep=',' read2} \
-        ${true="-U" false="" defined(unpairedReads)} ${sep=',' unpairedReads}\
+        ${true="-U" false="" defined(unpairedReads)} ${sep=',' unpairedReads} \
         ${"--report-file " + reportFilePath} \
         ${"--min-hitlen " + minHitLen} \
         ${"--min-totallen " + minTotalLen} \
@@ -179,7 +179,10 @@ task Kreport {
     String? preCommand
     File centrifugeOut
     Boolean inputIsCompressed
-    String kreportFilePath=sub(centrifugeOut, "\\.out$|\\.out\\.gz$", "\\.kreport")
+    String outputDir
+    String? suffix = "kreport"
+    String? prefix = "centrifuge"
+    String kreportFilePath = outputDir + "/" + prefix + "." + suffix
     String indexPrefix
     Boolean? onlyUnique
     Boolean? showZeros
