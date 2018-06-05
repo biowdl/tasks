@@ -1,8 +1,7 @@
 # Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2018
 #
 # Tasks from centrifuge
-task build {
-
+task Build {
     File conversionTable
     File taxonomyTree
     File inputFasta
@@ -22,9 +21,10 @@ task build {
     File? nameTable
     File? sizeTable
     Int? seed
+    Int? kmerCount
+
     Int? threads
     Int? memory
-    Int? kmerCount
 
     command {
         set -e -o pipefail
@@ -56,25 +56,28 @@ task build {
     }
 }
 
-task classify {
+task Classify {
     String outputDir
     Boolean? compressOutput = true
     String? preCommand
     String indexPrefix
-    File? unpairedReads
-    File read1
-    File? read2
+    Array[File]? unpairedReads
+    Array[File]+ read1
+    Array[File]? read2
     Boolean? fastaInput
     # Variables for handling output
-    String outputFileName = outputDir + "/centrifuge.out"
-    String reportFileName = outputDir + "/centrifuge_report.tsv"
-    String finalOutputName = if (compressOutput == true) then outputFileName + ".gz" else outputFileName
-    String? metFileName # If this is specified, the report file is empty
+    String outputFilePath = outputDir + "/centrifuge.out"
+    String reportFilePath = outputDir + "/centrifuge_report.tsv"
+    String finalOutputPath = if (compressOutput == true)
+            then outputFilePath + ".gz"
+            else outputFilePath
+    String? metFilePath # If this is specified, the report file is empty
     Int? assignments
     Int? minHitLen
     Int? minTotalLen
     Array[String]? hostTaxIds
     Array[String]? excludeTaxIds
+
     Int? threads
     Int? memory
 
@@ -86,22 +89,22 @@ task classify {
         ${"-p " + threads} \
         ${"-x " + indexPrefix} \
         ${true="-f" false="" fastaInput} \
-        ${true="-k " false="" defined(assignments)} ${assignments} \
-        ${true="-1 " false="-U " defined(read2)} ${read1} \
-        ${"-2 " + read2} \
-        ${"-U " + unpairedReads} \
-        ${"--report-file " + reportFileName} \
+        ${true="-k" false="" defined(assignments)} ${assignments} \
+        ${true="-1" false="-U" defined(read2)} ${sep=',' read1} \
+        ${true="-2" false="" defined(read2)} ${sep=',' read2} \
+        ${true="-U" false="" defined(unpairedReads)} ${sep=',' unpairedReads}\
+        ${"--report-file " + reportFilePath} \
         ${"--min-hitlen " + minHitLen} \
         ${"--min-totallen " + minTotalLen} \
-        ${"--met-file " + metFileName} \
+        ${"--met-file " + metFilePath} \
         ${true="--host-taxids " false="" defined(hostTaxIds)} ${sep=',' hostTaxIds} \
         ${true="--exclude-taxids " false="" defined(excludeTaxIds)} ${sep=',' excludeTaxIds} \
-        ${true="| gzip -c >" false="-S" compressOutput} ${finalOutputName}
+        ${true="| gzip -c >" false="-S" compressOutput} ${finalOutputPath}
     }
 
     output {
-        File classifiedReads = finalOutputName
-        File reportFile = reportFileName
+        File classifiedReads = finalOutputPath
+        File reportFile = reportFilePath
     }
 
     runtime {
@@ -110,7 +113,7 @@ task classify {
     }
 }
 
-task download {
+task Download {
     String libraryPath
     Array[String]? domain
     String? executable = "centrifuge-download"
@@ -153,10 +156,11 @@ task download {
     }
  }
 
-task downloadTaxonomy {
+task DownloadTaxonomy {
     String centrifugeTaxonomyDir
     String? executable = "centrifuge-download"
     String? preCommand
+
     command {
         set -e -o pipefail
         ${preCommand}
@@ -164,23 +168,25 @@ task downloadTaxonomy {
         -o ${centrifugeTaxonomyDir} \
         taxonomy
     }
+
     output {
         File taxonomyTree = centrifugeTaxonomyDir + "/nodes.dmp"
         File nameTable = centrifugeTaxonomyDir + "/names.dmp"
     }
  }
 
-task kreport {
+task Kreport {
     String? preCommand
     File centrifugeOut
     Boolean inputIsCompressed
-    String kreportFileName=sub(centrifugeOut, "\\.out$|\\.out\\.gz$", "\\.kreport")
+    String kreportFilePath=sub(centrifugeOut, "\\.out$|\\.out\\.gz$", "\\.kreport")
     String indexPrefix
     Boolean? onlyUnique
     Boolean? showZeros
     Boolean? isCountTable
     Int? minScore
     Int? minLength
+
     Int? cores
     Int? memory
 
@@ -196,11 +202,11 @@ task kreport {
         ${"--min-length " + minLength} \
         ${true="<(zcat" false="" inputIsCompressed} ${centrifugeOut}\
         ${true=")" false="" inputIsCompressed} \
-        > ${kreportFileName}
+        > ${kreportFilePath}
     }
 
     output {
-        File kreport = kreportFileName
+        File kreport = kreportFilePath
     }
 
     runtime {
