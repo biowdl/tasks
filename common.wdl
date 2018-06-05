@@ -106,7 +106,9 @@ task appendToStringArray {
 }
 
 task createLink {
-    File inputFile
+    # Making this of type File will create a link to the copy of the file in the execution
+    # folder, instead of the actual file.
+    String inputFile
     String outputPath
 
     command {
