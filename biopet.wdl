@@ -88,7 +88,8 @@ task FastqSplitter {
     }
 
     output {
-        Array[File] outputFastqFiles = glob(outputPath + "/chunk_*/" + basename(inputFastq))
+        Array[File] chunkDirs = prefix(outputPath + "/chunk_", chunks)
+        String filename = basename(inputFastq)
     }
 }
 
