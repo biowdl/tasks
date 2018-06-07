@@ -76,7 +76,6 @@ task FastqSplitter {
     command {
         set -e -o pipefail
         ${preCommand}
-        for
         mkdir -p $(dirname ${sep=') $(dirname ' outputPaths})
         if [ ${length(outputPaths)} -gt 1 ]; then
             java -jar ${toolJar} \
