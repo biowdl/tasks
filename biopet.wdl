@@ -70,25 +70,24 @@ task BaseCounter {
 task FastqSplitter {
     String? preCommand
     File inputFastq
-    String outputPath
-    Int numberChunks
-    String tool_jar
-    Array[Int] chunks = range(numberChunks)
+    Array[String] outputPaths
+    String toolJar
 
     command {
         set -e -o pipefail
         ${preCommand}
-        mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
-        if [ ${numberChunks} -gt 1 ]; then
-            SEP="/${basename(inputFastq)} -o "
-            java -jar ${tool_jar} -I ${inputFastq} -o ${sep='$SEP' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
-        else
-            ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
-        fi
+        mkdir -p $(dirname ${sep=') $(dirname ' outputPaths})
+        if [ ${length(outputPaths)} -gt 1 ]; then
+            java -jar ${toolJar} \
+            -I ${inputFastq} \
+            -o ${sep=' -o ' outputPaths}
+          else
+            ln -sf ${inputFastq} ${outputPaths[0]}
+          fi
     }
 
     output {
-        Array[File] outputFastqFiles = glob(outputPath + "/chunk_*/" + basename(inputFastq))
+        Array[File] chunks = outputPaths
     }
 }
 
