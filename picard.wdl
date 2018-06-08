@@ -120,11 +120,11 @@ task MarkDuplicates {
 # Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
 task MergeVCFs {
     String? preCommand
-    Array[File] input_vcfs
-    Array[File] input_vcfs_indexes
-    String output_vcf_path
-    Int? compression_level
-    String picard_jar
+    Array[File] inputVCFs
+    Array[File] inputVCFsIndexes
+    String outputVCFpath
+    Int? compressionLevel
+    String picardJar
 
     Float? memory
     Float? memoryMultiplier
@@ -135,16 +135,16 @@ task MergeVCFs {
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${mem}G -jar ${picard_jar} \
+        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        -Xmx${mem}G -jar ${picardJar} \
           MergeVcfs \
-          INPUT=${sep=' INPUT=' input_vcfs} \
-          OUTPUT=${output_vcf_path}
+          INPUT=${sep=' INPUT=' inputVCFs} \
+          OUTPUT=${outputVCFpath}
     }
 
     output {
-        File output_vcf = output_vcf_path
-        File output_vcf_index = output_vcf_path + ".tbi"
+        File outputVCF = outputVCFpath
+        File outputVCFindex = outputVCFpath + ".tbi"
     }
 
     runtime {

@@ -114,16 +114,16 @@ task GatherBqsrReports {
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
 task HaplotypeCallerGvcf {
     String? preCommand
-    Array[File]+ input_bams
-    Array[File]+ input_bams_index
-    Array[File]+ interval_list
-    String gvcf_basename
-    File ref_dict
-    File ref_fasta
-    File ref_fasta_index
+    Array[File]+ inputBams
+    Array[File]+ inputBamsIndex
+    Array[File]+ intervalList
+    String gvcfPath
+    File refDict
+    File refFasta
+    File refFastaIndex
     Float? contamination
-    Int? compression_level
-    String gatk_jar
+    Int? compressionLevel
+    String gatkJar
 
     Float? memory
     Float? memoryMultiplier
@@ -132,20 +132,20 @@ task HaplotypeCallerGvcf {
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${mem}G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        -Xmx${mem}G -jar ${gatkJar} \
           HaplotypeCaller \
-          -R ${ref_fasta} \
-          -O ${gvcf_basename}.vcf.gz \
-          -I ${sep=" -I " input_bams} \
-          -L ${sep=' -L ' interval_list} \
+          -R ${refFasta} \
+          -O ${gvcfPath} \
+          -I ${sep=" -I " inputBams} \
+          -L ${sep=' -L ' intervalList} \
           -contamination ${default=0 contamination} \
           -ERC GVCF
     }
 
     output {
-        File output_gvcf = "${gvcf_basename}.vcf.gz"
-        File output_gvcf_index = "${gvcf_basename}.vcf.gz.tbi"
+        File outputGVCF = gvcfPath
+        File outputGVCFindex = gvcfPath + ".tbi"
     }
 
     runtime {
@@ -155,22 +155,22 @@ task HaplotypeCallerGvcf {
 
 task GenotypeGVCFs {
     String? preCommand
-    File gvcf_files
-    File gvcf_file_indexes
+    File gvcfFiles
+    File gvcfFileIndexes
     Array[File]+ intervals
 
-    String output_basename
+    String outputPath
 
-    String gatk_jar
+    String gatkJar
 
-    File ref_fasta
-    File ref_fasta_index
-    File ref_dict
+    File refFasta
+    File refFastaIndex
+    File refDict
 
-    File dbsnp_vcf
-    File dbsnp_vcf_index
+    File dbsnpVCF
+    File dbsnpVCFindex
 
-    Int? compression_level
+    Int? compressionLevel
     Float? memory
     Float? memoryMultiplier
 
@@ -179,22 +179,22 @@ task GenotypeGVCFs {
         set -e -o pipefail
         ${preCommand}
 
-        java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${mem}G -jar ${gatk_jar} \
+        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        -Xmx${mem}G -jar ${gatkJar} \
          GenotypeGVCFs \
-         -R ${ref_fasta} \
-         -O ${output_basename + ".vcf.gz"} \
-         -D ${dbsnp_vcf} \
+         -R ${refFasta} \
+         -O ${outputPath} \
+         -D ${dbsnpVCF} \
          -G StandardAnnotation \
          --only-output-calls-starting-in-intervals \
          -new-qual \
-         -V ${gvcf_files} \
+         -V ${gvcfFiles} \
          -L ${sep=' -L ' intervals}
     }
 
     output {
-        File output_vcf = output_basename + ".vcf.gz"
-        File output_vcf_index = output_basename + ".vcf.gz.tbi"
+        File outputVCF = outputPath
+        File outputVCFindex = outputPath + ".tbi"
     }
 
     runtime{
@@ -204,19 +204,19 @@ task GenotypeGVCFs {
 
 task CombineGVCFs {
     String? preCommand
-    Array[File]+ gvcf_files
-    Array[File]+ gvcf_file_indexes
+    Array[File]+ gvcfFiles
+    Array[File]+ gvcfFileIndexes
     Array[File]+ intervals
 
-    String output_basename
+    String outputPath
 
-    String gatk_jar
+    String gatkJar
 
-    File ref_fasta
-    File ref_fasta_index
-    File ref_dict
+    File refFasta
+    File refFastaIndex
+    File refDict
 
-    Int? compression_level
+    Int? compressionLevel
     Float? memory
     Float? memoryMultiplier
 
@@ -225,23 +225,23 @@ task CombineGVCFs {
         set -e -o pipefail
         ${preCommand}
 
-        if [ ${length(gvcf_files)} -gt 1 ]; then
-            java ${"-Dsamjdk.compression_level=" + compression_level} \
-            -Xmx${mem}G -jar ${gatk_jar} \
+        if [ ${length(gvcfFiles)} -gt 1 ]; then
+            java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+            -Xmx${mem}G -jar ${gatkJar} \
              CombineGVCFs \
-             -R ${ref_fasta} \
-             -O ${output_basename + ".vcf.gz"} \
-             -V ${sep=' -V ' gvcf_files} \
+             -R ${refFasta} \
+             -O ${outputPath} \
+             -V ${sep=' -V ' gvcfFiles} \
              -L ${sep=' -L ' intervals}
         else
-            ln -sf ${select_first(gvcf_files)} ${output_basename + ".vcf.gz"}
-            ln -sf ${select_first(gvcf_files)}.tbi ${output_basename + ".vcf.gz.tbi"}
+            ln -sf ${select_first(gvcfFiles)} ${outputPath}
+            ln -sf ${select_first(gvcfFileIndexes)} ${outputPath}.tbi
         fi
     }
 
     output {
-        File output_gvcf = output_basename + ".vcf.gz"
-        File output_gvcf_index = output_basename + ".vcf.gz.tbi"
+        File outputGVCF = outputPath
+        File outputGVCFindex = outputPath + ".tbi"
     }
 
     runtime {
@@ -252,13 +252,13 @@ task CombineGVCFs {
 task SplitNCigarReads {
     String? preCommand
 
-    File input_bam
-    File input_bam_index
-    File ref_fasta
-    File ref_fasta_index
-    File ref_dict
-    String output_bam
-    String gatk_jar
+    File inputBam
+    File inputBamIndex
+    File refFasta
+    File refFastaIndex
+    File refDict
+    String outputBam
+    String gatkJar
     Array[File]+ intervals
 
     Float? memory
@@ -268,17 +268,17 @@ task SplitNCigarReads {
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${mem}G -jar ${gatk_jar} \
+        java -Xms${mem}G -jar ${gatkJar} \
         SplitNCigarReads \
-        -I ${input_bam} \
-        -R ${ref_fasta} \
-        -O ${output_bam} \
+        -I ${inputBam} \
+        -R ${refFasta} \
+        -O ${outputBam} \
         -L ${sep=' -L ' intervals}
     }
 
     output {
-        File bam = output_bam
-        File bam_index = sub(output_bam, "\\.bam$", ".bai")
+        File bam = outputBam
+        File bam_index = sub(outputBam, "\\.bam$", ".bai")
     }
 
     runtime {
