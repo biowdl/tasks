@@ -3,6 +3,7 @@ task ApplyBQSR {
     String? preCommand
     File gatkJar
     File inputBam
+    File inputBamIndex
     String outputBamPath
     File recalibrationReport
     Array[File]+ sequenceGroupInterval
