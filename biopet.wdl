@@ -121,7 +121,6 @@ task FastqSync {
 
 task SampleConfig {
     String? preCommand
-    String tool_jar
     Array[File]+ inputFiles
     String keyFilePath
     String? sample
@@ -138,7 +137,7 @@ task SampleConfig {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx${mem}G -jar ${tool_jar} \
+        biopet-sampleconfig -Xmx${mem}G \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
