@@ -1,16 +1,15 @@
-# Generate Base Quality Score Recalibration (BQSR) model
-task BaseRecalibrator {
+# Apply Base Quality Score Recalibration (BQSR) model
+task ApplyBQSR {
     String? preCommand
-    String gatk_jar
-    String input_bam
-    String input_bam_index
-    String recalibration_report_filename
-    Array[File]+ sequence_group_interval
-    Array[File]+ known_indels_sites_VCFs
-    Array[File]+ known_indels_sites_indices
-    File ref_dict
-    File ref_fasta
-    File ref_fasta_index
+    File gatkJar
+    File inputBam
+    String outputBamPath
+    File recalibrationReport
+    Array[File]+ sequenceGroupInterval
+    File refDict
+    File refFasta
+    File refFastaIndex
+    Int? compressionLevel
 
     Float? memory
     Float? memoryMultiplier
@@ -19,18 +18,23 @@ task BaseRecalibrator {
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${mem}G -jar ${gatk_jar} \
-          BaseRecalibrator \
-          -R ${ref_fasta} \
-          -I ${input_bam} \
+        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        -Xms${mem}G -jar ${gatkJar} \
+          ApplyBQSR \
+          --create-output-bam-md5 \
+          --add-output-sam-program-record \
+          -R ${refFasta} \
+          -I ${inputBam} \
           --use-original-qualities \
-          -O ${recalibration_report_filename} \
-          --known-sites ${sep=" --known-sites " known_indels_sites_VCFs} \
-          -L ${sep=" -L " sequence_group_interval}
+          -O ${outputBamPath} \
+          -bqsr ${recalibrationReport} \
+          --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 \
+          -L ${sep=" -L " sequenceGroupInterval}
     }
 
     output {
-        File recalibration_report = "${recalibration_report_filename}"
+        File recalibrated_bam = outputBamPath
+        File recalibrated_bam_checksum = outputBamPath + ".md5"
     }
 
     runtime {
@@ -38,18 +42,19 @@ task BaseRecalibrator {
     }
 }
 
-# Apply Base Quality Score Recalibration (BQSR) model
-task ApplyBQSR {
+# Generate Base Quality Score Recalibration (BQSR) model
+task BaseRecalibrator {
     String? preCommand
-    String gatk_jar
-    String input_bam
-    String output_bam_path
-    File recalibration_report
-    Array[String] sequence_group_interval
-    File ref_dict
-    File ref_fasta
-    File ref_fasta_index
-    Int? compression_level
+    File gatkJar
+    File inputBam
+    File inputBamIndex
+    String recalibrationReportPath
+    Array[File]+ sequenceGroupInterval
+    Array[File]+ knownIndelsSitesVCFs
+    Array[File]+ knownIndelsSitesIndices
+    File refDict
+    File refFasta
+    File refFastaIndex
 
     Float? memory
     Float? memoryMultiplier
@@ -58,23 +63,65 @@ task ApplyBQSR {
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xms${mem}G -jar ${gatk_jar} \
-          ApplyBQSR \
-          --create-output-bam-md5 \
-          --add-output-sam-program-record \
-          -R ${ref_fasta} \
-          -I ${input_bam} \
+        java -Xms${mem}G -jar ${gatkJar} \
+          BaseRecalibrator \
+          -R ${refFasta} \
+          -I ${inputBam} \
           --use-original-qualities \
-          -O ${output_bam_path} \
-          -bqsr ${recalibration_report} \
-          --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 \
-          -L ${sep=" -L " sequence_group_interval}
+          -O ${recalibrationReportPath} \
+          --known-sites ${sep=" --known-sites " knownIndelsSitesVCFs} \
+          -L ${sep=" -L " sequenceGroupInterval}
     }
 
     output {
-        File recalibrated_bam = "${output_bam_path}"
-        File recalibrated_bam_checksum = "${output_bam_path}.md5"
+        File recalibrationReport = recalibrationReportPath
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+    }
+}
+
+task CombineGVCFs {
+    String? preCommand
+    Array[File]+ gvcfFiles
+    Array[File]+ gvcfFileIndexes
+    Array[File]+ intervals
+
+    String outputPath
+
+    String gatkJar
+
+    File refFasta
+    File refFastaIndex
+    File refDict
+
+    Int? compressionLevel
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
+    command {
+        set -e -o pipefail
+        ${preCommand}
+
+        if [ ${length(gvcfFiles)} -gt 1 ]; then
+            java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+            -Xmx${mem}G -jar ${gatkJar} \
+             CombineGVCFs \
+             -R ${refFasta} \
+             -O ${outputPath} \
+             -V ${sep=' -V ' gvcfFiles} \
+             -L ${sep=' -L ' intervals}
+        else # TODO this should be handeled in wdl
+            ln -sf ${select_first(gvcfFiles)} ${outputPath}
+            ln -sf ${select_first(gvcfFileIndexes)} ${outputPath}.tbi
+        fi
+    }
+
+    output {
+        File outputGVCF = outputPath
+        File outputGVCFindex = outputPath + ".tbi"
     }
 
     runtime {
@@ -85,45 +132,9 @@ task ApplyBQSR {
 # Combine multiple recalibration tables from scattered BaseRecalibrator runs
 task GatherBqsrReports {
     String? preCommand
-    String gatk_jar
-    Array[File] input_bqsr_reports
-    String output_report_filepath
-
-    Float? memory
-    Float? memoryMultiplier
-
-    Int mem = ceil(select_first([memory, 4.0]))
-    command {
-        set -e -o pipefail
-        ${preCommand}
-        java -Xms${mem}G -jar ${gatk_jar} \
-        GatherBQSRReports \
-        -I ${sep=' -I ' input_bqsr_reports} \
-        -O ${output_report_filepath}
-    }
-
-    output {
-        File output_bqsr_report = "${output_report_filepath}"
-    }
-
-    runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
-    }
-}
-
-# Call variants on a single sample with HaplotypeCaller to produce a GVCF
-task HaplotypeCallerGvcf {
-    String? preCommand
-    Array[File]+ inputBams
-    Array[File]+ inputBamsIndex
-    Array[File]+ intervalList
-    String gvcfPath
-    File refDict
-    File refFasta
-    File refFastaIndex
-    Float? contamination
-    Int? compressionLevel
     String gatkJar
+    Array[File] inputBQSRreports
+    String outputReportPath
 
     Float? memory
     Float? memoryMultiplier
@@ -132,20 +143,14 @@ task HaplotypeCallerGvcf {
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
-        -Xmx${mem}G -jar ${gatkJar} \
-          HaplotypeCaller \
-          -R ${refFasta} \
-          -O ${gvcfPath} \
-          -I ${sep=" -I " inputBams} \
-          -L ${sep=' -L ' intervalList} \
-          -contamination ${default=0 contamination} \
-          -ERC GVCF
+        java -Xms${mem}G -jar ${gatkJar} \
+        GatherBQSRReports \
+        -I ${sep=' -I ' inputBQSRreports} \
+        -O ${outputReportPath}
     }
 
     output {
-        File outputGVCF = gvcfPath
-        File outputGVCFindex = gvcfPath + ".tbi"
+        File outputBQSRreport = outputReportPath
     }
 
     runtime {
@@ -202,21 +207,20 @@ task GenotypeGVCFs {
     }
 }
 
-task CombineGVCFs {
+# Call variants on a single sample with HaplotypeCaller to produce a GVCF
+task HaplotypeCallerGvcf {
     String? preCommand
-    Array[File]+ gvcfFiles
-    Array[File]+ gvcfFileIndexes
-    Array[File]+ intervals
-
-    String outputPath
-
-    String gatkJar
-
+    Array[File]+ inputBams
+    Array[File]+ inputBamsIndex
+    Array[File]+ intervalList
+    String gvcfPath
+    File refDict
     File refFasta
     File refFastaIndex
-    File refDict
-
+    Float? contamination
     Int? compressionLevel
+    String gatkJar
+
     Float? memory
     Float? memoryMultiplier
 
@@ -224,24 +228,20 @@ task CombineGVCFs {
     command {
         set -e -o pipefail
         ${preCommand}
-
-        if [ ${length(gvcfFiles)} -gt 1 ]; then
-            java ${"-Dsamjdk.compression_level=" + compressionLevel} \
-            -Xmx${mem}G -jar ${gatkJar} \
-             CombineGVCFs \
-             -R ${refFasta} \
-             -O ${outputPath} \
-             -V ${sep=' -V ' gvcfFiles} \
-             -L ${sep=' -L ' intervals}
-        else
-            ln -sf ${select_first(gvcfFiles)} ${outputPath}
-            ln -sf ${select_first(gvcfFileIndexes)} ${outputPath}.tbi
-        fi
+        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        -Xmx${mem}G -jar ${gatkJar} \
+          HaplotypeCaller \
+          -R ${refFasta} \
+          -O ${gvcfPath} \
+          -I ${sep=" -I " inputBams} \
+          -L ${sep=' -L ' intervalList} \
+          -contamination ${default=0 contamination} \
+          -ERC GVCF
     }
 
     output {
-        File outputGVCF = outputPath
-        File outputGVCFindex = outputPath + ".tbi"
+        File outputGVCF = gvcfPath
+        File outputGVCFindex = gvcfPath + ".tbi"
     }
 
     runtime {
