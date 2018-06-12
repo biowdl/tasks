@@ -1,5 +1,5 @@
 language: java
 script:
   - set -e
-  - wget https://github.com/broadinstitute/cromwell/releases/download/32/womtool-32.jar
-  - for F in `find -name "*.wdl"`; do echo $F; java -jar womtool-32.jar validate $F; done
+  - wget https://github.com/broadinstitute/cromwell/releases/download/31/womtool-31.jar
+  - for F in `find -name "*.wdl"`; do echo $F; java -jar womtool-31.jar validate $F; done
