@@ -12,8 +12,8 @@ task BaseCounter {
 
     Float? memory
     Float? memoryMultiplier
-
     Int mem = ceil(select_first([memory, 12.0]))
+
     command {
         set -e -o pipefail
         mkdir -p ${outputDir}
@@ -67,12 +67,59 @@ task BaseCounter {
     }
 }
 
+task extractAdaptersFastqc {
+    File? toolJar
+    File inputFile
+    String outputDir
+    String? adapterOutputFilePath = outputDir + "/adapter.list"
+    String? contamsOutputFilePath = outputDir + "/contaminations.list"
+    Boolean? skipContams
+    File? knownContamFile
+    File? knownAdapterFile
+    Float? adapterCutoff
+    Boolean? outputAsFasta
+
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
+
+    command {
+    set -e
+    mkdir -p ${outputDir}
+    ${toolCommand} \
+    --inputFile ${inputFile} \
+    ${"--adapterOutputFile " + adapterOutputFilePath } \
+    ${"--contamsOutputFile " + contamsOutputFilePath } \
+    ${"--knownContamFile " + knownContamFile} \
+    ${"--knownAdapterFile " + knownAdapterFile} \
+    ${"--adapterCutoff " + adapterCutoff} \
+    ${true="--skipContams" false="" skipContams} \
+    ${true="--outputAsFasta" false="" outputAsFasta}
+    }
+
+    output {
+        File adapterOutputFile = select_first([adapterOutputFilePath])
+        File contamsOutputFile = select_first([contamsOutputFilePath])
+        Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
+        Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
+    }
+}
+
+
 task FastqSplitter {
     String? preCommand
     File inputFastq
     String outputPath
     Int numberChunks
-    String tool_jar
+    File toolJar
     Array[Int] chunks = range(numberChunks)
 
     command {
@@ -81,7 +128,7 @@ task FastqSplitter {
         mkdir -p ${sep=' ' prefix(outputPath + "/chunk_", chunks)}
         if [ ${numberChunks} -gt 1 ]; then
             SEP="/${basename(inputFastq)} -o "
-            java -jar ${tool_jar} -I ${inputFastq} -o ${sep='$SEP' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
+            java -jar ${toolJar} -I ${inputFastq} -o ${sep='$SEP' prefix(outputPath + "/chunk_", chunks)}/${basename(inputFastq)}
         else
             ln -sf ${inputFastq} ${outputPath}/chunk_0/${basename(inputFastq)}
         fi
@@ -100,12 +147,13 @@ task FastqSync {
     File in2
     String out1path
     String out2path
-    File tool_jar
+    File toolJar
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p $(dirname ${out1path}) $(dirname ${out2path})
-        java -jar ${tool_jar} \
+        java -jar ${toolJar} \
         --in1 ${in1} \
         --in2 ${in2} \
         --ref1 ${ref1} \
@@ -113,6 +161,7 @@ task FastqSync {
         --out1 ${out1path} \
         --out2 ${out2path}
     }
+
     output {
         File out1 = out1path
         File out2 = out2path
@@ -131,8 +180,8 @@ task SampleConfig {
 
     Float? memory
     Float? memoryMultiplier
-
     Int mem = ceil(select_first([memory, 4.0]))
+
     command {
         set -e -o pipefail
         ${preCommand}
@@ -160,23 +209,23 @@ task SampleConfig {
 
 task ScatterRegions {
     String? preCommand
-    File ref_fasta
-    File ref_dict
+    File refFasta
+    File refDict
     String outputDirPath
-    String tool_jar
+    File toolJar
     Int? scatterSize
     File? regions
 
     Float? memory
     Float? memoryMultiplier
-
     Int mem = ceil(select_first([memory, 4.0]))
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDirPath}
-        java -Xmx${mem}G -jar ${tool_jar} \
-          -R ${ref_fasta} \
+        java -Xmx${mem}G -jar ${toolJar} \
+          -R ${refFasta} \
           -o ${outputDirPath} \
           ${"-s " + scatterSize} \
           ${"-L " + regions}
