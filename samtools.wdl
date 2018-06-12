@@ -1,15 +1,16 @@
 task Index {
     String? preCommand
-    String bamFilePath
+    File bamFilePath
+    String? bamIndexPath
 
     command {
         set -e -o pipefail
         ${preCommand}
-        samtools index ${bamFilePath}
+        samtools index ${bamFilePath} ${bamIndexPath}
     }
 
     output {
-        File indexFile = bamFilePath + ".bai"
+        File indexFile = if defined(bamIndexPath) then select_first([bamIndexPath]) else bamFilePath + ".bai"
     }
 }
 
@@ -21,12 +22,7 @@ task Merge {
     command {
         set -e -o pipefail
         ${preCommand}
-        if [ ${length(bamFiles)} -gt 1 ]
-          then
-            samtools merge ${outputBamPath} ${sep=' ' bamFiles}
-          else
-            ln -sf ${bamFiles} ${outputBamPath}
-        fi
+        samtools merge ${outputBamPath} ${sep=' ' bamFiles}
     }
 
     output {

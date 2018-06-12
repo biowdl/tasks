@@ -28,7 +28,7 @@ task ScatterIntervalList {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -63,7 +63,7 @@ task GatherBamFiles {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -113,7 +113,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -148,7 +148,7 @@ task MergeVCFs {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }
 
@@ -183,6 +183,6 @@ task SamToFastq {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
     }
 }

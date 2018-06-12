@@ -10,6 +10,7 @@ task Stringtie {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ${assembledTranscriptsFile})
         ${preCommand}
         stringtie \
         ${"-p " + threads} \

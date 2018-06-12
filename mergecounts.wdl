@@ -3,29 +3,38 @@ task MergeCounts {
 
     Array[File] inputFiles
     String outputFile
-    String idVar
-    String measurementVar
+    Int featureColumn
+    Int valueColumn
+    Boolean inputHasHeader
 
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
     command <<<
         set -e -o pipefail
+        mkdir -p ${sub(outputFile, basename(outputFile) + "$", "")}
         ${preCommand}
-        R --no-save --slave <<CODE > ${outputFile}
+        R --no-save <<CODE
             library(dplyr)
             library(reshape2)
 
             listOfFiles <- c("${sep='", "' inputFiles}")
 
+            valueI <- ${valueColumn}
+            featureI <- ${featureColumn}
+            header <- ${true="TRUE" false="FALSE" inputHasHeader}
+
             d <- do.call(rbind, lapply(listOfFiles, function(file){
-                d <- read.table(file, header=TRUE, comment.char="#")
-                colI <- grep(${measurementVar}, colnames(d))
-                colnames(d)[colI] <- strsplit(file, "/")[[1]][3]
-                d <- d %>% melt(id.vars=${idVar}, measure.vars=colI,
-                    variable.name="sample", value.name="count")
+                d <- read.table(file, sep="\t", header=header, comment.char="#")
+
+                splitPath <- strsplit(file, "/")[[1]]
+                colnames(d)[valueI] <- sub("\\\.[^\\\.]*$", "",
+                    splitPath[length(splitPath)])
+                colnames(d)[featureI] <- "feature"
+
+                d <- d %>% melt(id.vars=featureI, variable.name="sample", value.name="count")
             }))
 
-            d <- d %>% dcast(paste0(${idVar}, " ~ sample"), value.var="count")
-            write.table(d, sep="\t", quote=FALSE, row.names=FALSE)
+            d <- d %>% dcast(feature ~ sample, value.var="count")
+            write.table(d, file="${outputFile}", sep="\t", quote=FALSE, row.names=FALSE)
         CODE
     >>>
 
