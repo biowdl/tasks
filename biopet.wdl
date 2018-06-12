@@ -67,6 +67,53 @@ task BaseCounter {
     }
 }
 
+task extractAdaptersFastqc {
+    File? toolJar
+    File inputFile
+    String outputDir
+    String? adapterOutputFilePath = outputDir + "/adapter.list"
+    String? contamsOutputFilePath = outputDir + "/contaminations.list"
+    Boolean? skipContams
+    File? knownContamFile
+    File? knownAdapterFile
+    Float? adapterCutoff
+    Boolean? outputAsFasta
+
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
+
+    command {
+    set -e
+    mkdir -p ${outputDir}
+    ${toolCommand} \
+    --inputFile ${inputFile} \
+    ${"--adapterOutputFile " + adapterOutputFilePath } \
+    ${"--contamsOutputFile " + contamsOutputFilePath } \
+    ${"--knownContamFile " + knownContamFile} \
+    ${"--knownAdapterFile " + knownAdapterFile} \
+    ${"--adapterCutoff " + adapterCutoff} \
+    ${true="--skipContams" false="" skipContams} \
+    ${true="--outputAsFasta" false="" outputAsFasta}
+    }
+
+    output {
+        File adapterOutputFile = select_first([adapterOutputFilePath])
+        File contamsOutputFile = select_first([contamsOutputFilePath])
+        Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
+        Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
+    }
+}
+
+
 task FastqSplitter {
     String? preCommand
     File inputFastq

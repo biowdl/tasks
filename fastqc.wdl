@@ -55,48 +55,6 @@ task fastqc {
     }
 }
 
-task extractAdapters {
-    File extractAdaptersFastqcJar
-    File inputFile
-    String outputDir
-    String? adapterOutputFilePath = outputDir + "/adapter.list"
-    String? contamsOutputFilePath = outputDir + "/contaminations.list"
-    Boolean? skipContams
-    File? knownContamFile
-    File? knownAdapterFile
-    Float? adapterCutoff
-    Boolean? outputAsFasta
-
-    Float? memory
-    Float? memoryMultiplier
-
-    Int mem = ceil(select_first([memory, 4.0]))
-    command {
-    set -e
-    mkdir -p ${outputDir}
-    java -Xmx${mem}G -jar ${extractAdaptersFastqcJar} \
-    --inputFile ${inputFile} \
-    ${"--adapterOutputFile " + adapterOutputFilePath } \
-    ${"--contamsOutputFile " + contamsOutputFilePath } \
-    ${"--knownContamFile " + knownContamFile} \
-    ${"--knownAdapterFile " + knownAdapterFile} \
-    ${"--adapterCutoff " + adapterCutoff} \
-    ${true="--skipContams" false="" skipContams} \
-    ${true="--outputAsFasta" false="" outputAsFasta}
-    }
-
-    output {
-        File adapterOutputFile = select_first([adapterOutputFilePath])
-        File contamsOutputFile = select_first([contamsOutputFilePath])
-        Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
-        Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
-    }
-
-    runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
-    }
-}
-
 task getConfiguration {
     String? preCommand
     String? fastqcDirFile = "fastqcDir.txt"
