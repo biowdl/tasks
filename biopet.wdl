@@ -169,8 +169,8 @@ task FastqSync {
 }
 
 task SampleConfig {
+    File? toolJar
     String? preCommand
-    File toolJar
     Array[File]+ inputFiles
     String keyFilePath
     String? sample
@@ -183,11 +183,15 @@ task SampleConfig {
     Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
 
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        java -Xmx${mem}G -jar ${toolJar} \
+        ${toolCommand} \
         -i ${sep="-i " inputFiles} \
         ${"--sample " + sample} \
         ${"--library " + library} \
