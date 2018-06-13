@@ -56,11 +56,16 @@ task BaseRecalibrator {
     File inputBamIndex
     String recalibrationReportPath
     Array[File]+ sequenceGroupInterval
-    Array[File]+ knownIndelsSitesVCFs
-    Array[File]+ knownIndelsSitesIndices
+    Array[File]? knownIndelsSitesVCFs
+    Array[File]? knownIndelsSitesIndices
+    File? dbsnpVCF
+    File? dbsnpVCFindex
     File refDict
     File refFasta
     File refFastaIndex
+
+    Array[File]+ knownIndelsSitesVCFsArg = select_all(flatten([knownIndelsSitesVCFs, [dbsnpVCF]]))
+    Array[File]+ knownIndelsSitesIndicesArg = select_all(flatten([knownIndelsSitesIndices, [dbsnpVCFindex]]))
 
     Float? memory
     Float? memoryMultiplier
@@ -80,7 +85,7 @@ task BaseRecalibrator {
           -I ${inputBam} \
           --use-original-qualities \
           -O ${recalibrationReportPath} \
-          --known-sites ${sep=" --known-sites " knownIndelsSitesVCFs} \
+          --known-sites ${sep=" --known-sites " knownIndelsSitesVCFsArg} \
           -L ${sep=" -L " sequenceGroupInterval}
     }
 
