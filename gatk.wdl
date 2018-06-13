@@ -1,7 +1,7 @@
 # Apply Base Quality Score Recalibration (BQSR) model
 task ApplyBQSR {
     String? preCommand
-    File gatkJar
+    File? gatkJar
     File inputBam
     File inputBamIndex
     String outputBamPath
@@ -16,10 +16,15 @@ task ApplyBQSR {
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(gatkJar)
+    then "java -Xmx" + mem + "G -jar " + gatkJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        ${toolCommand} \
         -Xms${mem}G -jar ${gatkJar} \
           ApplyBQSR \
           --create-output-bam-md5 \
@@ -46,7 +51,7 @@ task ApplyBQSR {
 # Generate Base Quality Score Recalibration (BQSR) model
 task BaseRecalibrator {
     String? preCommand
-    File gatkJar
+    File? gatkJar
     File inputBam
     File inputBamIndex
     String recalibrationReportPath
@@ -61,10 +66,15 @@ task BaseRecalibrator {
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(gatkJar)
+    then "java -Xmx" + mem + "G -jar " + gatkJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${mem}G -jar ${gatkJar} \
+        ${toolCommand} \
           BaseRecalibrator \
           -R ${refFasta} \
           -I ${inputBam} \
@@ -91,7 +101,7 @@ task CombineGVCFs {
 
     String outputPath
 
-    String gatkJar
+    String? gatkJar
 
     File refFasta
     File refFastaIndex
@@ -102,12 +112,17 @@ task CombineGVCFs {
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(gatkJar)
+    then "java -Xmx" + mem + "G -jar " + gatkJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
 
         if [ ${length(gvcfFiles)} -gt 1 ]; then
-            java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+            ${toolCommand} \
             -Xmx${mem}G -jar ${gatkJar} \
              CombineGVCFs \
              -R ${refFasta} \
@@ -133,7 +148,7 @@ task CombineGVCFs {
 # Combine multiple recalibration tables from scattered BaseRecalibrator runs
 task GatherBqsrReports {
     String? preCommand
-    String gatkJar
+    String? gatkJar
     Array[File] inputBQSRreports
     String outputReportPath
 
@@ -141,10 +156,15 @@ task GatherBqsrReports {
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(gatkJar)
+    then "java -Xmx" + mem + "G -jar " + gatkJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${mem}G -jar ${gatkJar} \
+        ${toolCommand} \
         GatherBQSRReports \
         -I ${sep=' -I ' inputBQSRreports} \
         -O ${outputReportPath}
@@ -167,7 +187,7 @@ task GenotypeGVCFs {
 
     String outputPath
 
-    String gatkJar
+    String? gatkJar
 
     File refFasta
     File refFastaIndex
@@ -181,11 +201,16 @@ task GenotypeGVCFs {
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(gatkJar)
+    then "java -Xmx" + mem + "G -jar " + gatkJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
 
-        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        ${toolCommand} \
         -Xmx${mem}G -jar ${gatkJar} \
          GenotypeGVCFs \
          -R ${refFasta} \
@@ -220,16 +245,21 @@ task HaplotypeCallerGvcf {
     File refFastaIndex
     Float? contamination
     Int? compressionLevel
-    String gatkJar
+    String? gatkJar
 
     Float? memory
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(gatkJar)
+    then "java -Xmx" + mem + "G -jar " + gatkJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
+        ${toolCommand} \
         -Xmx${mem}G -jar ${gatkJar} \
           HaplotypeCaller \
           -R ${refFasta} \
