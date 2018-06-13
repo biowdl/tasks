@@ -184,7 +184,7 @@ task SampleConfig {
 
     String toolCommand = if defined(toolJar)
     then "java -Xmx" + mem + "G -jar " +toolJar
-    else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
+    else "biopet-sampleconfig -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
