@@ -3,7 +3,7 @@
 
 task BaseCounter {
     String? preCommand
-    File toolJar
+    String? toolJar
     File bam
     File bamIndex
     File refFlat
@@ -12,13 +12,17 @@ task BaseCounter {
 
     Float? memory
     Float? memoryMultiplier
-    Int mem = ceil(select_first([memory, 12.0]))
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-basecounter -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         mkdir -p ${outputDir}
         ${preCommand}
-        java -Xmx${mem}G -jar ${toolJar} \
+        ${toolCommand} \
         -b ${bam} \
         -r ${refFlat} \
         -o ${outputDir} \
@@ -67,8 +71,8 @@ task BaseCounter {
     }
 }
 
-task extractAdaptersFastqc {
-    File? toolJar
+task ExtractAdaptersFastqc {
+    String? toolJar
     File inputFile
     String outputDir
     String? adapterOutputFilePath = outputDir + "/adapter.list"
@@ -118,14 +122,22 @@ task FastqSplitter {
     String? preCommand
     File inputFastq
     Array[String] outputPaths
-    String toolJar
+    String? toolJar
+
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-fastqsplitter -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p $(dirname ${sep=') $(dirname ' outputPaths})
         if [ ${length(outputPaths)} -gt 1 ]; then
-            java -jar ${toolJar} \
+            ${toolCommand} \
             -I ${inputFastq} \
             -o ${sep=' -o ' outputPaths}
           else
@@ -135,6 +147,10 @@ task FastqSplitter {
 
     output {
         Array[File] chunks = outputPaths
+    }
+    
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
     }
 }
 
@@ -146,13 +162,21 @@ task FastqSync {
     File in2
     String out1path
     String out2path
-    File toolJar
+    String? toolJar
+    
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-fastqsync -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p $(dirname ${out1path}) $(dirname ${out2path})
-        java -jar ${toolJar} \
+        ${toolCommand} \
         --in1 ${in1} \
         --in2 ${in2} \
         --ref1 ${ref1} \
@@ -165,10 +189,14 @@ task FastqSync {
         File out1 = out1path
         File out2 = out2path
     }
+    
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
+    }
 }
 
 task SampleConfig {
-    File? toolJar
+    String? toolJar
     String? preCommand
     Array[File]+ inputFiles
     String keyFilePath
@@ -216,7 +244,7 @@ task ScatterRegions {
     File refFasta
     File refDict
     String outputDirPath
-    File toolJar
+    String? toolJar
     Int? scatterSize
     File? regions
 
@@ -224,11 +252,15 @@ task ScatterRegions {
     Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
 
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " +toolJar
+    else "biopet-scatterregions -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p ${outputDirPath}
-        java -Xmx${mem}G -jar ${toolJar} \
+        ${toolCommand} \
           -R ${refFasta} \
           -o ${outputDirPath} \
           ${"-s " + scatterSize} \
