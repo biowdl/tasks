@@ -193,8 +193,8 @@ task GenotypeGVCFs {
     File refFastaIndex
     File refDict
 
-    File dbsnpVCF
-    File dbsnpVCFindex
+    File? dbsnpVCF
+    File? dbsnpVCFindex
 
     Int? compressionLevel
     Float? memory
@@ -215,7 +215,7 @@ task GenotypeGVCFs {
          GenotypeGVCFs \
          -R ${refFasta} \
          -O ${outputPath} \
-         -D ${dbsnpVCF} \
+         ${"-D " + dbsnpVCF} \
          -G StandardAnnotation \
          --only-output-calls-starting-in-intervals \
          -new-qual \
@@ -247,6 +247,9 @@ task HaplotypeCallerGvcf {
     Int? compressionLevel
     String? gatkJar
 
+    File? dbsnpVCF
+    File? dbsnpVCFindex
+
     Float? memory
     Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
@@ -265,6 +268,7 @@ task HaplotypeCallerGvcf {
           -O ${gvcfPath} \
           -I ${sep=" -I " inputBams} \
           -L ${sep=' -L ' intervalList} \
+          ${"-D " + dbsnpVCF} \
           -contamination ${default=0 contamination} \
           -ERC GVCF
     }
