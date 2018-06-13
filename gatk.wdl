@@ -249,7 +249,6 @@ task HaplotypeCallerGvcf {
 
     Float? memory
     Float? memoryMultiplier
-
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(gatkJar)
@@ -289,17 +288,24 @@ task SplitNCigarReads {
     File refFastaIndex
     File refDict
     String outputBam
-    String gatkJar
+    String? gatkJar
     Array[File]+ intervals
 
     Float? memory
     Float? memoryMultiplier
 
+    Float? memory
+    Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(gatkJar)
+    then "java -Xmx" + mem + "G -jar " + gatkJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java -Xms${mem}G -jar ${gatkJar} \
+        ${toolCommand} \
         SplitNCigarReads \
         -I ${inputBam} \
         -R ${refFasta} \
