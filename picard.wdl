@@ -2,17 +2,22 @@ task ScatterIntervalList {
     String? preCommand
     File interval_list
     Int scatter_count
-    String picard_jar
+    String? picardJar
 
     Float? memory
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(picardJar)
+    then "java -Xmx" + mem + "G -jar " + picardJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir scatter_list
-        java -Xmx${mem}G -jar ${picard_jar} \
+        ${toolCommand} \
           IntervalListTools \
           SCATTER_COUNT=${scatter_count} \
           SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -38,17 +43,21 @@ task GatherBamFiles {
     Array[File]+ input_bams
     String output_bam_path
     Int? compression_level
-    String picard_jar
+    String? picardJar
 
     Float? memory
     Float? memoryMultiplier
 
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(picardJar)
+    then "java -Xmx" + mem + "G -jar " + picardJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${mem}G -jar ${picard_jar} \
+        ${toolCommand} \
           GatherBamFiles \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -74,7 +83,7 @@ task MarkDuplicates {
     String output_bam_path
     String metrics_path
     Int? compression_level
-    String picard_jar
+    String? picardJar
 
     Float? memory
     Float? memoryMultiplier
@@ -88,12 +97,16 @@ task MarkDuplicates {
     # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
     # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(picardJar)
+    then "java -Xmx" + mem + "G -jar " + picardJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
         mkdir -p $(dirname ${output_bam_path})
-        java ${"-Dsamjdk.compression_level=" + compression_level} \
-        -Xmx${mem}G -jar ${picard_jar} \
+        ${toolCommand} \
           MarkDuplicates \
           INPUT=${sep=' INPUT=' input_bams} \
           OUTPUT=${output_bam_path} \
@@ -124,7 +137,7 @@ task MergeVCFs {
     Array[File] inputVCFsIndexes
     String outputVCFpath
     Int? compressionLevel
-    String picardJar
+    String? picardJar
 
     Float? memory
     Float? memoryMultiplier
@@ -132,11 +145,15 @@ task MergeVCFs {
     # Using MergeVcfs instead of GatherVcfs so we can create indices
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
     Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(picardJar)
+    then "java -Xmx" + mem + "G -jar " + picardJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java ${"-Dsamjdk.compression_level=" + compressionLevel} \
-        -Xmx${mem}G -jar ${picardJar} \
+        ${toolCommand} \
           MergeVcfs \
           INPUT=${sep=' INPUT=' inputVCFs} \
           OUTPUT=${outputVCFpath}
@@ -158,17 +175,19 @@ task SamToFastq {
     String outputRead1
     String? outputRead2
     String? outputUnpaired
-    String picard_jar
+    String? picardJar
     Float? memory
     Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 16.0])) # High memory default to avoid crashes.
 
+    String toolCommand = if defined(picardJar)
+    then "java -Xmx" + mem + "G -jar " + picardJar
+    else "gatk -Xmx" + mem + "G"
+
     command {
         set -e -o pipefail
         ${preCommand}
-        java \
-        -Xmx${mem}G \
-        -jar ${picard_jar} \
+        ${toolCommand} \
         SamToFastq \
         I=${inputBam} \
         ${"FASTQ=" + outputRead1} \
