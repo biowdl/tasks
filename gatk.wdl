@@ -19,7 +19,7 @@ task ApplyBQSR {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -74,7 +74,7 @@ task BaseRecalibrator {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -120,7 +120,7 @@ task CombineGVCFs {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -164,7 +164,7 @@ task GatherBqsrReports {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -209,7 +209,7 @@ task GenotypeGVCFs {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -261,7 +261,7 @@ task HaplotypeCallerGvcf {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -306,7 +306,7 @@ task SplitNCigarReads {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
