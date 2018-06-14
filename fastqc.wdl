@@ -16,7 +16,7 @@ task fastqc {
     Int? kmers
     String? dir
     # Chops of the .gz extension if present.
-    String name = sub(sub(seqFile, "\\.gz$",""), "\\.fq$|\\.fastq$","")
+    String name = sub(sub(sub(seqFile, "\\.gz$",""), "\\.fq$",""), "\\.fastq$","")
     # This regex chops of the extension and replaces it with _fastqc for the reportdir.
     # Just as fastqc does it.
     String reportDir = outdirPath + "/" + sub(basename(name), "\\.[^\\.]*$", "_fastqc")
