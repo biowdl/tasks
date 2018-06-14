@@ -292,7 +292,7 @@ task Seqstat {
     command {
         set -e -o pipefail
         ${preCommand}
-        mkdir -p ${outputFilePath}
+        mkdir -p $(dirname ${outputFilePath})
         ${toolCommand} \
         --fastq ${fastq} \
         --output ${outputFilePath}
