@@ -11,7 +11,7 @@ task ScatterIntervalList {
 
     String toolCommand = if defined(picardJar)
     then "java -Xmx" + mem + "G -jar " + picardJar
-    else "gatk -Xmx" + mem + "G"
+    else "picard -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -52,7 +52,7 @@ task GatherBamFiles {
 
     String toolCommand = if defined(picardJar)
     then "java -Xmx" + mem + "G -jar " + picardJar
-    else "gatk -Xmx" + mem + "G"
+    else "picard -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -100,7 +100,7 @@ task MarkDuplicates {
 
     String toolCommand = if defined(picardJar)
     then "java -Xmx" + mem + "G -jar " + picardJar
-    else "gatk -Xmx" + mem + "G"
+    else "picard -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -148,7 +148,7 @@ task MergeVCFs {
 
     String toolCommand = if defined(picardJar)
     then "java -Xmx" + mem + "G -jar " + picardJar
-    else "gatk -Xmx" + mem + "G"
+    else "picard -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -182,7 +182,7 @@ task SamToFastq {
 
     String toolCommand = if defined(picardJar)
     then "java -Xmx" + mem + "G -jar " + picardJar
-    else "gatk -Xmx" + mem + "G"
+    else "picard -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
