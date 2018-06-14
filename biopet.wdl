@@ -280,7 +280,7 @@ task Seqstat {
     String? preCommand
     File? toolJar
     File fastq
-    String outputFile
+    String outputFilePath
     Float? memory
     Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
@@ -292,13 +292,13 @@ task Seqstat {
     command {
         set -e -o pipefail
         ${preCommand}
-        mkdir -p ${outputFile}
+        mkdir -p ${outputFilePath}
         ${toolCommand} \
         --fastq ${fastq} \
-        --output ${outputFile}
+        --output ${outputFilePath}
     }
     output {
-        File seqstatsJson = outputFile
+        File json = outputFilePath
     }
     runtime {
         memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
