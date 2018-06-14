@@ -297,6 +297,9 @@ task Seqstat {
         --fastq ${fastq} \
         --output ${outputFile}
     }
+    output {
+        File seqstatsJson = outputFile
+    }
     runtime {
         memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
     }
