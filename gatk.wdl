@@ -215,7 +215,6 @@ task GenotypeGVCFs {
         ${preCommand}
 
         ${toolCommand} \
-        -Xmx${mem}G -jar ${gatkJar} \
          GenotypeGVCFs \
          -R ${refFasta} \
          -O ${outputPath} \
@@ -266,7 +265,6 @@ task HaplotypeCallerGvcf {
         set -e -o pipefail
         ${preCommand}
         ${toolCommand} \
-        -Xmx${mem}G -jar ${gatkJar} \
           HaplotypeCaller \
           -R ${refFasta} \
           -O ${gvcfPath} \
