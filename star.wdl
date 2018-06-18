@@ -2,7 +2,7 @@ task Star {
     String? preCommand
 
     Array[File] inputR1
-    Array[File?] inputR2
+    Array[File]? inputR2
     String genomeDir
     String outFileNamePrefix
 
