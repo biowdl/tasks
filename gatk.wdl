@@ -128,7 +128,6 @@ task CombineGVCFs {
 
         if [ ${length(gvcfFiles)} -gt 1 ]; then
             ${toolCommand} \
-            -Xmx${mem}G -jar ${gatkJar} \
              CombineGVCFs \
              -R ${refFasta} \
              -O ${outputPath} \
