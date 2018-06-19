@@ -280,25 +280,25 @@ task Seqstat {
     String? preCommand
     File? toolJar
     File fastq
-    String outputFilePath
+    String outputFile
     Float? memory
     Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " +toolJar
+    then "java -Xmx" + mem + "G -jar " + toolJar
     else "biopet-seqstat -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         ${preCommand}
-        mkdir -p $(dirname ${outputFilePath})
+        mkdir -p $(dirname ${outputFile})
         ${toolCommand} \
         --fastq ${fastq} \
-        --output ${outputFilePath}
+        --output ${outputFile}
     }
     output {
-        File json = outputFilePath
+        File json = outputFile
     }
     runtime {
         memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
