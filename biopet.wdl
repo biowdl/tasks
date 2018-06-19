@@ -326,6 +326,8 @@ task ValidateFastq {
         --fastq1 ${fastq1} \
         ${"--fastq2 " + fastq2}
     }
-
+    output {
+        File stderr = stderr()
+    }
 }
 
