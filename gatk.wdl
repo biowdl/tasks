@@ -56,8 +56,8 @@ task BaseRecalibrator {
     File inputBamIndex
     String recalibrationReportPath
     Array[File]+ sequenceGroupInterval
-    Array[File]? knownIndelsSitesVCFs
-    Array[File]? knownIndelsSitesIndices
+    Array[File?]? knownIndelsSitesVCFs
+    Array[File?]? knownIndelsSitesIndices
     File? dbsnpVCF
     File? dbsnpVCFindex
     File refDict
