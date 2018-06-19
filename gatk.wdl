@@ -25,7 +25,6 @@ task ApplyBQSR {
         set -e -o pipefail
         ${preCommand}
         ${toolCommand} \
-        -Xms${mem}G -jar ${gatkJar} \
           ApplyBQSR \
           --create-output-bam-md5 \
           --add-output-sam-program-record \
