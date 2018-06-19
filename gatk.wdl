@@ -56,16 +56,22 @@ task BaseRecalibrator {
     File inputBamIndex
     String recalibrationReportPath
     Array[File]+ sequenceGroupInterval
-    Array[File?]? knownIndelsSitesVCFs
-    Array[File?]? knownIndelsSitesIndices
+    Array[File]? knownIndelsSitesVCFs
+    Array[File]? knownIndelsSitesIndices
     File? dbsnpVCF
     File? dbsnpVCFindex
     File refDict
     File refFasta
     File refFastaIndex
 
-    Array[File]+ knownIndelsSitesVCFsArg = select_all(flatten([knownIndelsSitesVCFs, [dbsnpVCF]]))
-    Array[File]+ knownIndelsSitesIndicesArg = select_all(flatten([knownIndelsSitesIndices, [dbsnpVCFindex]]))
+    Array[File]+ knownIndelsSitesVCFsArg = flatten([
+        select_first([knownIndelsSitesVCFs, []]),
+        select_all([dbsnpVCF])
+    ])
+    Array[File]+ knownIndelsSitesIndicesArg = flatten([
+        select_first([knownIndelsSitesIndices, []]),
+        select_all([dbsnpVCFindex])
+    ])
 
     Float? memory
     Float? memoryMultiplier
