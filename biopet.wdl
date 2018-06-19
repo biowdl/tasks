@@ -305,3 +305,27 @@ task Seqstat {
     }
 }
 
+task ValidateFastq {
+    String? preCommand
+    File? toolJar
+    File fastq1
+    File? fastq2
+
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+    then "java -Xmx" + mem + "G -jar " + toolJar
+    else "biopet-validatefastq -Xmx" + mem + "G"
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        biopet-validatefastq \
+        --fastq1 ${fastq1} \
+        ${"--fastq2 " + fastq2}
+    }
+
+}
+
