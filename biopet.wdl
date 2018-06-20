@@ -313,7 +313,7 @@ task ValidateFastq {
 
     Float? memory
     Float? memoryMultiplier
-    Int mem = ceil(select_first([memory, 4.0]))
+    Int mem = ceil(select_first([memory, 2.0]))
 
     String toolCommand = if defined(toolJar)
     then "java -Xmx" + mem + "G -jar " + toolJar
@@ -330,7 +330,7 @@ task ValidateFastq {
         File stderr = stderr()
     }
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(mem * select_first([memoryMultiplier, 1.5]))
     }
 }
 
