@@ -329,5 +329,8 @@ task ValidateFastq {
     output {
         File stderr = stderr()
     }
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+    }
 }
 
