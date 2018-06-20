@@ -86,7 +86,7 @@ task Classify {
         mkdir -p ${outputDir}
         ${preCommand}
         centrifuge \
-        ${"-p " + threads} \
+        ${"-p " + select_first([threads, 4])} \
         ${"-x " + indexPrefix} \
         ${true="-f" false="" fastaInput} \
         ${true="-k" false="" defined(assignments)} ${assignments} \
@@ -108,8 +108,8 @@ task Classify {
     }
 
     runtime {
-        cpu: select_first([threads, 1])
-        memory: select_first([memory, 4])
+        cpu: select_first([threads, 4])
+        memory: select_first([memory, 8])
     }
 }
 
