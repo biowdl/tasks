@@ -33,7 +33,7 @@ task cutadapt {
     String? stripSuffix
     String? prefix
     String? suffix
-    Int? minimumLength
+    Int? minimumLength = 1  # Necessary to prevent creation of empty reads
     Int? maximumLength
     Int? maxN
     Boolean? discardTrimmed
