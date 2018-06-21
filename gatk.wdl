@@ -19,13 +19,12 @@ task ApplyBQSR {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         ${preCommand}
         ${toolCommand} \
-        -Xms${mem}G -jar ${gatkJar} \
           ApplyBQSR \
           --create-output-bam-md5 \
           --add-output-sam-program-record \
@@ -56,11 +55,22 @@ task BaseRecalibrator {
     File inputBamIndex
     String recalibrationReportPath
     Array[File]+ sequenceGroupInterval
-    Array[File]+ knownIndelsSitesVCFs
-    Array[File]+ knownIndelsSitesIndices
+    Array[File]? knownIndelsSitesVCFs
+    Array[File]? knownIndelsSitesIndices
+    File? dbsnpVCF
+    File? dbsnpVCFindex
     File refDict
     File refFasta
     File refFastaIndex
+
+    Array[File]+ knownIndelsSitesVCFsArg = flatten([
+        select_first([knownIndelsSitesVCFs, []]),
+        select_all([dbsnpVCF])
+    ])
+    Array[File]+ knownIndelsSitesIndicesArg = flatten([
+        select_first([knownIndelsSitesIndices, []]),
+        select_all([dbsnpVCFindex])
+    ])
 
     Float? memory
     Float? memoryMultiplier
@@ -69,7 +79,7 @@ task BaseRecalibrator {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -80,7 +90,7 @@ task BaseRecalibrator {
           -I ${inputBam} \
           --use-original-qualities \
           -O ${recalibrationReportPath} \
-          --known-sites ${sep=" --known-sites " knownIndelsSitesVCFs} \
+          --known-sites ${sep=" --known-sites " knownIndelsSitesVCFsArg} \
           -L ${sep=" -L " sequenceGroupInterval}
     }
 
@@ -115,7 +125,7 @@ task CombineGVCFs {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -123,7 +133,6 @@ task CombineGVCFs {
 
         if [ ${length(gvcfFiles)} -gt 1 ]; then
             ${toolCommand} \
-            -Xmx${mem}G -jar ${gatkJar} \
              CombineGVCFs \
              -R ${refFasta} \
              -O ${outputPath} \
@@ -159,7 +168,7 @@ task GatherBqsrReports {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -193,8 +202,8 @@ task GenotypeGVCFs {
     File refFastaIndex
     File refDict
 
-    File dbsnpVCF
-    File dbsnpVCFindex
+    File? dbsnpVCF
+    File? dbsnpVCFindex
 
     Int? compressionLevel
     Float? memory
@@ -204,18 +213,17 @@ task GenotypeGVCFs {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         ${preCommand}
 
         ${toolCommand} \
-        -Xmx${mem}G -jar ${gatkJar} \
          GenotypeGVCFs \
          -R ${refFasta} \
          -O ${outputPath} \
-         -D ${dbsnpVCF} \
+         ${"-D " + dbsnpVCF} \
          -G StandardAnnotation \
          --only-output-calls-starting-in-intervals \
          -new-qual \
@@ -247,24 +255,27 @@ task HaplotypeCallerGvcf {
     Int? compressionLevel
     String? gatkJar
 
+    File? dbsnpVCF
+    File? dbsnpVCFindex
+
     Float? memory
     Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         ${preCommand}
         ${toolCommand} \
-        -Xmx${mem}G -jar ${gatkJar} \
           HaplotypeCaller \
           -R ${refFasta} \
           -O ${gvcfPath} \
           -I ${sep=" -I " inputBams} \
           -L ${sep=' -L ' intervalList} \
+          ${"-D " + dbsnpVCF} \
           -contamination ${default=0 contamination} \
           -ERC GVCF
     }
@@ -297,7 +308,7 @@ task SplitNCigarReads {
 
     String toolCommand = if defined(gatkJar)
     then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk -Xmx" + mem + "G"
+    else "gatk --java-options -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
