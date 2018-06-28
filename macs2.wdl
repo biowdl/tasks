@@ -14,7 +14,7 @@ task peakCalling {
     }
 
     output {
-        File peakFile = outDir + "/" + sampleName + "/macs2/" + sampleName + "_peaks.narrowPeak"
+        File peakFile = outDir + "/" + sampleName + "/macs2/" + sampleName + "_peaks.narrowPeakd"
     }
 
     runtime {
