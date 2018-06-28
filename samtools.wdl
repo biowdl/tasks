@@ -54,6 +54,7 @@ task Flagstat {
     command {
         set -e -o pipefail
         ${preCommand}
+        mkdir -p $(dirname ${outputPath})
         samtools flagstat ${inputBam} > ${outputPath}
     }
 
