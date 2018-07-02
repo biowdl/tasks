@@ -1,11 +1,10 @@
-task peakCalling {
+task PeakCalling {
     String? preCommand
     Array[File] bamFiles
     String outDir
     String sampleName
     Int? threads
     Int? memory
-
 
     command {
         set -e -o pipefail
