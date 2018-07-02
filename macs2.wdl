@@ -1,6 +1,6 @@
 task peakCalling {
     String? preCommand
-    File bamFile
+    Array[File] bamFiles
     String outDir
     String sampleName
     Int? threads
@@ -10,7 +10,10 @@ task peakCalling {
     command {
         set -e -o pipefail
         ${preCommand}
-        macs2 callpeaks --treatment ${bamFile} --outdir ${outDir} --name ${sampleName}
+        macs2 callpeaks \
+        --treatment ${sep = ' ' bamFiles} \
+        --outdir ${outDir} \
+        --name ${sampleName}
     }
 
     output {
