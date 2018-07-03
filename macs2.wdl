@@ -9,7 +9,7 @@ task PeakCalling {
     command {
         set -e -o pipefail
         ${preCommand}
-        macs2 callpeaks \
+        macs2 callpeak \
         --treatment ${sep = ' ' bamFiles} \
         --outdir ${outDir} \
         --name ${sampleName}
