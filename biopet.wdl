@@ -73,6 +73,7 @@ task BaseCounter {
 
 task ExtractAdaptersFastqc {
     File? toolJar
+    String? preCommand
     File inputFile
     String outputDir
     String? adapterOutputFilePath = outputDir + "/adapter.list"
@@ -93,6 +94,7 @@ task ExtractAdaptersFastqc {
 
     command {
     set -e
+    ${preCommand}
     mkdir -p ${outputDir}
     ${toolCommand} \
     --inputFile ${inputFile} \
