@@ -16,6 +16,18 @@ task AppendToStringArray {
     }
 }
 
+# This task will fail if the MD5sum doesn't match the file.
+task CheckFileMD5 {
+    File file
+    String MD5sum
+
+    command {
+        set -e -o pipefail
+        MD5SUM=$(md5sum ${file} | cut -d ' ' -f 1)
+        [ $MD5SUM = ${MD5sum} ]
+    }
+}
+
 task ConcatenateTextFiles {
     Array[File] fileList
     String combinedFilePath
