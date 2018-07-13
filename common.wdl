@@ -8,7 +8,7 @@ task AppendToStringArray {
     }
 
     output {
-        Array[String] out_array = read_lines(stdout())
+        Array[String] outArray = read_lines(stdout())
     }
 
     runtime {
@@ -19,8 +19,8 @@ task AppendToStringArray {
 task ConcatenateTextFiles {
     Array[File] fileList
     String combinedFilePath
-    Boolean? unzip=false
-    Boolean? zip=false
+    Boolean? unzip = false
+    Boolean? zip = false
 
     command {
         set -e -o pipefail
