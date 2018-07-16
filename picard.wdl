@@ -1,7 +1,24 @@
-task ScatterIntervalList {
+task CollectMultipleMetrics {
     String? preCommand
-    File interval_list
-    Int scatter_count
+    File bamFile
+    File bamIndex
+    File refFasta
+    File refDict
+    File refFastaIndex
+    String basename
+
+    # These should proably be optional, but I'm not sure how to handle the ouput in that
+    # case (without a null literal).
+    Boolean collectAlignmentSummaryMetrics = true
+    Boolean collectInsertSizeMetrics = true
+    Boolean qualityScoreDistribution = true
+    Boolean meanQualityByCycle = true
+    Boolean collectBaseDistributionByCycle = true
+    Boolean collectGcBiasMetrics = true
+    #Boolean? rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
+    Boolean collectSequencingArtifactMetrics = true
+    Boolean collectQualityYieldMetrics = true
+
     String? picardJar
 
     Float? memory
@@ -10,26 +27,139 @@ task ScatterIntervalList {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(picardJar)
-    then "java -Xmx" + mem + "G -jar " + picardJar
-    else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " + picardJar
+        else "picard -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname "${basename}")
         ${preCommand}
-        mkdir scatter_list
         ${toolCommand} \
-          IntervalListTools \
-          SCATTER_COUNT=${scatter_count} \
-          SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
-          UNIQUE=true \
-          SORT=true \
-          INPUT=${interval_list} \
-          OUTPUT=scatter_list
+        CollectMultipleMetrics \
+        I=${bamFile} \
+        R=${refFasta} \
+        O=${basename} \
+        PROGRAM=null \
+        ${true="PROGRAM=CollectAlignmentSummaryMetrics" false="" collectAlignmentSummaryMetrics} \
+        ${true="PROGRAM=CollectInsertSizeMetrics" false="" collectInsertSizeMetrics} \
+        ${true="PROGRAM=QualityScoreDistribution" false="" qualityScoreDistribution} \
+        ${true="PROGRAM=MeanQualityByCycle" false="" meanQualityByCycle} \
+        ${true="PROGRAM=CollectBaseDistributionByCycle" false="" collectBaseDistributionByCycle} \
+        ${true="PROGRAM=CollectGcBiasMetrics" false="" collectGcBiasMetrics} \
+        ${true="PROGRAM=CollectSequencingArtifactMetrics" false=""
+            collectSequencingArtifactMetrics} \
+        ${true="PROGRAM=CollectQualityYieldMetrics" false="" collectQualityYieldMetrics}
     }
 
     output {
-        Array[File] out = glob("scatter_list/*/*.interval_list")
-        Int interval_count = read_int(stdout())
+        File aligmentSummary = basename + ".alignment_summary_metrics"
+        File baitBiasDetail = basename + ".bait_bias_detail_metrics"
+        File baitBiasSummary = basename + ".bait_bias_summary_metrics"
+        File baseDistributionByCycle = basename + ".base_distribution_by_cycle_metrics"
+        File baseDistributionByCyclePdf = basename + ".base_distribution_by_cycle.pdf"
+        File errorSummary = basename + ".error_summary_metrics"
+        File gcBiasDetail = basename + ".gc_bias.detail_metrics"
+        File gcBiasPdf = basename + ".gc_bias.pdf"
+        File gcBiasSummary = basename + ".gc_bias.summary_metrics"
+        File insertSizeHistogramPdf = basename + ".insert_size_histogram.pdf"
+        File insertSize = basename + ".insert_size_metrics"
+        File preAdapterDetail = basename + ".pre_adapter_detail_metrics"
+        File preAdapterSummary = basename + ".pre_adapter_summary_metrics"
+        File qualityByCycle = basename + ".quality_by_cycle_metrics"
+        File qualityByCyclePdf = basename + ".quality_by_cycle.pdf"
+        File qualityDistribution = basename + ".quality_distribution_metrics"
+        File qualityDistributionPdf = basename + ".quality_distribution.pdf"
+        File qualityYield = basename + ".quality_yield_metrics"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+    }
+}
+
+task CollectRnaSeqMetrics {
+    String? preCommand
+    File bamFile
+    File bamIndex
+    File refRefflat
+    String basename
+    String? strandSpecificity = "NONE"
+
+    String? picardJar
+
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(picardJar)
+        then "java -Xmx" + mem + "G -jar " + picardJar
+        else "picard -Xmx" + mem + "G"
+
+    command {
+        set -e -o pipefail
+        mkdir -p $(dirname "${basename}")
+        ${preCommand}
+        ${toolCommand} \
+        CollectRnaSeqMetrics \
+        I=${bamFile} \
+        O=${basename}.RNA_Metrics \
+        CHART_OUTPUT=${basename}.RNA_Metrics.pdf \
+        ${"STRAND_SPECIFICITY=" + strandSpecificity} \
+        REF_FLAT=${refRefflat}
+    }
+
+    output {
+        File chart = basename + ".RNA_Metrics.pdf"
+        File metrics = basename + "RNA_Metrics"
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+    }
+}
+
+task CollectTargetedPcrMetrics {
+    String? preCommand
+    File bamFile
+    File bamIndex
+    File refFasta
+    File refDict
+    File refFastaIndex
+    File ampliconIntervals
+    Array[File]+ targetIntervals
+    String basename
+
+    String? picardJar
+
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(picardJar)
+        then "java -Xmx" + mem + "G -jar " + picardJar
+        else "picard -Xmx" + mem + "G"
+
+    command {
+        set -e -o pipefail
+        mkdir -p $(dirname "${basename}")
+        ${preCommand}
+        ${toolCommand} \
+        CollectTargetedPcrMetrics \
+        I=${bamFile} \
+        R=${refFasta} \
+        AMPLICON_INTERVALS=${ampliconIntervals} \
+        TARGET_INTERVALS=${sep=" TARGET_INTERVALS=" targetIntervals} \
+        O=${basename}.targetPcrMetrics \
+        PER_BASE_COVERAGE=${basename}.targetPcrPerBaseCoverage \
+        PER_TARGET_COVERAGE=${basename}.targetPcrPerTargetCoverage
+    }
+
+    output {
+        File perTargetCoverage = basename + ".targetPcrPerTargetCoverage"
+        File perBaseCoverage = basename + ".targetPcrPerBaseCoverage"
+        File metrics = basename + "targetPcrMetrics"
     }
 
     runtime {
@@ -199,6 +329,45 @@ task SamToFastq {
         File read1 = outputRead1
         File? read2 = outputRead2
         File? unpairedRead = outputUnpaired
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+    }
+}
+
+task ScatterIntervalList {
+    String? preCommand
+    File interval_list
+    Int scatter_count
+    String? picardJar
+
+    Float? memory
+    Float? memoryMultiplier
+
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(picardJar)
+    then "java -Xmx" + mem + "G -jar " + picardJar
+    else "picard -Xmx" + mem + "G"
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        mkdir scatter_list
+        ${toolCommand} \
+          IntervalListTools \
+          SCATTER_COUNT=${scatter_count} \
+          SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
+          UNIQUE=true \
+          SORT=true \
+          INPUT=${interval_list} \
+          OUTPUT=scatter_list
+    }
+
+    output {
+        Array[File] out = glob("scatter_list/*/*.interval_list")
+        Int interval_count = read_int(stdout())
     }
 
     runtime {
