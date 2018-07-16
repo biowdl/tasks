@@ -5,6 +5,7 @@ task PeakCalling {
     String sampleName
     Int? threads
     Int? memory
+    Boolean? nomodel
 
     command {
         set -e -o pipefail
@@ -12,7 +13,8 @@ task PeakCalling {
         macs2 callpeak \
         --treatment ${sep = ' ' bamFiles} \
         --outdir ${outDir} \
-        --name ${sampleName}
+        --name ${sampleName} \
+        ${default="false" true='--nomodel' false='' nomodel}
     }
 
     output {
