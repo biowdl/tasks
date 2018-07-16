@@ -159,7 +159,7 @@ task CollectTargetedPcrMetrics {
     output {
         File perTargetCoverage = basename + ".targetPcrPerTargetCoverage"
         File perBaseCoverage = basename + ".targetPcrPerBaseCoverage"
-        File metrics = basename + "targetPcrMetrics"
+        File metrics = basename + ".targetPcrMetrics"
     }
 
     runtime {
