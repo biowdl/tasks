@@ -111,7 +111,7 @@ task CollectRnaSeqMetrics {
 
     output {
         File chart = basename + ".RNA_Metrics.pdf"
-        File metrics = basename + "RNA_Metrics"
+        File metrics = basename + ".RNA_Metrics"
     }
 
     runtime {
