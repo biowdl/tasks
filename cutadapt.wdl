@@ -69,7 +69,7 @@ task cutadapt {
         ${true="-A " false="" defined(adapterRead2)} ${sep=" -A " adapterRead2} \
         ${true="-g " false="" defined(front)} ${sep=" -g " front} \
         ${true="-G " false="" defined(frontRead2)} ${sep=" -G " frontRead2} \
-        ${true="-b " false="" defined(anywhere)} ${sep=" -a " anywhere} \
+        ${true="-b " false="" defined(anywhere)} ${sep=" -b " anywhere} \
         ${true="-B " false="" defined(anywhereRead2)} ${sep=" -B " anywhereRead2} \
         --output ${read1output} ${"--paired-output " + read2output} \
         ${"--to-short-output " + tooShortOutputPath} ${"--to-short-paired-output " + tooShortPairedOutputPath} \
