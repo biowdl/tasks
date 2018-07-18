@@ -369,7 +369,7 @@ task ValidateFastq {
     }
 }
 
-task validateVcf {
+task ValidateVcf {
     String? preCommand
     File? toolJar
     File vcfFile
