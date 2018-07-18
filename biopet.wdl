@@ -1,6 +1,3 @@
-# PLEASE ADD TASKS IN ALPHABETIC ORDER.
-# This makes searching a lot easier.
-
 task BaseCounter {
     String? preCommand
     File? toolJar
@@ -15,8 +12,8 @@ task BaseCounter {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " +toolJar
-    else "biopet-basecounter -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " +toolJar
+        else "biopet-basecounter -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -89,8 +86,8 @@ task ExtractAdaptersFastqc {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " +toolJar
-    else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " +toolJar
+        else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
 
     command {
     set -e
@@ -119,7 +116,6 @@ task ExtractAdaptersFastqc {
     }
 }
 
-
 task FastqSplitter {
     String? preCommand
     File inputFastq
@@ -131,8 +127,8 @@ task FastqSplitter {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " +toolJar
-    else "biopet-fastqsplitter -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " +toolJar
+        else "biopet-fastqsplitter -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -171,8 +167,8 @@ task FastqSync {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " +toolJar
-    else "biopet-fastqsync -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " +toolJar
+        else "biopet-fastqsync -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -213,8 +209,8 @@ task SampleConfig {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " +toolJar
-    else "biopet-sampleconfig -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " +toolJar
+        else "biopet-sampleconfig -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -255,8 +251,8 @@ task ScatterRegions {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " +toolJar
-    else "biopet-scatterregions -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " +toolJar
+        else "biopet-scatterregions -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -288,8 +284,8 @@ task Seqstat {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " + toolJar
-    else "biopet-seqstat -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " + toolJar
+        else "biopet-seqstat -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
@@ -299,9 +295,44 @@ task Seqstat {
         --fastq ${fastq} \
         --output ${outputFile}
     }
+
     output {
         File json = outputFile
     }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+    }
+}
+
+task ValidateAnnotation {
+    String? preCommand
+    File? toolJar
+    File? refRefflat
+    File? gtfFile
+    File refFasta
+
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+        then "java -Xmx" + mem + "G -jar " + toolJar
+        else "biopet-validateannotation -Xmx" + mem + "G"
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        ${toolCommand} \
+        ${"-r" + refRefflat} \
+        ${"-g" + gtfFile} \
+        -R ${refFasta}
+    }
+
+    output {
+        File stderr = stderr()
+    }
+
     runtime {
         memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
     }
@@ -318,21 +349,53 @@ task ValidateFastq {
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-    then "java -Xmx" + mem + "G -jar " + toolJar
-    else "biopet-validatefastq -Xmx" + mem + "G"
+        then "java -Xmx" + mem + "G -jar " + toolJar
+        else "biopet-validatefastq -Xmx" + mem + "G"
 
     command {
         set -e -o pipefail
         ${preCommand}
-        biopet-validatefastq \
+        ${toolCommand}\
         --fastq1 ${fastq1} \
         ${"--fastq2 " + fastq2}
     }
+
     output {
         File stderr = stderr()
     }
+
     runtime {
         memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
     }
 }
 
+task validateVcf {
+    String? preCommand
+    File? toolJar
+    File vcfFile
+    File refFasta
+
+    Float? memory
+    Float? memoryMultiplier
+    Int mem = ceil(select_first([memory, 4.0]))
+
+    String toolCommand = if defined(toolJar)
+        then "java -Xmx" + mem + "G -jar " + toolJar
+        else "biopet-validatevcf -Xmx" + mem + "G"
+
+    command {
+        set -e -o pipefail
+        ${preCommand}
+        ${toolCommand}\
+        -i ${vcfFile} \
+        -R ${refFasta}
+    }
+
+    output {
+        File stderr = stderr()
+    }
+
+    runtime {
+        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+    }
+}
