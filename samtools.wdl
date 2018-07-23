@@ -1,12 +1,16 @@
+version 1.0
+
 task Index {
-    String? preCommand
-    File bamFilePath
-    String? bamIndexPath
+    input {
+        String? preCommand
+        File bamFilePath
+        String? bamIndexPath
+    }
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        samtools index ${bamFilePath} ${bamIndexPath}
+        ~{preCommand}
+        samtools index ~{bamFilePath} ~{bamIndexPath}
     }
 
     output {
@@ -15,14 +19,16 @@ task Index {
 }
 
 task Merge {
-    String? preCommand
-    Array[File]+ bamFiles
-    String outputBamPath
+    input {
+        String? preCommand
+        Array[File]+ bamFiles
+        String outputBamPath
+    }
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        samtools merge ${outputBamPath} ${sep=' ' bamFiles}
+        ~{preCommand}
+        samtools merge ~{outputBamPath} ~{sep=' ' bamFiles}
     }
 
     output {
@@ -31,14 +37,16 @@ task Merge {
 }
 
 task Markdup {
-    String? preCommand
-    File inputBam
-    String outputBamPath
+    input {
+        String? preCommand
+        File inputBam
+        String outputBamPath
+    }
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        samtools markdup ${inputBam} ${outputBamPath}
+        ~{preCommand}
+        samtools markdup ~{inputBam} ~{outputBamPath}
     }
 
     output {
@@ -47,15 +55,17 @@ task Markdup {
 }
 
 task Flagstat {
-    String? preCommand
-    File inputBam
-    String outputPath
+    input {
+        String? preCommand
+        File inputBam
+        String outputPath
+    }
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${outputPath})
-        samtools flagstat ${inputBam} > ${outputPath}
+        ~{preCommand}
+        mkdir -p $(dirname ~{outputPath})
+        samtools flagstat ~{inputBam} > ~{outputPath}
     }
 
     output {
@@ -64,45 +74,50 @@ task Flagstat {
 }
 
 task fastq {
-    String? preCommand
-    File inputBam
-    String outputRead1
-    String? outputRead2
-    String? outputRead0
-    Int? includeFilter
-    Int? excludeFilter
-    Int? excludeSpecificFilter
-    Boolean? appendReadNumber
-    Boolean? outputQuality
-    Int? compressionLevel
-    Int? threads
-    Int? memory
-    Int totalThreads = select_first([threads, 1])
+    input {
+        String? preCommand
+        File inputBam
+        String outputRead1
+        String? outputRead2
+        String? outputRead0
+        Int? includeFilter
+        Int? excludeFilter
+        Int? excludeSpecificFilter
+        Boolean? appendReadNumber
+        Boolean? outputQuality
+        Int? compressionLevel
+        Int? threads
+        Int? memory
+        Int totalThreads = select_first([threads, 1])
+    }
 
     command {
-        ${preCommand}
+        ~{preCommand}
         samtools fastq \
-        ${true="-1" false="-s" defined(outputRead2)} ${outputRead1} \
-        ${"-2 " + outputRead2} \
-        ${"-0 " + outputRead0} \
-        ${"-f " + includeFilter} \
-        ${"-F " + excludeFilter} \
-        ${"-G " + excludeSpecificFilter} \
-        ${true="-N" false="-n" appendReadNumber} \
-        ${true="-O" false="" outputQuality} \
-        ${"-c " + compressionLevel} \
-        ${"--threads " + totalThreads} \
-        ${inputBam}
+        ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
+        ~{"-2 " + outputRead2} \
+        ~{"-0 " + outputRead0} \
+        ~{"-f " + includeFilter} \
+        ~{"-F " + excludeFilter} \
+        ~{"-G " + excludeSpecificFilter} \
+        ~{true="-N" false="-n" appendReadNumber} \
+        ~{true="-O" false="" outputQuality} \
+        ~{"-c " + compressionLevel} \
+        ~{"--threads " + totalThreads} \
+        ~{inputBam}
     }
+
     output {
         File read1 = outputRead1
         File? read2 = outputRead2
         File? read0 = outputRead0
     }
+
     runtime {
         cpu: totalThreads
         memory: select_first([memory, 1])
     }
+
     parameter_meta {
         preCommand: "A command that is run before the task. Can be used to activate environments"
         inputBam: "The bam file to process."
@@ -116,31 +131,33 @@ task fastq {
 }
 
 task view {
-    String? preCommand
-    File inFile
-    File? referenceFasta
-    String outputFileName
-    Boolean? outputBam
-    Boolean? uncompressedBamOutput
-    Int? includeFilter
-    Int? excludeFilter
-    Int? excludeSpecificFilter
-    Int? threads
-    Int? memory
+    input {
+        String? preCommand
+        File inFile
+        File? referenceFasta
+        String outputFileName
+        Boolean? outputBam
+        Boolean? uncompressedBamOutput
+        Int? includeFilter
+        Int? excludeFilter
+        Int? excludeSpecificFilter
+        Int? threads
+        Int? memory
+    }
 
     command {
-    set -e -o pipefail
-    ${preCommand}
-    samtools view \
-    ${"-T " + referenceFasta} \
-    ${"-o " + outputFileName} \
-    ${true="-b " false="" outputBam} \
-    ${true="-u " false="" uncompressedBamOutput} \
-    ${"-f " + includeFilter} \
-    ${"-F " + excludeFilter} \
-    ${"-G " + excludeSpecificFilter} \
-    ${"--threads " + threads - 1} \
-    ${inFile}
+        set -e -o pipefail
+        ~{preCommand}
+        samtools view \
+        ~{"-T " + referenceFasta} \
+        ~{"-o " + outputFileName} \
+        ~{true="-b " false="" outputBam} \
+        ~{true="-u " false="" uncompressedBamOutput} \
+        ~{"-f " + includeFilter} \
+        ~{"-F " + excludeFilter} \
+        ~{"-G " + excludeSpecificFilter} \
+        ~{"--threads " + threads - 1} \
+        ~{inFile}
     }
 
     output {

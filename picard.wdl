@@ -1,28 +1,32 @@
+version 1.0
+
 task CollectMultipleMetrics {
-    String? preCommand
-    File bamFile
-    File bamIndex
-    File refFasta
-    File refDict
-    File refFastaIndex
-    String basename
+    input {
+        String? preCommand
+        File bamFile
+        File bamIndex
+        File refFasta
+        File refDict
+        File refFastaIndex
+        String basename
 
-    # These should proably be optional, but I'm not sure how to handle the ouput in that
-    # case (without a null literal).
-    Boolean collectAlignmentSummaryMetrics = true
-    Boolean collectInsertSizeMetrics = true
-    Boolean qualityScoreDistribution = true
-    Boolean meanQualityByCycle = true
-    Boolean collectBaseDistributionByCycle = true
-    Boolean collectGcBiasMetrics = true
-    #Boolean? rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
-    Boolean collectSequencingArtifactMetrics = true
-    Boolean collectQualityYieldMetrics = true
+        # These should proably be optional, but I'm not sure how to handle the ouput in that
+        # case (without a null literal).
+        Boolean collectAlignmentSummaryMetrics = true
+        Boolean collectInsertSizeMetrics = true
+        Boolean qualityScoreDistribution = true
+        Boolean meanQualityByCycle = true
+        Boolean collectBaseDistributionByCycle = true
+        Boolean collectGcBiasMetrics = true
+        #Boolean? rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
+        Boolean collectSequencingArtifactMetrics = true
+        Boolean collectQualityYieldMetrics = true
 
-    String? picardJar
+        String? picardJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
 
     Int mem = ceil(select_first([memory, 4.0]))
 
@@ -32,23 +36,23 @@ task CollectMultipleMetrics {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname "${basename}")
-        ${preCommand}
-        ${toolCommand} \
+        mkdir -p $(dirname "~{basename}")
+        ~{preCommand}
+        ~{toolCommand} \
         CollectMultipleMetrics \
-        I=${bamFile} \
-        R=${refFasta} \
-        O=${basename} \
+        I=~{bamFile} \
+        R=~{refFasta} \
+        O=~{basename} \
         PROGRAM=null \
-        ${true="PROGRAM=CollectAlignmentSummaryMetrics" false="" collectAlignmentSummaryMetrics} \
-        ${true="PROGRAM=CollectInsertSizeMetrics" false="" collectInsertSizeMetrics} \
-        ${true="PROGRAM=QualityScoreDistribution" false="" qualityScoreDistribution} \
-        ${true="PROGRAM=MeanQualityByCycle" false="" meanQualityByCycle} \
-        ${true="PROGRAM=CollectBaseDistributionByCycle" false="" collectBaseDistributionByCycle} \
-        ${true="PROGRAM=CollectGcBiasMetrics" false="" collectGcBiasMetrics} \
-        ${true="PROGRAM=CollectSequencingArtifactMetrics" false=""
+        ~{true="PROGRAM=CollectAlignmentSummaryMetrics" false="" collectAlignmentSummaryMetrics} \
+        ~{true="PROGRAM=CollectInsertSizeMetrics" false="" collectInsertSizeMetrics} \
+        ~{true="PROGRAM=QualityScoreDistribution" false="" qualityScoreDistribution} \
+        ~{true="PROGRAM=MeanQualityByCycle" false="" meanQualityByCycle} \
+        ~{true="PROGRAM=CollectBaseDistributionByCycle" false="" collectBaseDistributionByCycle} \
+        ~{true="PROGRAM=CollectGcBiasMetrics" false="" collectGcBiasMetrics} \
+        ~{true="PROGRAM=CollectSequencingArtifactMetrics" false=""
             collectSequencingArtifactMetrics} \
-        ${true="PROGRAM=CollectQualityYieldMetrics" false="" collectQualityYieldMetrics}
+        ~{true="PROGRAM=CollectQualityYieldMetrics" false="" collectQualityYieldMetrics}
     }
 
     output {
@@ -78,17 +82,19 @@ task CollectMultipleMetrics {
 }
 
 task CollectRnaSeqMetrics {
-    String? preCommand
-    File bamFile
-    File bamIndex
-    File refRefflat
-    String basename
-    String? strandSpecificity = "NONE"
+    input {
+        String? preCommand
+        File bamFile
+        File bamIndex
+        File refRefflat
+        String basename
+        String? strandSpecificity = "NONE"
 
-    String? picardJar
+        String? picardJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
 
     Int mem = ceil(select_first([memory, 4.0]))
 
@@ -98,15 +104,15 @@ task CollectRnaSeqMetrics {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname "${basename}")
-        ${preCommand}
-        ${toolCommand} \
+        mkdir -p $(dirname "~{basename}")
+        ~{preCommand}
+        ~{toolCommand} \
         CollectRnaSeqMetrics \
-        I=${bamFile} \
-        O=${basename}.RNA_Metrics \
-        CHART_OUTPUT=${basename}.RNA_Metrics.pdf \
-        ${"STRAND_SPECIFICITY=" + strandSpecificity} \
-        REF_FLAT=${refRefflat}
+        I=~{bamFile} \
+        O=~{basename}.RNA_Metrics \
+        CHART_OUTPUT=~{basename}.RNA_Metrics.pdf \
+        ~{"STRAND_SPECIFICITY=" + strandSpecificity} \
+        REF_FLAT=~{refRefflat}
     }
 
     output {
@@ -120,20 +126,22 @@ task CollectRnaSeqMetrics {
 }
 
 task CollectTargetedPcrMetrics {
-    String? preCommand
-    File bamFile
-    File bamIndex
-    File refFasta
-    File refDict
-    File refFastaIndex
-    File ampliconIntervals
-    Array[File]+ targetIntervals
-    String basename
+    input {
+        String? preCommand
+        File bamFile
+        File bamIndex
+        File refFasta
+        File refDict
+        File refFastaIndex
+        File ampliconIntervals
+        Array[File]+ targetIntervals
+        String basename
 
-    String? picardJar
+        String? picardJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
 
     Int mem = ceil(select_first([memory, 4.0]))
 
@@ -143,17 +151,17 @@ task CollectTargetedPcrMetrics {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname "${basename}")
-        ${preCommand}
-        ${toolCommand} \
+        mkdir -p $(dirname "~{basename}")
+        ~{preCommand}
+        ~{toolCommand} \
         CollectTargetedPcrMetrics \
-        I=${bamFile} \
-        R=${refFasta} \
-        AMPLICON_INTERVALS=${ampliconIntervals} \
-        TARGET_INTERVALS=${sep=" TARGET_INTERVALS=" targetIntervals} \
-        O=${basename}.targetPcrMetrics \
-        PER_BASE_COVERAGE=${basename}.targetPcrPerBaseCoverage \
-        PER_TARGET_COVERAGE=${basename}.targetPcrPerTargetCoverage
+        I=~{bamFile} \
+        R=~{refFasta} \
+        AMPLICON_INTERVALS=~{ampliconIntervals} \
+        TARGET_INTERVALS=~{sep=" TARGET_INTERVALS=" targetIntervals} \
+        O=~{basename}.targetPcrMetrics \
+        PER_BASE_COVERAGE=~{basename}.targetPcrPerBaseCoverage \
+        PER_TARGET_COVERAGE=~{basename}.targetPcrPerTargetCoverage
     }
 
     output {
@@ -169,14 +177,16 @@ task CollectTargetedPcrMetrics {
 
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
 task GatherBamFiles {
-    String? preCommand
-    Array[File]+ input_bams
-    String output_bam_path
-    Int? compression_level
-    String? picardJar
+    input {
+        String? preCommand
+        Array[File]+ input_bams
+        String output_bam_path
+        Int? compression_level
+        String? picardJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
 
     Int mem = ceil(select_first([memory, 4.0]))
 
@@ -186,19 +196,19 @@ task GatherBamFiles {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand} \
+        ~{preCommand}
+        ~{toolCommand} \
           GatherBamFiles \
-          INPUT=${sep=' INPUT=' input_bams} \
-          OUTPUT=${output_bam_path} \
+          INPUT=~{sep=' INPUT=' input_bams} \
+          OUTPUT=~{output_bam_path} \
           CREATE_INDEX=true \
           CREATE_MD5_FILE=true
     }
 
     output {
-        File output_bam = "${output_bam_path}"
+        File output_bam = "~{output_bam_path}"
         File output_bam_index = sub(output_bam_path, ".bam$", ".bai")
-        File output_bam_md5 = "${output_bam_path}.md5"
+        File output_bam_md5 = "~{output_bam_path}.md5"
     }
 
     runtime {
@@ -208,20 +218,22 @@ task GatherBamFiles {
 
 # Mark duplicate reads to avoid counting non-independent observations
 task MarkDuplicates {
-    String? preCommand
-    Array[File] input_bams
-    String output_bam_path
-    String metrics_path
-    Int? compression_level
-    String? picardJar
+    input {
+        String? preCommand
+        Array[File] input_bams
+        String output_bam_path
+        String metrics_path
+        Int? compression_level
+        String? picardJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
 
-    # The program default for READ_NAME_REGEX is appropriate in nearly every case.
-    # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
-    # This can be desirable if you don't mind the estimated library size being wrong and optical duplicate detection is taking >7 days and failing
-    String? read_name_regex
+        # The program default for READ_NAME_REGEX is appropriate in nearly every case.
+        # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
+        # This can be desirable if you don't mind the estimated library size being wrong and optical duplicate detection is taking >7 days and failing
+        String? read_name_regex
+    }
 
     # Task is assuming query-sorted input so that the Secondary and Supplementary reads get marked correctly
     # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
@@ -234,15 +246,15 @@ task MarkDuplicates {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${output_bam_path})
-        ${toolCommand} \
+        ~{preCommand}
+        mkdir -p $(dirname ~{output_bam_path})
+        ~{toolCommand} \
           MarkDuplicates \
-          INPUT=${sep=' INPUT=' input_bams} \
-          OUTPUT=${output_bam_path} \
-          METRICS_FILE=${metrics_path} \
+          INPUT=~{sep=' INPUT=' input_bams} \
+          OUTPUT=~{output_bam_path} \
+          METRICS_FILE=~{metrics_path} \
           VALIDATION_STRINGENCY=SILENT \
-          ${"READ_NAME_REGEX=" + read_name_regex} \
+          ~{"READ_NAME_REGEX=" + read_name_regex} \
           OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
           CLEAR_DT="false" \
           CREATE_INDEX=true \
@@ -262,15 +274,17 @@ task MarkDuplicates {
 
 # Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
 task MergeVCFs {
-    String? preCommand
-    Array[File] inputVCFs
-    Array[File] inputVCFsIndexes
-    String outputVCFpath
-    Int? compressionLevel
-    String? picardJar
+    input {
+        String? preCommand
+        Array[File] inputVCFs
+        Array[File] inputVCFsIndexes
+        String outputVCFpath
+        Int? compressionLevel
+        String? picardJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
@@ -282,11 +296,11 @@ task MergeVCFs {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand} \
+        ~{preCommand}
+        ~{toolCommand} \
           MergeVcfs \
-          INPUT=${sep=' INPUT=' inputVCFs} \
-          OUTPUT=${outputVCFpath}
+          INPUT=~{sep=' INPUT=' inputVCFs} \
+          OUTPUT=~{outputVCFpath}
     }
 
     output {
@@ -300,14 +314,17 @@ task MergeVCFs {
 }
 
 task SamToFastq {
-    String? preCommand
-    File inputBam
-    String outputRead1
-    String? outputRead2
-    String? outputUnpaired
-    String? picardJar
-    Float? memory
-    Float? memoryMultiplier
+    input {
+        String? preCommand
+        File inputBam
+        String outputRead1
+        String? outputRead2
+        String? outputUnpaired
+        String? picardJar
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 16.0])) # High memory default to avoid crashes.
 
     String toolCommand = if defined(picardJar)
@@ -316,13 +333,13 @@ task SamToFastq {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand} \
+        ~{preCommand}
+        ~{toolCommand} \
         SamToFastq \
-        I=${inputBam} \
-        ${"FASTQ=" + outputRead1} \
-        ${"SECOND_END_FASTQ=" + outputRead2} \
-        ${"UNPAIRED_FASTQ=" + outputUnpaired}
+        I=~{inputBam} \
+        ~{"FASTQ=" + outputRead1} \
+        ~{"SECOND_END_FASTQ=" + outputRead2} \
+        ~{"UNPAIRED_FASTQ=" + outputUnpaired}
     }
 
     output {
@@ -337,13 +354,15 @@ task SamToFastq {
 }
 
 task ScatterIntervalList {
-    String? preCommand
-    File interval_list
-    Int scatter_count
-    String? picardJar
+    input {
+        String? preCommand
+        File interval_list
+        Int scatter_count
+        String? picardJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
 
     Int mem = ceil(select_first([memory, 4.0]))
 
@@ -353,15 +372,15 @@ task ScatterIntervalList {
 
     command {
         set -e -o pipefail
-        ${preCommand}
+        ~{preCommand}
         mkdir scatter_list
-        ${toolCommand} \
+        ~{toolCommand} \
           IntervalListTools \
-          SCATTER_COUNT=${scatter_count} \
+          SCATTER_COUNT=~{scatter_count} \
           SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
           UNIQUE=true \
           SORT=true \
-          INPUT=${interval_list} \
+          INPUT=~{interval_list} \
           OUTPUT=scatter_list
     }
 

@@ -1,14 +1,19 @@
-task BaseCounter {
-    String? preCommand
-    File? toolJar
-    File bam
-    File bamIndex
-    File refFlat
-    String outputDir
-    String prefix
+version 1.0
 
-    Float? memory
-    Float? memoryMultiplier
+task BaseCounter {
+    input {
+        String? preCommand
+        File? toolJar
+        File bam
+        File bamIndex
+        File refFlat
+        String outputDir
+        String prefix
+
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -17,13 +22,13 @@ task BaseCounter {
 
     command {
         set -e -o pipefail
-        mkdir -p ${outputDir}
-        ${preCommand}
-        ${toolCommand} \
-        -b ${bam} \
-        -r ${refFlat} \
-        -o ${outputDir} \
-        -p ${prefix}
+        mkdir -p ~{outputDir}
+        ~{preCommand}
+        ~{toolCommand} \
+        -b ~{bam} \
+        -r ~{refFlat} \
+        -o ~{outputDir} \
+        -p ~{prefix}
     }
 
     output {
@@ -69,20 +74,23 @@ task BaseCounter {
 }
 
 task ExtractAdaptersFastqc {
-    File? toolJar
-    String? preCommand
-    File inputFile
-    String outputDir
-    String? adapterOutputFilePath = outputDir + "/adapter.list"
-    String? contamsOutputFilePath = outputDir + "/contaminations.list"
-    Boolean? skipContams
-    File? knownContamFile
-    File? knownAdapterFile
-    Float? adapterCutoff
-    Boolean? outputAsFasta
+    input {
+        File? toolJar
+        String? preCommand
+        File inputFile
+        String outputDir
+        String? adapterOutputFilePath = outputDir + "/adapter.list"
+        String? contamsOutputFilePath = outputDir + "/contaminations.list"
+        Boolean? skipContams
+        File? knownContamFile
+        File? knownAdapterFile
+        Float? adapterCutoff
+        Boolean? outputAsFasta
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -91,17 +99,17 @@ task ExtractAdaptersFastqc {
 
     command {
     set -e
-    ${preCommand}
-    mkdir -p ${outputDir}
-    ${toolCommand} \
-    --inputFile ${inputFile} \
-    ${"--adapterOutputFile " + adapterOutputFilePath } \
-    ${"--contamsOutputFile " + contamsOutputFilePath } \
-    ${"--knownContamFile " + knownContamFile} \
-    ${"--knownAdapterFile " + knownAdapterFile} \
-    ${"--adapterCutoff " + adapterCutoff} \
-    ${true="--skipContams" false="" skipContams} \
-    ${true="--outputAsFasta" false="" outputAsFasta}
+    ~{preCommand}
+    mkdir -p ~{outputDir}
+    ~{toolCommand} \
+    --inputFile ~{inputFile} \
+    ~{"--adapterOutputFile " + adapterOutputFilePath } \
+    ~{"--contamsOutputFile " + contamsOutputFilePath } \
+    ~{"--knownContamFile " + knownContamFile} \
+    ~{"--knownAdapterFile " + knownAdapterFile} \
+    ~{"--adapterCutoff " + adapterCutoff} \
+    ~{true="--skipContams" false="" skipContams} \
+    ~{true="--outputAsFasta" false="" outputAsFasta}
     }
 
     output {
@@ -117,13 +125,16 @@ task ExtractAdaptersFastqc {
 }
 
 task FastqSplitter {
-    String? preCommand
-    File inputFastq
-    Array[String] outputPaths
-    File? toolJar
+    input {
+        String? preCommand
+        File inputFastq
+        Array[String] outputPaths
+        File? toolJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -132,14 +143,14 @@ task FastqSplitter {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${sep=') $(dirname ' outputPaths})
-        if [ ${length(outputPaths)} -gt 1 ]; then
-            ${toolCommand} \
-            -I ${inputFastq} \
-            -o ${sep=' -o ' outputPaths}
+        ~{preCommand}
+        mkdir -p $(dirname ~{sep=') $(dirname ' outputPaths})
+        if [ ~{length(outputPaths)} -gt 1 ]; then
+            ~{toolCommand} \
+            -I ~{inputFastq} \
+            -o ~{sep=' -o ' outputPaths}
           else
-            ln -sf ${inputFastq} ${outputPaths[0]}
+            ln -sf ~{inputFastq} ~{outputPaths[0]}
           fi
     }
 
@@ -153,17 +164,20 @@ task FastqSplitter {
 }
 
 task FastqSync {
-    String? preCommand
-    File ref1
-    File ref2
-    File in1
-    File in2
-    String out1path
-    String out2path
-    File? toolJar
-    
-    Float? memory
-    Float? memoryMultiplier
+    input {
+        String? preCommand
+        File ref1
+        File ref2
+        File in1
+        File in2
+        String out1path
+        String out2path
+        File? toolJar
+
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -172,15 +186,15 @@ task FastqSync {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${out1path}) $(dirname ${out2path})
-        ${toolCommand} \
-        --in1 ${in1} \
-        --in2 ${in2} \
-        --ref1 ${ref1} \
-        --ref2 ${ref2} \
-        --out1 ${out1path} \
-        --out2 ${out2path}
+        ~{preCommand}
+        mkdir -p $(dirname ~{out1path}) $(dirname ~{out2path})
+        ~{toolCommand} \
+        --in1 ~{in1} \
+        --in2 ~{in2} \
+        --ref1 ~{ref1} \
+        --ref2 ~{ref2} \
+        --out1 ~{out1path} \
+        --out2 ~{out2path}
     }
 
     output {
@@ -194,18 +208,21 @@ task FastqSync {
 }
 
 task SampleConfig {
-    File? toolJar
-    String? preCommand
-    Array[File]+ inputFiles
-    String keyFilePath
-    String? sample
-    String? library
-    String? readgroup
-    String? jsonOutputPath
-    String? tsvOutputPath
+    input {
+        File? toolJar
+        String? preCommand
+        Array[File]+ inputFiles
+        String keyFilePath
+        String? sample
+        String? library
+        String? readgroup
+        String? jsonOutputPath
+        String? tsvOutputPath
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -214,16 +231,16 @@ task SampleConfig {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        ${toolCommand} \
-        -i ${sep="-i " inputFiles} \
-        ${"--sample " + sample} \
-        ${"--library " + library} \
-        ${"--readgroup " + readgroup} \
-        ${"--jsonOutput " + jsonOutputPath} \
-        ${"--tsvOutput " + tsvOutputPath} \
-        > ${keyFilePath}
+        ~{preCommand}
+        mkdir -p . ~{"$(dirname " + jsonOutputPath + ")"} ~{"$(dirname " + tsvOutputPath + ")"}
+        ~{toolCommand} \
+        -i ~{sep="-i " inputFiles} \
+        ~{"--sample " + sample} \
+        ~{"--library " + library} \
+        ~{"--readgroup " + readgroup} \
+        ~{"--jsonOutput " + jsonOutputPath} \
+        ~{"--tsvOutput " + tsvOutputPath} \
+        > ~{keyFilePath}
     }
 
     output {
@@ -238,16 +255,18 @@ task SampleConfig {
 }
 
 task ScatterRegions {
-    String? preCommand
-    File refFasta
-    File refDict
-    String outputDirPath
-    File? toolJar
-    Int? scatterSize
-    File? regions
+    input {
+        String? preCommand
+        File refFasta
+        File refDict
+        String outputDirPath
+        File? toolJar
+        Int? scatterSize
+        File? regions
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -256,13 +275,13 @@ task ScatterRegions {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p ${outputDirPath}
-        ${toolCommand} \
-          -R ${refFasta} \
-          -o ${outputDirPath} \
-          ${"-s " + scatterSize} \
-          ${"-L " + regions}
+        ~{preCommand}
+        mkdir -p ~{outputDirPath}
+        ~{toolCommand} \
+          -R ~{refFasta} \
+          -o ~{outputDirPath} \
+          ~{"-s " + scatterSize} \
+          ~{"-L " + regions}
     }
 
     output {
@@ -275,12 +294,15 @@ task ScatterRegions {
 }
 
 task Seqstat {
-    String? preCommand
-    File? toolJar
-    File fastq
-    String outputFile
-    Float? memory
-    Float? memoryMultiplier
+    input {
+        String? preCommand
+        File? toolJar
+        File fastq
+        String outputFile
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -289,11 +311,11 @@ task Seqstat {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${outputFile})
-        ${toolCommand} \
-        --fastq ${fastq} \
-        --output ${outputFile}
+        ~{preCommand}
+        mkdir -p $(dirname ~{outputFile})
+        ~{toolCommand} \
+        --fastq ~{fastq} \
+        --output ~{outputFile}
     }
 
     output {
@@ -306,16 +328,19 @@ task Seqstat {
 }
 
 task ValidateAnnotation {
-    String? preCommand
-    File? toolJar
-    File? refRefflat
-    File? gtfFile
-    File refFasta
-    File refFastaIndex
-    File refDict
+    input {
+        String? preCommand
+        File? toolJar
+        File? refRefflat
+        File? gtfFile
+        File refFasta
+        File refFastaIndex
+        File refDict
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -324,11 +349,11 @@ task ValidateAnnotation {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand} \
-        ${"-r " + refRefflat} \
-        ${"-g " + gtfFile} \
-        -R ${refFasta}
+        ~{preCommand}
+        ~{toolCommand} \
+        ~{"-r " + refRefflat} \
+        ~{"-g " + gtfFile} \
+        -R ~{refFasta}
     }
 
     output {
@@ -341,13 +366,16 @@ task ValidateAnnotation {
 }
 
 task ValidateFastq {
-    String? preCommand
-    File? toolJar
-    File fastq1
-    File? fastq2
+    input {
+        String? preCommand
+        File? toolJar
+        File fastq1
+        File? fastq2
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -356,10 +384,10 @@ task ValidateFastq {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand} \
-        --fastq1 ${fastq1} \
-        ${"--fastq2 " + fastq2}
+        ~{preCommand}
+        ~{toolCommand} \
+        --fastq1 ~{fastq1} \
+        ~{"--fastq2 " + fastq2}
     }
 
     output {
@@ -372,16 +400,19 @@ task ValidateFastq {
 }
 
 task ValidateVcf {
-    String? preCommand
-    File? toolJar
-    File vcfFile
-    File vcfIndex
-    File refFasta
-    File refFastaIndex
-    File refDict
+    input{
+        String? preCommand
+        File? toolJar
+        File vcfFile
+        File vcfIndex
+        File refFasta
+        File refFastaIndex
+        File refDict
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -390,10 +421,10 @@ task ValidateVcf {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand} \
-        -i ${vcfFile} \
-        -R ${refFasta}
+        ~{preCommand}
+        ~{toolCommand} \
+        -i ~{vcfFile} \
+        -R ~{refFasta}
     }
 
     output {
