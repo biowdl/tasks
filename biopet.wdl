@@ -311,6 +311,8 @@ task ValidateAnnotation {
     File? refRefflat
     File? gtfFile
     File refFasta
+    File refFastaIndex
+    File refDict
 
     Float? memory
     Float? memoryMultiplier
@@ -373,7 +375,10 @@ task ValidateVcf {
     String? preCommand
     File? toolJar
     File vcfFile
+    File vcfindex
     File refFasta
+    File refFastaIndex
+    File refDict
 
     Float? memory
     Float? memoryMultiplier
