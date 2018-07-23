@@ -1,11 +1,14 @@
+version 1.0
 # Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2017
 
 # Bioconda installs
 
 task installPrefix {
-    Array[String] requirements
-    String prefix
-    String? condaPath
+    input {
+        Array[String] requirements
+        String prefix
+        String? condaPath
+    }
     command {
         ${default="conda" condaPath} create \
         --json -q \
