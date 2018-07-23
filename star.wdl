@@ -1,20 +1,24 @@
+version 1.0
+
 task Star {
-    String? preCommand
+    input {
+        String? preCommand
 
-    Array[File] inputR1
-    Array[File]? inputR2
-    String genomeDir
-    String outFileNamePrefix
+        Array[File] inputR1
+        Array[File]? inputR2
+        String genomeDir
+        String outFileNamePrefix
 
-    String? outSAMtype
-    String? readFilesCommand
-    Int? runThreadN
-    String? outStd
-    String? twopassMode
-    Array[String]? outSAMattrRGline
-    Int? limitBAMsortRAM
+        String? outSAMtype
+        String? readFilesCommand
+        Int? runThreadN
+        String? outStd
+        String? twopassMode
+        Array[String]? outSAMattrRGline
+        Int? limitBAMsortRAM
 
-    Int? memory
+        Int? memory
+    }
 
     #TODO needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
@@ -24,19 +28,19 @@ task Star {
 
     command {
         set -e -o pipefail
-        mkdir -p ${sub(outFileNamePrefix, basename(outFileNamePrefix) + "$", "")}
-        ${preCommand}
+        mkdir -p ~{sub(outFileNamePrefix, basename(outFileNamePrefix) + "$", "")}
+        ~{preCommand}
         STAR \
-        --readFilesIn ${sep=',' inputR1} ${sep="," inputR2} \
-        --outFileNamePrefix ${outFileNamePrefix} \
-        --genomeDir ${genomeDir} \
-        --outSAMtype ${default="BAM SortedByCoordinate" outSAMtype} \
-        --readFilesCommand ${default="zcat" readFilesCommand} \
-        ${"--runThreadN " + runThreadN} \
-        ${"--outStd " + outStd} \
-        ${"--twopassMode " + twopassMode} \
-        ${"--limitBAMsortRAM " + limitBAMsortRAM} \
-        ${true="--outSAMattrRGline " false="" defined(outSAMattrRGline)} ${sep=" , " outSAMattrRGline}
+        --readFilesIn ~{sep=',' inputR1} ~{sep="," inputR2} \
+        --outFileNamePrefix ~{outFileNamePrefix} \
+        --genomeDir ~{genomeDir} \
+        --outSAMtype ~{default="BAM SortedByCoordinate" outSAMtype} \
+        --readFilesCommand ~{default="zcat" readFilesCommand} \
+        ~{"--runThreadN " + runThreadN} \
+        ~{"--outStd " + outStd} \
+        ~{"--twopassMode " + twopassMode} \
+        ~{"--limitBAMsortRAM " + limitBAMsortRAM} \
+        ~{true="--outSAMattrRGline " false="" defined(outSAMattrRGline)} ~{sep=" , " outSAMattrRGline}
     }
 
     output {
@@ -50,13 +54,15 @@ task Star {
 }
 
 task makeStarRGline {
-    String sample
-    String library
-    String? platform
-    String readgroup
+    input {
+        String sample
+        String library
+        String? platform
+        String readgroup
+    }
 
     command {
-        printf '"ID:${readgroup}" "LB:${library}" "PL:${default="ILLUMINA" platform}" "SM:${sample}"'
+        printf '"ID:~{readgroup}" "LB:~{library}" "PL:~{default="ILLUMINA" platform}" "SM:~{sample}"'
     }
 
     output {
