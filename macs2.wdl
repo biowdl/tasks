@@ -5,7 +5,7 @@ task PeakCalling {
     String sampleName
     Int? threads
     Int? memory
-    Boolean? nomodel
+    Boolean? nomodel = false
 
     command {
         set -e -o pipefail
@@ -14,7 +14,7 @@ task PeakCalling {
         --treatment ${sep = ' ' bamFiles} \
         --outdir ${outDir} \
         --name ${sampleName} \
-        ${true='--nomodel' false='' default='false' nomodel}
+        ${true='--nomodel' false='' nomodel}
     }
 
     output {
