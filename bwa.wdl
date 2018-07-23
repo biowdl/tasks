@@ -1,23 +1,26 @@
+version 1.0
+
 task mem {
-    String? preCommand
-    File inputR1
-    File? inputR2
-    File referenceFasta
-    Array[File] indexFiles # These indexFiles need to be added, otherwise cromwell will not find them.
-    String outputPath
-    String? readgroup
+    input {
+        String? preCommand
+        File inputR1
+        File? inputR2
+        File referenceFasta
+        Array[File] indexFiles # These indexFiles need to be added, otherwise cromwell will not find them.
+        String outputPath
+        String? readgroup
 
-    Int? threads
-    Int? memory
-
+        Int? threads
+        Int? memory
+    }
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname ${outputPath})
-        ${preCommand}
-        bwa mem ${"-t " + threads} \
-        ${"-R '" + readgroup + "'"} \
-        ${referenceFasta} ${inputR1} ${inputR2} | samtools sort --output-fmt BAM - > ${outputPath}
+        mkdir -p $(dirname ~{outputPath})
+        ~{preCommand}
+        bwa mem ~{"-t " + threads} \
+        ~{"-R '" + readgroup + "'"} \
+        ~{referenceFasta} ~{inputR1} ~{inputR2} | samtools sort --output-fmt BAM - > ~{outputPath}
     }
 
     output {
@@ -30,26 +33,29 @@ task mem {
 }
 
 task index {
-    File fasta
-    String? preCommand
-    String? constructionAlgorithm
-    Int? blockSize
-    String? outputDir
+    input {
+        File fasta
+        String? preCommand
+        String? constructionAlgorithm
+        Int? blockSize
+        String? outputDir
+    }
+
     String fastaFilename = basename(fasta)
     String outputFile = if (defined(outputDir)) then outputDir + "/" + fastaFilename else fasta
 
     command {
         set -e -o pipefail
-        ${"mkdir -p " + outputDir}
-        ${preCommand}
-        if [[ ! '${outputDir}' =  '' ]]
+        ~{"mkdir -p " + outputDir}
+        ~{preCommand}
+        if [[ ! '~{outputDir}' =  '' ]]
         then
-            ln -sf ${fasta} ${outputDir + "/"}${fastaFilename}
+            ln -sf ~{fasta} ~{outputDir + "/"}~{fastaFilename}
         fi
         bwa index \
-        ${"-a " + constructionAlgorithm} \
-        ${"-b" + blockSize} \
-        ${outputFile}
+        ~{"-a " + constructionAlgorithm} \
+        ~{"-b" + blockSize} \
+        ~{outputFile}
     }
 
     output {
