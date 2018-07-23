@@ -400,7 +400,7 @@ task ValidateFastq {
 }
 
 task ValidateVcf {
-    input{
+    input {
         String? preCommand
         File? toolJar
         File vcfFile
