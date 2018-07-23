@@ -12,7 +12,7 @@ task PeakCalling {
         ${preCommand}
         macs2 callpeak \
         --treatment ${sep = ' ' bamFiles} \
-        --outdir ${outDir} \
+        --outdir ${outDir} + "/macs2/" \
         --name ${sampleName} \
         ${default=false true='--nomodel' false='' nomodel}
     }
