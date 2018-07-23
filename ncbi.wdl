@@ -1,41 +1,44 @@
+version 1.0
+
 task genomeDownload {
-    String outputPath
-    String? section = "refseq"
-    String? format = "all"
-    String? assemblyLevel = "all"
-    String? taxId
-    String? refseqCategory
-    Boolean? humanReadable
-    String? ncbiBaseUri
-    Int? parallel
-    Int? retries
-    Boolean? verbose=true
-    Boolean? debug
-    String? domain = "all"
+    input {
+        String outputPath
+        String? section = "refseq"
+        String? format = "all"
+        String? assemblyLevel = "all"
+        String? taxId
+        String? refseqCategory
+        Boolean? humanReadable
+        String? ncbiBaseUri
+        Int? parallel
+        Int? retries
+        Boolean? verbose=true
+        Boolean? debug
+        String? domain = "all"
 
-    String? executable = "ncbi-genome-download"
-    String? preCommand
-
+        String? executable = "ncbi-genome-download"
+        String? preCommand
+    }
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${executable} \
-        ${"--section " + section} \
-        ${"--format " + format} \
-        ${"--assembly-level " + assemblyLevel } \
-        ${"--taxid " + taxId } \
-        ${"--refseq-category " + refseqCategory} \
-        ${"--output-folder " + outputPath } \
-        ${true="--human-readable" false="" humanReadable} \
-        ${"--uri " + ncbiBaseUri } \
-        ${"--parallel " + parallel } \
-        ${"--retries " + retries } \
-        ${true="--verbose" false="" verbose } \
-        ${true="--debug" false ="" debug } \
-        ${domain}
+        ~{preCommand}
+        ~{executable} \
+        ~{"--section " + section} \
+        ~{"--format " + format} \
+        ~{"--assembly-level " + assemblyLevel } \
+        ~{"--taxid " + taxId } \
+        ~{"--refseq-category " + refseqCategory} \
+        ~{"--output-folder " + outputPath } \
+        ~{true="--human-readable" false="" humanReadable} \
+        ~{"--uri " + ncbiBaseUri } \
+        ~{"--parallel " + parallel } \
+        ~{"--retries " + retries } \
+        ~{true="--verbose" false="" verbose } \
+        ~{true="--debug" false ="" debug } \
+        ~{domain}
 
         # Check md5sums for all downloaded files
-        for folder in $(realpath ${outputPath})/*/*/*
+        for folder in $(realpath ~{outputPath})/*/*/*
             do
                 (
                 md5sums="$(
@@ -69,20 +72,22 @@ task genomeDownload {
 
 
 task downloadNtFasta{
-    String libraryPath
-    String seqTaxMapPath
-    Boolean? unzip = true
-    String ntDir = libraryPath + "/nt"
-    String ntFilePath = ntDir + "/nt.fna"
+    input {
+        String libraryPath
+        String seqTaxMapPath
+        Boolean? unzip = true
+        String ntDir = libraryPath + "/nt"
+        String ntFilePath = ntDir + "/nt.fna"
+    }
     command {
         set -e -o pipefail
-        mkdir -p ${ntDir}
-        rsync -av --partial rsync://ftp.ncbi.nih.gov/blast/db/FASTA/nt.gz* ${ntDir}
-        (cd ${ntDir} && md5sum -c nt.gz.md5)
+        mkdir -p ~{ntDir}
+        rsync -av --partial rsync://ftp.ncbi.nih.gov/blast/db/FASTA/nt.gz* ~{ntDir}
+        (cd ~{ntDir} && md5sum -c nt.gz.md5)
         # Only unzip when necessary
-        if ${true='true' false='false' unzip}
+        if ~{true='true' false='false' unzip}
         then
-            zcat ${ntDir}/nt.gz > ${ntFilePath}
+            zcat ~{ntDir}/nt.gz > ~{ntFilePath}
         fi
         }
     output {
@@ -96,16 +101,18 @@ task downloadNtFasta{
 }
 
 task downloadAccessionToTaxId {
-    String downloadDir
-    Boolean gzip = false
+    input {
+        String downloadDir
+        Boolean gzip = false
+    }
     command {
         set -e -o pipefail
-        mkdir -p ${downloadDir}
-        rsync -av --partial rsync://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_*.accession2taxid.gz* ${downloadDir}
-        (cd ${downloadDir} && md5sum -c *.md5)
-        for file in ${downloadDir}/nucl_*.accession2taxid.gz
+        mkdir -p ~{downloadDir}
+        rsync -av --partial rsync://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_*.accession2taxid.gz* ~{downloadDir}
+        (cd ~{downloadDir} && md5sum -c *.md5)
+        for file in ~{downloadDir}/nucl_*.accession2taxid.gz
         do
-            zcat $file | tail -n +2 | cut -f 2,3 ${true="| gzip " false='' gzip}> $file.seqtaxmap${true='.gz' false='' gzip}
+            zcat $file | tail -n +2 | cut -f 2,3 ~{true="| gzip " false='' gzip}> $file.seqtaxmap~{true='.gz' false='' gzip}
         done
         }
     output {
