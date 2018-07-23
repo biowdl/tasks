@@ -375,7 +375,7 @@ task ValidateVcf {
     String? preCommand
     File? toolJar
     File vcfFile
-    File vcfindex
+    File vcfIndex
     File refFasta
     File refFastaIndex
     File refDict
