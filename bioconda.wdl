@@ -9,8 +9,8 @@ task installPrefix {
         String prefix
         String? condaPath
     }
-    command {
-        ${default="conda" condaPath} create \
+    command <<<
+        ~{default="conda" condaPath} create \
         --json -q \
         --yes \
         --override-channels \
@@ -19,8 +19,8 @@ task installPrefix {
         --channel defaults \
         --channel r \
         --prefix ${prefix} \
-        ${sep=' ' requirements}
-    }
+        ~{sep=' ' requirements}
+    >>>
     output {
         File condaEnvPath=prefix
         File condaJson=stdout()

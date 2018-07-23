@@ -21,13 +21,13 @@ task BaseCounter {
 
     command {
         set -e -o pipefail
-        mkdir -p ${outputDir}
-        ${preCommand}
-        ${toolCommand} \
-        -b ${bam} \
-        -r ${refFlat} \
-        -o ${outputDir} \
-        -p ${prefix}
+        mkdir -p ~{outputDir}
+        ~{preCommand}
+        ~{toolCommand} \
+        -b ~{bam} \
+        -r ~{refFlat} \
+        -o ~{outputDir} \
+        -p ~{prefix}
     }
 
     output {
@@ -97,17 +97,17 @@ task ExtractAdaptersFastqc {
 
     command {
     set -e
-    ${preCommand}
-    mkdir -p ${outputDir}
-    ${toolCommand} \
-    --inputFile ${inputFile} \
-    ${"--adapterOutputFile " + adapterOutputFilePath } \
-    ${"--contamsOutputFile " + contamsOutputFilePath } \
-    ${"--knownContamFile " + knownContamFile} \
-    ${"--knownAdapterFile " + knownAdapterFile} \
-    ${"--adapterCutoff " + adapterCutoff} \
-    ${true="--skipContams" false="" skipContams} \
-    ${true="--outputAsFasta" false="" outputAsFasta}
+    ~{preCommand}
+    mkdir -p ~{outputDir}
+    ~{toolCommand} \
+    --inputFile ~{inputFile} \
+    ~{"--adapterOutputFile " + adapterOutputFilePath } \
+    ~{"--contamsOutputFile " + contamsOutputFilePath } \
+    ~{"--knownContamFile " + knownContamFile} \
+    ~{"--knownAdapterFile " + knownAdapterFile} \
+    ~{"--adapterCutoff " + adapterCutoff} \
+    ~{true="--skipContams" false="" skipContams} \
+    ~{true="--outputAsFasta" false="" outputAsFasta}
     }
 
     output {
@@ -140,14 +140,14 @@ task FastqSplitter {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${sep=') $(dirname ' outputPaths})
-        if [ ${length(outputPaths)} -gt 1 ]; then
-            ${toolCommand} \
-            -I ${inputFastq} \
-            -o ${sep=' -o ' outputPaths}
+        ~{preCommand}
+        mkdir -p $(dirname ~{sep=') $(dirname ' outputPaths})
+        if [ ~{length(outputPaths)} -gt 1 ]; then
+            ~{toolCommand} \
+            -I ~{inputFastq} \
+            -o ~{sep=' -o ' outputPaths}
           else
-            ln -sf ${inputFastq} ${outputPaths[0]}
+            ln -sf ~{inputFastq} ~{outputPaths[0]}
           fi
     }
 
@@ -182,15 +182,15 @@ task FastqSync {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${out1path}) $(dirname ${out2path})
-        ${toolCommand} \
-        --in1 ${in1} \
-        --in2 ${in2} \
-        --ref1 ${ref1} \
-        --ref2 ${ref2} \
-        --out1 ${out1path} \
-        --out2 ${out2path}
+        ~{preCommand}
+        mkdir -p $(dirname ~{out1path}) $(dirname ~{out2path})
+        ~{toolCommand} \
+        --in1 ~{in1} \
+        --in2 ~{in2} \
+        --ref1 ~{ref1} \
+        --ref2 ~{ref2} \
+        --out1 ~{out1path} \
+        --out2 ~{out2path}
     }
 
     output {
@@ -226,16 +226,16 @@ task SampleConfig {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p . ${"$(dirname " + jsonOutputPath + ")"} ${"$(dirname " + tsvOutputPath + ")"}
-        ${toolCommand} \
-        -i ${sep="-i " inputFiles} \
-        ${"--sample " + sample} \
-        ${"--library " + library} \
-        ${"--readgroup " + readgroup} \
-        ${"--jsonOutput " + jsonOutputPath} \
-        ${"--tsvOutput " + tsvOutputPath} \
-        > ${keyFilePath}
+        ~{preCommand}
+        mkdir -p . ~{"$(dirname " + jsonOutputPath + ")"} ~{"$(dirname " + tsvOutputPath + ")"}
+        ~{toolCommand} \
+        -i ~{sep="-i " inputFiles} \
+        ~{"--sample " + sample} \
+        ~{"--library " + library} \
+        ~{"--readgroup " + readgroup} \
+        ~{"--jsonOutput " + jsonOutputPath} \
+        ~{"--tsvOutput " + tsvOutputPath} \
+        > ~{keyFilePath}
     }
 
     output {
@@ -270,13 +270,13 @@ task ScatterRegions {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p ${outputDirPath}
-        ${toolCommand} \
-          -R ${refFasta} \
-          -o ${outputDirPath} \
-          ${"-s " + scatterSize} \
-          ${"-L " + regions}
+        ~{preCommand}
+        mkdir -p ~{outputDirPath}
+        ~{toolCommand} \
+          -R ~{refFasta} \
+          -o ~{outputDirPath} \
+          ~{"-s " + scatterSize} \
+          ~{"-L " + regions}
     }
 
     output {
@@ -305,11 +305,11 @@ task Seqstat {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        mkdir -p $(dirname ${outputFile})
-        ${toolCommand} \
-        --fastq ${fastq} \
-        --output ${outputFile}
+        ~{preCommand}
+        mkdir -p $(dirname ~{outputFile})
+        ~{toolCommand} \
+        --fastq ~{fastq} \
+        --output ~{outputFile}
     }
 
     output {
@@ -339,11 +339,11 @@ task ValidateAnnotation {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand} \
-        ${"-r" + refRefflat} \
-        ${"-g" + gtfFile} \
-        -R ${refFasta}
+        ~{preCommand}
+        ~{toolCommand} \
+        ~{"-r" + refRefflat} \
+        ~{"-g" + gtfFile} \
+        -R ~{refFasta}
     }
 
     output {
@@ -373,10 +373,10 @@ task ValidateFastq {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand}\
-        --fastq1 ${fastq1} \
-        ${"--fastq2 " + fastq2}
+        ~{preCommand}
+        ~{toolCommand}\
+        --fastq1 ~{fastq1} \
+        ~{"--fastq2 " + fastq2}
     }
 
     output {
@@ -406,10 +406,10 @@ task ValidateVcf {
 
     command {
         set -e -o pipefail
-        ${preCommand}
-        ${toolCommand}\
-        -i ${vcfFile} \
-        -R ${refFasta}
+        ~{preCommand}
+        ~{toolCommand}\
+        -i ~{vcfFile} \
+        -R ~{refFasta}
     }
 
     output {
