@@ -341,8 +341,8 @@ task ValidateAnnotation {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        ~{"-r" + refRefflat} \
-        ~{"-g" + gtfFile} \
+        ~{"-r " + refRefflat} \
+        ~{"-g " + gtfFile} \
         -R ~{refFasta}
     }
 
@@ -374,7 +374,7 @@ task ValidateFastq {
     command {
         set -e -o pipefail
         ~{preCommand}
-        ~{toolCommand}\
+        ~{toolCommand} \
         --fastq1 ~{fastq1} \
         ~{"--fastq2 " + fastq2}
     }
@@ -407,7 +407,7 @@ task ValidateVcf {
     command {
         set -e -o pipefail
         ~{preCommand}
-        ~{toolCommand}\
+        ~{toolCommand} \
         -i ~{vcfFile} \
         -R ~{refFasta}
     }
