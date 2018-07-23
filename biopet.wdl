@@ -1,16 +1,20 @@
+version 1.0
+
 task BaseCounter {
-    String? preCommand
-    File? toolJar
-    File bam
-    File bamIndex
-    File refFlat
-    String outputDir
-    String prefix
+    input {
+        String? preCommand
+        File? toolJar
+        File bam
+        File bamIndex
+        File refFlat
+        String outputDir
+        String prefix
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
         then "java -Xmx" + mem + "G -jar " +toolJar
         else "biopet-basecounter -Xmx" + mem + "G"
@@ -69,20 +73,22 @@ task BaseCounter {
 }
 
 task ExtractAdaptersFastqc {
-    File? toolJar
-    String? preCommand
-    File inputFile
-    String outputDir
-    String? adapterOutputFilePath = outputDir + "/adapter.list"
-    String? contamsOutputFilePath = outputDir + "/contaminations.list"
-    Boolean? skipContams
-    File? knownContamFile
-    File? knownAdapterFile
-    Float? adapterCutoff
-    Boolean? outputAsFasta
+    input {
+        File? toolJar
+        String? preCommand
+        File inputFile
+        String outputDir
+        String? adapterOutputFilePath = outputDir + "/adapter.list"
+        String? contamsOutputFilePath = outputDir + "/contaminations.list"
+        Boolean? skipContams
+        File? knownContamFile
+        File? knownAdapterFile
+        Float? adapterCutoff
+        Boolean? outputAsFasta
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -117,15 +123,17 @@ task ExtractAdaptersFastqc {
 }
 
 task FastqSplitter {
-    String? preCommand
-    File inputFastq
-    Array[String] outputPaths
-    File? toolJar
+    input {
+        String? preCommand
+        File inputFastq
+        Array[String] outputPaths
+        File? toolJar
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
+
     Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
         then "java -Xmx" + mem + "G -jar " +toolJar
         else "biopet-fastqsplitter -Xmx" + mem + "G"
@@ -153,17 +161,19 @@ task FastqSplitter {
 }
 
 task FastqSync {
-    String? preCommand
-    File ref1
-    File ref2
-    File in1
-    File in2
-    String out1path
-    String out2path
-    File? toolJar
-    
-    Float? memory
-    Float? memoryMultiplier
+    input {
+        String? preCommand
+        File ref1
+        File ref2
+        File in1
+        File in2
+        String out1path
+        String out2path
+        File? toolJar
+
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -194,18 +204,20 @@ task FastqSync {
 }
 
 task SampleConfig {
-    File? toolJar
-    String? preCommand
-    Array[File]+ inputFiles
-    String keyFilePath
-    String? sample
-    String? library
-    String? readgroup
-    String? jsonOutputPath
-    String? tsvOutputPath
+    input {
+        File? toolJar
+        String? preCommand
+        Array[File]+ inputFiles
+        String keyFilePath
+        String? sample
+        String? library
+        String? readgroup
+        String? jsonOutputPath
+        String? tsvOutputPath
+        Float? memory
+        Float? memoryMultiplier
+    }
 
-    Float? memory
-    Float? memoryMultiplier
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -238,16 +250,18 @@ task SampleConfig {
 }
 
 task ScatterRegions {
-    String? preCommand
-    File refFasta
-    File refDict
-    String outputDirPath
-    File? toolJar
-    Int? scatterSize
-    File? regions
+    input {
+        String? preCommand
+        File refFasta
+        File refDict
+        String outputDirPath
+        File? toolJar
+        Int? scatterSize
+        File? regions
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -275,12 +289,14 @@ task ScatterRegions {
 }
 
 task Seqstat {
-    String? preCommand
-    File? toolJar
-    File fastq
-    String outputFile
-    Float? memory
-    Float? memoryMultiplier
+    input {
+        String? preCommand
+        File? toolJar
+        File fastq
+        String outputFile
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -306,14 +322,15 @@ task Seqstat {
 }
 
 task ValidateAnnotation {
-    String? preCommand
-    File? toolJar
-    File? refRefflat
-    File? gtfFile
-    File refFasta
-
-    Float? memory
-    Float? memoryMultiplier
+    input {
+        String? preCommand
+        File? toolJar
+        File? refRefflat
+        File? gtfFile
+        File refFasta
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -339,13 +356,15 @@ task ValidateAnnotation {
 }
 
 task ValidateFastq {
-    String? preCommand
-    File? toolJar
-    File fastq1
-    File? fastq2
+    input {
+        String? preCommand
+        File? toolJar
+        File fastq1
+        File? fastq2
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -370,13 +389,15 @@ task ValidateFastq {
 }
 
 task ValidateVcf {
-    String? preCommand
-    File? toolJar
-    File vcfFile
-    File refFasta
+    input {
+        String? preCommand
+        File? toolJar
+        File vcfFile
+        File refFasta
 
-    Float? memory
-    Float? memoryMultiplier
+        Float? memory
+        Float? memoryMultiplier
+    }
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
