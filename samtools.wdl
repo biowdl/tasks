@@ -141,18 +141,18 @@ task view {
     }
 
     command {
-    set -e -o pipefail
-    ~{preCommand}
-    samtools view \
-    ~{"-T " + referenceFasta} \
-    ~{"-o " + outputFileName} \
-    ~{true="-b " false="" outputBam} \
-    ~{true="-u " false="" uncompressedBamOutput} \
-    ~{"-f " + includeFilter} \
-    ~{"-F " + excludeFilter} \
-    ~{"-G " + excludeSpecificFilter} \
-    ~{"--threads " + threads - 1} \
-    ~{inFile}
+        set -e -o pipefail
+        ~{preCommand}
+        samtools view \
+        ~{"-T " + referenceFasta} \
+        ~{"-o " + outputFileName} \
+        ~{true="-b " false="" outputBam} \
+        ~{true="-u " false="" uncompressedBamOutput} \
+        ~{"-f " + includeFilter} \
+        ~{"-F " + excludeFilter} \
+        ~{"-G " + excludeSpecificFilter} \
+        ~{"--threads " + threads - 1} \
+        ~{inFile}
     }
 
     output {

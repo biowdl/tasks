@@ -23,8 +23,7 @@ task Stringtie {
         ~{true="fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
-        ~{alignedReads} \
-
+        ~{alignedReads}
     }
 
     output {

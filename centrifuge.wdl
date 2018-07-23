@@ -120,7 +120,7 @@ task Classify {
 }
 
 task Download {
-        input {
+    input {
         String libraryPath
         Array[String]? domain
         String? executable = "centrifuge-download"
