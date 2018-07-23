@@ -324,8 +324,8 @@ task ValidateAnnotation {
         set -e -o pipefail
         ${preCommand}
         ${toolCommand} \
-        ${"-r" + refRefflat} \
-        ${"-g" + gtfFile} \
+        ${"-r " + refRefflat} \
+        ${"-g " + gtfFile} \
         -R ${refFasta}
     }
 
