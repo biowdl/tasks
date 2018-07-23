@@ -15,6 +15,7 @@ task BaseCounter {
     }
 
     Int mem = ceil(select_first([memory, 4.0]))
+
     String toolCommand = if defined(toolJar)
         then "java -Xmx" + mem + "G -jar " +toolJar
         else "biopet-basecounter -Xmx" + mem + "G"
@@ -135,6 +136,7 @@ task FastqSplitter {
     }
 
     Int mem = ceil(select_first([memory, 4.0]))
+
     String toolCommand = if defined(toolJar)
         then "java -Xmx" + mem + "G -jar " +toolJar
         else "biopet-fastqsplitter -Xmx" + mem + "G"
@@ -216,6 +218,7 @@ task SampleConfig {
         String? readgroup
         String? jsonOutputPath
         String? tsvOutputPath
+
         Float? memory
         Float? memoryMultiplier
     }
@@ -331,6 +334,9 @@ task ValidateAnnotation {
         File? refRefflat
         File? gtfFile
         File refFasta
+        File refFastaIndex
+        File refDict
+
         Float? memory
         Float? memoryMultiplier
     }
@@ -398,7 +404,10 @@ task ValidateVcf {
         String? preCommand
         File? toolJar
         File vcfFile
+        File vcfIndex
         File refFasta
+        File refFastaIndex
+        File refDict
 
         Float? memory
         Float? memoryMultiplier
