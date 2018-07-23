@@ -26,6 +26,7 @@ task mem {
     output {
         File bamFile = outputPath
     }
+
     runtime{
         cpu: select_first([threads,1])
         memory: select_first([memory,8])
@@ -62,6 +63,7 @@ task index {
         File indexedFasta = outputFile
         Array[File] indexFiles = [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
     }
+
     parameter_meta {
         fasta: "Fasta file to be indexed"
         constructionAlgorithm: "-a STR    BWT construction algorithm: bwtsw, is or rb2 [auto]"

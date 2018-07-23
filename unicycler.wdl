@@ -46,6 +46,7 @@ task unicycler {
         String? scores
         String? lowScore
     }
+
     command {
         set -e -o pipefail
         mkdir -p ~{out}
@@ -92,11 +93,13 @@ task unicycler {
         ~{"--scores " + scores } \
         ~{"--low_score " + lowScore }
     }
+
     output {
         File assemblyFasta = out + "/assembly.fasta"
         File assemblyGfa = out + "/assembly.gfa"
         File log = out + "/unicycler.log"
     }
+
     runtime {
         cpu: select_first([threads])
         memory: select_first([memory])

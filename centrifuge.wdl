@@ -28,6 +28,7 @@ task Build {
         Int? threads
         Int? memory
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}
@@ -52,6 +53,7 @@ task Build {
         ~{inputFasta} \
         ~{centrifugeIndexBase}
     }
+
     runtime {
         cpu: select_first([threads, 8])
         memory: select_first([memory, 20])
@@ -136,6 +138,7 @@ task Download {
         Boolean? modifyHeader = false
         Boolean? downloadGiMap = false
     }
+
     # This will use centrifuge-download to download.
     # The bash statement at the beginning is to make sure
     # the directory for the SeqTaxMapPath exists.
@@ -201,6 +204,7 @@ task Kreport {
         Int? cores
         Int? memory
     }
+
     String kreportFilePath = outputDir + "/" + prefix + "." + suffix
     command {
         set -e -o pipefail

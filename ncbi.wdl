@@ -19,6 +19,7 @@ task genomeDownload {
         String? executable = "ncbi-genome-download"
         String? preCommand
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}
@@ -79,6 +80,7 @@ task downloadNtFasta{
         String ntDir = libraryPath + "/nt"
         String ntFilePath = ntDir + "/nt.fna"
     }
+
     command {
         set -e -o pipefail
         mkdir -p ~{ntDir}
@@ -105,6 +107,7 @@ task downloadAccessionToTaxId {
         String downloadDir
         Boolean gzip = false
     }
+
     command {
         set -e -o pipefail
         mkdir -p ~{downloadDir}

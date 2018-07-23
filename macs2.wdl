@@ -10,6 +10,7 @@ task PeakCalling {
         Int? memory
         Boolean? nomodel
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}

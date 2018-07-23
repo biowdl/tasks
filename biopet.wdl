@@ -89,6 +89,7 @@ task ExtractAdaptersFastqc {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -174,6 +175,7 @@ task FastqSync {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -297,6 +299,7 @@ task Seqstat {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -331,6 +334,7 @@ task ValidateAnnotation {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -365,6 +369,7 @@ task ValidateFastq {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
@@ -398,6 +403,7 @@ task ValidateVcf {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)

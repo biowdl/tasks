@@ -27,6 +27,7 @@ task CollectMultipleMetrics {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(picardJar)
@@ -94,6 +95,7 @@ task CollectRnaSeqMetrics {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(picardJar)
@@ -231,8 +233,8 @@ task MarkDuplicates {
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
         # This can be desirable if you don't mind the estimated library size being wrong and optical duplicate detection is taking >7 days and failing
         String? read_name_regex
-
     }
+
     # Task is assuming query-sorted input so that the Secondary and Supplementary reads get marked correctly
     # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
     # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
@@ -283,6 +285,7 @@ task MergeVCFs {
         Float? memory
         Float? memoryMultiplier
     }
+
     # Using MergeVcfs instead of GatherVcfs so we can create indices
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
     Int mem = ceil(select_first([memory, 4.0]))
@@ -321,6 +324,7 @@ task SamToFastq {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 16.0])) # High memory default to avoid crashes.
 
     String toolCommand = if defined(picardJar)
@@ -359,6 +363,7 @@ task ScatterIntervalList {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(picardJar)

@@ -9,6 +9,7 @@ task installPrefix {
         String prefix
         String? condaPath
     }
+
     command <<<
         ~{default="conda" condaPath} create \
         --json -q \
@@ -21,6 +22,7 @@ task installPrefix {
         --prefix ${prefix} \
         ~{sep=' ' requirements}
     >>>
+
     output {
         File condaEnvPath=prefix
         File condaJson=stdout()

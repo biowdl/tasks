@@ -10,6 +10,7 @@ task MergeCounts {
         Int valueColumn
         Boolean inputHasHeader
     }
+
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
     command <<<
         set -e -o pipefail

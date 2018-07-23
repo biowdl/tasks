@@ -13,17 +13,18 @@ task sample {
     }
 
     command {
-    set -e -o pipefail
-    ~{'mkdir -p $(dirname ' + outFilePath + ')'}
-    ~{preCommand}
-    seqtk sample \
-    ~{"-s " + seed} \
-    ~{true="-2 " false="" twoPassMode} \
-    ~{sequenceFile} \
-    ~{number} ~{fraction} \
-    ~{true="| gzip" false="" zip} \
-    ~{"> " + outFilePath}
+        set -e -o pipefail
+        ~{'mkdir -p $(dirname ' + outFilePath + ')'}
+        ~{preCommand}
+        seqtk sample \
+        ~{"-s " + seed} \
+        ~{true="-2 " false="" twoPassMode} \
+        ~{sequenceFile} \
+        ~{number} ~{fraction} \
+        ~{true="| gzip" false="" zip} \
+        ~{"> " + outFilePath}
     }
+
     output {
         File subsampledReads= select_first([outFilePath])
     }

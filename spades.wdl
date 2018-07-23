@@ -31,6 +31,7 @@ task spades {
         Float? covCutoff
         Int? phredOffset
     }
+
     Int finalThreads = select_first([threads])
     Float totalMemory = select_first([memoryGb, finalThreads * 16.0])
     Int finalMemory = ceil(totalMemory)
@@ -67,6 +68,7 @@ task spades {
         ~{"--cov-cutoff " + covCutoff } \
         ~{"--phred-offset " + phredOffset }
     }
+
     output {
         Array[File] correctedReads = glob(outputDir + "/corrected/*.fastq*")
         File scaffolds = outputDir + "/scaffolds.fasta"
@@ -78,6 +80,7 @@ task spades {
         File params = outputDir + "/params.txt"
         File log = outputDir + "/spades.log"
     }
+
     runtime {
         cpu: finalThreads
         memory: clusterMemory

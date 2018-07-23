@@ -19,6 +19,7 @@ task fastqc {
         Int? kmers
         String? dir
     }
+
     # Chops of the .gz extension if present.
     String name = sub(seqFile, "\\.gz$","")
     # This regex chops of the extension and replaces it with _fastqc for the reportdir.
@@ -64,6 +65,7 @@ task getConfiguration {
         String? preCommand
         String? fastqcDirFile = "fastqcDir.txt"
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}

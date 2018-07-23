@@ -60,6 +60,7 @@ task cutadapt {
         Boolean? noZeroCap
         String? reportPath
     }
+
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + read1output + ")"}
@@ -107,6 +108,7 @@ task cutadapt {
         ~{true="--zero-cap" false="" zeroCap} ~{true="--no-zero-cap" false="" noZeroCap} \
         ~{read1} ~{read2} ~{"> " + reportPath}
     }
+
     output{
         File report = if defined(reportPath) then select_first([reportPath]) else stdout()
         File cutRead1 = read1output
@@ -121,6 +123,7 @@ task cutadapt {
         File? restFile=restFilePath
         File? wildcardFile=wildcardFilePath
     }
+
     runtime {
         cpu: select_first([cores])
         memory: select_first([memory])

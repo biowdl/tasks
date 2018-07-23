@@ -60,6 +60,7 @@ task makeStarRGline {
         String? platform
         String readgroup
     }
+
     command {
         printf '"ID:~{readgroup}" "LB:~{library}" "PL:~{default="ILLUMINA" platform}" "SM:~{sample}"'
     }

@@ -5,6 +5,7 @@ task AppendToStringArray {
         Array[String] array
         String string
     }
+
     command {
         echo "~{sep='\n' array}
         ~{string}"
@@ -25,6 +26,7 @@ task CheckFileMD5 {
         File file
         String MD5sum
     }
+
     command {
         set -e -o pipefail
         MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
@@ -39,6 +41,7 @@ task ConcatenateTextFiles {
         Boolean? unzip = false
         Boolean? zip = false
     }
+
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
@@ -62,6 +65,7 @@ task CreateLink {
         String inputFile
         String outputPath
     }
+
     command {
         ln -sf ~{inputFile} ~{outputPath}
     }
@@ -98,6 +102,7 @@ task ObjectMd5 {
     input {
         Object the_object
     }
+
     command {
         cat ~{write_object(the_object)} |  md5sum - | sed -e 's/  -//'
     }
@@ -115,6 +120,7 @@ task StringArrayMd5 {
     input {
         Array[String] stringArray
     }
+
     command {
         set -eu -o pipefail
         echo ~{sep=',' stringArray} | md5sum - | sed -e 's/  -//'

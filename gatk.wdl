@@ -272,6 +272,7 @@ task HaplotypeCallerGvcf {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(gatkJar)
@@ -318,6 +319,7 @@ task SplitNCigarReads {
         Float? memory
         Float? memoryMultiplier
     }
+
     Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(gatkJar)

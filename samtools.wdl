@@ -6,6 +6,7 @@ task Index {
         File bamFilePath
         String? bamIndexPath
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}
@@ -23,6 +24,7 @@ task Merge {
         Array[File]+ bamFiles
         String outputBamPath
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}
@@ -104,15 +106,18 @@ task fastq {
         ~{"--threads " + totalThreads} \
         ~{inputBam}
     }
+
     output {
         File read1 = outputRead1
         File? read2 = outputRead2
         File? read0 = outputRead0
     }
+
     runtime {
         cpu: totalThreads
         memory: select_first([memory, 1])
     }
+
     parameter_meta {
         preCommand: "A command that is run before the task. Can be used to activate environments"
         inputBam: "The bam file to process."
