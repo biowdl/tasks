@@ -1,10 +1,13 @@
-task AppendToStringArray {
-    Array[String] array
-    String string
+version 1.0
 
+task AppendToStringArray {
+    input {
+        Array[String] array
+        String string
+    }
     command {
-        echo "${sep='\n' array}
-        ${string}"
+        echo "~{sep='\n' array}
+        ~{string}"
     }
 
     output {
@@ -18,27 +21,29 @@ task AppendToStringArray {
 
 # This task will fail if the MD5sum doesn't match the file.
 task CheckFileMD5 {
-    File file
-    String MD5sum
-
+    input {
+        File file
+        String MD5sum
+    }
     command {
         set -e -o pipefail
-        MD5SUM=$(md5sum ${file} | cut -d ' ' -f 1)
-        [ $MD5SUM = ${MD5sum} ]
+        MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
+        [ $MD5SUM = ~{MD5sum} ]
     }
 }
 
 task ConcatenateTextFiles {
-    Array[File] fileList
-    String combinedFilePath
-    Boolean? unzip = false
-    Boolean? zip = false
-
+    input {
+        Array[File] fileList
+        String combinedFilePath
+        Boolean? unzip = false
+        Boolean? zip = false
+    }
     command {
         set -e -o pipefail
-        ${"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ${true='zcat' false= 'cat' unzip} ${sep=' ' fileList} \
-        ${true="| gzip -c" false="" zip} > ${combinedFilePath}
+        ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
+        ~{true='zcat' false= 'cat' unzip} ~{sep=' ' fileList} \
+        ~{true="| gzip -c" false="" zip} > ~{combinedFilePath}
     }
 
     output {
@@ -53,11 +58,12 @@ task ConcatenateTextFiles {
 task CreateLink {
     # Making this of type File will create a link to the copy of the file in the execution
     # folder, instead of the actual file.
-    String inputFile
-    String outputPath
-
+    input {
+        String inputFile
+        String outputPath
+    }
     command {
-        ln -sf ${inputFile} ${outputPath}
+        ln -sf ~{inputFile} ~{outputPath}
     }
 
     output {
@@ -65,29 +71,17 @@ task CreateLink {
     }
 }
 
-# inspired by https://gatkforums.broadinstitute.org/wdl/discussion/9616/is-there-a-way-to-flatten-arrays
-task FlattenStringArray {
-    Array[Array[String]] arrayList
-
-    command {
-        for line in $(echo ${sep=', ' arrayList}) ; \
-        do echo $line | tr -d '"[],' ; done
-    }
-
-    output {
-        Array[String] flattenedArray = read_lines(stdout())
-    }
-
-    runtime {
-        memory: 1
-    }
-}
+# DEPRECATED. USE BUILT-IN FLATTEN FUNCTION
+# task FlattenStringArray {}
+# Commented out to let pipelines that depend on this fail.
 
 task MapMd5 {
-    Map[String,String] map
+    input {
+        Map[String,String] map
+    }
 
     command {
-        cat ${write_map(map)} | md5sum - | sed -e 's/  -//'
+        cat ~{write_map(map)} | md5sum - | sed -e 's/  -//'
     }
 
     output {
@@ -101,10 +95,11 @@ task MapMd5 {
 
 
 task ObjectMd5 {
-    Object the_object
-
+    input {
+        Object the_object
+    }
     command {
-        cat ${write_object(the_object)} |  md5sum - | sed -e 's/  -//'
+        cat ~{write_object(the_object)} |  md5sum - | sed -e 's/  -//'
     }
 
     output {
@@ -117,11 +112,12 @@ task ObjectMd5 {
 }
 
 task StringArrayMd5 {
-    Array[String] stringArray
-
+    input {
+        Array[String] stringArray
+    }
     command {
         set -eu -o pipefail
-        echo ${sep=',' stringArray} | md5sum - | sed -e 's/  -//'
+        echo ~{sep=',' stringArray} | md5sum - | sed -e 's/  -//'
     }
 
     output {
