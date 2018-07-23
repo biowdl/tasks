@@ -14,7 +14,7 @@ task PeakCalling {
         --treatment ${sep = ' ' bamFiles} \
         --outdir ${outDir} \
         --name ${sampleName} \
-        ${true='--nomodel' false='' default=false nomodel}
+        ${true='--nomodel' false='' default='false' nomodel}
     }
 
     output {
