@@ -14,7 +14,7 @@ task PeakCalling {
         --treatment ${sep = ' ' bamFiles} \
         --outdir ${outDir} + "/macs2/" \
         --name ${sampleName} \
-        ${default=false true='--nomodel' false='' nomodel}
+        ${true='--nomodel' false='' nomodel}
     }
 
     output {
