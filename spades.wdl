@@ -24,14 +24,14 @@ task spades {
         Boolean? disableGzipOutput
         Boolean? disableRepeatResolution
         File? dataset
-        Int? threads
+        Int? threads = 1
         Float? memoryGb
         File? tmpDir
         String? k
         Float? covCutoff
         Int? phredOffset
     }
-    Int finalThreads = select_first([threads,1])
+    Int finalThreads = select_first([threads])
     Float totalMemory = select_first([memoryGb, finalThreads * 16.0])
     Int finalMemory = ceil(totalMemory)
     Int clusterMemory = ceil(totalMemory / finalThreads)
