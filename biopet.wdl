@@ -153,7 +153,7 @@ task FastqSplitter {
     }
     
     runtime {
-        memory: ceil(memory * memoryMultiplier, 2.5)
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 

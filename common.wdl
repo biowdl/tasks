@@ -38,8 +38,8 @@ task ConcatenateTextFiles {
     input {
         Array[File] fileList
         String combinedFilePath
-        Boolean? unzip = false
-        Boolean? zip = false
+        Boolean unzip = false
+        Boolean zip = false
     }
 
     command {

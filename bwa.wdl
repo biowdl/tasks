@@ -1,6 +1,6 @@
 version 1.0
 
-task mem {
+task Mem {
     input {
         String? preCommand
         File inputR1
@@ -20,7 +20,10 @@ task mem {
         ~{preCommand}
         bwa mem ~{"-t " + threads} \
         ~{"-R '" + readgroup + "'"} \
-        ~{referenceFasta} ~{inputR1} ~{inputR2} | samtools sort --output-fmt BAM - > ~{outputPath}
+        ~{referenceFasta} \
+        ~{inputR1} \
+        ~{inputR2} \
+        | samtools sort --output-fmt BAM - > ~{outputPath}
     }
 
     output {
@@ -33,7 +36,7 @@ task mem {
     }
 }
 
-task index {
+task Index {
     input {
         File fasta
         String? preCommand
