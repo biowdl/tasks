@@ -10,15 +10,13 @@ task BaseCounter {
         String outputDir
         String prefix
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " +toolJar
-        else "biopet-basecounter -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " +toolJar
+        else "biopet-basecounter -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -69,7 +67,7 @@ task BaseCounter {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -79,48 +77,46 @@ task ExtractAdaptersFastqc {
         String? preCommand
         File inputFile
         String outputDir
-        String? adapterOutputFilePath = outputDir + "/adapter.list"
-        String? contamsOutputFilePath = outputDir + "/contaminations.list"
+        String adapterOutputFilePath = outputDir + "/adapter.list"
+        String contamsOutputFilePath = outputDir + "/contaminations.list"
         Boolean? skipContams
         File? knownContamFile
         File? knownAdapterFile
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 2.5
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " +toolJar
-        else "biopet-extractadaptersfastqc -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " +toolJar
+        else "biopet-extractadaptersfastqc -Xmx" + memory + "G"
 
     command {
-    set -e
-    ~{preCommand}
-    mkdir -p ~{outputDir}
-    ~{toolCommand} \
-    --inputFile ~{inputFile} \
-    ~{"--adapterOutputFile " + adapterOutputFilePath } \
-    ~{"--contamsOutputFile " + contamsOutputFilePath } \
-    ~{"--knownContamFile " + knownContamFile} \
-    ~{"--knownAdapterFile " + knownAdapterFile} \
-    ~{"--adapterCutoff " + adapterCutoff} \
-    ~{true="--skipContams" false="" skipContams} \
-    ~{true="--outputAsFasta" false="" outputAsFasta}
+        set -e
+        ~{preCommand}
+        mkdir -p ~{outputDir}
+        ~{toolCommand} \
+        --inputFile ~{inputFile} \
+        ~{"--adapterOutputFile " + adapterOutputFilePath } \
+        ~{"--contamsOutputFile " + contamsOutputFilePath } \
+        ~{"--knownContamFile " + knownContamFile} \
+        ~{"--knownAdapterFile " + knownAdapterFile} \
+        ~{"--adapterCutoff " + adapterCutoff} \
+        ~{true="--skipContams" false="" skipContams} \
+        ~{true="--outputAsFasta" false="" outputAsFasta}
     }
 
     output {
-        File adapterOutputFile = select_first([adapterOutputFilePath])
-        File contamsOutputFile = select_first([contamsOutputFilePath])
-        Array[String] adapterList = read_lines(select_first([adapterOutputFilePath]))
-        Array[String] contamsList = read_lines(select_first([contamsOutputFilePath]))
+        File adapterOutputFile = adapterOutputFilePath
+        File contamsOutputFile = contamsOutputFilePath
+        Array[String] adapterList = read_lines(adapterOutputFilePath)
+        Array[String] contamsList = read_lines(contamsOutputFilePath)
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -128,18 +124,16 @@ task FastqSplitter {
     input {
         String? preCommand
         File inputFastq
-        Array[String] outputPaths
+        Array[String]+ outputPaths
         File? toolJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 2.5
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " +toolJar
-        else "biopet-fastqsplitter -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " +toolJar
+        else "biopet-fastqsplitter -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -159,7 +153,7 @@ task FastqSplitter {
     }
     
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
+        memory: ceil(memory * memoryMultiplier, 2.5)
     }
 }
 
@@ -174,15 +168,13 @@ task FastqSync {
         String out2path
         File? toolJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 2.5
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " +toolJar
-        else "biopet-fastqsync -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " +toolJar
+        else "biopet-fastqsync -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -203,7 +195,7 @@ task FastqSync {
     }
     
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.5]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -219,15 +211,13 @@ task SampleConfig {
         String? jsonOutputPath
         String? tsvOutputPath
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 2.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " +toolJar
-        else "biopet-sampleconfig -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " +toolJar
+        else "biopet-sampleconfig -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -250,7 +240,7 @@ task SampleConfig {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -264,14 +254,13 @@ task ScatterRegions {
         Int? scatterSize
         File? regions
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
-    Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " +toolJar
-        else "biopet-scatterregions -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " +toolJar
+        else "biopet-scatterregions -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -289,7 +278,7 @@ task ScatterRegions {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -299,15 +288,14 @@ task Seqstat {
         File? toolJar
         File fastq
         String outputFile
-        Float? memory
-        Float? memoryMultiplier
+
+        Int memory = 4
+        Float memoryMultiplier = 2.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " + toolJar
-        else "biopet-seqstat -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-seqstat -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -323,7 +311,7 @@ task Seqstat {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -337,15 +325,13 @@ task ValidateAnnotation {
         File refFastaIndex
         File refDict
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 2.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " + toolJar
-        else "biopet-validateannotation -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-validateannotation -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -361,7 +347,7 @@ task ValidateAnnotation {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -372,15 +358,13 @@ task ValidateFastq {
         File fastq1
         File? fastq2
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 2.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " + toolJar
-        else "biopet-validatefastq -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-validatefastq -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -395,7 +379,7 @@ task ValidateFastq {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -409,15 +393,13 @@ task ValidateVcf {
         File refFastaIndex
         File refDict
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 2.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + mem + "G -jar " + toolJar
-        else "biopet-validatevcf -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-validatevcf -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -432,6 +414,6 @@ task ValidateVcf {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 2.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }

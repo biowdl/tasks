@@ -10,8 +10,8 @@ task mem {
         String outputPath
         String? readgroup
 
-        Int? threads
-        Int? memory
+        Int threads = 1
+        Int memory = 8
     }
 
     command {
@@ -28,8 +28,8 @@ task mem {
     }
 
     runtime{
-        cpu: select_first([threads,1])
-        memory: select_first([memory,8])
+        cpu: threads
+        memory: memory
     }
 }
 
