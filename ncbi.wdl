@@ -1,6 +1,6 @@
 version 1.0
 
-task genomeDownload {
+task GenomeDownload {
     input {
         String outputPath
         String? section = "refseq"
@@ -12,11 +12,11 @@ task genomeDownload {
         String? ncbiBaseUri
         Int? parallel
         Int? retries
-        Boolean? verbose=true
-        Boolean? debug
+        Boolean verbose = true
+        Boolean debug = false
         String? domain = "all"
 
-        String? executable = "ncbi-genome-download"
+        String executable = "ncbi-genome-download"
         String? preCommand
     }
 
@@ -72,11 +72,11 @@ task genomeDownload {
  }
 
 
-task downloadNtFasta{
+task DownloadNtFasta{
     input {
         String libraryPath
         String seqTaxMapPath
-        Boolean? unzip = true
+        Boolean unzip = true
         String ntDir = libraryPath + "/nt"
         String ntFilePath = ntDir + "/nt.fna"
     }
@@ -91,7 +91,8 @@ task downloadNtFasta{
         then
             zcat ~{ntDir}/nt.gz > ~{ntFilePath}
         fi
-        }
+    }
+
     output {
         File ntFileGz = ntDir + "/nt.gz"
         File library = libraryPath
@@ -102,7 +103,7 @@ task downloadNtFasta{
     }
 }
 
-task downloadAccessionToTaxId {
+task DownloadAccessionToTaxId {
     input {
         String downloadDir
         Boolean gzip = false
@@ -111,13 +112,18 @@ task downloadAccessionToTaxId {
     command {
         set -e -o pipefail
         mkdir -p ~{downloadDir}
-        rsync -av --partial rsync://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_*.accession2taxid.gz* ~{downloadDir}
+        rsync -av \
+          --partial \
+          rsync://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_*.accession2taxid.gz* \
+          ~{downloadDir}
         (cd ~{downloadDir} && md5sum -c *.md5)
         for file in ~{downloadDir}/nucl_*.accession2taxid.gz
         do
-            zcat $file | tail -n +2 | cut -f 2,3 ~{true="| gzip " false='' gzip}> $file.seqtaxmap~{true='.gz' false='' gzip}
+            zcat $file | tail -n +2 | cut -f 2,3 ~{true="| gzip" false='' gzip} > \
+              $file.seqtaxmap~{true='.gz' false='' gzip}
         done
-        }
+    }
+
     output {
         Array[File] seqTaxMaps = glob(downloadDir + "/*.seqtaxmap")
         Array[File] seqTaxMapsGz = glob(downloadDir + "/*.seqtaxmap.gz")

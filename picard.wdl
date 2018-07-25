@@ -10,29 +10,25 @@ task CollectMultipleMetrics {
         File refFastaIndex
         String basename
 
-        # These should proably be optional, but I'm not sure how to handle the ouput in that
-        # case (without a null literal).
         Boolean collectAlignmentSummaryMetrics = true
         Boolean collectInsertSizeMetrics = true
         Boolean qualityScoreDistribution = true
         Boolean meanQualityByCycle = true
         Boolean collectBaseDistributionByCycle = true
         Boolean collectGcBiasMetrics = true
-        #Boolean? rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
+        #Boolean rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
         String? picardJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(picardJar)
-        then "java -Xmx" + mem + "G -jar " + picardJar
-        else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -77,7 +73,7 @@ task CollectMultipleMetrics {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -88,19 +84,17 @@ task CollectRnaSeqMetrics {
         File bamIndex
         File refRefflat
         String basename
-        String? strandSpecificity = "NONE"
+        String strandSpecificity = "NONE"
 
         String? picardJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(picardJar)
-        then "java -Xmx" + mem + "G -jar " + picardJar
-        else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -111,7 +105,7 @@ task CollectRnaSeqMetrics {
         I=~{bamFile} \
         O=~{basename}.RNA_Metrics \
         CHART_OUTPUT=~{basename}.RNA_Metrics.pdf \
-        ~{"STRAND_SPECIFICITY=" + strandSpecificity} \
+        STRAND_SPECIFICITY=~{strandSpecificity} \
         REF_FLAT=~{refRefflat}
     }
 
@@ -121,7 +115,7 @@ task CollectRnaSeqMetrics {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -139,15 +133,13 @@ task CollectTargetedPcrMetrics {
 
         String? picardJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(picardJar)
-        then "java -Xmx" + mem + "G -jar " + picardJar
-        else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -171,7 +163,7 @@ task CollectTargetedPcrMetrics {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -184,25 +176,23 @@ task GatherBamFiles {
         Int? compression_level
         String? picardJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(picardJar)
-    then "java -Xmx" + mem + "G -jar " + picardJar
-    else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-          GatherBamFiles \
-          INPUT=~{sep=' INPUT=' input_bams} \
-          OUTPUT=~{output_bam_path} \
-          CREATE_INDEX=true \
-          CREATE_MD5_FILE=true
+        GatherBamFiles \
+        INPUT=~{sep=' INPUT=' input_bams} \
+        OUTPUT=~{output_bam_path} \
+        CREATE_INDEX=true \
+        CREATE_MD5_FILE=true
     }
 
     output {
@@ -212,7 +202,7 @@ task GatherBamFiles {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -226,8 +216,8 @@ task MarkDuplicates {
         Int? compression_level
         String? picardJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -238,27 +228,26 @@ task MarkDuplicates {
     # Task is assuming query-sorted input so that the Secondary and Supplementary reads get marked correctly
     # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
     # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
-    Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(picardJar)
-    then "java -Xmx" + mem + "G -jar " + picardJar
-    else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
         mkdir -p $(dirname ~{output_bam_path})
         ~{toolCommand} \
-          MarkDuplicates \
-          INPUT=~{sep=' INPUT=' input_bams} \
-          OUTPUT=~{output_bam_path} \
-          METRICS_FILE=~{metrics_path} \
-          VALIDATION_STRINGENCY=SILENT \
-          ~{"READ_NAME_REGEX=" + read_name_regex} \
-          OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
-          CLEAR_DT="false" \
-          CREATE_INDEX=true \
-          ADD_PG_TAG_TO_READS=false
+        MarkDuplicates \
+        INPUT=~{sep=' INPUT=' input_bams} \
+        OUTPUT=~{output_bam_path} \
+        METRICS_FILE=~{metrics_path} \
+        VALIDATION_STRINGENCY=SILENT \
+        ~{"READ_NAME_REGEX=" + read_name_regex} \
+        OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
+        CLEAR_DT="false" \
+        CREATE_INDEX=true \
+        ADD_PG_TAG_TO_READS=false
     }
 
     output {
@@ -268,7 +257,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -282,25 +271,24 @@ task MergeVCFs {
         Int? compressionLevel
         String? picardJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
-    Int mem = ceil(select_first([memory, 4.0]))
 
     String toolCommand = if defined(picardJar)
-    then "java -Xmx" + mem + "G -jar " + picardJar
-    else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-          MergeVcfs \
-          INPUT=~{sep=' INPUT=' inputVCFs} \
-          OUTPUT=~{outputVCFpath}
+        MergeVcfs \
+        INPUT=~{sep=' INPUT=' inputVCFs} \
+        OUTPUT=~{outputVCFpath}
     }
 
     output {
@@ -309,7 +297,7 @@ task MergeVCFs {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -320,16 +308,15 @@ task SamToFastq {
         String outputRead1
         String? outputRead2
         String? outputUnpaired
+
         String? picardJar
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 16 # High memory default to avoid crashes.
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 16.0])) # High memory default to avoid crashes.
-
     String toolCommand = if defined(picardJar)
-    then "java -Xmx" + mem + "G -jar " + picardJar
-    else "picard -Xmx" + mem + "G"
+    then "java -Xmx" + memory + "G -jar " + picardJar
+    else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -349,7 +336,7 @@ task SamToFastq {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -360,28 +347,26 @@ task ScatterIntervalList {
         Int scatter_count
         String? picardJar
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(picardJar)
-    then "java -Xmx" + mem + "G -jar " + picardJar
-    else "picard -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
         mkdir scatter_list
         ~{toolCommand} \
-          IntervalListTools \
-          SCATTER_COUNT=~{scatter_count} \
-          SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
-          UNIQUE=true \
-          SORT=true \
-          INPUT=~{interval_list} \
-          OUTPUT=scatter_list
+        IntervalListTools \
+        SCATTER_COUNT=~{scatter_count} \
+        SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
+        UNIQUE=true \
+        SORT=true \
+        INPUT=~{interval_list} \
+        OUTPUT=scatter_list
     }
 
     output {
@@ -390,6 +375,6 @@ task ScatterIntervalList {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }

@@ -1,6 +1,6 @@
 version 1.0
 
-task fastqc {
+task Fastqc {
     input {
         File seqFile
         String outdirPath
@@ -8,11 +8,11 @@ task fastqc {
         Boolean? casava
         Boolean? nano
         Boolean? noFilter
-        Boolean? extract = true
+        Boolean extract = true
         Boolean? nogroup
         Int? minLength
         String? format
-        Int? threads = 1
+        Int threads = 1
         File? contaminants
         File? adapters
         File? limits
@@ -56,14 +56,14 @@ task fastqc {
     }
 
     runtime {
-        cpu: select_first([threads])
+        cpu: threads
     }
 }
 
-task getConfiguration {
+task GetConfiguration {
     input {
         String? preCommand
-        String? fastqcDirFile = "fastqcDir.txt"
+        String fastqcDirFile = "fastqcDir.txt"
     }
 
     command {

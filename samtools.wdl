@@ -14,7 +14,9 @@ task Index {
     }
 
     output {
-        File indexFile = if defined(bamIndexPath) then select_first([bamIndexPath]) else bamFilePath + ".bai"
+        File indexFile = if defined(bamIndexPath)
+            then select_first([bamIndexPath])
+            else bamFilePath + ".bai"
     }
 }
 
@@ -73,7 +75,7 @@ task Flagstat {
     }
 }
 
-task fastq {
+task Fastq {
     input {
         String? preCommand
         File inputBam
@@ -86,9 +88,8 @@ task fastq {
         Boolean? appendReadNumber
         Boolean? outputQuality
         Int? compressionLevel
-        Int? threads
-        Int? memory
-        Int totalThreads = select_first([threads, 1])
+        Int threads = 1
+        Int memory = 1
     }
 
     command {
@@ -103,7 +104,7 @@ task fastq {
         ~{true="-N" false="-n" appendReadNumber} \
         ~{true="-O" false="" outputQuality} \
         ~{"-c " + compressionLevel} \
-        ~{"--threads " + totalThreads} \
+        ~{"--threads " + threads} \
         ~{inputBam}
     }
 
@@ -114,8 +115,8 @@ task fastq {
     }
 
     runtime {
-        cpu: totalThreads
-        memory: select_first([memory, 1])
+        cpu: threads
+        memory: memory
     }
 
     parameter_meta {
@@ -130,7 +131,7 @@ task fastq {
     }
 }
 
-task view {
+task View {
     input {
         String? preCommand
         File inFile
@@ -141,8 +142,8 @@ task view {
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
-        Int? threads
-        Int? memory
+        Int threads = 1
+        Int memory = 1
     }
 
     command {
@@ -164,7 +165,7 @@ task view {
         File outputFile = outputFileName
     }
     runtime {
-        cpu: select_first([threads, 1])
-        memory: select_first([memory, 1])
+        cpu: threads
+        memory: memory
     }
 }
