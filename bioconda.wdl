@@ -7,11 +7,11 @@ task installPrefix {
     input {
         Array[String] requirements
         String prefix
-        String? condaPath
+        String condaPath = "conda"
     }
 
     command <<<
-        ~{default="conda" condaPath} create \
+        ~{condaPath} create \
         --json -q \
         --yes \
         --override-channels \

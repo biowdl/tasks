@@ -1,6 +1,6 @@
 version 1.0
 
-task spades {
+task Spades {
     input {
         String outputDir
         String? preCommand
@@ -24,18 +24,15 @@ task spades {
         Boolean? disableGzipOutput
         Boolean? disableRepeatResolution
         File? dataset
-        Int? threads = 1
-        Float? memoryGb
+        Int threads = 1
+        Float memoryGb = 16.0
         File? tmpDir
         String? k
         Float? covCutoff
         Int? phredOffset
     }
 
-    Int finalThreads = select_first([threads])
-    Float totalMemory = select_first([memoryGb, finalThreads * 16.0])
-    Int finalMemory = ceil(totalMemory)
-    Int clusterMemory = ceil(totalMemory / finalThreads)
+    Int clusterMemory = ceil(memoryGb / threads)
 
     command {
         set -e -o pipefail
@@ -47,26 +44,26 @@ task spades {
         ~{true="--rna" false="" rna} \
         ~{true="--plasmid" false="" plasmid} \
         ~{true="--iontorrent" false="" ionTorrent} \
-        ~{"--12 " + interlacedReads } \
+        ~{"--12 " + interlacedReads} \
         ~{true="-1" false="-s" defined(read2)} ~{read1}  \
-        ~{"-2 " + read2 } \
-        ~{"--sanger " + sangerReads } \
-        ~{"--pacbio " + pacbioReads } \
-        ~{"--nanopore " + nanoporeReads } \
-        ~{"--tslr " + tslrContigs } \
-        ~{"--trusted-contigs " + trustedContigs } \
-        ~{"--untrusted-contigs " + untrustedContigs } \
-        ~{true="--only-error-correction" false="" onlyErrorCorrection } \
-        ~{true="--only-assembler" false="" onlyAssembler } \
-        ~{true="--careful" false="" careful } \
+        ~{"-2 " + read2} \
+        ~{"--sanger " + sangerReads} \
+        ~{"--pacbio " + pacbioReads} \
+        ~{"--nanopore " + nanoporeReads} \
+        ~{"--tslr " + tslrContigs} \
+        ~{"--trusted-contigs " + trustedContigs} \
+        ~{"--untrusted-contigs " + untrustedContigs} \
+        ~{true="--only-error-correction" false="" onlyErrorCorrection} \
+        ~{true="--only-assembler" false="" onlyAssembler} \
+        ~{true="--careful" false="" careful} \
         ~{true="--disable-gzip-output" false="" disableGzipOutput} \
-        ~{true="--disable-rr" false="" disableRepeatResolution } \
-        ~{"--dataset " + dataset } \
-        ~{"--threads " + finalThreads} \
-        ~{"--memory " + finalMemory } \
-        ~{"-k " + k } \
-        ~{"--cov-cutoff " + covCutoff } \
-        ~{"--phred-offset " + phredOffset }
+        ~{true="--disable-rr" false="" disableRepeatResolution} \
+        ~{"--dataset " + dataset} \
+        ~{"--threads " + threads} \
+        ~{"--memory " + memoryGb} \
+        ~{"-k " + k} \
+        ~{"--cov-cutoff " + covCutoff} \
+        ~{"--phred-offset " + phredOffset}
     }
 
     output {
@@ -82,7 +79,7 @@ task spades {
     }
 
     runtime {
-        cpu: finalThreads
+        cpu: threads
         memory: clusterMemory
     }
 }

@@ -1,6 +1,6 @@
 version 1.0
 
-task unicycler {
+task Unicycler {
     input {
         String? preCommand
         File? short1
@@ -12,8 +12,8 @@ task unicycler {
         Int? minFastaLength
         Int? keep
         Boolean? vcf
-        Int? threads = 1
-        Int? memory = 4
+        Int threads = 1
+        Int memory = 4
         String? mode
         Float? minBridgeQual
         Int? linearSeqs
@@ -101,7 +101,7 @@ task unicycler {
     }
 
     runtime {
-        cpu: select_first([threads])
-        memory: select_first([memory])
+        cpu: threads
+        memory: memory
     }
 }

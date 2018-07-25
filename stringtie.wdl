@@ -5,7 +5,7 @@ task Stringtie {
         String? preCommand
         File alignedReads
         File? referenceGtf
-        Int? threads
+        Int threads = 1
         String assembledTranscriptsFile
         Boolean? firstStranded
         Boolean? secondStranded
@@ -32,6 +32,6 @@ task Stringtie {
     }
 
     runtime {
-        cpu: select_first([threads, 1])
+        cpu: threads
     }
 }

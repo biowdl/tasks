@@ -6,11 +6,11 @@ task HTSeqCount {
         Array[File] alignmentFiles
         File gtfFile
         String outputTable
-        String? format
-        String? order
-        String? stranded
+        String format = "bam"
+        String order = "pos"
+        String stranded = "no"
 
-        Int? memory
+        Int memory = 3
     }
 
     command {
@@ -18,9 +18,9 @@ task HTSeqCount {
         mkdir -p ~{sub(outputTable, basename(outputTable), "")}
         ~{preCommand}
         htseq-count \
-        -f ~{default="bam" format} \
-        -r ~{default="pos" order} \
-        -s ~{default="no" stranded} \
+        -f ~{format} \
+        -r ~{order} \
+        -s ~{stranded} \
         ~{sep=" " alignmentFiles} \
         ~{gtfFile} \
         > ~{outputTable}
@@ -31,6 +31,6 @@ task HTSeqCount {
     }
 
     runtime {
-        memory: select_first([memory, 3])
+        memory: memory
     }
 }
