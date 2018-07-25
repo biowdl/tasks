@@ -27,6 +27,9 @@ task sampleConfigFileToStruct {
     # structure to a list of objects model.
     # It was specifically designed to run on both python2 and python3.
     # Only requirement is PyYAML.
+    #
+    # Code maintained in https://github.com/rhpvorderman/samplesheet-to-struct
+    # can be moved to biowdl group later.
     command {
         python <<CODE
 
