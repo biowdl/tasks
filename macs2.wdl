@@ -5,7 +5,7 @@ task PeakCalling {
     String sampleName
     Int? threads
     Int? memory
-    Boolean? nomodel
+    Boolean nomodel = false
 
     command {
         set -e -o pipefail
