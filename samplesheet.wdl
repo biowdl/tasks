@@ -23,8 +23,12 @@ task sampleConfigFileToStruct {
         String outputJson = "output.json"
     }
 
+    # Below command can convert any samplesheet with a nested dictionary
+    # structure to a list of objects model.
+    # It was specifically designed to run on both python2 and python3.
+    # Only requirement is PyYAML.
     command {
-        python3 <<CODE
+        python <<CODE
 
         import yaml
         import json
