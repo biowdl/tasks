@@ -1,25 +1,29 @@
-task HTSeqCount {
-    String? preCommand
-    Array[File] alignmentFiles
-    File gtfFile
-    String outputTable
-    String? format
-    String? order
-    String? stranded
+version 1.0
 
-    Int? memory
+task HTSeqCount {
+    input {
+        String? preCommand
+        Array[File] alignmentFiles
+        File gtfFile
+        String outputTable
+        String format = "bam"
+        String order = "pos"
+        String stranded = "no"
+
+        Int memory = 3
+    }
 
     command {
         set -e -o pipefail
-        mkdir -p ${sub(outputTable, basename(outputTable), "")}
-        ${preCommand}
+        mkdir -p ~{sub(outputTable, basename(outputTable), "")}
+        ~{preCommand}
         htseq-count \
-        -f ${default="bam" format} \
-        -r ${default="pos" order} \
-        -s ${default="no" stranded} \
-        ${sep=" " alignmentFiles} \
-        ${gtfFile} \
-        > ${outputTable}
+        -f ~{format} \
+        -r ~{order} \
+        -s ~{stranded} \
+        ~{sep=" " alignmentFiles} \
+        ~{gtfFile} \
+        > ~{outputTable}
     }
 
     output {
@@ -27,6 +31,6 @@ task HTSeqCount {
     }
 
     runtime {
-        memory: select_first([memory, 3])
+        memory: memory
     }
 }

@@ -1,26 +1,30 @@
-task MergeCounts {
-    String? preCommand
+version 1.0
 
-    Array[File] inputFiles
-    String outputFile
-    Int featureColumn
-    Int valueColumn
-    Boolean inputHasHeader
+task MergeCounts {
+    input {
+        String? preCommand
+
+        Array[File] inputFiles
+        String outputFile
+        Int featureColumn
+        Int valueColumn
+        Boolean inputHasHeader
+    }
 
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
     command <<<
         set -e -o pipefail
-        mkdir -p ${sub(outputFile, basename(outputFile) + "$", "")}
-        ${preCommand}
+        mkdir -p ~{sub(outputFile, basename(outputFile) + "$", "")}
+        ~{preCommand}
         R --no-save <<CODE
             library(dplyr)
             library(reshape2)
 
-            listOfFiles <- c("${sep='", "' inputFiles}")
+            listOfFiles <- c("~{sep='", "' inputFiles}")
 
-            valueI <- ${valueColumn}
-            featureI <- ${featureColumn}
-            header <- ${true="TRUE" false="FALSE" inputHasHeader}
+            valueI <- ~{valueColumn}
+            featureI <- ~{featureColumn}
+            header <- ~{true="TRUE" false="FALSE" inputHasHeader}
 
             d <- do.call(rbind, lapply(listOfFiles, function(file){
                 d <- read.table(file, sep="\t", header=header, comment.char="#")
@@ -34,7 +38,7 @@ task MergeCounts {
             }))
 
             d <- d %>% dcast(feature ~ sample, value.var="count")
-            write.table(d, file="${outputFile}", sep="\t", quote=FALSE, row.names=FALSE)
+            write.table(d, file="~{outputFile}", sep="\t", quote=FALSE, row.names=FALSE)
         CODE
     >>>
 

@@ -1,20 +1,24 @@
+version 1.0
+
 task PeakCalling {
-    String? preCommand
-    Array[File] bamFiles
-    String outDir
-    String sampleName
-    Int? threads
-    Int? memory
-    Boolean nomodel = false
+    input {
+        String? preCommand
+        Array[File] bamFiles
+        String outDir
+        String sampleName
+        Int threads = 1
+        Int memory = 8
+        Boolean nomodel = false
+    }
 
     command {
         set -e -o pipefail
-        ${preCommand}
+        ~{preCommand}
         macs2 callpeak \
-        --treatment ${sep = ' ' bamFiles} \
-        --outdir ${outDir} \
-        --name ${sampleName} \
-        ${true='--nomodel' false='' nomodel}
+        --treatment ~{sep = ' ' bamFiles} \
+        --outdir ~{outDir} \
+        --name ~{sampleName} \
+        ~{true='--nomodel' false='' nomodel}
     }
 
     output {
@@ -22,7 +26,7 @@ task PeakCalling {
     }
 
     runtime {
-        cpu: select_first([threads,1])
-        memory: select_first([memory,8])
+        cpu: threads
+        memory: memory
     }
 }

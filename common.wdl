@@ -1,12 +1,18 @@
-task objectMd5 {
-    Object the_object
+version 1.0
+
+task AppendToStringArray {
+    input {
+        Array[String] array
+        String string
+    }
 
     command {
-        cat ${write_object(the_object)} |  md5sum - | sed -e 's/  -//'
+        echo "~{sep='\n' array}
+        ~{string}"
     }
 
     output {
-        String md5sum = read_string(stdout())
+        Array[String] outArray = read_lines(stdout())
     }
 
     runtime {
@@ -14,50 +20,33 @@ task objectMd5 {
     }
 }
 
-task mapMd5 {
-    Map[String,String] map
-
-    command {
-        cat ${write_map(map)} | md5sum - | sed -e 's/  -//'
+# This task will fail if the MD5sum doesn't match the file.
+task CheckFileMD5 {
+    input {
+        File file
+        String MD5sum
     }
-
-    output {
-        String md5sum = read_string(stdout())
-    }
-
-    runtime {
-        memory: 1
-    }
-}
-
-task stringArrayMd5 {
-    Array[String] stringArray
-
-    command {
-        set -eu -o pipefail
-        echo ${sep=',' stringArray} | md5sum - | sed -e 's/  -//'
-    }
-
-    output {
-        String md5sum = read_string(stdout())
-    }
-
-    runtime {
-        memory: 1
-    }
-}
-
-task concatenateTextFiles {
-    Array[File] fileList
-    String combinedFilePath
-    Boolean? unzip=false
-    Boolean? zip=false
 
     command {
         set -e -o pipefail
-        ${"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ${true='zcat' false= 'cat' unzip} ${sep=' ' fileList} \
-        ${true="| gzip -c" false="" zip} > ${combinedFilePath}
+        MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
+        [ $MD5SUM = ~{MD5sum} ]
+    }
+}
+
+task ConcatenateTextFiles {
+    input {
+        Array[File] fileList
+        String combinedFilePath
+        Boolean unzip = false
+        Boolean zip = false
+    }
+
+    command {
+        set -e -o pipefail
+        ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
+        ~{true='zcat' false= 'cat' unzip} ~{sep=' ' fileList} \
+        ~{true="| gzip -c" false="" zip} > ~{combinedFilePath}
     }
 
     output {
@@ -69,53 +58,79 @@ task concatenateTextFiles {
     }
 }
 
-# inspired by https://gatkforums.broadinstitute.org/wdl/discussion/9616/is-there-a-way-to-flatten-arrays
-task flattenStringArray {
-    Array[Array[String]] arrayList
-
-    command {
-        for line in $(echo ${sep=', ' arrayList}) ; \
-        do echo $line | tr -d '"[],' ; done
-    }
-
-    output {
-        Array[String] flattenedArray = read_lines(stdout())
-    }
-
-    runtime {
-        memory: 1
-    }
-}
-
-task appendToStringArray {
-    Array[String] array
-    String string
-
-    command {
-        echo "${sep='\n' array}
-        ${string}"
-    }
-
-    output {
-        Array[String] out_array = read_lines(stdout())
-    }
-
-    runtime {
-        memory: 1
-    }
-}
-
-task createLink {
+task CreateLink {
     # Making this of type File will create a link to the copy of the file in the execution
     # folder, instead of the actual file.
-    String inputFile
-    String outputPath
+    input {
+        String inputFile
+        String outputPath
+    }
 
     command {
-        ln -sf ${inputFile} ${outputPath}
+        ln -sf ~{inputFile} ~{outputPath}
     }
 
     output {
         File link = outputPath
+    }
+}
+
+# DEPRECATED. USE BUILT-IN FLATTEN FUNCTION
+# task FlattenStringArray {}
+# Commented out to let pipelines that depend on this fail.
+
+task MapMd5 {
+    input {
+        Map[String,String] map
+    }
+
+    command {
+        cat ~{write_map(map)} | md5sum - | sed -e 's/  -//'
+    }
+
+    output {
+        String md5sum = read_string(stdout())
+    }
+
+    runtime {
+        memory: 1
+    }
+}
+
+
+task ObjectMd5 {
+    input {
+        Object the_object
+    }
+
+    command {
+        cat ~{write_object(the_object)} |  md5sum - | sed -e 's/  -//'
+    }
+
+    output {
+        String md5sum = read_string(stdout())
+    }
+
+    runtime {
+        memory: 1
+    }
+}
+
+task StringArrayMd5 {
+    input {
+        Array[String] stringArray
+    }
+
+    command {
+        set -eu -o pipefail
+        echo ~{sep=',' stringArray} | md5sum - | sed -e 's/  -//'
+    }
+
+    output {
+        String md5sum = read_string(stdout())
+    }
+
+    runtime {
+        memory: 1
     }
 }

@@ -1,27 +1,31 @@
-task flash {
-    String? preCommand
-    File inputR1
-    File inputR2
-    String outdirPath
-    String? outPrefix = "flash"
-    Int? minOverlap
-    Int? maxOverlap
-    Boolean? compress = true
-    Int? threads
-    Int? memory
+version 1.0
+
+task Flash {
+    input {
+        String? preCommand
+        File inputR1
+        File inputR2
+        String outdirPath
+        String outPrefix = "flash"
+        Int? minOverlap
+        Int? maxOverlap
+        Boolean compress = true
+        Int threads = 2
+        Int memory = 2
+    }
 
     command {
         set -e -o pipefail
-        mkdir -p ${outdirPath}
-        ${preCommand}
+        mkdir -p ~{outdirPath}
+        ~{preCommand}
         flash \
-        ${"--threads=" + threads} \
-        ${"--output-directory=" + outdirPath} \
-        ${"--output-prefix=" + outPrefix} \
-        ${true="--compress " false="" defined(compress)} \
-        ${"--min-overlap=" + minOverlap} \
-        ${"--max-overlap=" + maxOverlap} \
-        ${inputR1} ${inputR2}
+        ~{"--threads=" + threads} \
+        ~{"--output-directory=" + outdirPath} \
+        ~{"--output-prefix=" + outPrefix} \
+        ~{true="--compress " false="" compress} \
+        ~{"--min-overlap=" + minOverlap} \
+        ~{"--max-overlap=" + maxOverlap} \
+        ~{inputR1} ~{inputR2}
     }
 
     output {
@@ -33,8 +37,8 @@ task flash {
     }
 
     runtime {
-        cpu: select_first([threads, 2])
-        memory: select_first([memory, 2])
+        cpu: threads
+        memory: memory
     }
 
 }

@@ -1,62 +1,65 @@
+version 1.0
+
 task Star {
-    String? preCommand
+    input {
+        String? preCommand
 
-    Array[File] inputR1
-    Array[File]? inputR2
-    String genomeDir
-    String outFileNamePrefix
+        Array[File] inputR1
+        Array[File]? inputR2
+        String genomeDir
+        String outFileNamePrefix
 
-    String? outSAMtype
-    String? readFilesCommand
-    Int? runThreadN
-    String? outStd
-    String? twopassMode
-    Array[String]? outSAMattrRGline
-    Int? limitBAMsortRAM
+        String outSAMtype = "BAM SortedByCoordinate"
+        String readFilesCommand = "zcat"
+        Int runThreadN = 1
+        String? outStd
+        String? twopassMode
+        Array[String]? outSAMattrRGline
+        Int? limitBAMsortRAM
 
-    Int? memory
+        Int memory = 10
+    }
 
     #TODO needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
-    # converts String? to String for use as key (for the Map above) in output
-    String key = select_first([outSAMtype, "BAM SortedByCoordinate"])
-
     command {
         set -e -o pipefail
-        mkdir -p ${sub(outFileNamePrefix, basename(outFileNamePrefix) + "$", "")}
-        ${preCommand}
+        mkdir -p ~{sub(outFileNamePrefix, basename(outFileNamePrefix) + "$", "")}
+        ~{preCommand}
         STAR \
-        --readFilesIn ${sep=',' inputR1} ${sep="," inputR2} \
-        --outFileNamePrefix ${outFileNamePrefix} \
-        --genomeDir ${genomeDir} \
-        --outSAMtype ${default="BAM SortedByCoordinate" outSAMtype} \
-        --readFilesCommand ${default="zcat" readFilesCommand} \
-        ${"--runThreadN " + runThreadN} \
-        ${"--outStd " + outStd} \
-        ${"--twopassMode " + twopassMode} \
-        ${"--limitBAMsortRAM " + limitBAMsortRAM} \
-        ${true="--outSAMattrRGline " false="" defined(outSAMattrRGline)} ${sep=" , " outSAMattrRGline}
+        --readFilesIn ~{sep=',' inputR1} ~{sep="," inputR2} \
+        --outFileNamePrefix ~{outFileNamePrefix} \
+        --genomeDir ~{genomeDir} \
+        --outSAMtype ~{outSAMtype} \
+        --readFilesCommand ~{readFilesCommand} \
+        ~{"--runThreadN " + runThreadN} \
+        ~{"--outStd " + outStd} \
+        ~{"--twopassMode " + twopassMode} \
+        ~{"--limitBAMsortRAM " + limitBAMsortRAM} \
+        ~{true="--outSAMattrRGline " false="" defined(outSAMattrRGline)} ~{sep=" , " outSAMattrRGline}
     }
 
     output {
-        File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames[key]
+        File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames[outSAMtype]
     }
 
     runtime {
-        cpu: select_first([runThreadN, 1])
-        memory: select_first([memory, 10])
+        cpu: runThreadN
+        memory: memory
     }
 }
 
-task makeStarRGline {
-    String sample
-    String library
-    String? platform
-    String readgroup
+task MakeStarRGline {
+    input {
+        String sample
+        String library
+        String platform = "ILLUMINA"
+        String readgroup
+    }
 
     command {
-        printf '"ID:${readgroup}" "LB:${library}" "PL:${default="ILLUMINA" platform}" "SM:${sample}"'
+        printf '"ID:~{readgroup}" "LB:~{library}" "PL:~{platform}" "SM:~{sample}"'
     }
 
     output {
