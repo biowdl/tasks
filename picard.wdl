@@ -52,7 +52,7 @@ task CollectMultipleMetrics {
     }
 
     output {
-        File aligmentSummary = basename + ".alignment_summary_metrics"
+        File alignmentSummary = basename + ".alignment_summary_metrics"
         File baitBiasDetail = basename + ".bait_bias_detail_metrics"
         File baitBiasSummary = basename + ".bait_bias_summary_metrics"
         File baseDistributionByCycle = basename + ".base_distribution_by_cycle_metrics"
