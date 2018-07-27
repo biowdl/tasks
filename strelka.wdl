@@ -33,7 +33,6 @@ task Somatic {
     }
 
     output {
-        String runDir = runDir
         File indelsVcf = runDir + "/results/variants/somatic.indels.vcf.gz"
         File indelsIndex = runDir + "/results/variants/somatic.indels.vcf.gz.tbi"
         File snvVcf = runDir + "/results/variants/somatic.snvs.vcf.gz"
