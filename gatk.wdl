@@ -1,4 +1,5 @@
 version 1.0
+
 # Apply Base Quality Score Recalibration (BQSR) model
 task ApplyBQSR {
     input {
@@ -14,30 +15,30 @@ task ApplyBQSR {
         File refFastaIndex
         Int? compressionLevel
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(gatkJar)
-    then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk --java-options -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-          ApplyBQSR \
-          --create-output-bam-md5 \
-          --add-output-sam-program-record \
-          -R ~{refFasta} \
-          -I ~{inputBam} \
-          --use-original-qualities \
-          -O ~{outputBamPath} \
-          -bqsr ~{recalibrationReport} \
-          --static-quantized-quals 10 --static-quantized-quals 20 --static-quantized-quals 30 \
-          -L ~{sep=" -L " sequenceGroupInterval}
+         ApplyBQSR \
+         --create-output-bam-md5 \
+         --add-output-sam-program-record \
+         -R ~{refFasta} \
+         -I ~{inputBam} \
+         --use-original-qualities \
+         -O ~{outputBamPath} \
+         -bqsr ~{recalibrationReport} \
+         --static-quantized-quals 10 \
+         --static-quantized-quals 20 \
+         --static-quantized-quals 30 \
+         -L ~{sep=" -L " sequenceGroupInterval}
     }
 
     output {
@@ -46,7 +47,7 @@ task ApplyBQSR {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -66,8 +67,8 @@ task BaseRecalibrator {
         File refDict
         File refFasta
         File refFastaIndex
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
     Array[File]+ knownIndelsSitesVCFsArg = flatten([
@@ -79,23 +80,21 @@ task BaseRecalibrator {
         select_all([dbsnpVCFindex])
     ])
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(gatkJar)
-    then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk --java-options -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-          BaseRecalibrator \
-          -R ~{refFasta} \
-          -I ~{inputBam} \
-          --use-original-qualities \
-          -O ~{recalibrationReportPath} \
-          --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
-          -L ~{sep=" -L " sequenceGroupInterval}
+        BaseRecalibrator \
+        -R ~{refFasta} \
+        -I ~{inputBam} \
+        --use-original-qualities \
+        -O ~{recalibrationReportPath} \
+        --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
+        -L ~{sep=" -L " sequenceGroupInterval}
     }
 
     output {
@@ -103,7 +102,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -122,16 +121,14 @@ task CombineGVCFs {
         File refFastaIndex
         File refDict
 
-        Int? compressionLevel
-        Float? memory
-        Float? memoryMultiplier
+        Int? compressionLevel #TODO This isn't being used?
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(gatkJar)
-    then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk --java-options -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -156,7 +153,7 @@ task CombineGVCFs {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -168,15 +165,13 @@ task GatherBqsrReports {
         Array[File] inputBQSRreports
         String outputReportPath
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(gatkJar)
-    then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk --java-options -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -192,7 +187,7 @@ task GatherBqsrReports {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -215,30 +210,27 @@ task GenotypeGVCFs {
         File? dbsnpVCFindex
 
         Int? compressionLevel
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier =3.0
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(gatkJar)
-    then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk --java-options -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
-
         ~{toolCommand} \
-         GenotypeGVCFs \
-         -R ~{refFasta} \
-         -O ~{outputPath} \
-         ~{"-D " + dbsnpVCF} \
-         -G StandardAnnotation \
-         --only-output-calls-starting-in-intervals \
-         -new-qual \
-         -V ~{gvcfFiles} \
-         -L ~{sep=' -L ' intervals}
+        GenotypeGVCFs \
+        -R ~{refFasta} \
+        -O ~{outputPath} \
+        ~{"-D " + dbsnpVCF} \
+        -G StandardAnnotation \
+        --only-output-calls-starting-in-intervals \
+        -new-qual \
+        -V ~{gvcfFiles} \
+        -L ~{sep=' -L ' intervals}
     }
 
     output {
@@ -247,13 +239,13 @@ task GenotypeGVCFs {
     }
 
     runtime{
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
 task HaplotypeCallerGvcf {
-     input {
+    input {
         String? preCommand
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
@@ -262,35 +254,33 @@ task HaplotypeCallerGvcf {
         File refDict
         File refFasta
         File refFastaIndex
-        Float? contamination
+        Float contamination = 0.0
         Int? compressionLevel
         String? gatkJar
 
         File? dbsnpVCF
         File? dbsnpVCFindex
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(gatkJar)
-    then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk --java-options -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-          HaplotypeCaller \
-          -R ~{refFasta} \
-          -O ~{gvcfPath} \
-          -I ~{sep=" -I " inputBams} \
-          -L ~{sep=' -L ' intervalList} \
-          ~{"-D " + dbsnpVCF} \
-          -contamination ~{default=0 contamination} \
-          -ERC GVCF
+        HaplotypeCaller \
+        -R ~{refFasta} \
+        -O ~{gvcfPath} \
+        -I ~{sep=" -I " inputBams} \
+        -L ~{sep=' -L ' intervalList} \
+        ~{"-D " + dbsnpVCF} \
+        -contamination ~{contamination} \
+        -ERC GVCF
     }
 
     output {
@@ -299,7 +289,7 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }
 
@@ -316,15 +306,13 @@ task SplitNCigarReads {
         String? gatkJar
         Array[File]+ intervals
 
-        Float? memory
-        Float? memoryMultiplier
+        Int memory = 4
+        Float memoryMultiplier = 3
     }
 
-    Int mem = ceil(select_first([memory, 4.0]))
-
     String toolCommand = if defined(gatkJar)
-    then "java -Xmx" + mem + "G -jar " + gatkJar
-    else "gatk --java-options -Xmx" + mem + "G"
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
@@ -343,6 +331,6 @@ task SplitNCigarReads {
     }
 
     runtime {
-        memory: ceil(mem * select_first([memoryMultiplier, 3.0]))
+        memory: ceil(memory * memoryMultiplier)
     }
 }

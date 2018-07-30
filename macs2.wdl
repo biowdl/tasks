@@ -6,9 +6,9 @@ task PeakCalling {
         Array[File] bamFiles
         String outDir
         String sampleName
-        Int? threads
-        Int? memory
-        Boolean? nomodel
+        Int threads = 1
+        Int memory = 8
+        Boolean nomodel = false
     }
 
     command {
@@ -18,15 +18,15 @@ task PeakCalling {
         --treatment ~{sep = ' ' bamFiles} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
-        ~{default=false true='--nomodel' false='' nomodel}
+        ~{true='--nomodel' false='' nomodel}
     }
 
     output {
-        File peakFile = outDir + "/" + sampleName + "/macs2/" + sampleName + "_peaks.narrowPeak"
+        File peakFile = outDir + "/" + sampleName + "_peaks.narrowPeak"
     }
 
     runtime {
-        cpu: select_first([threads,1])
-        memory: select_first([memory,8])
+        cpu: threads
+        memory: memory
     }
 }

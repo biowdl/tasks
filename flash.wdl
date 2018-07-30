@@ -1,17 +1,17 @@
 version 1.0
 
-task flash {
+task Flash {
     input {
         String? preCommand
         File inputR1
         File inputR2
         String outdirPath
-        String? outPrefix = "flash"
+        String outPrefix = "flash"
         Int? minOverlap
         Int? maxOverlap
-        Boolean? compress = true
-        Int? threads
-        Int? memory
+        Boolean compress = true
+        Int threads = 2
+        Int memory = 2
     }
 
     command {
@@ -22,7 +22,7 @@ task flash {
         ~{"--threads=" + threads} \
         ~{"--output-directory=" + outdirPath} \
         ~{"--output-prefix=" + outPrefix} \
-        ~{true="--compress " false="" defined(compress)} \
+        ~{true="--compress " false="" compress} \
         ~{"--min-overlap=" + minOverlap} \
         ~{"--max-overlap=" + maxOverlap} \
         ~{inputR1} ~{inputR2}
@@ -37,8 +37,8 @@ task flash {
     }
 
     runtime {
-        cpu: select_first([threads, 2])
-        memory: select_first([memory, 2])
+        cpu: threads
+        memory: memory
     }
 
 }

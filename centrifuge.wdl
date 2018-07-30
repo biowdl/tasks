@@ -1,4 +1,5 @@
 version 1.0
+
 # Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2018
 #
 # Tasks from centrifuge
@@ -9,15 +10,15 @@ task Build {
         File inputFasta
         String centrifugeIndexBase
         String? preCommand
-        String? centrifugeBuildExecutable = "centrifuge-build"
+        String centrifugeBuildExecutable = "centrifuge-build"
         #Boolean? c = false
-        Boolean? largeIndex = false
-        Boolean? noAuto = false
+        Boolean largeIndex = false
+        Boolean noAuto = false
         Int? bMax
         Int? bMaxDivn
-        Boolean? noDiffCover = false
-        Boolean? noRef = false
-        Boolean? justRef = false
+        Boolean noDiffCover = false
+        Boolean noRef = false
+        Boolean justRef = false
         Int? offRate
         Int? fTabChars
         File? nameTable
@@ -25,8 +26,8 @@ task Build {
         Int? seed
         Int? kmerCount
 
-        Int? threads
-        Int? memory
+        Int threads = 8
+        Int memory = 20
     }
 
     command {
@@ -55,15 +56,15 @@ task Build {
     }
 
     runtime {
-        cpu: select_first([threads, 8])
-        memory: select_first([memory, 20])
+        cpu: threads
+        memory: memory
     }
 }
 
 task Classify {
     input {
         String outputDir
-        Boolean? compressOutput = true
+        Boolean compressOutput = true
         String? preCommand
         String indexPrefix
         Array[File]? unpairedReads
@@ -79,8 +80,8 @@ task Classify {
         Array[String]? hostTaxIds
         Array[String]? excludeTaxIds
 
-        Int? threads
-        Int? memory
+        Int threads = 4
+        Int memory = 8
     }
 
     String outputFilePath = outputDir + "/centrifuge.out"
@@ -94,7 +95,7 @@ task Classify {
         mkdir -p ~{outputDir}
         ~{preCommand}
         centrifuge \
-        ~{"-p " + select_first([threads, 4])} \
+        ~{"-p " + threads} \
         ~{"-x " + indexPrefix} \
         ~{true="-f" false="" fastaInput} \
         ~{true="-k" false="" defined(assignments)} ~{assignments} \
@@ -116,8 +117,8 @@ task Classify {
     }
 
     runtime {
-        cpu: select_first([threads, 4])
-        memory: select_first([memory, 8])
+        cpu: threads
+        memory: memory
     }
 }
 
@@ -125,18 +126,18 @@ task Download {
     input {
         String libraryPath
         Array[String]? domain
-        String? executable = "centrifuge-download"
+        String executable = "centrifuge-download"
         String? preCommand
         String? seqTaxMapPath
-        String? database = "refseq"
+        String database = "refseq"
         String? assemblyLevel
         String? refseqCategory
         Array[String]? taxIds
-        Boolean? filterUnplaced = false
-        Boolean? maskLowComplexRegions = false
-        Boolean? downloadRnaSeqs = false
-        Boolean? modifyHeader = false
-        Boolean? downloadGiMap = false
+        Boolean filterUnplaced = false
+        Boolean maskLowComplexRegions = false
+        Boolean downloadRnaSeqs = false
+        Boolean modifyHeader = false
+        Boolean downloadGiMap = false
     }
 
     # This will use centrifuge-download to download.
@@ -159,6 +160,7 @@ task Download {
         ~{true='-g' false='' downloadGiMap} \
         ~{database} ~{">> " + seqTaxMapPath}
     }
+
     output {
         File seqTaxMap = "~{seqTaxMapPath}"
         File library = libraryPath
@@ -169,7 +171,7 @@ task Download {
 task DownloadTaxonomy {
     input {
         String centrifugeTaxonomyDir
-        String? executable = "centrifuge-download"
+        String executable = "centrifuge-download"
         String? preCommand
     }
     command {
@@ -192,8 +194,8 @@ task Kreport {
         File centrifugeOut
         Boolean inputIsCompressed
         String outputDir
-        String? suffix = "kreport"
-        String? prefix = "centrifuge"
+        String suffix = "kreport"
+        String prefix = "centrifuge"
         String indexPrefix
         Boolean? onlyUnique
         Boolean? showZeros
@@ -201,8 +203,8 @@ task Kreport {
         Int? minScore
         Int? minLength
 
-        Int? cores
-        Int? memory
+        Int cores = 1
+        Int memory = 4
     }
 
     String kreportFilePath = outputDir + "/" + prefix + "." + suffix
@@ -226,7 +228,7 @@ task Kreport {
     }
 
     runtime {
-        cpu: select_first([cores, 1])
-        memory: select_first([memory, 4])
+        cpu: cores
+        memory: memory
     }
 }

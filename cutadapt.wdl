@@ -1,6 +1,6 @@
 version 1.0
 
-task cutadapt {
+task Cutadapt {
     input {
         File read1
         File? read2
@@ -8,8 +8,8 @@ task cutadapt {
         String? read2output
         String? format
         String? preCommand
-        Int? cores = 1
-        Int? memory = 4
+        Int cores = 1
+        Int memory = 4
         Array[String]+? adapter
         Array[String]+? front
         Array[String]+? anywhere
@@ -69,16 +69,19 @@ task cutadapt {
         ~{preCommand}
         cutadapt \
         ~{"--cores=" + cores} \
-        ~{true="-a " false="" defined(adapter)} ~{sep=" -a " adapter} \
-        ~{true="-A " false="" defined(adapterRead2)} ~{sep=" -A " adapterRead2} \
-        ~{true="-g " false="" defined(front)} ~{sep=" -g " front} \
-        ~{true="-G " false="" defined(frontRead2)} ~{sep=" -G " frontRead2} \
-        ~{true="-b " false="" defined(anywhere)} ~{sep=" -b " anywhere} \
-        ~{true="-B " false="" defined(anywhereRead2)} ~{sep=" -B " anywhereRead2} \
+        ~{true="-a" false="" defined(adapter)} ~{sep=" -a " adapter} \
+        ~{true="-A" false="" defined(adapterRead2)} ~{sep=" -A " adapterRead2} \
+        ~{true="-g" false="" defined(front)} ~{sep=" -g " front} \
+        ~{true="-G" false="" defined(frontRead2)} ~{sep=" -G " frontRead2} \
+        ~{true="-b" false="" defined(anywhere)} ~{sep=" -b " anywhere} \
+        ~{true="-B" false="" defined(anywhereRead2)} ~{sep=" -B " anywhereRead2} \
         --output ~{read1output} ~{"--paired-output " + read2output} \
-        ~{"--to-short-output " + tooShortOutputPath} ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
-        ~{"--to-long-output " + tooLongOutputPath} ~{"--to-long-paired-output " + tooLongPairedOutputPath} \
-        ~{"--untrimmed-output " + untrimmedOutputPath} ~{"--untrimmed-paired-output " + untrimmedPairedOutputPath} \
+        ~{"--to-short-output " + tooShortOutputPath} \
+        ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
+        ~{"--to-long-output " + tooLongOutputPath} \
+        ~{"--to-long-paired-output " + tooLongPairedOutputPath} \
+        ~{"--untrimmed-output " + untrimmedOutputPath} \
+        ~{"--untrimmed-paired-output " + untrimmedPairedOutputPath} \
         ~{"--pair-filter " + pairFilter} \
         ~{"--error-rate " + errorRate} \
         ~{"--times " + times} \
@@ -99,14 +102,24 @@ task cutadapt {
         ~{"--info-file " + infoFilePath } \
         ~{"--rest-file " + restFilePath } \
         ~{"--wildcard-file " + wildcardFilePath} \
-        ~{true="--match-read-wildcards" false="" matchReadWildcards} ~{true="--no-match-adapter-wildcards" false="" noMatchAdapterWildcards} \
-        ~{true="--no-trim" false="" noTrim} ~{true="--mask-adapter" false="" maskAdapter} \
-        ~{true="--no-indels" false="" noIndels} ~{true="--trim-n" false="" trimN}  \
-        ~{true="--interleaved" false="" interleaved} ~{true="--discard-trimmed" false="" discardTrimmed } \
-        ~{true="--colorspace" false="" colorspace} ~{true="--double-encode" false="" doubleEncode} \
-        ~{true="--strip-f3" false="" stripF3} ~{true="--maq" false="" maq} ~{true="--bwa" false="" bwa} \
-        ~{true="--zero-cap" false="" zeroCap} ~{true="--no-zero-cap" false="" noZeroCap} \
-        ~{read1} ~{read2} ~{"> " + reportPath}
+        ~{true="--match-read-wildcards" false="" matchReadWildcards} \
+        ~{true="--no-match-adapter-wildcards" false="" noMatchAdapterWildcards} \
+        ~{true="--no-trim" false="" noTrim} \
+        ~{true="--mask-adapter" false="" maskAdapter} \
+        ~{true="--no-indels" false="" noIndels} \
+        ~{true="--trim-n" false="" trimN}  \
+        ~{true="--interleaved" false="" interleaved} \
+        ~{true="--discard-trimmed" false="" discardTrimmed } \
+        ~{true="--colorspace" false="" colorspace} \
+        ~{true="--double-encode" false="" doubleEncode} \
+        ~{true="--strip-f3" false="" stripF3} \
+        ~{true="--maq" false="" maq} \
+        ~{true="--bwa" false="" bwa} \
+        ~{true="--zero-cap" false="" zeroCap} \
+        ~{true="--no-zero-cap" false="" noZeroCap} \
+        ~{read1} \
+        ~{read2} \
+        ~{"> " + reportPath}
     }
 
     output{
@@ -125,7 +138,7 @@ task cutadapt {
     }
 
     runtime {
-        cpu: select_first([cores])
-        memory: select_first([memory])
+        cpu: cores
+        memory: memory
     }
 }
