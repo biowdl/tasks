@@ -417,3 +417,71 @@ task ValidateVcf {
         memory: ceil(memory * memoryMultiplier)
     }
 }
+
+task VcfStats {
+    input {
+        File vcfFile
+        File vcfIndex
+        File refFasta
+        File refFastaIndex
+        File refDict
+        String outDir
+        File? intervals
+        Array[String]+? infoTags
+        Array[String]+? genotypeTags
+        Int? sampleToSampleMinDepth
+        Int? binSize
+        Int? maxContigsInSingleJob
+        Boolean writeBinStats = false
+        Int localThreads = 1
+        Boolean notWriteContigStats = false
+        Boolean skipGeneral = false
+        Boolean skipGenotype = false
+        Boolean skipSampleDistributions = false
+        Boolean skipSampleCompare = false
+        String? sparkMaster
+        Int? sparkExecutorMemory
+        Array[String]+? sparkConfigValues
+
+        Int memory = 4
+        Float memoryMultiplier = 2.0
+        File? toolJar
+        String? preCommand
+    }
+
+    String toolCommand = if defined(toolJar)
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-vcfstats -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        ~{toolCommand} \
+        -I ~{vcfFile} \
+        -R ~{refFasta} \
+        -o ~{outDir} \
+        -t ~{localThreads} \
+        ~{"--intervals " + intervals} \
+        ~{true="--infoTag" false="" defined(infoTags)} ~{sep=" --infoTag " infoTags} \
+        ~{true="--genotypeTag" false="" defined(genotypeTags)} ~{sep=" --genotypeTag "
+            genotypeTags} \
+        ~{"--sampleToSampleMinDepth " + sampleToSampleMinDepth} \
+        ~{"--binSize " + binSize} \
+        ~{"--maxContigsInSingleJob " + maxContigsInSingleJob} \
+        ~{true="--writeBinStats" false="" writeBinStats} \
+        ~{true="--notWriteContigStats" false="" notWriteContigStats} \
+        ~{true="--skipGeneral" false="" skipGeneral} \
+        ~{true="--skipGenotype" false="" skipGenotype} \
+        ~{true="--skipSampleDistributions" false="" skipSampleDistributions} \
+        ~{true="--skipSampleCompare" false="" skipSampleCompare} \
+        ~{"--sparkMaster " + sparkMaster} \
+        ~{"--sparkExecutorMemory " + sparkExecutorMemory} \
+        ~{true="--sparkConfigValue" false="" defined(sparkConfigValues)} ~{
+            sep=" --sparkConfigValue" sparkConfigValues}
+    }
+
+    runtime {
+        cpu: localThreads
+        memory: ceil(memory * memoryMultiplier)
+    }
+}

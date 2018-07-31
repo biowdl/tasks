@@ -293,6 +293,51 @@ task HaplotypeCallerGvcf {
     }
 }
 
+task MuTect2 {
+    input {
+        String? preCommand
+
+        Array[File]+ inputBams
+        File inputBamIndex
+        File refFasta
+        File refFastaIndex
+        File refDict
+        String outputVcf
+        String tumorSample
+        String? normalSample
+        Array[File]+ intervals
+
+        String? gatkJar
+        Int memory = 4
+        Float memoryMultiplier = 3
+    }
+
+    String toolCommand = if defined(gatkJar)
+        then "java -Xmx" + memory + "G -jar " + gatkJar
+        else "gatk --java-options -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        ~{toolCommand} \
+        Mutect2 \
+        -R ~{refFasta} \
+        -I ~{sep=" -I " inputBams} \
+        -tumor ~{tumorSample} \
+        ~{"-normal " + normalSample} \
+        -O ~{outputVcf} \
+        -L ~{sep=" -L " intervals}
+    }
+
+    output {
+        File vcfFile = outputVcf
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
 task SplitNCigarReads {
     input {
         String? preCommand
