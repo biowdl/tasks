@@ -1,4 +1,5 @@
 version 1.0
+
 struct Readgroup {
     String id
     File R1
@@ -15,9 +16,10 @@ struct Library {
 struct Sample {
     String id
     Array[Library]+ libraries
+    String? control
 }
 
-task sampleConfigFileToStruct {
+task SampleConfigFileToStruct {
     input {
         File sampleConfigFile
         String outputJson = "output.json"
@@ -69,5 +71,5 @@ task sampleConfigFileToStruct {
     output {
         Map[String,Array[Sample]] map = read_json(outputJson)
         Array[Sample] samples = map["samples"]
-     }
+    }
 }

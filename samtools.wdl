@@ -1,5 +1,25 @@
 version 1.0
 
+task BgzipAndIndex {
+    input {
+        File inputFile
+        String outputDir
+        String type = "vcf"
+    }
+
+    String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
+
+    command {
+        bgzip -c ~{inputFile} > ~{outputGz}
+        tabix ~{outputGz} -p ~{type}
+    }
+
+    output {
+        File compressed = outputGz
+        File index = outputGz + ".tbi"
+    }
+}
+
 task Index {
     input {
         String? preCommand
@@ -128,6 +148,21 @@ task Fastq {
         excludeSpecificFilter: "Exclude reads with ALL of these flags. Corresponds to '-G'"
         appendReadNumber: "Append /1 and /2 to the read name, or don't. Corresponds to '-n/N"
 
+    }
+}
+
+task Tabix {
+    input {
+        String inputFile
+        String type = "vcf"
+    }
+
+    command {
+        tabix ~{inputFile} -p ~{type}
+    }
+
+    output {
+        File index = inputFile + ".tbi"
     }
 }
 

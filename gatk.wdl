@@ -298,7 +298,7 @@ task MuTect2 {
         String? preCommand
 
         Array[File]+ inputBams
-        File inputBamIndex
+        Array[File]+ inputBamIndex
         File refFasta
         File refFastaIndex
         File refDict
@@ -331,6 +331,7 @@ task MuTect2 {
 
     output {
         File vcfFile = outputVcf
+        File vcfIndex = outputVcf + ".tbi"
     }
 
     runtime {

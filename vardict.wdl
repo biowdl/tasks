@@ -4,12 +4,14 @@ task VarDict {
     input {
         String? installDir
 
+        String tumorSampleName
         File tumorBam
-        File normalBam
+        File tumorIndex
+        String? normalSampleName
+        File? normalBam
+        File? normalIndex
         File refFasta
         File bedFile
-        String tumorSampleName
-        String normalSampleName
         String outputVcf
 
         Int chromosomeColumn = 1
@@ -30,16 +32,18 @@ task VarDict {
         ~{toolCommand} \
         -G ~{refFasta} \
         -N ~{tumorSampleName} \
-        -b "~{tumorBam}|~{normalBam}" \
+        -b "~{tumorBam}~{"|" + normalBam}" \
         -c ~{chromosomeColumn} \
         -S ~{startColumn} \
         -E ~{endColumn} \
         -g ~{geneColumn} \
         ~{bedFile} | \
-        ~{installDir + "/"}testsomatic.R | \
-        ~{installDir + "/"}var2vcf_paired.pl \
-        -N "~{tumorSampleName}|~{normalSampleName}" \
-        > ~{outputVcf}
+        ~{installDir + "/"}~{true="testsomatic.R" false="teststrandbias.R" defined(normalBam)} | \
+        ~{installDir + "/"}~{true="var2vcf_paired.pl"
+            false="var2vcf_valid.pl" defined(normalBam)} \
+        -N "~{tumorSampleName}~{"|" + normalSampleName}" \
+        ~{true="" false="-E" defined(normalBam)} | \
+        bgzip -c > ~{outputVcf}
     }
 
     output {
