@@ -63,7 +63,6 @@ task Somatic {
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
-        Boolean rna = false
 
         Int cores = 1
         Int memory = 4
