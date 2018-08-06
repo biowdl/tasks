@@ -34,7 +34,7 @@ task Germline {
 
         ~{runDir}/runWorkflow.py \
         -m local \
-        -J ~{cores} \
+        -j ~{cores} \
         -g ~{memory}
     }
 
@@ -62,6 +62,8 @@ task Somatic {
         File refFasta
         File? callRegions
         File? callRegionsIndex
+        File? indelCandidates
+        File? indelCandidatesIndex
         Boolean exome = false
 
         Int cores = 1
@@ -80,12 +82,13 @@ task Somatic {
         --tumorBam ~{tumorBam} \
         --ref ~{refFasta} \
         --runDir ~{runDir} \
-        ~{"--callRegions" + callRegions} \
+        ~{"--callRegions " + callRegions} \
+        ~{"--indelCandidates " + indelCandidates} \
         ~{true="--exome" false="" exome} \
 
         ~{runDir}/runWorkflow.py \
         -m local \
-        -J ~{cores} \
+        -j ~{cores} \
         -g ~{memory}
     }
 
