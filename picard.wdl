@@ -378,3 +378,38 @@ task ScatterIntervalList {
         memory: ceil(memory * memoryMultiplier)
     }
 }
+
+task SortVcf {
+    input {
+        String? preCommand
+        String? picardJar
+
+        Array[File]+ vcfFiles
+        String outputVcf
+
+        Int memory = 4
+        Float memoryMultiplier = 3.0
+        }
+
+        String toolCommand = if defined(picardJar)
+            then "java -Xmx" + memory + "G -jar " + picardJar
+            else "picard -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        ~{toolCommand} \
+        SortVcf \
+        I=~{sep=" I=" vcfFiles} \
+        O=outputVcf
+    }
+
+    output {
+        File vcfFile = outputVcf
+        File vcfIndex = outputVcf + ".tbi"
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
