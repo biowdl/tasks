@@ -8,6 +8,7 @@ task Germline {
         Array[File]+ bams
         Array[File]+ indexes
         File refFasta
+        File refFastaIndex
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
@@ -28,7 +29,7 @@ task Germline {
         --bam ~{sep=" --bam " bams} \
         --ref ~{refFasta} \
         --runDir ~{runDir} \
-        ~{"--callRegions" + callRegions} \
+        ~{"--callRegions " + callRegions} \
         ~{true="--exome" false="" exome} \
         ~{true="--rna" false="" rna}
 
@@ -39,8 +40,8 @@ task Germline {
     }
 
     output {
-        File variants = runDir + "/results/variants.vcf.gz"
-        File variantsIndex = runDir + "/results/variants.vcf.gz.tbi"
+        File variants = runDir + "/results/variants/variants.vcf.gz"
+        File variantsIndex = runDir + "/results/variants/variants.vcf.gz.tbi"
     }
 
     runtime {
@@ -60,6 +61,7 @@ task Somatic {
         File tumorBam
         File tumorIndex
         File refFasta
+        File refFastaIndex
         File? callRegions
         File? callRegionsIndex
         File? indelCandidates

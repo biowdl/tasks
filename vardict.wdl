@@ -3,6 +3,7 @@ version 1.0
 task VarDict {
     input {
         String? installDir
+        Boolean useJavaVersion = true
 
         String tumorSampleName
         File tumorBam
@@ -11,6 +12,7 @@ task VarDict {
         File? normalBam
         File? normalIndex
         File refFasta
+        File refFastaIndex
         File bedFile
         String outputVcf
 
@@ -24,7 +26,9 @@ task VarDict {
 
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"
-        else "vardict"
+        else if useJavaVersion
+            then "vardict-java" #probably needs memory stuff
+            else "vardict"
 
     command {
         set -e -o pipefail

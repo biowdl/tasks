@@ -192,7 +192,7 @@ task View {
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
-        ~{"--threads " + threads - 1} \
+        ~{"--threads " + (threads - 1)} \
         ~{inFile}
     }
 

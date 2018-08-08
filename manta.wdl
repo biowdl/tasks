@@ -7,6 +7,7 @@ task Somatic {
         File? normalBam
         File? normalIndex
         File refFasta
+        File refFastaIndex
         String runDir
         File? callRegions
         File? callRegionsIndex
@@ -33,7 +34,7 @@ task Somatic {
         --runDir ~{runDir} \
         ~{true="--exome" false="" exome}
 
-        ~{installDir}/runWorkflow.py \
+        ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
         -g ~{memory}
