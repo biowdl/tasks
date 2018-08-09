@@ -37,6 +37,7 @@ task VarDict {
         -G ~{refFasta} \
         -N ~{tumorSampleName} \
         -b "~{tumorBam}~{"|" + normalBam}" \
+        ~{true="-z" false="" defined(normalBam)} \
         -c ~{chromosomeColumn} \
         -S ~{startColumn} \
         -E ~{endColumn} \
