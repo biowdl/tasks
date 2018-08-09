@@ -22,12 +22,14 @@ task VarDict {
         Int geneColumn = 4
 
         String? preCommand
+        Int memory = 4
+        Float memoryMultiplier = 2.0
     }
 
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"
         else if useJavaVersion
-            then "vardict-java" #probably needs memory stuff
+            then "vardict-java -Xmx${memory}"
             else "vardict"
 
     command {
@@ -53,5 +55,9 @@ task VarDict {
 
     output {
         File vcfFile = outputVcf
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
     }
 }
