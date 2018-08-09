@@ -142,8 +142,8 @@ task CombineGVCFs {
              -V ~{sep=' -V ' gvcfFiles} \
              -L ~{sep=' -L ' intervals}
         else # TODO this should be handeled in wdl
-            ln -sf ~{select_first(gvcfFiles)} ~{outputPath}
-            ln -sf ~{select_first(gvcfFileIndexes)} ~{outputPath}.tbi
+            ln -sf ~{gvcfFiles[0]} ~{outputPath}
+            ln -sf ~{gvcfFileIndexes[0]} ~{outputPath}.tbi
         fi
     }
 
@@ -298,7 +298,7 @@ task MuTect2 {
         String? preCommand
 
         Array[File]+ inputBams
-        File inputBamIndex
+        Array[File]+ inputBamIndex
         File refFasta
         File refFastaIndex
         File refDict
@@ -331,6 +331,7 @@ task MuTect2 {
 
     output {
         File vcfFile = outputVcf
+        File vcfIndex = outputVcf + ".tbi"
     }
 
     runtime {

@@ -3,13 +3,17 @@ version 1.0
 task VarDict {
     input {
         String? installDir
+        Boolean useJavaVersion = true
 
-        File tumorBam
-        File normalBam
-        File refFasta
-        File bedFile
         String tumorSampleName
-        String normalSampleName
+        File tumorBam
+        File tumorIndex
+        String? normalSampleName
+        File? normalBam
+        File? normalIndex
+        File refFasta
+        File refFastaIndex
+        File bedFile
         String outputVcf
 
         Int chromosomeColumn = 1
@@ -22,7 +26,9 @@ task VarDict {
 
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"
-        else "vardict"
+        else if useJavaVersion
+            then "vardict-java" #probably needs memory stuff
+            else "vardict"
 
     command {
         set -e -o pipefail
@@ -30,16 +36,18 @@ task VarDict {
         ~{toolCommand} \
         -G ~{refFasta} \
         -N ~{tumorSampleName} \
-        -b "~{tumorBam}|~{normalBam}" \
+        -b "~{tumorBam}~{"|" + normalBam}" \
         -c ~{chromosomeColumn} \
         -S ~{startColumn} \
         -E ~{endColumn} \
         -g ~{geneColumn} \
         ~{bedFile} | \
-        ~{installDir + "/"}testsomatic.R | \
-        ~{installDir + "/"}var2vcf_paired.pl \
-        -N "~{tumorSampleName}|~{normalSampleName}" \
-        > ~{outputVcf}
+        ~{installDir + "/"}~{true="testsomatic.R" false="teststrandbias.R" defined(normalBam)} | \
+        ~{installDir + "/"}~{true="var2vcf_paired.pl"
+            false="var2vcf_valid.pl" defined(normalBam)} \
+        -N "~{tumorSampleName}~{"|" + normalSampleName}" \
+        ~{true="" false="-E" defined(normalBam)} | \
+        bgzip -c > ~{outputVcf}
     }
 
     output {
