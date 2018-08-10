@@ -22,18 +22,19 @@ task VarDict {
         Int geneColumn = 4
 
         String? preCommand
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 2.0
     }
 
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"
         else if useJavaVersion
-            then "vardict-java -Xmx${memory}"
+            then "vardict-java"
             else "vardict"
 
     command {
         set -e -o pipefail
+        export JAVA_OPTS="-Xmx~{memory}G"
         ~{preCommand}
         ~{toolCommand} \
         -G ~{refFasta} \
