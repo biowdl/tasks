@@ -403,7 +403,7 @@ task SortVcf {
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
         ~{"SEQUENCE_DICTIONARY=" + sequenceDict} \
-        O=outputVcf
+        O=~{outputVcf}
     }
 
     output {
