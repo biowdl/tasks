@@ -61,10 +61,12 @@ task Cutadapt {
         String? reportPath
     }
 
+    String read2outputarg = if (defined(read2output)) then "mkdir -p $(dirname " + read2output + ")" else ""
+
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + read1output + ")"}
-        ~{"mkdir -p $(dirname " + read2output + ")"}
+        ~{read2outputarg}
         ~{"mkdir -p $(dirname " + reportPath + ")"}
         ~{preCommand}
         cutadapt \
