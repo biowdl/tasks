@@ -22,21 +22,25 @@ task VarDict {
         Int geneColumn = 4
 
         String? preCommand
+        Int memory = 8
+        Float memoryMultiplier = 2.0
     }
 
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"
         else if useJavaVersion
-            then "vardict-java" #probably needs memory stuff
+            then "vardict-java"
             else "vardict"
 
     command {
         set -e -o pipefail
+        export JAVA_OPTS="-Xmx~{memory}G"
         ~{preCommand}
         ~{toolCommand} \
         -G ~{refFasta} \
         -N ~{tumorSampleName} \
         -b "~{tumorBam}~{"|" + normalBam}" \
+        ~{true="" false="-z" defined(normalBam)} \
         -c ~{chromosomeColumn} \
         -S ~{startColumn} \
         -E ~{endColumn} \
@@ -52,5 +56,9 @@ task VarDict {
 
     output {
         File vcfFile = outputVcf
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
     }
 }

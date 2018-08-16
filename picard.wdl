@@ -386,6 +386,7 @@ task SortVcf {
 
         Array[File]+ vcfFiles
         String outputVcf
+        File? sequenceDict
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -401,7 +402,8 @@ task SortVcf {
         ~{toolCommand} \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
-        O=outputVcf
+        ~{"SEQUENCE_DICTIONARY=" + sequenceDict} \
+        O=~{outputVcf}
     }
 
     output {
