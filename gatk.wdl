@@ -373,7 +373,7 @@ task SplitNCigarReads {
 
     output {
         File bam = outputBam
-        File bamIndex = sub(outputBam, "\\.bam$", ".bai")
+        File bamIndex = sub(outputBam, "\.bam$", ".bai")
     }
 
     runtime {
