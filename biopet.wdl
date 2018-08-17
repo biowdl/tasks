@@ -425,7 +425,7 @@ task VcfStats {
         File refFasta
         File refFastaIndex
         File refDict
-        String outDir
+        String outputDir
         File? intervals
         Array[String]+? infoTags
         Array[String]+? genotypeTags
@@ -455,11 +455,12 @@ task VcfStats {
 
     command {
         set -e -o pipefail
+        mkdir -p ~{outputDir}
         ~{preCommand}
         ~{toolCommand} \
         -I ~{vcfFile} \
         -R ~{refFasta} \
-        -o ~{outDir} \
+        -o ~{outputDir} \
         -t ~{localThreads} \
         ~{"--intervals " + intervals} \
         ~{true="--infoTag" false="" defined(infoTags)} ~{sep=" --infoTag " infoTags} \
@@ -478,6 +479,10 @@ task VcfStats {
         ~{"--sparkExecutorMemory " + sparkExecutorMemory} \
         ~{true="--sparkConfigValue" false="" defined(sparkConfigValues)} ~{
             sep=" --sparkConfigValue" sparkConfigValues}
+    }
+
+    output {
+        String resultsDir = outputDir
     }
 
     runtime {
