@@ -61,8 +61,8 @@ task CollectMultipleMetrics {
         File gcBiasDetail = basename + ".gc_bias.detail_metrics"
         File gcBiasPdf = basename + ".gc_bias.pdf"
         File gcBiasSummary = basename + ".gc_bias.summary_metrics"
-        File insertSizeHistogramPdf = basename + ".insert_size_histogram.pdf"
-        File insertSize = basename + ".insert_size_metrics"
+        File? insertSizeHistogramPdf = basename + ".insert_size_histogram.pdf"
+        File? insertSize = basename + ".insert_size_metrics"
         File preAdapterDetail = basename + ".pre_adapter_detail_metrics"
         File preAdapterSummary = basename + ".pre_adapter_summary_metrics"
         File qualityByCycle = basename + ".quality_by_cycle_metrics"
@@ -110,7 +110,7 @@ task CollectRnaSeqMetrics {
     }
 
     output {
-        File chart = basename + ".RNA_Metrics.pdf"
+        File? chart = basename + ".RNA_Metrics.pdf"
         File metrics = basename + ".RNA_Metrics"
     }
 
