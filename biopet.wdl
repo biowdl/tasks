@@ -458,7 +458,7 @@ task VcfStats {
         File refFasta
         File refFastaIndex
         File refDict
-        String outDir
+        String outputDir
         File? intervals
         Array[String]+? infoTags
         Array[String]+? genotypeTags
@@ -488,11 +488,12 @@ task VcfStats {
 
     command {
         set -e -o pipefail
+        mkdir -p ~{outputDir}
         ~{preCommand}
         ~{toolCommand} \
         -I ~{vcfFile} \
         -R ~{refFasta} \
-        -o ~{outDir} \
+        -o ~{outputDir} \
         -t ~{localThreads} \
         ~{"--intervals " + intervals} \
         ~{true="--infoTag" false="" defined(infoTags)} ~{sep=" --infoTag " infoTags} \
@@ -511,6 +512,58 @@ task VcfStats {
         ~{"--sparkExecutorMemory " + sparkExecutorMemory} \
         ~{true="--sparkConfigValue" false="" defined(sparkConfigValues)} ~{
             sep=" --sparkConfigValue" sparkConfigValues}
+    }
+
+    output {
+        File? general = outputDir + "/general.tsv"
+        File? genotype = outputDir + "/genotype.tsv"
+        File? sampleDistributionAvailableAggregate = outputDir +
+            "/sample_distributions/Available.aggregate.tsv"
+        File? sampleDistributionAvailable = outputDir + "/sample_distributions/Available.tsv"
+        File? sampleDistributionCalledAggregate = outputDir +
+            "/sample_distributions/Called.aggregate.tsv"
+        File? sampleDistributionCalled = outputDir + "/sample_distributions/Called.tsv"
+        File? sampleDistributionFilteredAggregate = outputDir +
+            "/sample_distributions/Filtered.aggregate.tsv"
+        File? sampleDistributionFiltered = outputDir + "/sample_distributions/Filtered.tsv"
+        File? sampleDistributionHetAggregate = outputDir + "/sample_distributions/Het.aggregate.tsv"
+        File? sampleDistributionHetNoNRefAggregate = outputDir +
+            "/sample_distributions/HetNonRef.aggregate.tsv"
+        File? sampleDistributionHetNonRef = outputDir + "/sample_distributions/HetNonRef.tsv"
+        File? sampleDistributionHet = outputDir + "/sample_distributions/Het.tsv"
+        File? sampleDistributionHomAggregate = outputDir + "/sample_distributions/Hom.aggregate.tsv"
+        File? sampleDistributionHomRefAggregate = outputDir +
+            "/sample_distributions/HomRef.aggregate.tsv"
+        File? sampleDistributionHomRef = outputDir + "/sample_distributions/HomRef.tsv"
+        File? sampleDistributionHom = outputDir + "/sample_distributions/Hom.tsv"
+        File? sampleDistributionHomVarAggregate = outputDir +
+            "/sample_distributions/HomVar.aggregate.tsv"
+        File? sampleDistributionHomVar = outputDir + "/sample_distributions/HomVar.tsv"
+        File? sampleDistributionMixedAggregate = outputDir +
+            "/sample_distributions/Mixed.aggregate.tsv"
+        File? sampleDistributionMixed = outputDir + "/sample_distributions/Mixed.tsv"
+        File? sampleDistributionNoCallAggregate = outputDir +
+            "/sample_distributions/NoCall.aggregate.tsv"
+        File? sampleDistributionNoCall = outputDir + "/sample_distributions/NoCall.tsv"
+        File? sampleDistributionNonInformativeAggregate = outputDir +
+            "/sample_distributions/NonInformative.aggregate.tsv"
+        File? sampleDistributionNonInformative = outputDir +
+            "/sample_distributions/NonInformative.tsv"
+        File? sampleDistributionToalAggregate = outputDir +
+            "/sample_distributions/Total.aggregate.tsv"
+        File? sampleDistributionTotal = outputDir + "/sample_distributions/Total.tsv"
+        File? sampleDistributionVariantAggregate = outputDir +
+            "/sample_distributions/Variant.aggregate.tsv"
+        File? sampleDistributionVariant = outputDir + "/sample_distributions/Variant.tsv"
+        File? sampleCompareAlleleAbs = outputDir + "/sample_compare/allele.abs.tsv"
+        File? sampleCompareAlleleNonRefAbs = outputDir + "/sample_compare/allele.non_ref.abs.tsv"
+        File? sampleCompareAlleleRefAbs = outputDir + "/sample_compare/allele.ref.abs.tsv"
+        File? sampleCompareAlleleRel = outputDir + "/sample_compare/allele.rel.tsv"
+        File? sampleCompareGenotypeAbs = outputDir + "/sample_compare/genotype.abs.tsv"
+        File? sampleCompareGenotypeNonRefAbs = outputDir +
+            "/sample_compare/genotype.non_ref.abs.tsv"
+        File? sampleCompareGenotypeRefAbs = outputDir + "/sample_compare/genotype.ref.abs.tsv"
+        File? sampleCompareGenotypeRel = outputDir + "/sample_compare/genotype.rel.tsv"
     }
 
     runtime {
