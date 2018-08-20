@@ -21,10 +21,10 @@ task Fastqc {
     }
 
     # Chops of the .gz extension if present.
-    String name = sub(seqFile, "\\.gz$","")
+    String name = sub(seqFile, "\.gz$","")
     # This regex chops of the extension and replaces it with _fastqc for the reportdir.
     # Just as fastqc does it.
-    String reportDir = outdirPath + "/" + sub(basename(name), "\\.[^\\.]*$", "_fastqc")
+    String reportDir = outdirPath + "/" + sub(basename(name), "\.[^\.]*$", "_fastqc")
 
     command {
         set -e -o pipefail
