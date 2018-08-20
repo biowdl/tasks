@@ -1,6 +1,6 @@
 version 1.0
 
-task Somatic {
+task ConfigureSomatic {
     input {
         File tumorBam
         File tumorIndex
@@ -14,9 +14,6 @@ task Somatic {
         Boolean exome = false
         String? preCommand
         String? installDir
-
-        Int cores = 1
-        Int memory = 4
     }
 
     String toolCommand = if defined(installDir)
@@ -33,7 +30,22 @@ task Somatic {
         ~{"--callRegions " + callRegions} \
         --runDir ~{runDir} \
         ~{true="--exome" false="" exome}
+    }
 
+    output {
+        String runDirectory = runDir
+    }
+}
+
+task RunSomatic {
+    input {
+        String runDir
+        Int cores = 1
+        Int memory = 4
+        Boolean paired = true
+    }
+
+    command {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
@@ -46,10 +58,10 @@ task Somatic {
             "/results/variants/candidateSmallIndels.vcf.gz.tbi"
         File candidateSV = runDir + "/results/variants/candidateSV.vcf.gz"
         File candidateSVindex = runDir + "/results/variants/candidateSV.vcf.gz.tbi"
-        File tumorSV = if defined(normalBam)
+        File tumorSV = if paired
             then runDir + "/results/variants/somaticSV.vcf.gz"
             else runDir + "/results/variants/tumorSV.vcf.gz"
-        File tumorSVindex = if defined(normalBam)
+        File tumorSVindex = if paired
             then runDir + "/results/variants/somaticSV.vcf.gz.tbi"
             else runDir + "/results/variants/tumorSV.vcf.gz.tbi"
         File? diploidSV = "/results/variants/diploidSV.vcf.gz"
