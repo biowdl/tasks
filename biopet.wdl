@@ -256,13 +256,13 @@ task SampleConfigCromwellArrays {
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
+        then "java -Xmx" + memory + "G -jar " + toolJar
         else "biopet-sampleconfig -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         ~{preCommand}
-        mkdir -p . ~{"$(dirname " + outputPath + ")"}
+        mkdir -p $(dirname ~{outputPath})
         ~{toolCommand} CromwellArrays \
         -i ~{sep="-i " inputFiles} \
         ~{"-o " + outputPath}
