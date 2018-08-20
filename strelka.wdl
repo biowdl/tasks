@@ -1,6 +1,6 @@
 version 1.0
 
-task Germline {
+task ConfigureGermline {
     input {
         String? preCommand
         String? installDir
@@ -13,9 +13,6 @@ task Germline {
         File? callRegionsIndex
         Boolean exome = false
         Boolean rna = false
-
-        Int cores = 1
-        Int memory = 4
     }
 
     String toolCommand = if defined(installDir)
@@ -32,26 +29,14 @@ task Germline {
         ~{"--callRegions " + callRegions} \
         ~{true="--exome" false="" exome} \
         ~{true="--rna" false="" rna}
-
-        ~{runDir}/runWorkflow.py \
-        -m local \
-        -j ~{cores} \
-        -g ~{memory}
     }
 
     output {
-        File variants = runDir + "/results/variants/variants.vcf.gz"
-        File variantsIndex = runDir + "/results/variants/variants.vcf.gz.tbi"
-    }
-
-    runtime {
-        cpu: cores
-        memory: memory
+        String runDirectory = runDir
     }
 }
 
-
-task Somatic {
+task ConfigureSomatic {
     input {
         String? preCommand
         String? installDir
@@ -67,9 +52,6 @@ task Somatic {
         File? indelCandidates
         File? indelCandidatesIndex
         Boolean exome = false
-
-        Int cores = 1
-        Int memory = 4
     }
 
     String toolCommand = if defined(installDir)
@@ -87,7 +69,22 @@ task Somatic {
         ~{"--callRegions " + callRegions} \
         ~{"--indelCandidates " + indelCandidates} \
         ~{true="--exome" false="" exome} \
+    }
 
+    output {
+        String runDirectory = runDir
+    }
+}
+
+task Run {
+    input {
+        String runDir
+        Int cores = 1
+        Int memory = 4
+        Boolean somatic = true
+    }
+
+    command {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
@@ -95,10 +92,14 @@ task Somatic {
     }
 
     output {
-        File indelsVcf = runDir + "/results/variants/somatic.indels.vcf.gz"
-        File indelsIndex = runDir + "/results/variants/somatic.indels.vcf.gz.tbi"
-        File snvVcf = runDir + "/results/variants/somatic.snvs.vcf.gz"
-        File snvIndex = runDir + "/results/variants/somatic.snvs.vcf.gz.tbi"
+        File? indelsVcf = runDir + "/results/variants/somatic.indels.vcf.gz"
+        File? indelsIndex = runDir + "/results/variants/somatic.indels.vcf.gz.tbi"
+        File variants = if somatic
+            then runDir + "/results/variants/somatic.snvs.vcf.gz"
+            else runDir + "/results/variants/variants.vcf.gz"
+        File variantsIndex = if somatic
+            then runDir + "/results/variants/somatic.snvs.vcf.gz.tbi"
+            else runDir + "/results/variants/variants.vcf.gz.tbi"
     }
 
     runtime {
