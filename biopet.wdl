@@ -244,6 +244,39 @@ task SampleConfig {
     }
 }
 
+task SampleConfigCromwellArrays {
+    input {
+        File? toolJar
+        String? preCommand
+        Array[File]+ inputFiles
+        String outputPath
+
+        Int memory = 4
+        Float memoryMultiplier = 2.0
+    }
+
+    String toolCommand = if defined(toolJar)
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-sampleconfig -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        mkdir -p $(dirname ~{outputPath})
+        ~{toolCommand} CromwellArrays \
+        -i ~{sep="-i " inputFiles} \
+        ~{"-o " + outputPath}
+    }
+
+    output {
+        File outputFile = outputPath
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
 task ScatterRegions {
     input {
         String? preCommand
