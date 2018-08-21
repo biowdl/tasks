@@ -97,6 +97,8 @@ task ExtractAdaptersFastqc {
         set -e
         ~{preCommand}
         mkdir -p ~{outputDir}
+        touch ~{adapterOutputFilePath}
+        touch ~{contamsOutputFilePath}
         ~{toolCommand} \
         --inputFile ~{inputFile} \
         ~{"--adapterOutputFile " + adapterOutputFilePath } \
