@@ -5,8 +5,7 @@ task Mem {
         String? preCommand
         File inputR1
         File? inputR2
-        File referenceFasta
-        Array[File] indexFiles # These indexFiles need to be added, otherwise cromwell will not find them.
+        BwaIndex bwaIndex
         String outputPath
         String? readgroup
 
@@ -20,7 +19,7 @@ task Mem {
         ~{preCommand}
         bwa mem ~{"-t " + threads} \
         ~{"-R '" + readgroup + "'"} \
-        ~{referenceFasta} \
+        ~{bwaIndex.fastaFile} \
         ~{inputR1} \
         ~{inputR2} \
         | samtools sort --output-fmt BAM - > ~{outputPath}
@@ -75,3 +74,7 @@ task Index {
     }
 }
 
+struct BwaIndex {
+    File fastaFile
+    Array[File] indexFiles
+}
