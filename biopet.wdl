@@ -97,8 +97,6 @@ task ExtractAdaptersFastqc {
         set -e
         ~{preCommand}
         mkdir -p ~{outputDir}
-        touch ~{adapterOutputFilePath}
-        touch ~{contamsOutputFilePath}
         ~{toolCommand} \
         --inputFile ~{inputFile} \
         ~{"--adapterOutputFile " + adapterOutputFilePath } \
@@ -113,8 +111,8 @@ task ExtractAdaptersFastqc {
     output {
         File adapterOutputFile = adapterOutputFilePath
         File contamsOutputFile = contamsOutputFilePath
-        Array[String] adapterList = read_lines(adapterOutputFilePath)
-        Array[String] contamsList = read_lines(contamsOutputFilePath)
+        Array[String] adapterList = read_lines(adapterOutputFile)
+        Array[String] contamsList = read_lines(contamsOutputFile)
     }
 
     runtime {
