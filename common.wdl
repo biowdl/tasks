@@ -140,3 +140,13 @@ struct Reference {
     File fai
     File dict
 }
+
+struct IndexedVcfFile {
+    File file
+    File index
+}
+
+struct IndexedBamFile {
+    File file
+    File index
+}
