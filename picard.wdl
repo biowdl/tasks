@@ -19,9 +19,10 @@ task BedToIntervalList {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname "~{outputPath}")
         ~{preCommand}
         ~{toolCommand} \
-        BedToIntervalsList \
+        BedToIntervalList \
         I=~{bedFile} \
         O=~{outputPath} \
         SD=~{dict}
