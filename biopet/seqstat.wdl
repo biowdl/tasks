@@ -9,9 +9,9 @@ task Generate {
         File fastqR1
         File? fastqR2
         String outputFile
-        String sample = "sample"
-        String library = "library"
-        String readgroup = "readgroup"
+        String sample
+        String library
+        String readgroup
 
         Int memory = 4
         Float memoryMultiplier = 2.0
