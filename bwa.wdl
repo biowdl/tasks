@@ -13,6 +13,8 @@ task Mem {
         Int memory = 8
     }
 
+    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex + " \\" else "\\"
+
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outputPath})
@@ -22,6 +24,7 @@ task Mem {
         ~{bwaIndex.fastaFile} \
         ~{inputR1} \
         ~{inputR2} \
+        ~{altCommand}
         | samtools sort --output-fmt BAM - > ~{outputPath}
     }
 
@@ -77,4 +80,5 @@ task Index {
 struct BwaIndex {
     File fastaFile
     Array[File] indexFiles
+    File? altIndex
 }
