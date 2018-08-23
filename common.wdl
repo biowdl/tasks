@@ -134,3 +134,19 @@ task StringArrayMd5 {
         memory: 1
     }
 }
+
+struct Reference {
+    File fasta
+    File fai
+    File dict
+}
+
+struct IndexedVcfFile {
+    File file
+    File index
+}
+
+struct IndexedBamFile {
+    File file
+    File index
+}
