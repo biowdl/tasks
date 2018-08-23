@@ -1,5 +1,42 @@
 version 1.0
 
+task BedToIntervalList {
+    input {
+        String? preCommand
+        File? picardJar
+
+        File bedFile
+        File dict
+        String outputPath
+
+        Int memory = 4
+        Float memoryMultiplier = 3.0
+    }
+
+    String toolCommand = if defined(picardJar)
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        mkdir -p $(dirname "~{outputPath}")
+        ~{preCommand}
+        ~{toolCommand} \
+        BedToIntervalList \
+        I=~{bedFile} \
+        O=~{outputPath} \
+        SD=~{dict}
+    }
+
+    output {
+        File intervalList = outputPath
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
 task CollectMultipleMetrics {
     input {
         String? preCommand
