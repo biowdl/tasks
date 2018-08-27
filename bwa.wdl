@@ -21,9 +21,9 @@ task Mem {
         else "picard -Xmx" + picardMemory + "G"
 
     String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex+  " | " +
-        picardCommand + " SetNmAndUqTags \
-        INPUT=/dev/stdin OUTPUT=" + outputPath + " \
-        CREATE_INDEX=true R=" + bwaIndex.fasta else ""
+        picardCommand + " SetNmAndUqTags " +
+        " INPUT=/dev/stdin OUTPUT=" + outputPath +
+        " CREATE_INDEX=true R=" + bwaIndex.fasta else ""
 
     command {
         set -e -o pipefail
