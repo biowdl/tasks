@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl"
+
 task Mem {
     input {
         String? preCommand
