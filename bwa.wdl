@@ -23,7 +23,7 @@ task Mem {
         else "picard -Xmx" + picardMemory + "G"
 
     String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex +  " | " +
-        picardCommand + " SetNmAndUqTags " +
+        picardCommand + " SetNmMdAndUqTags " +
         " INPUT=/dev/stdin OUTPUT=/dev/stdout" +
         " R=" + bwaIndex.fastaFile else ""
 
