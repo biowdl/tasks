@@ -24,8 +24,8 @@ task Mem {
 
     String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex +  " | " +
         picardCommand + " SetNmAndUqTags " +
-        " INPUT=/dev/stdin OUTPUT=" + outputPath +
-        " CREATE_INDEX=true R=" + bwaIndex.fastaFile else ""
+        " INPUT=/dev/stdin OUTPUT=/dev/stdout" +
+        " R=" + bwaIndex.fastaFile else ""
 
     command {
         set -e -o pipefail
@@ -37,11 +37,7 @@ task Mem {
         ~{inputR1} \
         ~{inputR2} \
         ~{altCommand} \
-        | ~{picardCommand} SortSam \
-              INPUT=/dev/stdin OUTPUT=/dev/stdout SORT_ORDER=coordinate | \
-              java -jar $PICARD SetNmAndUqTags \
-              INPUT=/dev/stdin OUTPUT=~{outputPath} \
-              CREATE_INDEX=true R=~{bwaIndex.fastaFile}
+        | ~{picardCommand} SortSam INPUT=/dev/stdin OUTPUT=~{outputPath} SORT_ORDER=coordinate CREATE_INDEX=true
     }
 
     output {
