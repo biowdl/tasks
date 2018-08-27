@@ -1,6 +1,6 @@
 version 1.0
 
-import "common.wdl" as common
+import "./common.wdl" as common
 
 task Mem {
     input {
