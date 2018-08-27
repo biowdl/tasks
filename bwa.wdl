@@ -9,11 +9,21 @@ task Mem {
         String outputPath
         String? readgroup
 
+        String? picardJar
+
         Int threads = 1
         Int memory = 8
+        Int picardMemory = 4
     }
 
-    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex else ""
+    String picardCommand = if defined(picardJar)
+        then "java -Xmx" + picardMemory + "G -jar " + picardJar
+        else "picard -Xmx" + picardMemory + "G"
+
+    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex+  " | \
+        " + picardCommand + " SetNmAndUqTags \
+        INPUT=/dev/stdin OUTPUT=" + outputPath + " \
+        CREATE_INDEX=true R=" + bwaIndex.fasta else ""
 
     command {
         set -e -o pipefail
@@ -25,16 +35,23 @@ task Mem {
         ~{inputR1} \
         ~{inputR2} \
         ~{altCommand} \
-        | samtools sort --output-fmt BAM - > ~{outputPath}
+        | ~{picardCommand} SortSam \
+              INPUT=/dev/stdin OUTPUT=/dev/stdout SORT_ORDER=coordinate | \
+              java -jar $PICARD SetNmAndUqTags \
+              INPUT=/dev/stdin OUTPUT=${outputPath} \
+              CREATE_INDEX=true R=~{bwaIndex.fasta}
     }
 
     output {
-        File bamFile = outputPath
+        IndexedBamFile bamFile = {
+          "file": outputPath,
+          "index": sub(outputPath, ".bam$", ".bai")
+        }
     }
 
     runtime{
         cpu: threads
-        memory: memory
+        memory: memory + picardMemory + picardMemory
     }
 }
 
