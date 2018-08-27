@@ -20,8 +20,8 @@ task Mem {
         then "java -Xmx" + picardMemory + "G -jar " + picardJar
         else "picard -Xmx" + picardMemory + "G"
 
-    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex+  " | \
-        " + picardCommand + " SetNmAndUqTags \
+    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex+  " | " +
+        picardCommand + " SetNmAndUqTags \
         INPUT=/dev/stdin OUTPUT=" + outputPath + " \
         CREATE_INDEX=true R=" + bwaIndex.fasta else ""
 
