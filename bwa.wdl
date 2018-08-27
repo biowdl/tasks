@@ -1,6 +1,6 @@
 version 1.0
 
-import "./common.wdl" as common
+import "common.wdl" as common
 
 task Mem {
     input {
@@ -22,10 +22,10 @@ task Mem {
         then "java -Xmx" + picardMemory + "G -jar " + picardJar
         else "picard -Xmx" + picardMemory + "G"
 
-    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex+  " | " +
+    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex +  " | " +
         picardCommand + " SetNmAndUqTags " +
         " INPUT=/dev/stdin OUTPUT=" + outputPath +
-        " CREATE_INDEX=true R=" + bwaIndex.fasta else ""
+        " CREATE_INDEX=true R=" + bwaIndex.fastaFile else ""
 
     command {
         set -e -o pipefail
@@ -40,8 +40,8 @@ task Mem {
         | ~{picardCommand} SortSam \
               INPUT=/dev/stdin OUTPUT=/dev/stdout SORT_ORDER=coordinate | \
               java -jar $PICARD SetNmAndUqTags \
-              INPUT=/dev/stdin OUTPUT=${outputPath} \
-              CREATE_INDEX=true R=~{bwaIndex.fasta}
+              INPUT=/dev/stdin OUTPUT=~{outputPath} \
+              CREATE_INDEX=true R=~{bwaIndex.fastaFile}
     }
 
     output {
