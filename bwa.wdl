@@ -18,14 +18,24 @@ task Mem {
         Int picardMemory = 4
     }
 
-    String picardCommand = if defined(picardJar)
+    String picardPrefix = if defined(picardJar)
         then "java -Xmx" + picardMemory + "G -jar " + picardJar
         else "picard -Xmx" + picardMemory + "G"
 
-    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex +  " | " +
-        picardCommand + " SetNmMdAndUqTags " +
-        " INPUT=/dev/stdin OUTPUT=/dev/stdout" +
-        " R=" + bwaIndex.fastaFile else ""
+    # Post alt script from bwa
+    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex else ""
+
+    # setNmMdAndUqTags is only required if alt sequences are added
+    String setNmMdAndUqTagsCommand = picardPrefix + " SetNmMdAndUqTags " +
+                                             " INPUT=/dev/stdin OUTPUT=" + outputPath +
+                                             " CREATE_INDEX=true" +
+                                             " R=" + bwaIndex.fastaFile
+
+    String sortSamCommand = picardPrefix + " SortSam " +
+                 " INPUT=/dev/stdin " +
+                 if(defined(bwaIndex.altIndex)) then " OUTPUT=" + outputPath + " CREATE_INDEX=true" else " OUTPUT=/dev/stdout"
+
+    String picardCommand = if (defined(bwaIndex.altIndex)) then sortSamCommand + " | " + setNmMdAndUqTagsCommand else sortSamCommand
 
     command {
         set -e -o pipefail
@@ -37,7 +47,7 @@ task Mem {
         ~{inputR1} \
         ~{inputR2} \
         ~{altCommand} \
-        | ~{picardCommand} SortSam INPUT=/dev/stdin OUTPUT=~{outputPath} SORT_ORDER=coordinate CREATE_INDEX=true
+        | ~{picardCommand}
     }
 
     output {
