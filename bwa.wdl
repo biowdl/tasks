@@ -33,9 +33,11 @@ task Mem {
 
     String sortSamCommand = picardPrefix + " SortSam " +
                  " INPUT=/dev/stdin " +
-                 if(defined(bwaIndex.altIndex)) then " OUTPUT=" + outputPath + " CREATE_INDEX=true" else " OUTPUT=/dev/stdout"
+                 if(defined(bwaIndex.altIndex)) then " OUTPUT=" + outputPath + " CREATE_INDEX=true"
+                 else " OUTPUT=/dev/stdout"
 
-    String picardCommand = if (defined(bwaIndex.altIndex)) then sortSamCommand + " | " + setNmMdAndUqTagsCommand else sortSamCommand
+    String picardCommand = if (defined(bwaIndex.altIndex)) then sortSamCommand + " | " + setNmMdAndUqTagsCommand
+    else sortSamCommand
 
     command {
         set -e -o pipefail
