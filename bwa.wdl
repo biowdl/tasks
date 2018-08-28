@@ -32,7 +32,7 @@ task Mem {
                                              " R=" + bwaIndex.fastaFile
 
     String sortSamCommand = picardPrefix + " SortSam " +
-                 " INPUT=/dev/stdin " +
+                 " INPUT=/dev/stdin SORT_ORDER=coordinate " +
                  if(defined(bwaIndex.altIndex)) then " OUTPUT=/dev/stdout "
                  else " OUTPUT=" + outputPath + " CREATE_INDEX=true "
 
