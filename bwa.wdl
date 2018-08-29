@@ -92,9 +92,9 @@ task Index {
     }
 
     output {
-        BwaIndex outputIndex = {
-            "fastaFile": outputFile,
-            "indexFiles": [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
+        BwaIndex outputIndex = object {
+            fastaFile: outputFile,
+            indexFiles: [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
         }
     }
 
