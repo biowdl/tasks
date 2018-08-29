@@ -39,12 +39,14 @@ task Mem {
     String picardCommand = if (defined(bwaIndex.altIndex)) then sortSamCommand + " | " + setNmMdAndUqTagsCommand
     else sortSamCommand
 
+    String readgroupArg = if (defined(readgroup)) then "-R '" + readgroup + "'" else ""
+
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outputPath})
         ~{preCommand}
         bwa mem ~{"-t " + threads} \
-        ~{"-R '" + readgroup + "'"} \
+        ~{readgroupArg} \
         ~{bwaIndex.fastaFile} \
         ~{inputR1} \
         ~{inputR2} \
