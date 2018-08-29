@@ -39,12 +39,14 @@ task Mem {
     String picardCommand = if (defined(bwaIndex.altIndex)) then sortSamCommand + " | " + setNmMdAndUqTagsCommand
     else sortSamCommand
 
+    String readgroupArg = if (defined(readgroup)) then "-R '" + readgroup + "'" else ""
+
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outputPath})
         ~{preCommand}
         bwa mem ~{"-t " + threads} \
-        ~{"-R '" + readgroup + "'"} \
+        ~{readgroupArg} \
         ~{bwaIndex.fastaFile} \
         ~{inputR1} \
         ~{inputR2} \
@@ -53,9 +55,9 @@ task Mem {
     }
 
     output {
-        IndexedBamFile bamFile = {
-          "file": outputPath,
-          "index": sub(outputPath, ".bam$", ".bai")
+        IndexedBamFile bamFile = object {
+          file: outputPath,
+          index: sub(outputPath, ".bam$", ".bai")
         }
     }
 
@@ -92,9 +94,9 @@ task Index {
     }
 
     output {
-        BwaIndex outputIndex = {
-            "fastaFile": outputFile,
-            "indexFiles": [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
+        BwaIndex outputIndex = object {
+            fastaFile: outputFile,
+            indexFiles: [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
         }
     }
 

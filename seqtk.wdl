@@ -6,7 +6,7 @@ task Sample {
         String outFilePath = "subsampledReads.fq.gz"
         String? preCommand
         Int? seed
-        Boolean twoPassMode
+        Boolean twoPassMode = false
         Float? fraction
         Int? number
         Boolean zip = true

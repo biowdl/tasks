@@ -32,7 +32,8 @@ task Spades {
         Int? phredOffset
     }
 
-    Int clusterMemory = ceil(memoryGb / threads)
+    Int clusterMemory = ceil(memoryGb / threads * 1.2)
+    Int memoryArg = ceil(memoryGb)
 
     command {
         set -e -o pipefail
@@ -60,7 +61,7 @@ task Spades {
         ~{true="--disable-rr" false="" disableRepeatResolution} \
         ~{"--dataset " + dataset} \
         ~{"--threads " + threads} \
-        ~{"--memory " + memoryGb} \
+        ~{"--memory " + memoryArg} \
         ~{"-k " + k} \
         ~{"--cov-cutoff " + covCutoff} \
         ~{"--phred-offset " + phredOffset}
