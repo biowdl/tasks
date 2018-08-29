@@ -55,9 +55,9 @@ task Mem {
     }
 
     output {
-        IndexedBamFile bamFile = {
-          "file": outputPath,
-          "index": sub(outputPath, ".bam$", ".bai")
+        IndexedBamFile bamFile = object {
+          file: outputPath,
+          index: sub(outputPath, ".bam$", ".bai")
         }
     }
 
