@@ -62,8 +62,10 @@ task Index {
     }
 
     output {
-        File indexedFasta = outputFile
-        Array[File] indexFiles = [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
+        BwaIndex outputIndex = {
+            "fastaFile": outputFile,
+            "indexFiles": [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
+        }
     }
 
     parameter_meta {
