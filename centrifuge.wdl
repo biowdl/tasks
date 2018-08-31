@@ -197,7 +197,7 @@ task Kreport {
         String suffix = "kreport"
         String prefix = "centrifuge"
         String indexPrefix
-        Boolean? onlyUnique
+        Boolean? onlyUnique ## removed in 1.0.4
         Boolean? showZeros
         Boolean? isCountTable
         Int? minScore
