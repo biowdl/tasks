@@ -7,7 +7,7 @@ task Sample {
         String? preCommand
         Int? seed
         Boolean twoPassMode = false
-        Float? fractionOrNumber # when above 1.0 is the number of reads, otherwise it's a fraction
+        Float fractionOrNumber # when above 1.0 is the number of reads, otherwise it's a fraction
         Boolean zip = true
     }
 
