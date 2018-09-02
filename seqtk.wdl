@@ -7,8 +7,7 @@ task Sample {
         String? preCommand
         Int? seed
         Boolean twoPassMode = false
-        Float? fraction
-        Int? number
+        Float? fractionOrNumber # when above 1.0 is the number of reads, otherwise it's a fraction
         Boolean zip = true
     }
 
@@ -20,8 +19,7 @@ task Sample {
         ~{"-s " + seed} \
         ~{true="-2 " false="" twoPassMode} \
         ~{sequenceFile} \
-        ~{number} \
-        ~{fraction} \
+        ~{fractionOrNumber} \
         ~{true="| gzip" false="" zip} \
         >  ~{outFilePath}
     }
