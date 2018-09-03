@@ -43,13 +43,13 @@ task ConcatenateTextFiles {
     }
 
     # When input and output is both compressed decompression is not needed
-    String prefix = if (unzip && !zip) then "zcat " else "cat "
-    String suffix = if (!unzip && zip) then " | gzip -c " else ""
+    String cmdPrefix = if (unzip && !zip) then "zcat " else "cat "
+    String cmdSuffix = if (!unzip && zip) then " | gzip -c " else ""
 
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ~{prefix} ~{sep=' ' fileList} ~{suffix} > ~{combinedFilePath}
+        ~{cmdPrefix} ~{sep=' ' fileList} ~{cmdSuffix} > ~{combinedFilePath}
     }
 
     output {
