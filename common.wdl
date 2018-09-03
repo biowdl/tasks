@@ -42,11 +42,14 @@ task ConcatenateTextFiles {
         Boolean zip = false
     }
 
+    # When input and output is both compressed decompression is not needed
+    String cmdPrefix = if (unzip && !zip) then "zcat " else "cat "
+    String cmdSuffix = if (!unzip && zip) then " | gzip -c " else ""
+
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ~{true='zcat' false= 'cat' unzip} ~{sep=' ' fileList} \
-        ~{true="| gzip -c" false="" zip} > ~{combinedFilePath}
+        ~{cmdPrefix} ~{sep=' ' fileList} ~{cmdSuffix} > ~{combinedFilePath}
     }
 
     output {
