@@ -60,8 +60,8 @@ task SomaticSeqWrapper {
     output {
         File consensusIndels = outputDir + "/Consensus.sINDEL.vcf"
         File consensusSNV = outputDir + "/Consensus.sSNV.vcf"
-        File ensembleIndels = outputDir + "/Ensemble.sINDEL.vcf"
-        File ensembleSNV = outputDir + "/Ensemble.sSNV.vcf"
+        File ensembleIndels = outputDir + "/Ensemble.sINDEL.tsv"
+        File ensembleSNV = outputDir + "/Ensemble.sSNV.tsv"
     }
 }
 
@@ -103,5 +103,12 @@ task SsSomaticSeqWrapper {
         ~{"--lofreq " + lofreqVCF} \
         ~{"--scalpel " + scalpelVCF} \
         ~{"--strelka " + strelkaVCF}
+    }
+
+    output {
+        File consensusIndels = outputDir + "/Consensus.ssINDEL.vcf"
+        File consensusSNV = outputDir + "/Consensus.ssSNV.vcf"
+        File ensembleIndels = outputDir + "/Ensemble.ssINDEL.tsv"
+        File ensembleSNV = outputDir + "/Ensemble.ssSNV.tsv"
     }
 }
