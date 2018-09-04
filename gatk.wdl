@@ -13,7 +13,6 @@ task ApplyBQSR {
         File refDict
         File refFasta
         File refFastaIndex
-        Int? compressionLevel
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -121,7 +120,6 @@ task CombineGVCFs {
         File refFastaIndex
         File refDict
 
-        Int? compressionLevel #TODO This isn't being used?
         Int memory = 4
         Float memoryMultiplier = 3.0
     }
@@ -209,7 +207,6 @@ task GenotypeGVCFs {
         File? dbsnpVCF
         File? dbsnpVCFindex
 
-        Int? compressionLevel
         Int memory = 4
         Float memoryMultiplier =3.0
     }
@@ -255,7 +252,6 @@ task HaplotypeCallerGvcf {
         File refFasta
         File refFastaIndex
         Float contamination = 0.0
-        Int? compressionLevel
         String? gatkJar
 
         File? dbsnpVCF
