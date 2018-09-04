@@ -153,3 +153,10 @@ struct IndexedBamFile {
     File file
     File index
 }
+
+struct FastqPair {
+    File R1
+    String? R1_md5
+    File? R2
+    String? R2_md5
+}
