@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl"
+
 task HTSeqCount {
     input {
         String? preCommand
