@@ -6,8 +6,7 @@ task Generate {
     input {
         String? preCommand
         File? toolJar
-        File fastqR1
-        File? fastqR2
+        FastqPair fastq
         String outputFile
         String sample
         String library
@@ -26,8 +25,8 @@ task Generate {
         ~{preCommand}
         mkdir -p $(dirname ~{outputFile})
         ~{toolCommand} Generate \
-        --fastqR1 ~{fastqR1} \
-        ~{"--fastqR2 " + fastqR2} \
+        --fastqR1 ~{fastq.R1} \
+        ~{"--fastqR2 " + fastq.R2} \
         --output ~{outputFile} \
         ~{"--sample " + sample} \
         ~{"--library " + library } \
