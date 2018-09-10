@@ -1,11 +1,12 @@
 version 1.0
 
+import "common.wdl"
+
 task BaseCounter {
     input {
         String? preCommand
         File? toolJar
-        File bam
-        File bamIndex
+        IndexedBamFile bam
         File refFlat
         String outputDir
         String prefix
@@ -23,7 +24,7 @@ task BaseCounter {
         mkdir -p ~{outputDir}
         ~{preCommand}
         ~{toolCommand} \
-        -b ~{bam} \
+        -b ~{bam.file} \
         -r ~{refFlat} \
         -o ~{outputDir} \
         -p ~{prefix}
@@ -160,10 +161,8 @@ task FastqSplitter {
 task FastqSync {
     input {
         String? preCommand
-        File ref1
-        File ref2
-        File in1
-        File in2
+        FastqPair refFastq
+        FastqPair inputFastq
         String out1path
         String out2path
         File? toolJar
@@ -181,97 +180,21 @@ task FastqSync {
         ~{preCommand}
         mkdir -p $(dirname ~{out1path}) $(dirname ~{out2path})
         ~{toolCommand} \
-        --in1 ~{in1} \
-        --in2 ~{in2} \
-        --ref1 ~{ref1} \
-        --ref2 ~{ref2} \
+        --in1 ~{inputFastq.R1} \
+        --in2 ~{inputFastq.R2} \
+        --ref1 ~{refFastq.R1} \
+        --ref2 ~{refFastq.R2} \
         --out1 ~{out1path} \
         --out2 ~{out2path}
     }
 
     output {
-        File out1 = out1path
-        File out2 = out2path
+        FastqPair out1 = object {
+          R1: out1path,
+          R1: out2path
+        }
     }
     
-    runtime {
-        memory: ceil(memory * memoryMultiplier)
-    }
-}
-
-task SampleConfig {
-    input {
-        File? toolJar
-        String? preCommand
-        Array[File]+ inputFiles
-        String keyFilePath
-        String? sample
-        String? library
-        String? readgroup
-        String? jsonOutputPath
-        String? tsvOutputPath
-
-        Int memory = 4
-        Float memoryMultiplier = 2.0
-    }
-
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-sampleconfig -Xmx" + memory + "G"
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        mkdir -p . ~{"$(dirname " + jsonOutputPath + ")"} ~{"$(dirname " + tsvOutputPath + ")"}
-        ~{toolCommand} \
-        -i ~{sep="-i " inputFiles} \
-        ~{"--sample " + sample} \
-        ~{"--library " + library} \
-        ~{"--readgroup " + readgroup} \
-        ~{"--jsonOutput " + jsonOutputPath} \
-        ~{"--tsvOutput " + tsvOutputPath} \
-        > ~{keyFilePath}
-    }
-
-    output {
-        File keysFile = keyFilePath
-        File? jsonOutput = jsonOutputPath
-        File? tsvOutput = tsvOutputPath
-    }
-
-    runtime {
-        memory: ceil(memory * memoryMultiplier)
-    }
-}
-
-task SampleConfigCromwellArrays {
-    input {
-        File? toolJar
-        String? preCommand
-        Array[File]+ inputFiles
-        String outputPath
-
-        Int memory = 4
-        Float memoryMultiplier = 2.0
-    }
-
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-sampleconfig -Xmx" + memory + "G"
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        mkdir -p $(dirname ~{outputPath})
-        ~{toolCommand} CromwellArrays \
-        -i ~{sep="-i " inputFiles} \
-        ~{"-o " + outputPath}
-    }
-
-    output {
-        File outputFile = outputPath
-    }
-
     runtime {
         memory: ceil(memory * memoryMultiplier)
     }
@@ -280,8 +203,7 @@ task SampleConfigCromwellArrays {
 task ScatterRegions {
     input {
         String? preCommand
-        File refFasta
-        File refDict
+        Reference reference
         String outputDirPath
         File? toolJar
         Int? scatterSize
@@ -300,7 +222,7 @@ task ScatterRegions {
         ~{preCommand}
         mkdir -p ~{outputDirPath}
         ~{toolCommand} \
-          -R ~{refFasta} \
+          -R ~{reference.fasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
           ~{"-L " + regions}
@@ -315,48 +237,13 @@ task ScatterRegions {
     }
 }
 
-task Seqstat {
-    input {
-        String? preCommand
-        File? toolJar
-        File fastq
-        String outputFile
-
-        Int memory = 4
-        Float memoryMultiplier = 2.0
-    }
-
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-seqstat -Xmx" + memory + "G"
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        mkdir -p $(dirname ~{outputFile})
-        ~{toolCommand} \
-        --fastq ~{fastq} \
-        --output ~{outputFile}
-    }
-
-    output {
-        File json = outputFile
-    }
-
-    runtime {
-        memory: ceil(memory * memoryMultiplier)
-    }
-}
-
 task ValidateAnnotation {
     input {
         String? preCommand
         File? toolJar
         File? refRefflat
         File? gtfFile
-        File refFasta
-        File refFastaIndex
-        File refDict
+        Reference reference
 
         Int memory = 4
         Float memoryMultiplier = 2.0
@@ -372,7 +259,7 @@ task ValidateAnnotation {
         ~{toolCommand} \
         ~{"-r " + refRefflat} \
         ~{"-g " + gtfFile} \
-        -R ~{refFasta}
+        -R ~{reference.fasta}
     }
 
     output {
@@ -388,8 +275,7 @@ task ValidateFastq {
     input {
         String? preCommand
         File? toolJar
-        File fastq1
-        File? fastq2
+        FastqPair inputFastq
 
         Int memory = 4
         Float memoryMultiplier = 2.0
@@ -403,14 +289,13 @@ task ValidateFastq {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        --fastq1 ~{fastq1} \
-        ~{"--fastq2 " + fastq2}
+        --fastq1 ~{inputFastq.R1} \
+        ~{"--fastq2 " + inputFastq.R2}
     }
 
     output {
         File stderr = stderr()
-        File validatedFastq1 = fastq1
-        File? validatedFastq2 = fastq2
+        FastqPair validatedFastq = inputFastq
     }
 
     runtime {
@@ -422,11 +307,8 @@ task ValidateVcf {
     input {
         String? preCommand
         File? toolJar
-        File vcfFile
-        File vcfIndex
-        File refFasta
-        File refFastaIndex
-        File refDict
+        IndexedVcfFile vcf
+        Reference reference
 
         Int memory = 4
         Float memoryMultiplier = 2.0
@@ -440,8 +322,8 @@ task ValidateVcf {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        -i ~{vcfFile} \
-        -R ~{refFasta}
+        -i ~{vcf.file} \
+        -R ~{reference.fasta}
     }
 
     output {
@@ -455,11 +337,8 @@ task ValidateVcf {
 
 task VcfStats {
     input {
-        File vcfFile
-        File vcfIndex
-        File refFasta
-        File refFastaIndex
-        File refDict
+        IndexedVcfFile vcf
+        Reference reference
         String outputDir
         File? intervals
         Array[String]+? infoTags
@@ -493,8 +372,8 @@ task VcfStats {
         mkdir -p ~{outputDir}
         ~{preCommand}
         ~{toolCommand} \
-        -I ~{vcfFile} \
-        -R ~{refFasta} \
+        -I ~{vcf.file} \
+        -R ~{reference.fasta} \
         -o ~{outputDir} \
         -t ~{localThreads} \
         ~{"--intervals " + intervals} \
