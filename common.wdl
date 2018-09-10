@@ -147,11 +147,13 @@ struct Reference {
 struct IndexedVcfFile {
     File file
     File index
+    File? md5sum
 }
 
 struct IndexedBamFile {
     File file
     File index
+    File? md5sum
 }
 
 struct FastqPair {

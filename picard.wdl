@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl"
+
 task BedToIntervalList {
     input {
         String? preCommand
@@ -40,11 +42,8 @@ task BedToIntervalList {
 task CollectMultipleMetrics {
     input {
         String? preCommand
-        File bamFile
-        File bamIndex
-        File refFasta
-        File refDict
-        File refFastaIndex
+        IndexedBamFile bam
+        Reference reference
         String basename
 
         Boolean collectAlignmentSummaryMetrics = true
@@ -53,7 +52,7 @@ task CollectMultipleMetrics {
         Boolean meanQualityByCycle = true
         Boolean collectBaseDistributionByCycle = true
         Boolean collectGcBiasMetrics = true
-        #Boolean rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
+        #FIXME: Boolean rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
@@ -73,8 +72,8 @@ task CollectMultipleMetrics {
         ~{preCommand}
         ~{toolCommand} \
         CollectMultipleMetrics \
-        I=~{bamFile} \
-        R=~{refFasta} \
+        I=~{bam.file} \
+        R=~{reference.fasta} \
         O=~{basename} \
         PROGRAM=null \
         ~{true="PROGRAM=CollectAlignmentSummaryMetrics" false="" collectAlignmentSummaryMetrics} \
@@ -117,8 +116,7 @@ task CollectMultipleMetrics {
 task CollectRnaSeqMetrics {
     input {
         String? preCommand
-        File bamFile
-        File bamIndex
+        IndexedBamFile bam
         File refRefflat
         String basename
         String strandSpecificity = "NONE"
@@ -139,7 +137,7 @@ task CollectRnaSeqMetrics {
         ~{preCommand}
         ~{toolCommand} \
         CollectRnaSeqMetrics \
-        I=~{bamFile} \
+        I=~{bam.file} \
         O=~{basename}.RNA_Metrics \
         CHART_OUTPUT=~{basename}.RNA_Metrics.pdf \
         STRAND_SPECIFICITY=~{strandSpecificity} \
@@ -159,11 +157,8 @@ task CollectRnaSeqMetrics {
 task CollectTargetedPcrMetrics {
     input {
         String? preCommand
-        File bamFile
-        File bamIndex
-        File refFasta
-        File refDict
-        File refFastaIndex
+        IndexedBamFile bam
+        Reference reference
         File ampliconIntervals
         Array[File]+ targetIntervals
         String basename
@@ -184,8 +179,8 @@ task CollectTargetedPcrMetrics {
         ~{preCommand}
         ~{toolCommand} \
         CollectTargetedPcrMetrics \
-        I=~{bamFile} \
-        R=~{refFasta} \
+        I=~{bam.file} \
+        R=~{reference.fasta} \
         AMPLICON_INTERVALS=~{ampliconIntervals} \
         TARGET_INTERVALS=~{sep=" TARGET_INTERVALS=" targetIntervals} \
         O=~{basename}.targetPcrMetrics \
@@ -208,9 +203,8 @@ task CollectTargetedPcrMetrics {
 task GatherBamFiles {
     input {
         String? preCommand
-        Array[File]+ input_bams
-        String output_bam_path
-        Int? compression_level
+        Array[IndexedBamFile]+ inputBams
+        String outputBamPath
         String? picardJar
 
         Int memory = 4
@@ -226,16 +220,18 @@ task GatherBamFiles {
         ~{preCommand}
         ~{toolCommand} \
         GatherBamFiles \
-        INPUT=~{sep=' INPUT=' input_bams} \
-        OUTPUT=~{output_bam_path} \
+        INPUT=~{sep=' INPUT=' inputBams.file} \
+        OUTPUT=~{outputBamPath} \
         CREATE_INDEX=true \
         CREATE_MD5_FILE=true
     }
 
     output {
-        File output_bam = "~{output_bam_path}"
-        File output_bam_index = sub(output_bam_path, ".bam$", ".bai")
-        File output_bam_md5 = "~{output_bam_path}.md5"
+        IndexedBamFile outputBam = object {
+          file: outputBamPath,
+          index: sub(outputBamPath, ".bam$", ".bai"),
+          md5: outputBamPath + ".md5"
+        }
     }
 
     runtime {
@@ -247,10 +243,9 @@ task GatherBamFiles {
 task MarkDuplicates {
     input {
         String? preCommand
-        Array[File] input_bams
-        String output_bam_path
-        String metrics_path
-        Int? compression_level
+        Array[IndexedBamFile] inputBams
+        String outputBamPath
+        String metricsPath
         String? picardJar
 
         Int memory = 4
@@ -273,24 +268,28 @@ task MarkDuplicates {
     command {
         set -e -o pipefail
         ~{preCommand}
-        mkdir -p $(dirname ~{output_bam_path})
+        mkdir -p $(dirname ~{outputBamPath})
         ~{toolCommand} \
         MarkDuplicates \
-        INPUT=~{sep=' INPUT=' input_bams} \
-        OUTPUT=~{output_bam_path} \
-        METRICS_FILE=~{metrics_path} \
+        INPUT=~{sep=' INPUT=' inputBams.file} \
+        OUTPUT=~{outputBamPath} \
+        METRICS_FILE=~{metricsPath} \
         VALIDATION_STRINGENCY=SILENT \
         ~{"READ_NAME_REGEX=" + read_name_regex} \
         OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
         CLEAR_DT="false" \
         CREATE_INDEX=true \
-        ADD_PG_TAG_TO_READS=false
+        ADD_PG_TAG_TO_READS=false \
+        CREATE_MD5_FILE=true
     }
 
     output {
-        File output_bam = output_bam_path
-        File output_bam_index = sub(output_bam_path, ".bam$", ".bai")
-        File duplicate_metrics = metrics_path
+        IndexedBamFile outputBam = object {
+          file: outputBamPath,
+          index: sub(outputBamPath, ".bam$", ".bai"),
+          md5: outputBamPath + ".md5"
+        }
+        File metricsFile = metricsPath
     }
 
     runtime {
@@ -304,7 +303,7 @@ task MergeVCFs {
         String? preCommand
         Array[File] inputVCFs
         Array[File] inputVCFsIndexes
-        String outputVCFpath
+        String outputVcfPath
         Int? compressionLevel
         String? picardJar
 
@@ -325,12 +324,14 @@ task MergeVCFs {
         ~{toolCommand} \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
-        OUTPUT=~{outputVCFpath}
+        OUTPUT=~{outputVcfPath}
     }
 
     output {
-        File outputVCF = outputVCFpath
-        File outputVCFindex = outputVCFpath + ".tbi"
+        IndexedVcfFile outputVcf = object {
+          file: outputVcfPath,
+          index: outputVcfPath + ".tbi"
+        }
     }
 
     runtime {
@@ -341,7 +342,7 @@ task MergeVCFs {
 task SamToFastq {
     input {
         String? preCommand
-        File inputBam
+        IndexedBamFile inputBam
         String outputRead1
         String? outputRead2
         String? outputUnpaired
@@ -360,7 +361,7 @@ task SamToFastq {
         ~{preCommand}
         ~{toolCommand} \
         SamToFastq \
-        I=~{inputBam} \
+        I=~{inputBam.file} \
         ~{"FASTQ=" + outputRead1} \
         ~{"SECOND_END_FASTQ=" + outputRead2} \
         ~{"UNPAIRED_FASTQ=" + outputUnpaired}
@@ -422,8 +423,8 @@ task SortVcf {
         String? picardJar
 
         Array[File]+ vcfFiles
-        String outputVcf
-        File? sequenceDict
+        String outputVcfPath
+        File? dict
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -439,13 +440,15 @@ task SortVcf {
         ~{toolCommand} \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
-        ~{"SEQUENCE_DICTIONARY=" + sequenceDict} \
-        O=~{outputVcf}
+        ~{"SEQUENCE_DICTIONARY=" + dict} \
+        O=~{outputVcfPath}
     }
 
     output {
-        File vcfFile = outputVcf
-        File vcfIndex = outputVcf + ".tbi"
+        IndexedVcfFile outputVcf = object {
+          file: outputVcfPath,
+          index: outputVcfPath + ".tbi"
+        }
     }
 
     runtime {
