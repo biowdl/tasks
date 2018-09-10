@@ -6,9 +6,8 @@ task Sample {
         String outFilePath = "subsampledReads.fq.gz"
         String? preCommand
         Int? seed
-        Boolean twoPassMode
-        Float? fraction
-        Int? number
+        Boolean twoPassMode = false
+        Float fractionOrNumber # when above 1.0 is the number of reads, otherwise it's a fraction
         Boolean zip = true
     }
 
@@ -20,8 +19,7 @@ task Sample {
         ~{"-s " + seed} \
         ~{true="-2 " false="" twoPassMode} \
         ~{sequenceFile} \
-        ~{number} \
-        ~{fraction} \
+        ~{fractionOrNumber} \
         ~{true="| gzip" false="" zip} \
         >  ~{outFilePath}
     }

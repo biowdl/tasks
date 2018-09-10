@@ -12,7 +12,6 @@ task ApplyBQSR {
         File recalibrationReport
         Array[File]+ sequenceGroupInterval
         Reference reference
-        Int? compressionLevel
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -112,7 +111,6 @@ task CombineGVCFs {
 
         Reference reference
 
-        Int? compressionLevel #TODO This isn't being used?
         Int memory = 4
         Float memoryMultiplier = 3.0
     }
@@ -198,7 +196,6 @@ task GenotypeGVCFs {
 
         IndexedVcfFile? dbsnpVCF
 
-        Int? compressionLevel
         Int memory = 4
         Float memoryMultiplier =3.0
     }
@@ -243,7 +240,6 @@ task HaplotypeCallerGvcf {
         String gvcfPath
         Reference reference
         Float contamination = 0.0
-        Int? compressionLevel
         String? gatkJar
 
         IndexedVcfFile? dbsnpVCF
