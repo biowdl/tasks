@@ -3,7 +3,7 @@ version 1.0
 task PeakCalling {
     input {
         String? preCommand
-        Array[File] bamFiles
+        Array[IndexedBamFile] bamFiles
         String outDir
         String sampleName
         Int threads = 1
@@ -15,7 +15,7 @@ task PeakCalling {
         set -e -o pipefail
         ~{preCommand}
         macs2 callpeak \
-        --treatment ~{sep = ' ' bamFiles} \
+        --treatment ~{sep = ' ' bamFiles.file} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
         ~{true='--nomodel' false='' nomodel}

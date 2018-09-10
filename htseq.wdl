@@ -3,7 +3,7 @@ version 1.0
 task HTSeqCount {
     input {
         String? preCommand
-        Array[File] alignmentFiles
+        Array[IndexedBamFile] inputBamFiles
         File gtfFile
         String outputTable
         String format = "bam"
@@ -21,7 +21,7 @@ task HTSeqCount {
         -f ~{format} \
         -r ~{order} \
         -s ~{stranded} \
-        ~{sep=" " alignmentFiles} \
+        ~{sep=" " inputBamFiles.file} \
         ~{gtfFile} \
         > ~{outputTable}
     }

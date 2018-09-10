@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl"
+
 task BgzipAndIndex {
     input {
         File inputFile
@@ -34,9 +36,12 @@ task Index {
     }
 
     output {
-        File indexFile = if defined(bamIndexPath)
-            then select_first([bamIndexPath])
-            else bamFilePath + ".bai"
+        IndexedBamFile outputBam = object {
+          file: bamFilePath,
+          index: if defined(bamIndexPath)
+                              then select_first([bamIndexPath])
+                              else bamFilePath + ".bai"
+        }
     }
 }
 

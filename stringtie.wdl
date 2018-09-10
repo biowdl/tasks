@@ -3,7 +3,7 @@ version 1.0
 task Stringtie {
     input {
         String? preCommand
-        File alignedReads
+        IndexedBamFile bam
         File? referenceGtf
         Int threads = 1
         String assembledTranscriptsFile
@@ -23,7 +23,7 @@ task Stringtie {
         ~{true="fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
-        ~{alignedReads}
+        ~{bam.file}
     }
 
     output {
