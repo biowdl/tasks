@@ -5,7 +5,7 @@ import "common.wdl"
 task Stringtie {
     input {
         String? preCommand
-        IndexedBamFile bam
+        IndexedBamFile bamFile
         File? referenceGtf
         Int threads = 1
         String assembledTranscriptsFile
@@ -25,7 +25,7 @@ task Stringtie {
         ~{true="fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
-        ~{bam.file}
+        ~{bamFile.file}
     }
 
     output {
