@@ -42,7 +42,7 @@ task BedToIntervalList {
 task CollectMultipleMetrics {
     input {
         String? preCommand
-        IndexedBamFile bam
+        IndexedBamFile bamFile
         Reference reference
         String basename
 
@@ -72,7 +72,7 @@ task CollectMultipleMetrics {
         ~{preCommand}
         ~{toolCommand} \
         CollectMultipleMetrics \
-        I=~{bam.file} \
+        I=~{bamFile.file} \
         R=~{reference.fasta} \
         O=~{basename} \
         PROGRAM=null \
@@ -116,7 +116,7 @@ task CollectMultipleMetrics {
 task CollectRnaSeqMetrics {
     input {
         String? preCommand
-        IndexedBamFile bam
+        IndexedBamFile bamFile
         File refRefflat
         String basename
         String strandSpecificity = "NONE"
@@ -137,7 +137,7 @@ task CollectRnaSeqMetrics {
         ~{preCommand}
         ~{toolCommand} \
         CollectRnaSeqMetrics \
-        I=~{bam.file} \
+        I=~{bamFile.file} \
         O=~{basename}.RNA_Metrics \
         CHART_OUTPUT=~{basename}.RNA_Metrics.pdf \
         STRAND_SPECIFICITY=~{strandSpecificity} \
@@ -157,7 +157,7 @@ task CollectRnaSeqMetrics {
 task CollectTargetedPcrMetrics {
     input {
         String? preCommand
-        IndexedBamFile bam
+        IndexedBamFile bamFile
         Reference reference
         File ampliconIntervals
         Array[File]+ targetIntervals
@@ -179,7 +179,7 @@ task CollectTargetedPcrMetrics {
         ~{preCommand}
         ~{toolCommand} \
         CollectTargetedPcrMetrics \
-        I=~{bam.file} \
+        I=~{bamFile.file} \
         R=~{reference.fasta} \
         AMPLICON_INTERVALS=~{ampliconIntervals} \
         TARGET_INTERVALS=~{sep=" TARGET_INTERVALS=" targetIntervals} \
