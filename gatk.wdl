@@ -61,7 +61,8 @@ task BaseRecalibrator {
         IndexedBamFile inputBam
         String recalibrationReportPath
         Array[File]+ sequenceGroupInterval
-        Array[IndexedVcfFile]? knownIndelsSitesVCFs
+        Array[File]? knownIndelsSitesVCFs
+        Array[File]? knownIndelsSitesVCFIndexes
         IndexedVcfFile? dbsnpVCF
         Reference reference
         Int memory = 4
@@ -69,8 +70,8 @@ task BaseRecalibrator {
     }
 
     Array[File]+ knownIndelsSitesVCFsArg = flatten([
-        select_first([knownIndelsSitesVCFs.file, []]),
-        select_all([dbsnpVCF.file])
+        select_first([knownIndelsSitesVCFs, []]),
+        [select_first([dbsnpVCF]).file]
     ])
 
     String toolCommand = if defined(gatkJar)
@@ -185,7 +186,8 @@ task GatherBqsrReports {
 task GenotypeGVCFs {
     input {
         String? preCommand
-        Array[IndexedVcfFile] gvcfFiles
+        Array[File]+ gvcfFiles
+        Array[File]+ gvcfFileIndex
         Array[File]+ intervals
 
         String outputPath
@@ -200,6 +202,8 @@ task GenotypeGVCFs {
         Float memoryMultiplier =3.0
     }
 
+    String dbsnpArg = if defined(dbsnpVCF) then "-D " + select_first([dbsnpVCF]).file else ""
+
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
         else "gatk --java-options -Xmx" + memory + "G"
@@ -211,11 +215,11 @@ task GenotypeGVCFs {
         GenotypeGVCFs \
         -R ~{reference.fasta} \
         -O ~{outputPath} \
-        ~{"-D " + dbsnpVCF.file} \
+        ~{dbsnpArg} \
         -G StandardAnnotation \
         --only-output-calls-starting-in-intervals \
         -new-qual \
-        -V ~{sep=' -V ' gvcfFiles.file} \
+        -V ~{sep=' -V ' gvcfFiles} \
         -L ~{sep=' -L ' intervals}
     }
 
@@ -235,7 +239,8 @@ task GenotypeGVCFs {
 task HaplotypeCallerGvcf {
     input {
         String? preCommand
-        Array[IndexedBamFile]+ inputBams
+        Array[File]+ inputBams
+        Array[File]+ inputBamsIndex
         Array[File]+ intervalList
         String gvcfPath
         Reference reference
@@ -248,6 +253,8 @@ task HaplotypeCallerGvcf {
         Float memoryMultiplier = 3
     }
 
+    String dbsnpArg = if (defined(dbsnpVCF)) then "-D " + select_first([dbsnpVCF]).file else ""
+
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
         else "gatk --java-options -Xmx" + memory + "G"
@@ -259,9 +266,9 @@ task HaplotypeCallerGvcf {
         HaplotypeCaller \
         -R ~{reference.fasta} \
         -O ~{gvcfPath} \
-        -I ~{sep=" -I " inputBams.file} \
+        -I ~{sep=" -I " inputBams} \
         -L ~{sep=' -L ' intervalList} \
-        ~{"-D " + dbsnpVCF.file} \
+        ~{dbsnpArg} \
         -contamination ~{contamination} \
         -ERC GVCF
     }
@@ -282,7 +289,8 @@ task MuTect2 {
     input {
         String? preCommand
 
-        Array[IndexedBamFile]+ inputBams
+        Array[File]+ inputBams
+        Array[File]+ inputBamsIndex
         Reference reference
         String outputVcf
         String tumorSample
@@ -304,7 +312,7 @@ task MuTect2 {
         ~{toolCommand} \
         Mutect2 \
         -R ~{reference.fasta} \
-        -I ~{sep=" -I " inputBams.file} \
+        -I ~{sep=" -I " inputBams} \
         -tumor ~{tumorSample} \
         ~{"-normal " + normalSample} \
         -O ~{outputVcf} \

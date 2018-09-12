@@ -203,7 +203,7 @@ task CollectTargetedPcrMetrics {
 task GatherBamFiles {
     input {
         String? preCommand
-        Array[IndexedBamFile]+ inputBams
+        Array[File]+ inputBams
         String outputBamPath
         String? picardJar
 
@@ -220,7 +220,7 @@ task GatherBamFiles {
         ~{preCommand}
         ~{toolCommand} \
         GatherBamFiles \
-        INPUT=~{sep=' INPUT=' inputBams.file} \
+        INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
         CREATE_INDEX=true \
         CREATE_MD5_FILE=true
@@ -243,7 +243,8 @@ task GatherBamFiles {
 task MarkDuplicates {
     input {
         String? preCommand
-        Array[IndexedBamFile] inputBams
+        Array[File]+ inputBams
+        Array[File] inputBamIndexes
         String outputBamPath
         String metricsPath
         String? picardJar
@@ -271,7 +272,7 @@ task MarkDuplicates {
         mkdir -p $(dirname ~{outputBamPath})
         ~{toolCommand} \
         MarkDuplicates \
-        INPUT=~{sep=' INPUT=' inputBams.file} \
+        INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
         METRICS_FILE=~{metricsPath} \
         VALIDATION_STRINGENCY=SILENT \
