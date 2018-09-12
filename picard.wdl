@@ -204,6 +204,7 @@ task GatherBamFiles {
     input {
         String? preCommand
         Array[File]+ inputBams
+        Array[File]+ inputBamsIndex
         String outputBamPath
         String? picardJar
 

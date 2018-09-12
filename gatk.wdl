@@ -40,12 +40,11 @@ task ApplyBQSR {
     }
 
     output {
-        IndexedBamFile recalibrated_bam = {
+        IndexedBamFile recalibratedBam = {
             "file": outputBamPath,
-            "index": sub(outputBamPath, "\.bam$", ".bai")
+            "index": sub(outputBamPath, "\.bam$", ".bai"),
+            "md5": outputBamPath + ".md5"
         }
-
-        File recalibrated_bam_checksum = outputBamPath + ".md5"
     }
 
     runtime {
