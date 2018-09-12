@@ -14,6 +14,7 @@ task Generate {
         Boolean tsvOutputs = false
         String outputDir
         File? reference
+        File? referenceDict
         Int memory = 4
         Float memoryMultiplier = 2.0
     }
@@ -32,7 +33,7 @@ task Generate {
         ~{"--reference " + reference} \
         ~{true="--onlyUnmapped" false="" onlyUnmapped} \
         ~{true="--scatterMode" false="" scatterMode} \
-        ~{true="--tsvOutputs" false="" tsvOutputs}
+        ~{true="--tsvOutputs" false="" tsvOutputs} \
         --outputDir ~{outputDir}
     }
 
