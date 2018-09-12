@@ -19,11 +19,13 @@ task ConfigureSomatic {
         then installDir + "bin/configMata.py"
         else "configManta.py"
 
+    String normalArg = if (defined(normalBam)) then "--normalBam " + select_first([normalBam]).file else ""
+
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        ~{"--normalBam " + normalBam.file} \
+        ~{normalArg} \
         ~{"--tumorBam " + tumorBam.file} \
         --referenceFasta ~{reference.fasta} \
         ~{"--callRegions " + callRegions} \

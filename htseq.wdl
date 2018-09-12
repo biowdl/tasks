@@ -5,7 +5,8 @@ import "common.wdl"
 task HTSeqCount {
     input {
         String? preCommand
-        Array[IndexedBamFile] inputBamFiles
+        Array[File]+ inputBams
+        Array[File]+ inputBamsIndex
         File gtfFile
         String outputTable
         String format = "bam"
@@ -23,7 +24,7 @@ task HTSeqCount {
         -f ~{format} \
         -r ~{order} \
         -s ~{stranded} \
-        ~{sep=" " inputBamFiles.file} \
+        ~{sep=" " inputBams} \
         ~{gtfFile} \
         > ~{outputTable}
     }

@@ -25,6 +25,8 @@ task VarDict {
         Float memoryMultiplier = 2.0
     }
 
+    String normalArg = if (defined(normalBam)) then "|" + select_first([normalBam]).file else ""
+
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"
         else if useJavaVersion
@@ -38,7 +40,7 @@ task VarDict {
         ~{toolCommand} \
         -G ~{reference.fasta} \
         -N ~{tumorSampleName} \
-        -b "~{tumorBam.file}~{"|" + normalBam.file}" \
+        -b "~{tumorBam.file}~{normalArg}" \
         ~{true="" false="-z" defined(normalBam)} \
         -c ~{chromosomeColumn} \
         -S ~{startColumn} \
