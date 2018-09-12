@@ -1,6 +1,6 @@
 version 1.0
 
-import "common.wdl"
+import "../common.wdl"
 
 task BaseCounter {
     input {
