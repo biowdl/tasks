@@ -24,13 +24,14 @@ task AppendToStringArray {
 task CheckFileMD5 {
     input {
         File file
-        String MD5sum
+        File md5
     }
 
     command {
         set -e -o pipefail
         MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
-        [ $MD5SUM = ~{MD5sum} ]
+        MD5SUM_CORRECT=$(cat ~{md5} | | grep ~{basename(file)} | cut -d ' ' -f 1)
+        [ $MD5SUM = $MD5SUM_CORRECT ]
     }
 }
 
