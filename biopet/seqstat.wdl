@@ -2,6 +2,8 @@ version 1.0
 
 # Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2018
 
+import "../common.wdl" as common
+
 task Generate {
     input {
         String? preCommand
