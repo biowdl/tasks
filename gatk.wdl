@@ -102,7 +102,8 @@ task BaseRecalibrator {
 task CombineGVCFs {
     input {
         String? preCommand
-        Array[IndexedVcfFile]+ gvcfFiles
+        Array[File]+ gvcfFiles
+        Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
 
         String outputPath
@@ -131,8 +132,8 @@ task CombineGVCFs {
              -V ~{sep=' -V ' gvcfFiles} \
              -L ~{sep=' -L ' intervals}
         else # TODO this should be handeled in wdl
-            ln -sf ~{gvcfFiles[0].file} ~{outputPath}
-            ln -sf ~{gvcfFiles[0].index} ~{outputPath}.tbi
+            ln -sf ~{gvcfFiles[0]} ~{outputPath}
+            ln -sf ~{gvcfFiles[0]} ~{outputPath}.tbi
         fi
     }
 
