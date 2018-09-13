@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl" as common
+
 task ConfigureGermline {
     input {
         String? preCommand
@@ -7,8 +9,7 @@ task ConfigureGermline {
         String runDir
         Array[File]+ bams
         Array[File]+ indexes
-        File refFasta
-        File refFastaIndex
+        Reference reference
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
@@ -24,7 +25,7 @@ task ConfigureGermline {
         ~{preCommand}
         ~{toolCommand} \
         --bam ~{sep=" --bam " bams} \
-        --ref ~{refFasta} \
+        --ref ~{reference.fasta} \
         --runDir ~{runDir} \
         ~{"--callRegions " + callRegions} \
         ~{true="--exome" false="" exome} \
@@ -41,16 +42,12 @@ task ConfigureSomatic {
         String? preCommand
         String? installDir
         String runDir
-        File normalBam
-        File normalIndex
-        File tumorBam
-        File tumorIndex
-        File refFasta
-        File refFastaIndex
+        IndexedBamFile normalBam
+        IndexedBamFile tumorBam
+        Reference reference
         File? callRegions
         File? callRegionsIndex
-        File? indelCandidates
-        File? indelCandidatesIndex
+        IndexedVcfFile? indelCandidates
         Boolean exome = false
     }
 
@@ -58,16 +55,18 @@ task ConfigureSomatic {
         then installDir + "bin/configureStrelkaSomaticWorkflow.py"
         else "configureStrelkaSomaticWorkflow.py"
 
+    String indelCandidatesArg = if (defined(indelCandidates)) then "--indelCandidates " + select_first([indelCandidates]).file else ""
+
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        --normalBam ~{normalBam} \
-        --tumorBam ~{tumorBam} \
-        --ref ~{refFasta} \
+        --normalBam ~{normalBam.file} \
+        --tumorBam ~{tumorBam.file} \
+        --ref ~{reference.fasta} \
         --runDir ~{runDir} \
         ~{"--callRegions " + callRegions} \
-        ~{"--indelCandidates " + indelCandidates} \
+        ~{indelCandidatesArg} \
         ~{true="--exome" false="" exome} \
     }
 
@@ -82,6 +81,7 @@ task Run {
         Int cores = 1
         Int memory = 4
         Boolean somatic = true
+        #FIXME: This task does not have input files
     }
 
     command {

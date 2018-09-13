@@ -62,7 +62,7 @@ task RunSomatic {
           file: runDir + "/results/variants/candidateSV.vcf.gz",
           index: runDir + "/results/variants/candidateSV.vcf.gz.tbi"
         }
-        File tumorSV = if (paired)
+        IndexedVcfFile tumorSV = if (paired)
             then object {
               file: runDir + "/results/variants/somaticSV.vcf.gz",
               index: runDir + "/results/variants/somaticSV.vcf.gz.tbi"
