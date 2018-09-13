@@ -25,22 +25,22 @@ task BgzipAndIndex {
 task Index {
     input {
         String? preCommand
-        File bamFilePath
+        File bamFile
         String? bamIndexPath
     }
 
     command {
         set -e -o pipefail
         ~{preCommand}
-        samtools index ~{bamFilePath} ~{bamIndexPath}
+        samtools index ~{bamFile} ~{bamIndexPath}
     }
 
     output {
         IndexedBamFile outputBam = object {
-          file: bamFilePath,
+          file: bamFile,
           index: if defined(bamIndexPath)
                               then select_first([bamIndexPath])
-                              else bamFilePath + ".bai"
+                              else bamFile + ".bai"
         }
     }
 }
