@@ -36,10 +36,9 @@ task Index {
     }
 
     output {
-        File index = select_first(flatten([[bamIndexPath], glob(sub(basename(bamFile), "\.bam$", "") + "*.bai")]))
         IndexedBamFile outputBam = object {
           file: bamFile,
-          index: index
+          index: select_first(flatten([[bamIndexPath], glob(sub(basename(bamFile), "\.bam$", "") + "*.bai")]))
         }
     }
 }
