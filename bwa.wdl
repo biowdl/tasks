@@ -12,7 +12,7 @@ task Mem {
 
         String? picardJar
 
-        Int threads = 1
+        Int threads = 2
         Int memory = 8
         Int picardMemory = 4
     }

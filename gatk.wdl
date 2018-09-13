@@ -187,7 +187,7 @@ task GenotypeGVCFs {
     input {
         String? preCommand
         Array[File]+ gvcfFiles
-        Array[File]+ gvcfFileIndex
+        Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
 
         String outputPath
