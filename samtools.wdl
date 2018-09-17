@@ -26,7 +26,7 @@ task Index {
     input {
         String? preCommand
         File bamFile
-        String? bamIndexPath
+        String bamIndexPath
     }
 
     command {
@@ -38,7 +38,7 @@ task Index {
     output {
         IndexedBamFile outputBam = object {
           file: bamFile,
-          index: select_first(flatten([[bamIndexPath], glob(sub(basename(bamFile), "\.bam$", "") + "*.bai")]))
+          index: bamIndexPath
         }
     }
 }
