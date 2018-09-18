@@ -1,18 +1,17 @@
 version 1.0
 
+import "common.wdl"
+
 task VarDict {
     input {
         String? installDir
         Boolean useJavaVersion = true
 
         String tumorSampleName
-        File tumorBam
-        File tumorIndex
+        IndexedBamFile tumorBam
         String? normalSampleName
-        File? normalBam
-        File? normalIndex
-        File refFasta
-        File refFastaIndex
+        IndexedBamFile? normalBam
+        Reference reference
         File bedFile
         String outputVcf
 
@@ -26,6 +25,8 @@ task VarDict {
         Float memoryMultiplier = 2.0
     }
 
+    String normalArg = if (defined(normalBam)) then "|" + select_first([normalBam]).file else ""
+
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"
         else if useJavaVersion
@@ -37,9 +38,9 @@ task VarDict {
         export JAVA_OPTS="-Xmx~{memory}G"
         ~{preCommand}
         ~{toolCommand} \
-        -G ~{refFasta} \
+        -G ~{reference.fasta} \
         -N ~{tumorSampleName} \
-        -b "~{tumorBam}~{"|" + normalBam}" \
+        -b "~{tumorBam.file}~{normalArg}" \
         ~{true="" false="-z" defined(normalBam)} \
         -c ~{chromosomeColumn} \
         -S ~{startColumn} \
@@ -52,10 +53,14 @@ task VarDict {
         -N "~{tumorSampleName}~{"|" + normalSampleName}" \
         ~{true="" false="-E" defined(normalBam)} | \
         bgzip -c > ~{outputVcf}
+        tabix -p vcf ~{outputVcf}
     }
 
     output {
-        File vcfFile = outputVcf
+        IndexedVcfFile vcfFile = object {
+          file: outputVcf,
+          index: outputVcf + ".tbi"
+        }
     }
 
     runtime {

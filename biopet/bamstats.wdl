@@ -2,19 +2,19 @@ version 1.0
 
 # Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2018
 
+import "../common.wdl" as common
+
 task Generate {
     input {
         String? preCommand
         File? toolJar
-        File bam
-        File bamIndex
+        IndexedBamFile bam
         File? bedFile
         Boolean scatterMode = false
         Boolean onlyUnmapped = false
         Boolean tsvOutputs = false
         String outputDir
-        File? reference
-        File? referenceDict
+        Reference? reference
         Int memory = 4
         Float memoryMultiplier = 2.0
     }
@@ -23,14 +23,16 @@ task Generate {
         then "java -Xmx" + memory + "G -jar " + toolJar
         else "biopet-bamstats -Xmx" + memory + "G"
 
+    String refArg = if (defined(reference)) then "--reference " + select_first([reference]).fasta else ""
+
     command {
         set -e -o pipefail
         ~{preCommand}
         mkdir -p ~{outputDir}
         ~{toolCommand} Generate \
-        --bam ~{bam} \
+        --bam ~{bam.file} \
         ~{"--bedFile " + bedFile} \
-        ~{"--reference " + reference} \
+        ~{refArg} \
         ~{true="--onlyUnmapped" false="" onlyUnmapped} \
         ~{true="--scatterMode" false="" scatterMode} \
         ~{true="--tsvOutputs" false="" tsvOutputs} \

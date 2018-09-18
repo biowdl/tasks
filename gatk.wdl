@@ -1,18 +1,17 @@
 version 1.0
 
+import "common.wdl"
+
 # Apply Base Quality Score Recalibration (BQSR) model
 task ApplyBQSR {
     input {
         String? preCommand
         File? gatkJar
-        File inputBam
-        File inputBamIndex
+        IndexedBamFile inputBam
         String outputBamPath
         File recalibrationReport
         Array[File]+ sequenceGroupInterval
-        File refDict
-        File refFasta
-        File refFastaIndex
+        Reference reference
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -29,8 +28,8 @@ task ApplyBQSR {
          ApplyBQSR \
          --create-output-bam-md5 \
          --add-output-sam-program-record \
-         -R ~{refFasta} \
-         -I ~{inputBam} \
+         -R ~{reference.fasta} \
+         -I ~{inputBam.file} \
          --use-original-qualities \
          -O ~{outputBamPath} \
          -bqsr ~{recalibrationReport} \
@@ -41,8 +40,11 @@ task ApplyBQSR {
     }
 
     output {
-        File recalibrated_bam = outputBamPath
-        File recalibrated_bam_checksum = outputBamPath + ".md5"
+        IndexedBamFile recalibratedBam = {
+            "file": outputBamPath,
+            "index": sub(outputBamPath, "\.bam$", ".bai"),
+            "md5": outputBamPath + ".md5"
+        }
     }
 
     runtime {
@@ -55,28 +57,20 @@ task BaseRecalibrator {
     input {
         String? preCommand
         File? gatkJar
-        File inputBam
-        File inputBamIndex
+        IndexedBamFile inputBam
         String recalibrationReportPath
         Array[File]+ sequenceGroupInterval
         Array[File]? knownIndelsSitesVCFs
-        Array[File]? knownIndelsSitesIndices
-        File? dbsnpVCF
-        File? dbsnpVCFindex
-        File refDict
-        File refFasta
-        File refFastaIndex
+        Array[File]? knownIndelsSitesVCFIndexes
+        IndexedVcfFile? dbsnpVCF
+        Reference reference
         Int memory = 4
         Float memoryMultiplier = 3.0
     }
 
     Array[File]+ knownIndelsSitesVCFsArg = flatten([
         select_first([knownIndelsSitesVCFs, []]),
-        select_all([dbsnpVCF])
-    ])
-    Array[File]+ knownIndelsSitesIndicesArg = flatten([
-        select_first([knownIndelsSitesIndices, []]),
-        select_all([dbsnpVCFindex])
+        [select_first([dbsnpVCF]).file]
     ])
 
     String toolCommand = if defined(gatkJar)
@@ -88,8 +82,8 @@ task BaseRecalibrator {
         ~{preCommand}
         ~{toolCommand} \
         BaseRecalibrator \
-        -R ~{refFasta} \
-        -I ~{inputBam} \
+        -R ~{reference.fasta} \
+        -I ~{inputBam.file} \
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
         --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
@@ -109,16 +103,14 @@ task CombineGVCFs {
     input {
         String? preCommand
         Array[File]+ gvcfFiles
-        Array[File]+ gvcfFileIndexes
+        Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
 
         String outputPath
 
         String? gatkJar
 
-        File refFasta
-        File refFastaIndex
-        File refDict
+        Reference reference
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -135,19 +127,21 @@ task CombineGVCFs {
         if [ ~{length(gvcfFiles)} -gt 1 ]; then
             ~{toolCommand} \
              CombineGVCFs \
-             -R ~{refFasta} \
+             -R ~{reference.fasta} \
              -O ~{outputPath} \
              -V ~{sep=' -V ' gvcfFiles} \
              -L ~{sep=' -L ' intervals}
         else # TODO this should be handeled in wdl
             ln -sf ~{gvcfFiles[0]} ~{outputPath}
-            ln -sf ~{gvcfFileIndexes[0]} ~{outputPath}.tbi
+            ln -sf ~{gvcfFiles[0]} ~{outputPath}.tbi
         fi
     }
 
     output {
-        File outputGVCF = outputPath
-        File outputGVCFindex = outputPath + ".tbi"
+        IndexedVcfFile outputVCF = {
+            "file": outputPath,
+            "index": outputPath + ".tbi"
+        }
     }
 
     runtime {
@@ -192,24 +186,23 @@ task GatherBqsrReports {
 task GenotypeGVCFs {
     input {
         String? preCommand
-        File gvcfFiles
-        File gvcfFileIndexes
+        Array[File]+ gvcfFiles
+        Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
 
         String outputPath
 
         String? gatkJar
 
-        File refFasta
-        File refFastaIndex
-        File refDict
+        Reference reference
 
-        File? dbsnpVCF
-        File? dbsnpVCFindex
+        IndexedVcfFile? dbsnpVCF
 
-        Int memory = 4
-        Float memoryMultiplier =3.0
+        Int memory = 6
+        Float memoryMultiplier = 2.0
     }
+
+    String dbsnpArg = if defined(dbsnpVCF) then "-D " + select_first([dbsnpVCF]).file else ""
 
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
@@ -220,19 +213,21 @@ task GenotypeGVCFs {
         ~{preCommand}
         ~{toolCommand} \
         GenotypeGVCFs \
-        -R ~{refFasta} \
+        -R ~{reference.fasta} \
         -O ~{outputPath} \
-        ~{"-D " + dbsnpVCF} \
+        ~{dbsnpArg} \
         -G StandardAnnotation \
         --only-output-calls-starting-in-intervals \
         -new-qual \
-        -V ~{gvcfFiles} \
+        -V ~{sep=' -V ' gvcfFiles} \
         -L ~{sep=' -L ' intervals}
     }
 
     output {
-        File outputVCF = outputPath
-        File outputVCFindex = outputPath + ".tbi"
+        IndexedVcfFile outputVCF = {
+            "file": outputPath,
+            "index": outputPath + ".tbi"
+        }
     }
 
     runtime{
@@ -248,18 +243,17 @@ task HaplotypeCallerGvcf {
         Array[File]+ inputBamsIndex
         Array[File]+ intervalList
         String gvcfPath
-        File refDict
-        File refFasta
-        File refFastaIndex
+        Reference reference
         Float contamination = 0.0
         String? gatkJar
 
-        File? dbsnpVCF
-        File? dbsnpVCFindex
+        IndexedVcfFile? dbsnpVCF
 
         Int memory = 4
         Float memoryMultiplier = 3
     }
+
+    String dbsnpArg = if (defined(dbsnpVCF)) then "-D " + select_first([dbsnpVCF]).file else ""
 
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
@@ -270,18 +264,20 @@ task HaplotypeCallerGvcf {
         ~{preCommand}
         ~{toolCommand} \
         HaplotypeCaller \
-        -R ~{refFasta} \
+        -R ~{reference.fasta} \
         -O ~{gvcfPath} \
         -I ~{sep=" -I " inputBams} \
         -L ~{sep=' -L ' intervalList} \
-        ~{"-D " + dbsnpVCF} \
+        ~{dbsnpArg} \
         -contamination ~{contamination} \
         -ERC GVCF
     }
 
     output {
-        File outputGVCF = gvcfPath
-        File outputGVCFindex = gvcfPath + ".tbi"
+        IndexedVcfFile outputGVCF = {
+            "file": gvcfPath,
+            "index": gvcfPath + ".tbi"
+        }
     }
 
     runtime {
@@ -294,10 +290,8 @@ task MuTect2 {
         String? preCommand
 
         Array[File]+ inputBams
-        Array[File]+ inputBamIndex
-        File refFasta
-        File refFastaIndex
-        File refDict
+        Array[File]+ inputBamsIndex
+        Reference reference
         String outputVcf
         String tumorSample
         String? normalSample
@@ -317,7 +311,7 @@ task MuTect2 {
         ~{preCommand}
         ~{toolCommand} \
         Mutect2 \
-        -R ~{refFasta} \
+        -R ~{reference.fasta} \
         -I ~{sep=" -I " inputBams} \
         -tumor ~{tumorSample} \
         ~{"-normal " + normalSample} \
@@ -326,8 +320,10 @@ task MuTect2 {
     }
 
     output {
-        File vcfFile = outputVcf
-        File vcfIndex = outputVcf + ".tbi"
+        IndexedVcfFile vcfFile = {
+            "file": outputVcf,
+            "index": outputVcf + ".tbi"
+        }
     }
 
     runtime {
@@ -339,11 +335,8 @@ task SplitNCigarReads {
     input {
         String? preCommand
 
-        File inputBam
-        File inputBamIndex
-        File refFasta
-        File refFastaIndex
-        File refDict
+        IndexedBamFile inputBam
+        Reference reference
         String outputBam
         String? gatkJar
         Array[File]+ intervals
@@ -361,15 +354,17 @@ task SplitNCigarReads {
         ~{preCommand}
         ~{toolCommand} \
         SplitNCigarReads \
-        -I ~{inputBam} \
-        -R ~{refFasta} \
+        -I ~{inputBam.file} \
+        -R ~{reference.fasta} \
         -O ~{outputBam} \
         -L ~{sep=' -L ' intervals}
     }
 
     output {
-        File bam = outputBam
-        File bamIndex = sub(outputBam, "\.bam$", ".bai")
+        IndexedBamFile bam = {
+            "file": outputBam,
+            "index": sub(outputBam, "\.bam$", ".bai")
+        }
     }
 
     runtime {

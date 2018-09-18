@@ -1,13 +1,12 @@
 version 1.0
 
+import "common.wdl"
+
 task ConfigureSomatic {
     input {
-        File tumorBam
-        File tumorIndex
-        File? normalBam
-        File? normalIndex
-        File refFasta
-        File refFastaIndex
+        IndexedBamFile tumorBam
+        IndexedBamFile? normalBam
+        Reference reference
         String runDir
         File? callRegions
         File? callRegionsIndex
@@ -20,13 +19,15 @@ task ConfigureSomatic {
         then installDir + "bin/configMata.py"
         else "configManta.py"
 
+    String normalArg = if (defined(normalBam)) then "--normalBam " + select_first([normalBam]).file else ""
+
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        ~{"--normalBam " + normalBam} \
-        ~{"--tumorBam " + tumorBam} \
-        --referenceFasta ~{refFasta} \
+        ~{normalArg} \
+        ~{"--tumorBam " + tumorBam.file} \
+        --referenceFasta ~{reference.fasta} \
         ~{"--callRegions " + callRegions} \
         --runDir ~{runDir} \
         ~{true="--exome" false="" exome}
@@ -53,19 +54,27 @@ task RunSomatic {
     }
 
     output {
-        File condidateSmallIndels = runDir + "/results/variants/candidateSmallIndels.vcf.gz"
-        File condidateSmallIndelsIndex = runDir +
-            "/results/variants/candidateSmallIndels.vcf.gz.tbi"
-        File candidateSV = runDir + "/results/variants/candidateSV.vcf.gz"
-        File candidateSVindex = runDir + "/results/variants/candidateSV.vcf.gz.tbi"
-        File tumorSV = if paired
-            then runDir + "/results/variants/somaticSV.vcf.gz"
-            else runDir + "/results/variants/tumorSV.vcf.gz"
-        File tumorSVindex = if paired
-            then runDir + "/results/variants/somaticSV.vcf.gz.tbi"
-            else runDir + "/results/variants/tumorSV.vcf.gz.tbi"
-        File? diploidSV = "/results/variants/diploidSV.vcf.gz"
-        File? diploidSVindex = "/results/variants/diploidSV.vcf.gz.tbi"
+        IndexedVcfFile condidateSmallIndels = object {
+          file: runDir + "/results/variants/candidateSmallIndels.vcf.gz",
+          index: runDir + "/results/variants/candidateSmallIndels.vcf.gz.tbi"
+        }
+        IndexedVcfFile candidateSV = object {
+          file: runDir + "/results/variants/candidateSV.vcf.gz",
+          index: runDir + "/results/variants/candidateSV.vcf.gz.tbi"
+        }
+        IndexedVcfFile tumorSV = if (paired)
+            then object {
+              file: runDir + "/results/variants/somaticSV.vcf.gz",
+              index: runDir + "/results/variants/somaticSV.vcf.gz.tbi"
+            }
+            else object {
+              file: runDir + "/results/variants/tumorSV.vcf.gz",
+              index: runDir + "/results/variants/tumorSV.vcf.gz.tbi"
+            }
+
+        #FIXME: workaround for https://github.com/broadinstitute/cromwell/issues/4111
+        File? diploidSV = runDir + "/results/variants/diploidSV.vcf.gz"
+        File? diploidSVindex = runDir + "/results/variants/diploidSV.vcf.gz.tbi"
     }
 
     runtime {

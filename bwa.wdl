@@ -5,15 +5,14 @@ import "common.wdl" as common
 task Mem {
     input {
         String? preCommand
-        File inputR1
-        File? inputR2
+        FastqPair inputFastq
         BwaIndex bwaIndex
         String outputPath
         String? readgroup
 
         String? picardJar
 
-        Int threads = 1
+        Int threads = 2
         Int memory = 8
         Int picardMemory = 4
     }
@@ -48,8 +47,8 @@ task Mem {
         bwa mem ~{"-t " + threads} \
         ~{readgroupArg} \
         ~{bwaIndex.fastaFile} \
-        ~{inputR1} \
-        ~{inputR2} \
+        ~{inputFastq.R1} \
+        ~{inputFastq.R2} \
         ~{altCommand} \
         | ~{picardCommand}
     }

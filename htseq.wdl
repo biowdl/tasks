@@ -1,9 +1,12 @@
 version 1.0
 
+import "common.wdl"
+
 task HTSeqCount {
     input {
         String? preCommand
-        Array[File] alignmentFiles
+        Array[File]+ inputBams
+        Array[File]+ inputBamsIndex
         File gtfFile
         String outputTable
         String format = "bam"
@@ -21,7 +24,7 @@ task HTSeqCount {
         -f ~{format} \
         -r ~{order} \
         -s ~{stranded} \
-        ~{sep=" " alignmentFiles} \
+        ~{sep=" " inputBams} \
         ~{gtfFile} \
         > ~{outputTable}
     }
