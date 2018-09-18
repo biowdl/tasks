@@ -72,7 +72,7 @@ task RunSomatic {
               index: runDir + "/results/variants/tumorSV.vcf.gz.tbi"
             }
 
-        IndexedVcfFile diploidSV = object {
+        IndexedVcfFile? diploidSV = object {
           file: runDir + "/results/variants/diploidSV.vcf.gz",
           index: runDir + "/results/variants/diploidSV.vcf.gz.tbi"
         }
