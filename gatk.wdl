@@ -198,8 +198,8 @@ task GenotypeGVCFs {
 
         IndexedVcfFile? dbsnpVCF
 
-        Int memory = 4
-        Float memoryMultiplier =3.0
+        Int memory = 6
+        Float memoryMultiplier = 2.0
     }
 
     String dbsnpArg = if defined(dbsnpVCF) then "-D " + select_first([dbsnpVCF]).file else ""
