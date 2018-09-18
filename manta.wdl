@@ -72,10 +72,9 @@ task RunSomatic {
               index: runDir + "/results/variants/tumorSV.vcf.gz.tbi"
             }
 
-        IndexedVcfFile? diploidSV = object {
-          file: runDir + "/results/variants/diploidSV.vcf.gz",
-          index: runDir + "/results/variants/diploidSV.vcf.gz.tbi"
-        }
+        #FIXME: workaround for https://github.com/broadinstitute/cromwell/issues/4111
+        File? diploidSV = runDir + "/results/variants/diploidSV.vcf.gz"
+        File? diploidSVindex = runDir + "/results/variants/diploidSV.vcf.gz.tbi"
     }
 
     runtime {
