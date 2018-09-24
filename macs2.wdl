@@ -7,6 +7,8 @@ task PeakCalling {
         String? preCommand
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
+        Array[File]? controlBams
+        Array[File]? controlBamsIndex
         String outDir
         String sampleName
         Int threads = 1
@@ -19,6 +21,7 @@ task PeakCalling {
         ~{preCommand}
         macs2 callpeak \
         --treatment ~{sep = ' ' inputBams} \
+        ~{true="--control" false="" defined(controlBams)} ~{sep = ' ' controlBams} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
         ~{true='--nomodel' false='' nomodel}
