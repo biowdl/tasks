@@ -5,10 +5,10 @@ import "common.wdl"
 task PeakCalling {
     input {
         String? preCommand
-        Array[File]+ inputBams
-        Array[File]+ inputBamsIndex
-        Array[File]? controlBams
-        Array[File]? controlBamsIndex
+        File inputBams
+        File inputBamsIndex
+        File? controlBams
+        File? controlBamsIndex
         String outDir
         String sampleName
         Int threads = 1
