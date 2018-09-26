@@ -163,3 +163,10 @@ struct FastqPair {
     File? R2
     File? R2_md5
 }
+
+struct CaseControl {
+    String inputName
+    IndexedBamFile inputBam
+    String controlName
+    IndexedBamFile controlBam
+}
