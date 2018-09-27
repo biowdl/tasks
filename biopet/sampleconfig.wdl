@@ -91,7 +91,7 @@ task CaseControl {
         String controlTag = "control"
 
         Int memory = 4
-        Float memoryMultiplier = 1.5
+        Float memoryMultiplier = 2.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -102,7 +102,7 @@ task CaseControl {
         set -e -o pipefail
         ~{preCommand}
         mkdir -p $(dirname ~{outputPath})
-        ~{toolCommand} CromwellArrays \
+        ~{toolCommand} CaseControl \
         -i ~{sep="-i " inputFiles} \
         -s ~{sep="-s " sampleConfigs} \
         ~{"-o " + outputPath} \
