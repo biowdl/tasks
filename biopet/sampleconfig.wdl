@@ -103,14 +103,14 @@ task CaseControl {
         mkdir -p $(dirname ~{outputPath})
         ~{toolCommand} CromwellArrays \
         -i ~{sep="-i " inputFiles} \
-        -s ~{sep="-s " inputFiles} \
+        -s ~{sep="-s " sampleConfigs} \
         ~{"-o " + outputPath} \
         ~{"--controlTag " + controlTag}
     }
 
     output {
         File outputFile = outputPath
-        Array[CaseControl] controls = read_json(outputFile)
+        Array[CaseControl] caseControls = read_json(outputFile)
     }
 
     runtime {
