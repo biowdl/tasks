@@ -1,5 +1,7 @@
 version 1.0
 
+import "../common.wdl" as common
+
 task SampleConfig {
     input {
         File? toolJar
@@ -71,6 +73,44 @@ task SampleConfigCromwellArrays {
 
     output {
         File outputFile = outputPath
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task CaseControl {
+    input {
+        File? toolJar
+        String? preCommand
+        Array[File]+ inputFiles
+        Array[File]+ sampleConfigs
+        String outputPath
+        String controlTag = "control"
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+    }
+
+    String toolCommand = if defined(toolJar)
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-sampleconfig -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        mkdir -p $(dirname ~{outputPath})
+        ~{toolCommand} CromwellArrays \
+        -i ~{sep="-i " inputFiles} \
+        -s ~{sep="-s " sampleConfigs} \
+        ~{"-o " + outputPath} \
+        ~{"--controlTag " + controlTag}
+    }
+
+    output {
+        File outputFile = outputPath
+        Array[CaseControl] caseControls = read_json(outputFile)
     }
 
     runtime {

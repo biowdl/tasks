@@ -123,18 +123,12 @@ task CombineGVCFs {
     command {
         set -e -o pipefail
         ~{preCommand}
-
-        if [ ~{length(gvcfFiles)} -gt 1 ]; then
-            ~{toolCommand} \
-             CombineGVCFs \
-             -R ~{reference.fasta} \
-             -O ~{outputPath} \
-             -V ~{sep=' -V ' gvcfFiles} \
-             -L ~{sep=' -L ' intervals}
-        else # TODO this should be handeled in wdl
-            ln -sf ~{gvcfFiles[0]} ~{outputPath}
-            ln -sf ~{gvcfFiles[0]} ~{outputPath}.tbi
-        fi
+        ~{toolCommand} \
+        CombineGVCFs \
+        -R ~{reference.fasta} \
+        -O ~{outputPath} \
+        -V ~{sep=' -V ' gvcfFiles} \
+        -L ~{sep=' -L ' intervals}
     }
 
     output {
