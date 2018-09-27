@@ -85,6 +85,7 @@ task CaseControl {
         File? toolJar
         String? preCommand
         Array[File]+ inputFiles
+        Array[File]+ inputIndexFiles
         Array[File]+ sampleConfigs
         String outputPath
         String controlTag = "control"
