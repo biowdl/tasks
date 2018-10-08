@@ -170,3 +170,7 @@ struct CaseControl {
     String controlName
     IndexedBamFile controlBam
 }
+
+struct CaseControls {
+    Array[CaseControl] caseControls
+}
