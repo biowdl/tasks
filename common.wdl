@@ -166,9 +166,9 @@ struct FastqPair {
 
 struct CaseControl {
     String inputName
-    IndexedBamFile inputBam
+    IndexedBamFile inputFile
     String controlName
-    IndexedBamFile controlBam
+    IndexedBamFile controlFile
 }
 
 struct CaseControls {
