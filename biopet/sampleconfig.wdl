@@ -110,7 +110,7 @@ task CaseControl {
 
     output {
         File outputFile = outputPath
-        Array[CaseControl] caseControls = read_json(outputFile)
+        CaseControls caseControls = read_json(outputFile)
     }
 
     runtime {
