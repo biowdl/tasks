@@ -103,8 +103,8 @@ task CaseControl {
         ~{preCommand}
         mkdir -p $(dirname ~{outputPath})
         ~{toolCommand} CaseControl \
-        -i ~{sep="-i " inputFiles} \
-        -s ~{sep="-s " sampleConfigs} \
+        -i ~{sep=" -i " inputFiles} \
+        -s ~{sep=" -s " sampleConfigs} \
         ~{"-o " + outputPath} \
         ~{"--controlTag " + controlTag}
     }
