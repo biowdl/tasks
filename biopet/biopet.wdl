@@ -245,8 +245,8 @@ task ValidateAnnotation {
         File? gtfFile
         Reference reference
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -277,8 +277,8 @@ task ValidateFastq {
         File? toolJar
         FastqPair inputFastq
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -310,8 +310,8 @@ task ValidateVcf {
         IndexedVcfFile vcf
         Reference reference
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
