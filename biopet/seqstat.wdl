@@ -15,7 +15,7 @@ task Generate {
         String readgroup
 
         Int memory = 4
-        Float memoryMultiplier = 2.0
+        Float memoryMultiplier = 2.5
     }
 
     String toolCommand = if defined(toolJar)
