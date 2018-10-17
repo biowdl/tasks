@@ -200,6 +200,34 @@ task FastqSync {
     }
 }
 
+task ReorderGlobbedScatters {
+    input {
+        Array[File]+ scatters
+        String scatterDir
+    }
+
+    command <<<
+       python << CODE
+       from os.path import basename
+       scatters = ['~{sep="','" scatters}']
+       splitext = [basename(x).split(".") for x in scatters]
+       splitnum = [x.split("-") + [y] for x,y in splitext]
+       ordered = sorted(splitnum, key=lambda x: int(x[1]))
+       merged = ["~{scatterDir}/{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
+       for x in merged:
+           print(x)
+       CODE
+    >>>
+
+    output {
+        Array[String] reorderedScatters = read_lines(stdout())
+    }
+
+    runtime {
+        memory: 1
+    }
+}
+
 task ScatterRegions {
     input {
         String? preCommand
