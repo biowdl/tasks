@@ -199,47 +199,6 @@ task CollectTargetedPcrMetrics {
     }
 }
 
-task FixMateInformation {
-    input {
-        Array[File]+ inputBams
-        Array[File]+ inputBamsIndex
-        String outputBamPath
-
-        String? preCommand
-        String? picardJar
-
-        Int memory = 4
-        Float memoryMultiplier = 3.0
-    }
-
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
-        FixMateInformation \
-        INPUT=~{sep=' INPUT=' inputBams} \
-        OUTPUT=~{outputBamPath} \
-        CREATE_INDEX=true \
-        CREATE_MD5_FILE=true
-    }
-
-    output {
-        IndexedBamFile outputBam = object {
-          file: outputBamPath,
-          index: sub(outputBamPath, ".bam$", ".bai"),
-          md5: outputBamPath + ".md5"
-        }
-    }
-
-    runtime {
-        memory: ceil(memory * memoryMultiplier)
-    }
-}
-
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
 task GatherBamFiles {
     input {
