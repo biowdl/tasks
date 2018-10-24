@@ -85,12 +85,13 @@ task CaseControl {
         File? toolJar
         String? preCommand
         Array[File]+ inputFiles
+        Array[File]+ inputIndexFiles
         Array[File]+ sampleConfigs
         String outputPath
         String controlTag = "control"
 
         Int memory = 4
-        Float memoryMultiplier = 1.5
+        Float memoryMultiplier = 2.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -101,9 +102,9 @@ task CaseControl {
         set -e -o pipefail
         ~{preCommand}
         mkdir -p $(dirname ~{outputPath})
-        ~{toolCommand} CromwellArrays \
-        -i ~{sep="-i " inputFiles} \
-        -s ~{sep="-s " sampleConfigs} \
+        ~{toolCommand} CaseControl \
+        -i ~{sep=" -i " inputFiles} \
+        -s ~{sep=" -s " sampleConfigs} \
         ~{"-o " + outputPath} \
         ~{"--controlTag " + controlTag}
     }
