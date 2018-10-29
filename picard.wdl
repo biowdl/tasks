@@ -240,6 +240,40 @@ task GatherBamFiles {
     }
 }
 
+task GatherVcfs {
+    input {
+        String? preCommand
+        Array[File]+ inputVcfs
+        Array[File]+ inputVcfIndexes
+        String outputVcfPath
+        String? picardJar
+
+        Int memory = 4
+        Float memoryMultiplier = 3.0
+    }
+
+    String toolCommand = if defined(picardJar)
+        then "java -Xmx" + memory + "G -jar " + picardJar
+        else "picard -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        ~{toolCommand} \
+        GatherVcfs \
+        INPUT=~{sep=' INPUT=' inputVcfs} \
+        OUTPUT=~{outputVcfPath}
+    }
+
+    output {
+        File outputVcf = outputVcfPath
+    }
+
+    runtime {
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
 # Mark duplicate reads to avoid counting non-independent observations
 task MarkDuplicates {
     input {
