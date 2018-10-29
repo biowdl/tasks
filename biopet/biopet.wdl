@@ -236,6 +236,7 @@ task ScatterRegions {
         File? toolJar
         Int? scatterSize
         File? regions
+        Boolean notSplitContigs = false
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -253,7 +254,8 @@ task ScatterRegions {
           -R ~{reference.fasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
-          ~{"-L " + regions}
+          ~{"-L " + regions} \
+          ~{true="--notSplitContigs" false="" notSplitContigs}
     }
 
     output {
