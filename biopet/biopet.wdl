@@ -388,7 +388,7 @@ task VcfStats {
         Array[String]+? sparkConfigValues
 
         Int memory = 4
-        Float memoryMultiplier = 2.0
+        Float memoryMultiplier = 2.5
         File? toolJar
         String? preCommand
     }
