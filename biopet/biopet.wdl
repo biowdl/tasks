@@ -12,7 +12,7 @@ task BaseCounter {
         String prefix
 
         Int memory = 4
-        Float memoryMultiplier = 3.0
+        Float memoryMultiplier = 3.5
     }
 
     String toolCommand = if defined(toolJar)
