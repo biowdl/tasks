@@ -10,7 +10,7 @@ task Cutadapt {
         String? format
         String? preCommand
         Int cores = 1
-        Int memory = 4
+        Int memory = 8
         Array[String]+? adapter
         Array[String]+? front
         Array[String]+? anywhere

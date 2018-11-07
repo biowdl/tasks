@@ -336,7 +336,7 @@ task SplitNCigarReads {
         Array[File]+ intervals
 
         Int memory = 4
-        Float memoryMultiplier = 3
+        Float memoryMultiplier = 4
     }
 
     String toolCommand = if defined(gatkJar)

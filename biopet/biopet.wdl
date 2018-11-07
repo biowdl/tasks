@@ -12,7 +12,7 @@ task BaseCounter {
         String prefix
 
         Int memory = 4
-        Float memoryMultiplier = 3.0
+        Float memoryMultiplier = 3.5
     }
 
     String toolCommand = if defined(toolJar)
@@ -200,6 +200,34 @@ task FastqSync {
     }
 }
 
+task ReorderGlobbedScatters {
+    input {
+        Array[File]+ scatters
+        String scatterDir
+    }
+
+    command <<<
+       python << CODE
+       from os.path import basename
+       scatters = ['~{sep="','" scatters}']
+       splitext = [basename(x).split(".") for x in scatters]
+       splitnum = [x.split("-") + [y] for x,y in splitext]
+       ordered = sorted(splitnum, key=lambda x: int(x[1]))
+       merged = ["~{scatterDir}/{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
+       for x in merged:
+           print(x)
+       CODE
+    >>>
+
+    output {
+        Array[String] reorderedScatters = read_lines(stdout())
+    }
+
+    runtime {
+        memory: 1
+    }
+}
+
 task ScatterRegions {
     input {
         String? preCommand
@@ -208,6 +236,7 @@ task ScatterRegions {
         File? toolJar
         Int? scatterSize
         File? regions
+        Boolean notSplitContigs = false
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -225,7 +254,8 @@ task ScatterRegions {
           -R ~{reference.fasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
-          ~{"-L " + regions}
+          ~{"-L " + regions} \
+          ~{true="--notSplitContigs" false="" notSplitContigs}
     }
 
     output {
@@ -245,8 +275,8 @@ task ValidateAnnotation {
         File? gtfFile
         Reference reference
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -277,8 +307,8 @@ task ValidateFastq {
         File? toolJar
         FastqPair inputFastq
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -310,8 +340,8 @@ task ValidateVcf {
         IndexedVcfFile vcf
         Reference reference
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -358,7 +388,7 @@ task VcfStats {
         Array[String]+? sparkConfigValues
 
         Int memory = 4
-        Float memoryMultiplier = 2.0
+        Float memoryMultiplier = 2.5
         File? toolJar
         String? preCommand
     }
