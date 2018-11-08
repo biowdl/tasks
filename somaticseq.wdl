@@ -8,13 +8,11 @@ task SomaticSeqWrapper {
         String? installDir
 
         String outputDir
-        Reference ref
+        Reference reference
         File? inclusionRegion
         File? exclusionRegion
-        File tumorBam
-        File tumorIndex
-        File normalBam
-        File normalIndex
+        IndexedBamFile tumorBam
+        IndexedBamFile normalBam
         File? mutect2VCF
         File? varscanSNV
         File? varscanIndel
@@ -38,11 +36,11 @@ task SomaticSeqWrapper {
         ~{preCommand}
         ~{toolCommand} \
         --output-dir ~{outputDir} \
-        --genome-reference ~{ref.fasta} \
+        --genome-reference ~{reference.fasta} \
         ~{"--inclusion-region " +  inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
-        --tumor-bam ~{tumorBam} \
-        --normal-bam ~{normalBam} \
+        --tumor-bam ~{tumorBam.file} \
+        --normal-bam ~{normalBam.file} \
         ~{"--mutect2 " + mutect2VCF} \
         ~{"--varscan-snv " + varscanSNV} \
         ~{"--varscan-indel " + varscanIndel} \
@@ -71,11 +69,10 @@ task SsSomaticSeqWrapper {
         String? installDir
 
         String outputDir
-        Reference ref
+        Reference reference
         File? inclusionRegion
         File? exclusionRegion
-        File bam
-        File bamIndex
+        IndexedBamFile bam
         File? mutect2VCF
         File? varscanVCF
         File? vardictVCF
@@ -93,10 +90,10 @@ task SsSomaticSeqWrapper {
         ~{preCommand}
         ~{toolCommand} \
         --output-dir ~{outputDir} \
-        --genome-reference ~{ref.fasta} \
+        --genome-reference ~{reference.fasta} \
         ~{"--inclusion-region " +  inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
-        --in-bam ~{bam} \
+        --in-bam ~{bam.file} \
         ~{"--mutect2 " + mutect2VCF} \
         ~{"--varscan " + varscanVCF} \
         ~{"--vardict " + vardictVCF} \
