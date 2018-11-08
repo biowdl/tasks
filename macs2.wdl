@@ -1,9 +1,14 @@
 version 1.0
 
+import "common.wdl"
+
 task PeakCalling {
     input {
         String? preCommand
-        Array[File] bamFiles
+        Array[File]+ inputBams
+        Array[File]+ inputBamsIndex
+        Array[File]+? controlBams
+        Array[File]+? controlBamsIndex
         String outDir
         String sampleName
         Int threads = 1
@@ -15,7 +20,8 @@ task PeakCalling {
         set -e -o pipefail
         ~{preCommand}
         macs2 callpeak \
-        --treatment ~{sep = ' ' bamFiles} \
+        --treatment ~{sep = ' ' inputBams} \
+        ~{true="--control" false="" defined(controlBams)} ~{sep = ' ' controlBams} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
         ~{true='--nomodel' false='' nomodel}

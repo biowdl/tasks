@@ -20,7 +20,7 @@ task Star {
         Int memory = 10
     }
 
-    #TODO needs to be extended for all possible output extensions
+    # Needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
     command {

@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl"
+
 task BgzipAndIndex {
     input {
         File inputFile
@@ -23,20 +25,21 @@ task BgzipAndIndex {
 task Index {
     input {
         String? preCommand
-        File bamFilePath
-        String? bamIndexPath
+        File bamFile
+        String bamIndexPath
     }
 
     command {
         set -e -o pipefail
         ~{preCommand}
-        samtools index ~{bamFilePath} ~{bamIndexPath}
+        samtools index ~{bamFile} ~{bamIndexPath}
     }
 
     output {
-        File indexFile = if defined(bamIndexPath)
-            then select_first([bamIndexPath])
-            else bamFilePath + ".bai"
+        IndexedBamFile outputBam = object {
+          file: bamFile,
+          index: bamIndexPath
+        }
     }
 }
 
