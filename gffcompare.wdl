@@ -2,9 +2,13 @@ version 1.0
 
 task GffCompare {
     input {
+        String? preCommand
         File? inputGtfList
         Array[File]+? inputGtfFiles
         File referenceAnnotation
+        String? outputDir
+        String outPrefix = "gffcmp" # gffcmp is the default used by the program as well. This needs to be
+        # defined in order for the output values to be consistent and correct.
         File? genomeSequences
         Int? maxDistanceFreeEndsTerminalExons
         Int? maxDistanceGroupingTranscriptStartSites
@@ -21,12 +25,19 @@ task GffCompare {
         Boolean verbose = false
         Boolean debugMode = false
     }
+    # This allows for the creation of output directories"
+    String dirPrefix= if defined(outputDir) then outputDir + "/" else ""
+    String totalPrefix = dirPrefix + outPrefix
 
     parameter_meta {}
 
     command {
+        set -e
+        ~{preCommand}
+        ~{"mkdir -p " + outputDir}
         gffcompare \
         -r ~{referenceAnnotation} \
+        ~{"-o " + totalPrefix } \
         ~{"-s " + genomeSequences} \
         ~{"-e " + maxDistanceFreeEndsTerminalExons} \
         ~{"-d " + maxDistanceGroupingTranscriptStartSites} \
