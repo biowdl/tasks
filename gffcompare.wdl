@@ -24,10 +24,14 @@ task GffCompare {
         Boolean noTmap = false
         Boolean verbose = false
         Boolean debugMode = false
+        # This workaround only works in the input section.
+        # Issue addressed at https://github.com/openwdl/wdl/pull/263
+        File? noneFile # This is a wdl workaround. Please do not assign!
     }
     # This allows for the creation of output directories"
     String dirPrefix= if defined(outputDir) then outputDir + "/" else ""
     String totalPrefix = dirPrefix + outPrefix
+
 
     parameter_meta {}
 
@@ -37,7 +41,7 @@ task GffCompare {
         ~{"mkdir -p " + outputDir}
         gffcompare \
         -r ~{referenceAnnotation} \
-        ~{"-o " + totalPrefix } \
+        ~{"-o '" + totalPrefix + "'"} \
         ~{"-s " + genomeSequences} \
         ~{"-e " + maxDistanceFreeEndsTerminalExons} \
         ~{"-d " + maxDistanceGroupingTranscriptStartSites} \
@@ -57,5 +61,20 @@ task GffCompare {
         ~{sep=" " + inputGtfFiles}
     }
 
-    output {}
+    # Output of gffcompare is not stable. It depends on the number of files in the input.
+    Int noFilesGtfList = if defined(inputGtfList) then length(read_lines(inputGtfList)) else 0
+    Int noInputFiles = if defined(inputGtfFiles) then length(inputGtfFiles) else 0
+    Boolean oneFile = (noFilesGtfList + noInputFiles) == 1
+    String annotatedName = if oneFile then "annotated" else "combined"
+
+    # Check if a redundant .gtf will be created
+    Boolean createRedundant = C || A || X
+
+    output {
+        File annotated = totalPrefix + "." + annotatedName + ".gtf"
+        File loci = totalPrefix + ".loci"
+        File stats = totalPrefix + ".stats"
+        File tracking = totalPrefix + ".tracking"
+        File? redundant = if createRedundant then totalPrefix + ".redundant.gtf" else noneFile
+    }
 }
