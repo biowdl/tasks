@@ -75,6 +75,8 @@ task GffCompare {
         File loci = totalPrefix + ".loci"
         File stats = totalPrefix + ".stats"
         File tracking = totalPrefix + ".tracking"
+        # noneFile is not stable. Please replace this as soon as wdl spec allows
         File? redundant = if createRedundant then totalPrefix + ".redundant.gtf" else noneFile
+        File? missedIntrons = if debugMode then totalPrefix + ".missed_introns.gtf" else noneFile
     }
 }
