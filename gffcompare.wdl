@@ -58,12 +58,12 @@ task GffCompare {
         ~{true="-V" false="" verbose} \
         ~{true="D" false="" debugMode} \
         ~{"-i " + inputGtfList} \
-        ~{sep=" " + inputGtfFiles}
+        ~{sep=" " inputGtfFiles}
     }
 
     # Output of gffcompare is not stable. It depends on the number of files in the input.
-    Int noFilesGtfList = if defined(inputGtfList) then length(read_lines(inputGtfList)) else 0
-    Int noInputFiles = if defined(inputGtfFiles) then length(inputGtfFiles) else 0
+    Int noFilesGtfList = if defined(inputGtfList) then length(read_lines(select_first([inputGtfList]))) else 0
+    Int noInputFiles = length(select_first([inputGtfFiles, []]))
     Boolean oneFile = (noFilesGtfList + noInputFiles) == 1
     String annotatedName = if oneFile then "annotated" else "combined"
 
