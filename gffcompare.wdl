@@ -4,7 +4,7 @@ task GffCompare {
     input {
         String? preCommand
         File? inputGtfList
-        Array[File]+? inputGtfFiles
+        Array[File] inputGtfFiles
         File referenceAnnotation
         String? outputDir
         String outPrefix = "gffcmp" # gffcmp is the default used by the program as well. This needs to be
@@ -63,7 +63,7 @@ task GffCompare {
 
     # Output of gffcompare is not stable. It depends on the number of files in the input.
     Int noFilesGtfList = if defined(inputGtfList) then length(read_lines(select_first([inputGtfList]))) else 0
-    Int noInputFiles = length(select_first([inputGtfFiles, []]))
+    Int noInputFiles = length(inputGtfFiles)
     Boolean oneFile = (noFilesGtfList + noInputFiles) == 1
     String annotatedName = if oneFile then "annotated" else "combined"
 
