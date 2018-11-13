@@ -2,11 +2,13 @@ version 1.0
 
 import "common.wdl" as common
 
-task SomaticSeqWrapper {
+task SomaticSeqParallelPaired {
     input {
         String? preCommand
         String? installDir
 
+        File? classifierSNV
+        File? classifierIndel
         String outputDir
         Reference reference
         File? inclusionRegion
@@ -25,32 +27,119 @@ task SomaticSeqWrapper {
         File? scalpelVCF
         File? strelkaSNV
         File? strelkaIndel
+
+        Int threads = 1
     }
 
     String toolCommand = if defined(installDir)
-        then installDir + "/SomaticSeq.Wrapper.sh"
-        else "SomaticSeq.Wrapper.sh"
+        then installDir + "/somaticseq_parallel.py"
+        else "/opt/somaticseq/somaticseq_parallel.py"
+        # else here points to the location in the docker image
 
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        --output-dir ~{outputDir} \
+        ~{"--classifier-snv " + classifierSNV} \
+        ~{"--classifier-indel " + classifierIndel} \
+        --output-directory ~{outputDir} \
         --genome-reference ~{reference.fasta} \
-        ~{"--inclusion-region " +  inclusionRegion} \
+        ~{"--inclusion-region " + inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
-        --tumor-bam ~{tumorBam.file} \
-        --normal-bam ~{normalBam.file} \
-        ~{"--mutect2 " + mutect2VCF} \
+        --threads ~{threads} \
+        paired \
+        --tumor-bam-file ~{tumorBam.file} \
+        --normal-bam-file ~{normalBam.file} \
+        ~{"--mutect2-vcf " + mutect2VCF} \
         ~{"--varscan-snv " + varscanSNV} \
         ~{"--varscan-indel " + varscanIndel} \
-        ~{"--jsm " + jsmVCF} \
-        ~{"--sniper " + somaticsniperVCF} \
-        ~{"--vardict " + vardictVCF} \
-        ~{"--muse " + museVCF} \
+        ~{"--jsm-vcf " + jsmVCF} \
+        ~{"--somaticsniper-vcf " + somaticsniperVCF} \
+        ~{"--vardict-vcf " + vardictVCF} \
+        ~{"--muse-vcf " + museVCF} \
         ~{"--lofreq-snv " + lofreqSNV} \
         ~{"--lofreq-indel " + lofreqIndel} \
-        ~{"--scalpel " + scalpelVCF} \
+        ~{"--scalpel-vcf " + scalpelVCF} \
+        ~{"--strelka-snv " + strelkaSNV} \
+        ~{"--strelka-indel " + strelkaIndel}
+    }
+
+    output {
+        File indels = outputDir + if defined(classifierIndel)
+            then "/SSeq.Classified.sINDEL.vcf"
+            else "/Consensus.sINDEL.vcf"
+        File snvs = outputDir + if defined(classifierSNV)
+            then "/SSeq.Classified.sSNV.vcf"
+            else "/Consensus.sSNV.vcf"
+        File ensembleIndels = outputDir + "/Ensemble.sINDEL.tsv"
+        File ensembleSNV = outputDir + "/Ensemble.sSNV.tsv"
+    }
+
+    runtime {
+        cpu: threads
+        docker: "lethalfang/somaticseq:3.1.0"
+    }
+}
+
+task SomaticSeqParallelPairedTrain {
+    input {
+        String? preCommand
+        String? installDir
+
+        File truthSNV
+        File truthIndel
+        String outputDir
+        Reference reference
+        File? inclusionRegion
+        File? exclusionRegion
+        IndexedBamFile tumorBam
+        IndexedBamFile normalBam
+        File? mutect2VCF
+        File? varscanSNV
+        File? varscanIndel
+        File? jsmVCF
+        File? somaticsniperVCF
+        File? vardictVCF
+        File? museVCF
+        File? lofreqSNV
+        File? lofreqIndel
+        File? scalpelVCF
+        File? strelkaSNV
+        File? strelkaIndel
+
+        Int threads = 1
+    }
+
+    String toolCommand = if defined(installDir)
+        then installDir + "/somaticseq_parallel.py"
+        else "/opt/somaticseq/somaticseq_parallel.py"
+        # else here points to the location in the docker image
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        ~{toolCommand} \
+        --somaticseq-train \
+        --truth-snv ~{truthSNV} \
+        --truth-indel ~{truthIndel} \
+        --output-directory ~{outputDir} \
+        --genome-reference ~{reference.fasta} \
+        ~{"--inclusion-region " + inclusionRegion} \
+        ~{"--exclusion-region " + exclusionRegion} \
+        --threads ~{threads} \
+        paired \
+        --tumor-bam-file ~{tumorBam.file} \
+        --normal-bam-file ~{normalBam.file} \
+        ~{"--mutect2-vcf " + mutect2VCF} \
+        ~{"--varscan-snv " + varscanSNV} \
+        ~{"--varscan-indel " + varscanIndel} \
+        ~{"--jsm-vcf " + jsmVCF} \
+        ~{"--somaticsniper-vcf " + somaticsniperVCF} \
+        ~{"--vardict-vcf " + vardictVCF} \
+        ~{"--muse-vcf " + museVCF} \
+        ~{"--lofreq-snv " + lofreqSNV} \
+        ~{"--lofreq-indel " + lofreqIndel} \
+        ~{"--scalpel-vcf " + scalpelVCF} \
         ~{"--strelka-snv " + strelkaSNV} \
         ~{"--strelka-indel " + strelkaIndel}
     }
@@ -60,14 +149,23 @@ task SomaticSeqWrapper {
         File consensusSNV = outputDir + "/Consensus.sSNV.vcf"
         File ensembleIndels = outputDir + "/Ensemble.sINDEL.tsv"
         File ensembleSNV = outputDir + "/Ensemble.sSNV.tsv"
+        File ensembleIndelsClassifier = outputDir + "/Ensemble.sINDEL.tsv.ntChange.Classifier.RData"
+        File ensembleSNVClassifier = outputDir + "/Ensemble.sSNV.tsv.ntChange.Classifier.RData"
+    }
+
+    runtime {
+        cpu: threads
+        docker: "lethalfang/somaticseq:3.1.0"
     }
 }
 
-task SsSomaticSeqWrapper {
+task SomaticSeqParallelSingle {
     input {
         String? preCommand
         String? installDir
 
+        File? classifierSNV
+        File? classifierIndel
         String outputDir
         Reference reference
         File? inclusionRegion
@@ -79,33 +177,113 @@ task SsSomaticSeqWrapper {
         File? lofreqVCF
         File? scalpelVCF
         File? strelkaVCF
+
+        Int threads = 1
     }
 
     String toolCommand = if defined(installDir)
-        then installDir + "/ssSomaticSeq.Wrapper.sh"
-        else "ssSomaticSeq.Wrapper.sh"
+        then installDir + "/somaticseq_parallel.py"
+        else "/opt/somaticseq/somaticseq_parallel.py"
+        # else here points to the location in the docker image
 
     command {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        --output-dir ~{outputDir} \
+        ~{"--classifier-snv " + classifierSNV} \
+        ~{"--classifier-indel " + classifierIndel} \
+        --output-directory ~{outputDir} \
         --genome-reference ~{reference.fasta} \
-        ~{"--inclusion-region " +  inclusionRegion} \
+        ~{"--inclusion-region " + inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
-        --in-bam ~{bam.file} \
-        ~{"--mutect2 " + mutect2VCF} \
-        ~{"--varscan " + varscanVCF} \
-        ~{"--vardict " + vardictVCF} \
-        ~{"--lofreq " + lofreqVCF} \
-        ~{"--scalpel " + scalpelVCF} \
-        ~{"--strelka " + strelkaVCF}
+        --threads ~{threads} \
+        single \
+        --bam-file ~{bam.file} \
+        ~{"--mutect2-vcf " + mutect2VCF} \
+        ~{"--varscan-vcf " + varscanVCF} \
+        ~{"--vardict-vcf " + vardictVCF} \
+        ~{"--lofreq-vcf " + lofreqVCF} \
+        ~{"--scalpel-vcf " + scalpelVCF} \
+        ~{"--strelka-vcf " + strelkaVCF}
     }
 
     output {
-        File consensusIndels = outputDir + "/Consensus.ssINDEL.vcf"
-        File consensusSNV = outputDir + "/Consensus.ssSNV.vcf"
-        File ensembleIndels = outputDir + "/Ensemble.ssINDEL.tsv"
-        File ensembleSNV = outputDir + "/Ensemble.ssSNV.tsv"
+        File indels = outputDir + if defined(classifierIndel)
+            then "/SSeq.Classified.sINDEL.vcf"
+            else "/Consensus.sINDEL.vcf"
+        File snvs = outputDir + if defined(classifierSNV)
+            then "/SSeq.Classified.sSNV.vcf"
+            else "/Consensus.sSNV.vcf"
+        File ensembleIndels = outputDir + "/Ensemble.sINDEL.tsv"
+        File ensembleSNV = outputDir + "/Ensemble.sSNV.tsv"
+    }
+
+    runtime {
+        cpu: threads
+        docker: "lethalfang/somaticseq:3.1.0"
+    }
+}
+
+task SomaticSeqParallelSingleTrain {
+    input {
+        String? preCommand
+        String? installDir
+
+        File truthSNV
+        File truthIndel
+        String outputDir
+        Reference reference
+        File? inclusionRegion
+        File? exclusionRegion
+        IndexedBamFile bam
+        File? mutect2VCF
+        File? varscanVCF
+        File? vardictVCF
+        File? lofreqVCF
+        File? scalpelVCF
+        File? strelkaVCF
+
+        Int threads = 1
+    }
+
+    String toolCommand = if defined(installDir)
+        then installDir + "/somaticseq_parallel.py"
+        else "/opt/somaticseq/somaticseq_parallel.py"
+        # else here points to the location in the docker image
+
+    command {
+        set -e -o pipefail
+        ~{preCommand}
+        ~{toolCommand} \
+        --somaticseq-train \
+        --truth-snv ~{truthSNV} \
+        --truth-indel ~{truthIndel} \
+        --output-directory ~{outputDir} \
+        --genome-reference ~{reference.fasta} \
+        ~{"--inclusion-region " + inclusionRegion} \
+        ~{"--exclusion-region " + exclusionRegion} \
+        --threads ~{threads} \
+        single \
+        --bam-file ~{bam.file} \
+        ~{"--mutect2-vcf " + mutect2VCF} \
+        ~{"--varscan-vcf " + varscanVCF} \
+        ~{"--vardict-vcf " + vardictVCF} \
+        ~{"--lofreq-vcf " + lofreqVCF} \
+        ~{"--scalpel-vcf " + scalpelVCF} \
+        ~{"--strelka-vcf " + strelkaVCF}
+    }
+
+    output {
+        File consensusIndels = outputDir + "/Consensus.sINDEL.vcf"
+        File consensusSNV = outputDir + "/Consensus.sSNV.vcf"
+        File ensembleIndels = outputDir + "/Ensemble.sINDEL.tsv"
+        File ensembleSNV = outputDir + "/Ensemble.sSNV.tsv"
+        File ensembleIndelsClassifier = outputDir + "/Ensemble.sINDEL.tsv.ntChange.Classifier.RData"
+        File ensembleSNVClassifier = outputDir + "/Ensemble.sSNV.tsv.ntChange.Classifier.RData"
+    }
+
+    runtime {
+        cpu: threads
+        docker: "lethalfang/somaticseq:3.1.0"
     }
 }

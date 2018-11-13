@@ -337,8 +337,8 @@ task MarkDuplicates {
 task MergeVCFs {
     input {
         String? preCommand
-        Array[File] inputVCFs
-        Array[File] inputVCFsIndexes
+        Array[File]+ inputVCFs
+        Array[File]+ inputVCFsIndexes
         String outputVcfPath
         Int? compressionLevel
         String? picardJar
