@@ -9,12 +9,13 @@ task CPAT {
         String logitModel
         File? referenceGenome
         File? referenceGenomeIndex  # Should be added as input if
-        # CPAT should not index ther reference genome.
+        # CPAT should not index the reference genome.
         Array[String]? startCodons
         Array[String]? stopCodons
     }
 
     # Some WDL magic in the command section to properly output the start and stopcodons to the command.
+    # select_first is needed in order to convert the optional arrays to non-optionals.
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outFilePath})
