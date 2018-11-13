@@ -17,6 +17,7 @@ task CPAT {
     # Some WDL magic in the command section to properly output the start and stopcodons to the command.
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{outFilePath})
         ~{preCommand}
         cpat.py \
         --gene ~{gene} \
