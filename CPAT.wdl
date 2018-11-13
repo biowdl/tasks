@@ -2,7 +2,7 @@ version 1.0
 
 task CPAT {
     input {
-        String preCommand
+        String? preCommand
         File gene
         String outFilePath
         String hex
@@ -25,8 +25,8 @@ task CPAT {
         --hex ~{hex} \
         --logitModel ~{logitModel} \
         ~{"--ref " + referenceGenome} \
-        ~{true="--start" false="" defined(startCodons)} ~{sep="," select_first([startCodons, []])} \
-        ~{true="--stop" false="" defined(stopCodons)} ~{sep="," select_first([stopCodons, []])}
+        ~{true="--start" false="" defined(startCodons)} ~{sep="," select_first([startCodons, [""]])} \
+        ~{true="--stop" false="" defined(stopCodons)} ~{sep="," select_first([stopCodons, [""]])}
     }
 
     output {
