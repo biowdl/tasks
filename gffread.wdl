@@ -1,10 +1,11 @@
 version 1.0
 
-task gffread {
+task GffRead {
     input {
         String? preCommand
         File inputGff
-        File genomicSequences
+        File genomicSequence
+        File? genomicIndex  # Optional. GFFRead can create this by itself.
         String? exonsFastaPath
         String? CDSFastaPath
         String? proteinFastaPath
@@ -21,7 +22,7 @@ task gffread {
         ~{"mkdir -p $(dirname " + filteredGffPath +")"}
         gffread \
         ~{inputGff} \
-        -g ~{genomicSequences} \
+        -g ~{genomicSequence} \
         ${"-w " + exonsFastaPath} \
         ${"-x " + CDSFastaPath} \
         ${"-y " + proteinFastaPath} \
