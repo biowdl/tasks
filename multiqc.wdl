@@ -37,9 +37,12 @@ task MultiQC {
         Boolean quiet = false
     }
 
+    String outputDir = if defined(outDir) then select_first([outDir]) else "."
+
     command {
         set -e -o pipefail
         ~{preCommand}
+        ~{if defined(outDir) then "mkdir -p " + outputDir else ""}
         multiqc \
         ~{true="--force" false="" force} \
         ~{true="--dirs" false="" dirs} \
@@ -73,5 +76,10 @@ task MultiQC {
         ~{analysisDirectory}
     }
 
-    output {}
+    String reportFilename = if (defined(fileName)) then sub(select_first([fileName]), "\.html$", "") else "multi_qc"
+    output {
+        File multiqcReport = outputDir + "/" + reportFilename + ".html"
+        File multiqcDataDir = outputDir + "/" +reportFilename + "_data"
+        File multigcDataJson = multiqcDataDir + "/multiqc_data.json"
+    }
 }
