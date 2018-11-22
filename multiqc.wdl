@@ -81,6 +81,5 @@ task MultiQC {
     output {
         File multiqcReport = outputDir + "/" + reportFilename + "_report.html"
         File multiqcDataDir = outputDir + "/" +reportFilename + "_data"
-        File multigcDataJson = multiqcDataDir + "/multiqc_data.json"
     }
 }
