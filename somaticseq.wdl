@@ -2,10 +2,9 @@ version 1.0
 
 import "common.wdl" as common
 
-task SomaticSeqParallelPaired {
+task ParallelPaired {
     input {
-        String? preCommand
-        String? installDir
+        String installDir = "/opt/somaticseq" #the location in the docker image
 
         File? classifierSNV
         File? classifierIndel
@@ -31,15 +30,8 @@ task SomaticSeqParallelPaired {
         Int threads = 1
     }
 
-    String toolCommand = if defined(installDir)
-        then installDir + "/somaticseq_parallel.py"
-        else "/opt/somaticseq/somaticseq_parallel.py"
-        # else here points to the location in the docker image
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        ~{installDir}/somaticseq_parallel.py \
         ~{"--classifier-snv " + classifierSNV} \
         ~{"--classifier-indel " + classifierIndel} \
         --output-directory ~{outputDir} \
@@ -81,10 +73,9 @@ task SomaticSeqParallelPaired {
     }
 }
 
-task SomaticSeqParallelPairedTrain {
+task ParallelPairedTrain {
     input {
-        String? preCommand
-        String? installDir
+        String installDir = "/opt/somaticseq" #the location in the docker image
 
         File truthSNV
         File truthIndel
@@ -110,15 +101,8 @@ task SomaticSeqParallelPairedTrain {
         Int threads = 1
     }
 
-    String toolCommand = if defined(installDir)
-        then installDir + "/somaticseq_parallel.py"
-        else "/opt/somaticseq/somaticseq_parallel.py"
-        # else here points to the location in the docker image
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        ~{installDir}/somaticseq_parallel.py \
         --somaticseq-train \
         --truth-snv ~{truthSNV} \
         --truth-indel ~{truthIndel} \
@@ -159,10 +143,9 @@ task SomaticSeqParallelPairedTrain {
     }
 }
 
-task SomaticSeqParallelSingle {
+task ParallelSingle {
     input {
-        String? preCommand
-        String? installDir
+        String installDir = "/opt/somaticseq" #the location in the docker image
 
         File? classifierSNV
         File? classifierIndel
@@ -181,15 +164,8 @@ task SomaticSeqParallelSingle {
         Int threads = 1
     }
 
-    String toolCommand = if defined(installDir)
-        then installDir + "/somaticseq_parallel.py"
-        else "/opt/somaticseq/somaticseq_parallel.py"
-        # else here points to the location in the docker image
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        ~{installDir}/somaticseq_parallel.py \
         ~{"--classifier-snv " + classifierSNV} \
         ~{"--classifier-indel " + classifierIndel} \
         --output-directory ~{outputDir} \
@@ -224,10 +200,9 @@ task SomaticSeqParallelSingle {
     }
 }
 
-task SomaticSeqParallelSingleTrain {
+task ParallelSingleTrain {
     input {
-        String? preCommand
-        String? installDir
+        String installDir = "/opt/somaticseq" #the location in the docker image
 
         File truthSNV
         File truthIndel
@@ -246,15 +221,8 @@ task SomaticSeqParallelSingleTrain {
         Int threads = 1
     }
 
-    String toolCommand = if defined(installDir)
-        then installDir + "/somaticseq_parallel.py"
-        else "/opt/somaticseq/somaticseq_parallel.py"
-        # else here points to the location in the docker image
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        ~{installDir}/somaticseq_parallel.py \
         --somaticseq-train \
         --truth-snv ~{truthSNV} \
         --truth-indel ~{truthIndel} \
