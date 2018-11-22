@@ -77,9 +77,9 @@ task MultiQC {
         ~{analysisDirectory}
     }
 
-    String reportFilename = if (defined(fileName)) then sub(select_first([fileName]), "\.html$", "") else "multiqc_report"
+    String reportFilename = if (defined(fileName)) then sub(select_first([fileName]), "\.html$", "") else "multiqc"
     output {
-        File multiqcReport = outputDir + "/" + reportFilename + ".html"
+        File multiqcReport = outputDir + "/" + reportFilename + "_report.html"
         File multiqcDataDir = outputDir + "/" +reportFilename + "_data"
         File multigcDataJson = multiqcDataDir + "/multiqc_data.json"
     }
