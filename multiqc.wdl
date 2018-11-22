@@ -4,6 +4,7 @@ task MultiQC {
     input {
         String? preCommand
         File analysisDirectory
+        Array[File] dependencies   # This must be used in order to run multiqc after these tasks.
         Boolean force = false
         Boolean dirs = false
         Int? dirsDepth
