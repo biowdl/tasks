@@ -59,8 +59,8 @@ task MultiQC {
         ~{true="--ignore-symlinks" false="" ignoreSymlinks} \
         ~{"--sample-names " + sampleNames} \
         ~{"--file-list " + fileList} \
-        ~{true="--exclude " false="" defined(exclude)}~{sep=" --exclude " select_first([exclude])} \
-        ~{true="--module " false="" defined(module)}~{sep=" --module " select_first([module])} \
+        ~{true="--exclude " false="" defined(exclude)}~{sep=" --exclude " exclude} \
+        ~{true="--module " false="" defined(module)}~{sep=" --module " module} \
         ~{true="--data-dir" false="" dataDir} \
         ~{true="--no-data-dir" false="" noDataDir} \
         ~{"--data-format " + dataFormat} \
