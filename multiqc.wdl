@@ -12,7 +12,7 @@ task MultiQC {
         String? title
         String? comment
         String? fileName
-        String? outDir
+        String outDir = "."
         String? template
         String? tag
         String? ignore
@@ -38,12 +38,10 @@ task MultiQC {
         Boolean quiet = false
     }
 
-    String outputDir = if defined(outDir) then select_first([outDir]) else "."
-
     command {
         set -e -o pipefail
         ~{preCommand}
-        ~{if defined(outDir) then "mkdir -p " + outputDir else ""}
+        mkdir -p ~{outDir}
         multiqc \
         ~{true="--force" false="" force} \
         ~{true="--dirs" false="" dirs} \
@@ -79,7 +77,7 @@ task MultiQC {
 
     String reportFilename = if (defined(fileName)) then sub(select_first([fileName]), "\.html$", "") else "multiqc"
     output {
-        File multiqcReport = outputDir + "/" + reportFilename + "_report.html"
-        File multiqcDataDir = outputDir + "/" +reportFilename + "_data"
+        File multiqcReport = outDir + "/" + reportFilename + "_report.html"
+        File multiqcDataDir = outDir + "/" +reportFilename + "_data"
     }
 }
