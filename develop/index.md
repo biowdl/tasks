@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Home
-version: v0.1
-latest: true
+version: develop
+latest: false
 ---
 
 This repository contains WDL files defining tasks. It is used as a central
