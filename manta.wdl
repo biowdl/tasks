@@ -40,6 +40,7 @@ task ConfigureSomatic {
 
 task RunSomatic {
     input {
+        String? preCommand
         String runDir
         Int cores = 1
         Int memory = 4
@@ -47,6 +48,8 @@ task RunSomatic {
     }
 
     command {
+        set -e -o pipefail
+        ~{preCommand}
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
