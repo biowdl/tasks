@@ -153,7 +153,7 @@ task YamlToJson {
             content = yaml.load(input_yaml)
         with open("~{outputJson}", "w") as output_json:
             json.dump(content, output_json)
-        CODE>>>
+        CODE
     }
     output {
         File json = outputJson
