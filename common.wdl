@@ -139,6 +139,27 @@ task StringArrayMd5 {
     }
 }
 
+task YamlToJson {
+    input {
+        File yaml
+        String outputJson = basename(yaml, "\.ya?ml$") + ".json"
+    }
+
+    command {
+        python <<CODE
+        import json
+        import yaml
+        with open("~{yaml}", "r") as input_yaml:
+            content = yaml.load(input_yaml)
+        with open("~{outputJson}", "w") as output_json:
+            json.dump(content, output_json)
+        CODE
+    }
+    output {
+        File json = outputJson
+    }
+}
+
 struct Reference {
     File fasta
     File fai
