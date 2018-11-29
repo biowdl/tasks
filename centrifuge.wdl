@@ -101,7 +101,7 @@ task Classify {
         ~{true="-k" false="" defined(assignments)} ~{assignments} \
         ~{true="-1" false="-U" defined(read2)} ~{sep=',' read1} \
         ~{true="-2" false="" defined(read2)} ~{sep=',' read2} \
-        ~{true="-U" false="" defined(unpairedReads)} ~{sep=',' unpairedReads} \
+        ~{true="-U" false="" length(select_first([unpairedReads])) > 0} ~{sep=',' unpairedReads} \
         ~{"--report-file " + reportFilePath} \
         ~{"--min-hitlen " + minHitLen} \
         ~{"--min-totallen " + minTotalLen} \
@@ -197,7 +197,7 @@ task Kreport {
         String suffix = "kreport"
         String prefix = "centrifuge"
         String indexPrefix
-        Boolean? onlyUnique
+        Boolean? onlyUnique ## removed in 1.0.4
         Boolean? showZeros
         Boolean? isCountTable
         Int? minScore

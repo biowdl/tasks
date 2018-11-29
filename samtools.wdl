@@ -1,22 +1,45 @@
 version 1.0
 
+import "common.wdl"
+
+task BgzipAndIndex {
+    input {
+        File inputFile
+        String outputDir
+        String type = "vcf"
+    }
+
+    String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
+
+    command {
+        bgzip -c ~{inputFile} > ~{outputGz}
+        tabix ~{outputGz} -p ~{type}
+    }
+
+    output {
+        File compressed = outputGz
+        File index = outputGz + ".tbi"
+    }
+}
+
 task Index {
     input {
         String? preCommand
-        File bamFilePath
-        String? bamIndexPath
+        File bamFile
+        String bamIndexPath
     }
 
     command {
         set -e -o pipefail
         ~{preCommand}
-        samtools index ~{bamFilePath} ~{bamIndexPath}
+        samtools index ~{bamFile} ~{bamIndexPath}
     }
 
     output {
-        File indexFile = if defined(bamIndexPath)
-            then select_first([bamIndexPath])
-            else bamFilePath + ".bai"
+        IndexedBamFile outputBam = object {
+          file: bamFile,
+          index: bamIndexPath
+        }
     }
 }
 
@@ -131,6 +154,21 @@ task Fastq {
     }
 }
 
+task Tabix {
+    input {
+        String inputFile
+        String type = "vcf"
+    }
+
+    command {
+        tabix ~{inputFile} -p ~{type}
+    }
+
+    output {
+        File index = inputFile + ".tbi"
+    }
+}
+
 task View {
     input {
         String? preCommand
@@ -157,7 +195,7 @@ task View {
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
-        ~{"--threads " + threads - 1} \
+        ~{"--threads " + (threads - 1)} \
         ~{inFile}
     }
 

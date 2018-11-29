@@ -24,13 +24,14 @@ task AppendToStringArray {
 task CheckFileMD5 {
     input {
         File file
-        String MD5sum
+        File md5
     }
 
     command {
         set -e -o pipefail
         MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
-        [ $MD5SUM = ~{MD5sum} ]
+        MD5SUM_CORRECT=$(cat ~{md5} | grep ~{basename(file)} | cut -d ' ' -f 1)
+        [ $MD5SUM = $MD5SUM_CORRECT ]
     }
 }
 
@@ -42,11 +43,14 @@ task ConcatenateTextFiles {
         Boolean zip = false
     }
 
+    # When input and output is both compressed decompression is not needed
+    String cmdPrefix = if (unzip && !zip) then "zcat " else "cat "
+    String cmdSuffix = if (!unzip && zip) then " | gzip -c " else ""
+
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ~{true='zcat' false= 'cat' unzip} ~{sep=' ' fileList} \
-        ~{true="| gzip -c" false="" zip} > ~{combinedFilePath}
+        ~{cmdPrefix} ~{sep=' ' fileList} ~{cmdSuffix} > ~{combinedFilePath}
     }
 
     output {
@@ -133,4 +137,61 @@ task StringArrayMd5 {
     runtime {
         memory: 1
     }
+}
+
+task YamlToJson {
+    input {
+        File yaml
+        String outputJson = basename(yaml, "\.ya?ml$") + ".json"
+    }
+
+    command {
+        python <<CODE
+        import json
+        import yaml
+        with open("~{yaml}", "r") as input_yaml:
+            content = yaml.load(input_yaml)
+        with open("~{outputJson}", "w") as output_json:
+            json.dump(content, output_json)
+        CODE
+    }
+    output {
+        File json = outputJson
+    }
+}
+
+struct Reference {
+    File fasta
+    File fai
+    File dict
+}
+
+struct IndexedVcfFile {
+    File file
+    File index
+    File? md5sum
+}
+
+struct IndexedBamFile {
+    File file
+    File index
+    File? md5sum
+}
+
+struct FastqPair {
+    File R1
+    File? R1_md5
+    File? R2
+    File? R2_md5
+}
+
+struct CaseControl {
+    String inputName
+    IndexedBamFile inputFile
+    String controlName
+    IndexedBamFile controlFile
+}
+
+struct CaseControls {
+    Array[CaseControl] caseControls
 }

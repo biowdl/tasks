@@ -1,17 +1,18 @@
 version 1.0
 
+import "../common.wdl"
+
 task BaseCounter {
     input {
         String? preCommand
         File? toolJar
-        File bam
-        File bamIndex
+        IndexedBamFile bam
         File refFlat
         String outputDir
         String prefix
 
         Int memory = 4
-        Float memoryMultiplier = 3.0
+        Float memoryMultiplier = 3.5
     }
 
     String toolCommand = if defined(toolJar)
@@ -23,7 +24,7 @@ task BaseCounter {
         mkdir -p ~{outputDir}
         ~{preCommand}
         ~{toolCommand} \
-        -b ~{bam} \
+        -b ~{bam.file} \
         -r ~{refFlat} \
         -o ~{outputDir} \
         -p ~{prefix}
@@ -111,8 +112,8 @@ task ExtractAdaptersFastqc {
     output {
         File adapterOutputFile = adapterOutputFilePath
         File contamsOutputFile = contamsOutputFilePath
-        Array[String] adapterList = read_lines(adapterOutputFilePath)
-        Array[String] contamsList = read_lines(contamsOutputFilePath)
+        Array[String] adapterList = read_lines(adapterOutputFile)
+        Array[String] contamsList = read_lines(contamsOutputFile)
     }
 
     runtime {
@@ -160,10 +161,8 @@ task FastqSplitter {
 task FastqSync {
     input {
         String? preCommand
-        File ref1
-        File ref2
-        File in1
-        File in2
+        FastqPair refFastq
+        FastqPair inputFastq
         String out1path
         String out2path
         File? toolJar
@@ -181,17 +180,19 @@ task FastqSync {
         ~{preCommand}
         mkdir -p $(dirname ~{out1path}) $(dirname ~{out2path})
         ~{toolCommand} \
-        --in1 ~{in1} \
-        --in2 ~{in2} \
-        --ref1 ~{ref1} \
-        --ref2 ~{ref2} \
+        --in1 ~{inputFastq.R1} \
+        --in2 ~{inputFastq.R2} \
+        --ref1 ~{refFastq.R1} \
+        --ref2 ~{refFastq.R2} \
         --out1 ~{out1path} \
         --out2 ~{out2path}
     }
 
     output {
-        File out1 = out1path
-        File out2 = out2path
+        FastqPair out1 = object {
+          R1: out1path,
+          R1: out2path
+        }
     }
     
     runtime {
@@ -199,60 +200,43 @@ task FastqSync {
     }
 }
 
-task SampleConfig {
+task ReorderGlobbedScatters {
     input {
-        File? toolJar
-        String? preCommand
-        Array[File]+ inputFiles
-        String keyFilePath
-        String? sample
-        String? library
-        String? readgroup
-        String? jsonOutputPath
-        String? tsvOutputPath
-
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Array[File]+ scatters
+        String scatterDir
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-sampleconfig -Xmx" + memory + "G"
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        mkdir -p . ~{"$(dirname " + jsonOutputPath + ")"} ~{"$(dirname " + tsvOutputPath + ")"}
-        ~{toolCommand} \
-        -i ~{sep="-i " inputFiles} \
-        ~{"--sample " + sample} \
-        ~{"--library " + library} \
-        ~{"--readgroup " + readgroup} \
-        ~{"--jsonOutput " + jsonOutputPath} \
-        ~{"--tsvOutput " + tsvOutputPath} \
-        > ~{keyFilePath}
-    }
+    command <<<
+       python << CODE
+       from os.path import basename
+       scatters = ['~{sep="','" scatters}']
+       splitext = [basename(x).split(".") for x in scatters]
+       splitnum = [x.split("-") + [y] for x,y in splitext]
+       ordered = sorted(splitnum, key=lambda x: int(x[1]))
+       merged = ["~{scatterDir}/{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
+       for x in merged:
+           print(x)
+       CODE
+    >>>
 
     output {
-        File keysFile = keyFilePath
-        File? jsonOutput = jsonOutputPath
-        File? tsvOutput = tsvOutputPath
+        Array[String] reorderedScatters = read_lines(stdout())
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: 1
     }
 }
 
 task ScatterRegions {
     input {
         String? preCommand
-        File refFasta
-        File refDict
+        Reference reference
         String outputDirPath
         File? toolJar
         Int? scatterSize
         File? regions
+        Boolean notSplitContigs = false
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -267,47 +251,15 @@ task ScatterRegions {
         ~{preCommand}
         mkdir -p ~{outputDirPath}
         ~{toolCommand} \
-          -R ~{refFasta} \
+          -R ~{reference.fasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
-          ~{"-L " + regions}
+          ~{"-L " + regions} \
+          ~{true="--notSplitContigs" false="" notSplitContigs}
     }
 
     output {
         Array[File] scatters = glob(outputDirPath + "/scatter-*.bed")
-    }
-
-    runtime {
-        memory: ceil(memory * memoryMultiplier)
-    }
-}
-
-task Seqstat {
-    input {
-        String? preCommand
-        File? toolJar
-        File fastq
-        String outputFile
-
-        Int memory = 4
-        Float memoryMultiplier = 2.0
-    }
-
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-seqstat -Xmx" + memory + "G"
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        mkdir -p $(dirname ~{outputFile})
-        ~{toolCommand} \
-        --fastq ~{fastq} \
-        --output ~{outputFile}
-    }
-
-    output {
-        File json = outputFile
     }
 
     runtime {
@@ -321,12 +273,10 @@ task ValidateAnnotation {
         File? toolJar
         File? refRefflat
         File? gtfFile
-        File refFasta
-        File refFastaIndex
-        File refDict
+        Reference reference
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -339,7 +289,7 @@ task ValidateAnnotation {
         ~{toolCommand} \
         ~{"-r " + refRefflat} \
         ~{"-g " + gtfFile} \
-        -R ~{refFasta}
+        -R ~{reference.fasta}
     }
 
     output {
@@ -355,11 +305,10 @@ task ValidateFastq {
     input {
         String? preCommand
         File? toolJar
-        File fastq1
-        File? fastq2
+        FastqPair inputFastq
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -370,12 +319,13 @@ task ValidateFastq {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        --fastq1 ~{fastq1} \
-        ~{"--fastq2 " + fastq2}
+        --fastq1 ~{inputFastq.R1} \
+        ~{"--fastq2 " + inputFastq.R2}
     }
 
     output {
         File stderr = stderr()
+        FastqPair validatedFastq = inputFastq
     }
 
     runtime {
@@ -387,14 +337,11 @@ task ValidateVcf {
     input {
         String? preCommand
         File? toolJar
-        File vcfFile
-        File vcfIndex
-        File refFasta
-        File refFastaIndex
-        File refDict
+        IndexedVcfFile vcf
+        Reference reference
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        Int memory = 3
+        Float memoryMultiplier = 3.0
     }
 
     String toolCommand = if defined(toolJar)
@@ -405,8 +352,8 @@ task ValidateVcf {
         set -e -o pipefail
         ~{preCommand}
         ~{toolCommand} \
-        -i ~{vcfFile} \
-        -R ~{refFasta}
+        -i ~{vcf.file} \
+        -R ~{reference.fasta}
     }
 
     output {
@@ -414,6 +361,124 @@ task ValidateVcf {
     }
 
     runtime {
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task VcfStats {
+    input {
+        IndexedVcfFile vcf
+        Reference reference
+        String outputDir
+        File? intervals
+        Array[String]+? infoTags
+        Array[String]+? genotypeTags
+        Int? sampleToSampleMinDepth
+        Int? binSize
+        Int? maxContigsInSingleJob
+        Boolean writeBinStats = false
+        Int localThreads = 1
+        Boolean notWriteContigStats = false
+        Boolean skipGeneral = false
+        Boolean skipGenotype = false
+        Boolean skipSampleDistributions = false
+        Boolean skipSampleCompare = false
+        String? sparkMaster
+        Int? sparkExecutorMemory
+        Array[String]+? sparkConfigValues
+
+        Int memory = 4
+        Float memoryMultiplier = 2.5
+        File? toolJar
+        String? preCommand
+    }
+
+    String toolCommand = if defined(toolJar)
+        then "java -Xmx" + memory + "G -jar " + toolJar
+        else "biopet-vcfstats -Xmx" + memory + "G"
+
+    command {
+        set -e -o pipefail
+        mkdir -p ~{outputDir}
+        ~{preCommand}
+        ~{toolCommand} \
+        -I ~{vcf.file} \
+        -R ~{reference.fasta} \
+        -o ~{outputDir} \
+        -t ~{localThreads} \
+        ~{"--intervals " + intervals} \
+        ~{true="--infoTag" false="" defined(infoTags)} ~{sep=" --infoTag " infoTags} \
+        ~{true="--genotypeTag" false="" defined(genotypeTags)} ~{sep=" --genotypeTag "
+            genotypeTags} \
+        ~{"--sampleToSampleMinDepth " + sampleToSampleMinDepth} \
+        ~{"--binSize " + binSize} \
+        ~{"--maxContigsInSingleJob " + maxContigsInSingleJob} \
+        ~{true="--writeBinStats" false="" writeBinStats} \
+        ~{true="--notWriteContigStats" false="" notWriteContigStats} \
+        ~{true="--skipGeneral" false="" skipGeneral} \
+        ~{true="--skipGenotype" false="" skipGenotype} \
+        ~{true="--skipSampleDistributions" false="" skipSampleDistributions} \
+        ~{true="--skipSampleCompare" false="" skipSampleCompare} \
+        ~{"--sparkMaster " + sparkMaster} \
+        ~{"--sparkExecutorMemory " + sparkExecutorMemory} \
+        ~{true="--sparkConfigValue" false="" defined(sparkConfigValues)} ~{
+            sep=" --sparkConfigValue" sparkConfigValues}
+    }
+
+    output {
+        File? general = outputDir + "/general.tsv"
+        File? genotype = outputDir + "/genotype.tsv"
+        File? sampleDistributionAvailableAggregate = outputDir +
+            "/sample_distributions/Available.aggregate.tsv"
+        File? sampleDistributionAvailable = outputDir + "/sample_distributions/Available.tsv"
+        File? sampleDistributionCalledAggregate = outputDir +
+            "/sample_distributions/Called.aggregate.tsv"
+        File? sampleDistributionCalled = outputDir + "/sample_distributions/Called.tsv"
+        File? sampleDistributionFilteredAggregate = outputDir +
+            "/sample_distributions/Filtered.aggregate.tsv"
+        File? sampleDistributionFiltered = outputDir + "/sample_distributions/Filtered.tsv"
+        File? sampleDistributionHetAggregate = outputDir + "/sample_distributions/Het.aggregate.tsv"
+        File? sampleDistributionHetNoNRefAggregate = outputDir +
+            "/sample_distributions/HetNonRef.aggregate.tsv"
+        File? sampleDistributionHetNonRef = outputDir + "/sample_distributions/HetNonRef.tsv"
+        File? sampleDistributionHet = outputDir + "/sample_distributions/Het.tsv"
+        File? sampleDistributionHomAggregate = outputDir + "/sample_distributions/Hom.aggregate.tsv"
+        File? sampleDistributionHomRefAggregate = outputDir +
+            "/sample_distributions/HomRef.aggregate.tsv"
+        File? sampleDistributionHomRef = outputDir + "/sample_distributions/HomRef.tsv"
+        File? sampleDistributionHom = outputDir + "/sample_distributions/Hom.tsv"
+        File? sampleDistributionHomVarAggregate = outputDir +
+            "/sample_distributions/HomVar.aggregate.tsv"
+        File? sampleDistributionHomVar = outputDir + "/sample_distributions/HomVar.tsv"
+        File? sampleDistributionMixedAggregate = outputDir +
+            "/sample_distributions/Mixed.aggregate.tsv"
+        File? sampleDistributionMixed = outputDir + "/sample_distributions/Mixed.tsv"
+        File? sampleDistributionNoCallAggregate = outputDir +
+            "/sample_distributions/NoCall.aggregate.tsv"
+        File? sampleDistributionNoCall = outputDir + "/sample_distributions/NoCall.tsv"
+        File? sampleDistributionNonInformativeAggregate = outputDir +
+            "/sample_distributions/NonInformative.aggregate.tsv"
+        File? sampleDistributionNonInformative = outputDir +
+            "/sample_distributions/NonInformative.tsv"
+        File? sampleDistributionToalAggregate = outputDir +
+            "/sample_distributions/Total.aggregate.tsv"
+        File? sampleDistributionTotal = outputDir + "/sample_distributions/Total.tsv"
+        File? sampleDistributionVariantAggregate = outputDir +
+            "/sample_distributions/Variant.aggregate.tsv"
+        File? sampleDistributionVariant = outputDir + "/sample_distributions/Variant.tsv"
+        File? sampleCompareAlleleAbs = outputDir + "/sample_compare/allele.abs.tsv"
+        File? sampleCompareAlleleNonRefAbs = outputDir + "/sample_compare/allele.non_ref.abs.tsv"
+        File? sampleCompareAlleleRefAbs = outputDir + "/sample_compare/allele.ref.abs.tsv"
+        File? sampleCompareAlleleRel = outputDir + "/sample_compare/allele.rel.tsv"
+        File? sampleCompareGenotypeAbs = outputDir + "/sample_compare/genotype.abs.tsv"
+        File? sampleCompareGenotypeNonRefAbs = outputDir +
+            "/sample_compare/genotype.non_ref.abs.tsv"
+        File? sampleCompareGenotypeRefAbs = outputDir + "/sample_compare/genotype.ref.abs.tsv"
+        File? sampleCompareGenotypeRel = outputDir + "/sample_compare/genotype.rel.tsv"
+    }
+
+    runtime {
+        cpu: localThreads
         memory: ceil(memory * memoryMultiplier)
     }
 }

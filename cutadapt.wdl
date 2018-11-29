@@ -1,15 +1,16 @@
 version 1.0
 
+import "common.wdl"
+
 task Cutadapt {
     input {
-        File read1
-        File? read2
+        FastqPair inputFastq
         String read1output
         String? read2output
         String? format
         String? preCommand
         Int cores = 1
-        Int memory = 4
+        Int memory = 8
         Array[String]+? adapter
         Array[String]+? front
         Array[String]+? anywhere
@@ -61,10 +62,12 @@ task Cutadapt {
         String? reportPath
     }
 
+    String read2outputArg = if (defined(read2output)) then "mkdir -p $(dirname " + read2output + ")" else ""
+
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + read1output + ")"}
-        ~{"mkdir -p $(dirname " + read2output + ")"}
+        ~{read2outputArg}
         ~{"mkdir -p $(dirname " + reportPath + ")"}
         ~{preCommand}
         cutadapt \
@@ -117,15 +120,17 @@ task Cutadapt {
         ~{true="--bwa" false="" bwa} \
         ~{true="--zero-cap" false="" zeroCap} \
         ~{true="--no-zero-cap" false="" noZeroCap} \
-        ~{read1} \
-        ~{read2} \
+        ~{inputFastq.R1} \
+        ~{inputFastq.R2} \
         ~{"> " + reportPath}
     }
 
     output{
+        FastqPair cutOutput = object {
+          R1: read1output,
+          R2: read2output
+        }
         File report = if defined(reportPath) then select_first([reportPath]) else stdout()
-        File cutRead1 = read1output
-        File? cutRead2 = read2output
         File? tooLongOutput=tooLongOutputPath
         File? tooShortOutput=tooShortOutputPath
         File? untrimmedOutput=untrimmedOutputPath
