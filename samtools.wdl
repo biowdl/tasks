@@ -180,6 +180,7 @@ task View {
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
+        Int? MAPQthreshold
         Int threads = 1
         Int memory = 1
     }
@@ -195,6 +196,7 @@ task View {
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
+        ~{"-q " + MAPQthreshold} \
         ~{"--threads " + (threads - 1)} \
         ~{inFile}
     }
