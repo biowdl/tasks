@@ -34,5 +34,6 @@ task PeakCalling {
     runtime {
         cpu: threads
         memory: memory
+        docker: "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
     }
 }

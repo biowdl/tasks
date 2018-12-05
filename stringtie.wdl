@@ -22,7 +22,7 @@ task Stringtie {
         ~{"-p " + threads} \
         ~{"-G " + referenceGtf} \
         ~{true="--rf" false="" firstStranded} \
-        ~{true="fr" false="" secondStranded} \
+        ~{true="--fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
         ~{bamFile.file}
