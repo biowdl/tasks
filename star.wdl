@@ -15,7 +15,9 @@ task Star {
         String? outStd
         String? twopassMode
         Array[String]? outSAMattrRGline
+        String? outSAMunmapped = "Within KeepPairs"
         Int? limitBAMsortRAM
+
 
         Int memory = 10
     }
@@ -33,6 +35,7 @@ task Star {
         --genomeDir ~{genomeDir} \
         --outSAMtype ~{outSAMtype} \
         --readFilesCommand ~{readFilesCommand} \
+        ~{"--outSAMunmapped " + outSAMunmapped} \
         ~{"--runThreadN " + runThreadN} \
         ~{"--outStd " + outStd} \
         ~{"--twopassMode " + twopassMode} \
