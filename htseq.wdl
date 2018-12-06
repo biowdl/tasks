@@ -13,7 +13,7 @@ task HTSeqCount {
         String order = "pos"
         String stranded = "no"
 
-        Int memory = 6
+        Int memory = 12
     }
 
     command {
