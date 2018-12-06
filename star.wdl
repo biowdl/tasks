@@ -11,13 +11,13 @@ task Star {
 
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
-        Int runThreadN = 1
+        Int runThreadN = 4
         String? outStd
         String? twopassMode
         Array[String]? outSAMattrRGline
         Int? limitBAMsortRAM
 
-        Int memory = 10
+        Int memory = 48
     }
 
     # Needs to be extended for all possible output extensions
@@ -46,7 +46,9 @@ task Star {
 
     runtime {
         cpu: runThreadN
-        memory: memory
+        # Return memory per CPU here due to SGE backend.
+        # Can also work with slurms mem-per-cpu flag
+        memory: (memory / runThreadN) + 1
     }
 }
 
