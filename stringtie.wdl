@@ -60,7 +60,7 @@ task Merge {
         mkdir -p $(dirname ~{outputGtfPath})
         ~{preCommand}
         stringtie --merge \
-        -o ~{outputGtfPath}
+        -o ~{outputGtfPath} \
         ~{"-G " + guideGtf} \
         ~{"-m " + minimumLength } \
         ~{"-c " + minimumCoverage} \
