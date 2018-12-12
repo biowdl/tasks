@@ -37,3 +37,42 @@ task Stringtie {
         cpu: threads
     }
 }
+
+task Merge {
+    input {
+        String? preCommand
+
+        Array[File]+ gtfFiles
+        String outputGtfPath
+
+        File? guideGtf
+        Int? minimumLength
+        Float? minimumCoverage
+        Float? minimumFPKM
+        Float? minimumTPM
+        Float? minimumIsoformFraction
+        Boolean keepMergedTranscriptsWithRetainedIntrons = false
+        String? label
+    }
+
+    command {
+        set -e
+        mkdir -p $(dirname ~{outputGtfPath})
+        ~{preCommand}
+        stringtie --merge \
+        -o ~{outputGtfPath}
+        ~{"-G " + guideGtf} \
+        ~{"-m " + minimumLength } \
+        ~{"-c " + minimumCoverage} \
+        ~{"-F " + minimumFPKM} \
+        ~{"-T " + minimumTPM} \
+        ~{"-f " + minimumIsoformFraction} \
+        ~{true="-i" false="" keepMergedTranscriptsWithRetainedIntrons} \
+        ~{"-l " + label} \
+        ~{sep=" " gtfFiles}
+    }
+
+    output {
+        File mergedGtfFile = outputGtfPath
+    }
+}
