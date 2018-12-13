@@ -7,6 +7,7 @@ task Stringtie {
         String? preCommand
         IndexedBamFile bamFile
         File? referenceGtf
+        Boolean skipNovelTranscripts = false
         Int threads = 1
         String assembledTranscriptsFile
         Boolean? firstStranded
@@ -21,6 +22,7 @@ task Stringtie {
         stringtie \
         ~{"-p " + threads} \
         ~{"-G " + referenceGtf} \
+        ~{true="-e" false="" skipNovelTranscripts} \
         ~{true="--rf" false="" firstStranded} \
         ~{true="--fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
