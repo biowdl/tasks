@@ -325,7 +325,6 @@ task ValidateFastq {
 
     output {
         File stderr = stderr()
-        FastqPair validatedFastq = inputFastq
     }
 
     runtime {
