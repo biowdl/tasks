@@ -146,6 +146,8 @@ task YamlToJson {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputJson})
         python <<CODE
         import json
         import yaml
