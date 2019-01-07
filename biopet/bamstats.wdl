@@ -19,6 +19,8 @@ task Generate {
         Float memoryMultiplier = 2.0
     }
 
+    File referenceFasta = if defined(reference) then select_first([reference]).fasta else ""
+
     String toolCommand = if defined(toolJar)
         then "java -Xmx" + memory + "G -jar " + toolJar
         else "biopet-bamstats -Xmx" + memory + "G"
@@ -30,7 +32,7 @@ task Generate {
         ~{toolCommand} Generate \
         --bam ~{bam.file} \
         ~{"--bedFile " + bedFile} \
-        ~{true="--reference" false="" defined(reference)} ~{reference.fasta} \
+        ~{true="--reference" false="" defined(reference)} ~{referenceFasta} \
         ~{true="--onlyUnmapped" false="" onlyUnmapped} \
         ~{true="--scatterMode" false="" scatterMode} \
         ~{true="--tsvOutputs" false="" tsvOutputs} \
