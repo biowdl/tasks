@@ -23,7 +23,7 @@ task Generate {
         then "java -Xmx" + memory + "G -jar " + toolJar
         else "biopet-bamstats -Xmx" + memory + "G"
 
-    File refArg = if (defined(reference)) then "--reference " + select_first([reference]).fasta else ""
+    File referenceFasta = if (defined(reference)) then select_first([reference]).fasta else ""
 
     command {
         set -e -o pipefail
@@ -32,7 +32,7 @@ task Generate {
         ~{toolCommand} Generate \
         --bam ~{bam.file} \
         ~{"--bedFile " + bedFile} \
-        ~{refArg} \
+        ~{true="--reference" false="" defined(reference)} ~{referenceFasta} \
         ~{true="--onlyUnmapped" false="" onlyUnmapped} \
         ~{true="--scatterMode" false="" scatterMode} \
         ~{true="--tsvOutputs" false="" tsvOutputs} \
