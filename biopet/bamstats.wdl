@@ -23,7 +23,7 @@ task Generate {
         then "java -Xmx" + memory + "G -jar " + toolJar
         else "biopet-bamstats -Xmx" + memory + "G"
 
-    String refArg = if (defined(reference)) then "--reference " + select_first([reference]).fasta else ""
+    File refArg = if (defined(reference)) then "--reference " + select_first([reference]).fasta else ""
 
     command {
         set -e -o pipefail
