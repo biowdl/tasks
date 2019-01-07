@@ -196,7 +196,7 @@ task GenotypeGVCFs {
         Float memoryMultiplier = 2.0
     }
 
-    String dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
+    File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
 
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
@@ -247,7 +247,7 @@ task HaplotypeCallerGvcf {
         Float memoryMultiplier = 3
     }
 
-    String dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
+    File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
 
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
