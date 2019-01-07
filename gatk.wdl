@@ -196,7 +196,7 @@ task GenotypeGVCFs {
         Float memoryMultiplier = 2.0
     }
 
-    String dbsnpArg = if defined(dbsnpVCF) then "-D " + select_first([dbsnpVCF]).file else ""
+    String dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
 
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
@@ -209,7 +209,7 @@ task GenotypeGVCFs {
         GenotypeGVCFs \
         -R ~{reference.fasta} \
         -O ~{outputPath} \
-        ~{dbsnpArg} \
+        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpFile} \
         -G StandardAnnotation \
         --only-output-calls-starting-in-intervals \
         -new-qual \
@@ -247,7 +247,7 @@ task HaplotypeCallerGvcf {
         Float memoryMultiplier = 3
     }
 
-    String dbsnpArg = if (defined(dbsnpVCF)) then "-D " + select_first([dbsnpVCF]).file else ""
+    String dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
 
     String toolCommand = if defined(gatkJar)
         then "java -Xmx" + memory + "G -jar " + gatkJar
@@ -262,7 +262,7 @@ task HaplotypeCallerGvcf {
         -O ~{gvcfPath} \
         -I ~{sep=" -I " inputBams} \
         -L ~{sep=' -L ' intervalList} \
-        ~{dbsnpArg} \
+        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpFile} \
         -contamination ~{contamination} \
         -ERC GVCF
     }
