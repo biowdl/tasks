@@ -5,8 +5,8 @@ task CPAT {
         String? preCommand
         File gene
         String outFilePath
-        String hex
-        String logitModel
+        File hex
+        File logitModel
         File? referenceGenome
         File? referenceGenomeIndex  # Should be added as input if
         # CPAT should not index the reference genome.
