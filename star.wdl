@@ -6,7 +6,7 @@ task Star {
 
         Array[File] inputR1
         Array[File]? inputR2
-        String genomeDir
+        File genomeDir
         String outFileNamePrefix
 
         String outSAMtype = "BAM SortedByCoordinate"
