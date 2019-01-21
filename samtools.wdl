@@ -27,6 +27,8 @@ task Index {
         String? preCommand
         File bamFile
         String bamIndexPath
+
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
@@ -40,6 +42,10 @@ task Index {
           file: bamFile,
           index: bamIndexPath
         }
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
     }
 }
 
