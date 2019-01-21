@@ -54,6 +54,8 @@ task Merge {
         String? preCommand
         Array[File]+ bamFiles
         String outputBamPath
+
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
@@ -65,6 +67,10 @@ task Merge {
     output {
         File outputBam = outputBamPath
     }
+
+    runtime {
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
+    }
 }
 
 task Markdup {
@@ -72,6 +78,8 @@ task Markdup {
         String? preCommand
         File inputBam
         String outputBamPath
+
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
@@ -83,6 +91,10 @@ task Markdup {
     output {
         File outputBam = outputBamPath
     }
+
+    runtime {
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
+    }
 }
 
 task Flagstat {
@@ -90,6 +102,8 @@ task Flagstat {
         String? preCommand
         File inputBam
         String outputPath
+
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
@@ -101,6 +115,10 @@ task Flagstat {
 
     output {
         File flagstat = outputPath
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
     }
 }
 
@@ -119,6 +137,8 @@ task Fastq {
         Int? compressionLevel
         Int threads = 1
         Int memory = 1
+
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
@@ -146,6 +166,7 @@ task Fastq {
     runtime {
         cpu: threads
         memory: memory
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
     }
 
     parameter_meta {
@@ -189,6 +210,8 @@ task View {
         Int? MAPQthreshold
         Int threads = 1
         Int memory = 1
+
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
@@ -213,5 +236,6 @@ task View {
     runtime {
         cpu: threads
         memory: memory
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
     }
 }
