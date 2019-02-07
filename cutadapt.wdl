@@ -59,6 +59,8 @@ task Cutadapt {
         Boolean? zeroCap
         Boolean? noZeroCap
         String? reportPath
+
+        String dockerTag = "1.16--py36_2"
     }
 
     String read2outputArg = if (defined(read2output)) then "mkdir -p $(dirname " + read2output + ")" else ""
@@ -142,5 +144,6 @@ task Cutadapt {
     runtime {
         cpu: cores
         memory: memory
+        docker: "quay.io/biocontainers/cutadapt:" + dockerTag
     }
 }

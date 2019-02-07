@@ -88,10 +88,11 @@ task ExtractAdaptersFastqc {
 
         Int memory = 4
         Float memoryMultiplier = 2.5
+        String dockerTag = "0.2--1"
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
+        then "java -Xmx" + memory + "G -jar " + toolJar
         else "biopet-extractadaptersfastqc -Xmx" + memory + "G"
 
     command {
@@ -118,6 +119,7 @@ task ExtractAdaptersFastqc {
 
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-extractadaptersfastqc:" + dockerTag
     }
 }
 
