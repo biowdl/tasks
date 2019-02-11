@@ -18,6 +18,8 @@ task Fastqc {
         File? limits
         Int? kmers
         String? dir
+
+        String dockerTag = "0.11.7--4"
     }
 
     # Chops of the .gz extension if present.
@@ -57,29 +59,32 @@ task Fastqc {
 
     runtime {
         cpu: threads
+        docker: "quay.io/biocontainers/fastqc:" + dockerTag
     }
 }
 
 task GetConfiguration {
     input {
-        String? preCommand
-        String fastqcDirFile = "fastqcDir.txt"
+        String dockerTag = "0.11.7--4"
     }
 
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        echo $(dirname $(readlink -f $(which fastqc))) > ~{fastqcDirFile}
-    }
+    command <<<
+        set -e
+        fastqcDir=$(dirname $(readlink -f $(which fastqc)))
+        mkdir Configuration
+        cp ${fastqcDir}/Configuration/adapter_list.txt Configuration/adapter_list.txt
+        cp ${fastqcDir}/Configuration/contaminant_list.txt Configuration/contaminant_list.txt
+        cp ${fastqcDir}/Configuration/limits.txt Configuration/limits.txt
+    >>>
 
     output {
-        String fastqcDir = read_string(fastqcDirFile)
-        File adapterList = fastqcDir + "/Configuration/adapter_list.txt"
-        File contaminantList = fastqcDir + "/Configuration/contaminant_list.txt"
-        File limits = fastqcDir + "/Configuration/limits.txt"
+        File adapterList = "Configuration/adapter_list.txt"
+        File contaminantList = "Configuration/contaminant_list.txt"
+        File limits = "Configuration/limits.txt"
     }
 
     runtime {
         memory: 1
+        docker: "quay.io/biocontainers/fastqc:" + dockerTag
     }
 }
