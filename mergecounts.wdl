@@ -38,7 +38,7 @@ task MergeCounts {
                 d <- read.table(file, sep="\t", header=header, comment.char="#")
 
                 filename <- basename(file)
-                colnames(d)[value.i] <- sub("\\\.[^\\\.]*$", "", filename)
+                colnames(d)[value.i] <- sub("\\\.[^\\\.]*\$", "", filename)
                 colnames(d)[feature.i] <- "feature"
 
                 d <- d %>% melt(id.vars=feature.i, variable.name="sample",
@@ -50,7 +50,7 @@ task MergeCounts {
             gtf <- ensemblGenome(dirname(reference.gtf))
             read.gtf(gtf, basename(reference.gtf))
 
-            gtf.table <- gtf@ev$gtf
+            gtf.table <- gtf@ev\$gtf
             gtf.table <- gtf.table[order(gtf.table[,feature.attribute]),]
             gtf.table <- gtf.table[!duplicated(gtf.table[,feature.attribute]),]
             id.table <- gtf.table[, c(feature.attribute, additional.attributes), drop=F]
