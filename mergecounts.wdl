@@ -9,6 +9,9 @@ task MergeCounts {
         Int featureColumn
         Int valueColumn
         Boolean inputHasHeader
+        String featureAttribute = "gene_id"
+        File referenceGtf
+        Array[String]+? additionalAttributes
     }
 
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
@@ -19,26 +22,43 @@ task MergeCounts {
         R --no-save <<CODE
             library(dplyr)
             library(reshape2)
+            library(refGenome)
 
-            listOfFiles <- c("~{sep='", "' inputFiles}")
+            list.of.files <- c("~{sep='", "' inputFiles}")
 
-            valueI <- ~{valueColumn}
-            featureI <- ~{featureColumn}
+            value.i <- ~{valueColumn}
+            feature.i <- ~{featureColumn}
             header <- ~{true="TRUE" false="FALSE" inputHasHeader}
+            feature.attribute <- "~{featureAttribute}"
+            additional.attributes <- c(~{true='"' false="" defined(additionalAttributes)}~{sep='", "' additionalAttributes}~{true='"' false="" defined(additionalAttributes)})
+            reference.gtf <- "~{referenceGtf}"
+            output.path <- "~{outputFile}"
 
-            d <- do.call(rbind, lapply(listOfFiles, function(file){
+            d <- do.call(rbind, lapply(list.of.files, function(file){
                 d <- read.table(file, sep="\t", header=header, comment.char="#")
 
-                splitPath <- strsplit(file, "/")[[1]]
-                colnames(d)[valueI] <- sub("\\\.[^\\\.]*$", "",
-                    splitPath[length(splitPath)])
-                colnames(d)[featureI] <- "feature"
+                filename <- basename(file)
+                colnames(d)[value.i] <- sub("\\\.[^\\\.]*$", "", filename)
+                colnames(d)[feature.i] <- "feature"
 
-                d <- d %>% melt(id.vars=featureI, variable.name="sample", value.name="count")
+                d <- d %>% melt(id.vars=feature.i, variable.name="sample",
+                    value.name="count")
             }))
 
             d <- d %>% dcast(feature ~ sample, value.var="count")
-            write.table(d, file="~{outputFile}", sep="\t", quote=FALSE, row.names=FALSE)
+
+            gtf <- ensemblGenome(dirname(reference.gtf))
+            read.gtf(gtf, basename(reference.gtf))
+
+            gtf.table <- gtf@ev$gtf
+            gtf.table <- gtf.table[order(gtf.table[,feature.attribute]),]
+            gtf.table <- gtf.table[!duplicated(gtf.table[,feature.attribute]),]
+            id.table <- gtf.table[, c(feature.attribute, additional.attributes), drop=F]
+            output.table <- merge(id.table, d, all.y = T, by.y="feature",
+                by.x=feature.attribute)
+
+            write.table(output.table, file=output.path, sep="\t", quote=FALSE,
+                row.names=FALSE, na="")
         CODE
     >>>
 
@@ -48,5 +68,6 @@ task MergeCounts {
 
     runtime {
         memory: 4 + (2*length(inputFiles))
+        docker: "biowdl/mergecounts:latest"
     }
 }
