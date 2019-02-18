@@ -68,6 +68,6 @@ task MergeCounts {
 
     runtime {
         memory: 4 + (2*length(inputFiles))
-        docker: "biowdl/mergecounts:latest"
+        docker: "biowdl/mergecounts:1.0"
     }
 }

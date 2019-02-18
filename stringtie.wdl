@@ -14,7 +14,7 @@ task Stringtie {
         Boolean? secondStranded
         String? geneAbundanceFile
 
-        String dockerTag = "1.3.4--py35_0"
+        String dockerTag = "1.3.3--py36_3"
     }
 
     command {
@@ -59,7 +59,7 @@ task Merge {
         Boolean keepMergedTranscriptsWithRetainedIntrons = false
         String? label
 
-        String dockerTag = "1.3.4--py35_0"
+        String dockerTag = "1.3.3--py36_3"
     }
 
     command {
