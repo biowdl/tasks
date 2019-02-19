@@ -262,7 +262,7 @@ task ScatterRegions {
     }
 
     runtime {
-        docker: "quay.io/biopet-scatterregions/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/biopet-scatterregions:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
