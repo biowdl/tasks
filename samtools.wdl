@@ -7,6 +7,7 @@ task BgzipAndIndex {
         File inputFile
         String outputDir
         String type = "vcf"
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
@@ -19,6 +20,10 @@ task BgzipAndIndex {
     output {
         File compressed = outputGz
         File index = outputGz + ".tbi"
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
     }
 }
 
@@ -185,6 +190,7 @@ task Tabix {
     input {
         String inputFile
         String type = "vcf"
+        String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
@@ -193,6 +199,10 @@ task Tabix {
 
     output {
         File index = inputFile + ".tbi"
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/samtools:" + dockerTag
     }
 }
 
