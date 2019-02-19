@@ -361,7 +361,6 @@ task SamToFastq {
         File read1 = outputRead1
         File? read2 = outputRead2
         File? unpairedRead = outputUnpaired
-        String dockerTag = "2.18.26--0"
     }
 
     runtime {
