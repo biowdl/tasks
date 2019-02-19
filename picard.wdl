@@ -52,7 +52,7 @@ task CollectMultipleMetrics {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
 
@@ -98,7 +98,9 @@ task CollectMultipleMetrics {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
+        # Contains r-base=3.4.1,picard=2.18.2
+        docker: "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -112,7 +114,7 @@ task CollectRnaSeqMetrics {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
 
@@ -134,7 +136,9 @@ task CollectRnaSeqMetrics {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
+        # Contains r-base=3.4.1,picard=2.18.2
+        docker: "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
