@@ -13,6 +13,8 @@ task BedToIntervalList {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -35,6 +37,7 @@ task BedToIntervalList {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -60,6 +63,7 @@ task CollectMultipleMetrics {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -109,6 +113,7 @@ task CollectMultipleMetrics {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -125,6 +130,7 @@ task CollectRnaSeqMetrics {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -150,6 +156,7 @@ task CollectRnaSeqMetrics {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -167,6 +174,7 @@ task CollectTargetedPcrMetrics {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -195,6 +203,7 @@ task CollectTargetedPcrMetrics {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -210,6 +219,7 @@ task GatherBamFiles {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -236,6 +246,7 @@ task GatherBamFiles {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -250,6 +261,7 @@ task GatherVcfs {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -270,6 +282,7 @@ task GatherVcfs {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -286,6 +299,7 @@ task MarkDuplicates {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -329,6 +343,7 @@ task MarkDuplicates {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -345,6 +360,7 @@ task MergeVCFs {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
@@ -371,6 +387,7 @@ task MergeVCFs {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -386,6 +403,7 @@ task SamToFastq {
         String? picardJar
         Int memory = 16 # High memory default to avoid crashes.
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -407,9 +425,11 @@ task SamToFastq {
         File read1 = outputRead1
         File? read2 = outputRead2
         File? unpairedRead = outputUnpaired
+        String dockerTag = "2.18.26--0"
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -423,6 +443,7 @@ task ScatterIntervalList {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     String toolCommand = if defined(picardJar)
@@ -449,6 +470,7 @@ task ScatterIntervalList {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -465,6 +487,7 @@ task SortVcf {
         Int memory = 4
         Float memoryMultiplier = 3.0
         }
+        String dockerTag = "2.18.26--0"
 
         String toolCommand = if defined(picardJar)
             then "java -Xmx" + memory + "G -jar " + picardJar
@@ -488,6 +511,7 @@ task SortVcf {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
