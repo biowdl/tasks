@@ -4,26 +4,20 @@ import "common.wdl"
 
 task BedToIntervalList {
     input {
-        String? preCommand
-        File? picardJar
-
         File bedFile
         File dict
         String outputPath
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-    }
 
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
+        String dockerTag = "2.18.26--0"
+    }
 
     command {
         set -e -o pipefail
         mkdir -p $(dirname "~{outputPath}")
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         BedToIntervalList \
         I=~{bedFile} \
         O=~{outputPath} \
@@ -35,13 +29,13 @@ task BedToIntervalList {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task CollectMultipleMetrics {
     input {
-        String? preCommand
         IndexedBamFile bamFile
         Reference reference
         String basename
@@ -56,21 +50,16 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        String? picardJar
-
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         mkdir -p $(dirname "~{basename}")
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         CollectMultipleMetrics \
         I=~{bamFile.file} \
         R=~{reference.fasta} \
@@ -109,33 +98,30 @@ task CollectMultipleMetrics {
     }
 
     runtime {
+        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
+        # Contains r-base=3.4.1,picard=2.18.2
+        docker: "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task CollectRnaSeqMetrics {
     input {
-        String? preCommand
         IndexedBamFile bamFile
         File refRefflat
         String basename
         String strandSpecificity = "NONE"
 
-        String? picardJar
-
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         mkdir -p $(dirname "~{basename}")
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         CollectRnaSeqMetrics \
         I=~{bamFile.file} \
         O=~{basename}.RNA_Metrics \
@@ -150,34 +136,31 @@ task CollectRnaSeqMetrics {
     }
 
     runtime {
+        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
+        # Contains r-base=3.4.1,picard=2.18.2
+        docker: "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task CollectTargetedPcrMetrics {
     input {
-        String? preCommand
         IndexedBamFile bamFile
         Reference reference
         File ampliconIntervals
         Array[File]+ targetIntervals
         String basename
 
-        String? picardJar
-
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
         mkdir -p $(dirname "~{basename}")
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         CollectTargetedPcrMetrics \
         I=~{bamFile.file} \
         R=~{reference.fasta} \
@@ -195,6 +178,7 @@ task CollectTargetedPcrMetrics {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -202,24 +186,18 @@ task CollectTargetedPcrMetrics {
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
 task GatherBamFiles {
     input {
-        String? preCommand
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         String outputBamPath
-        String? picardJar
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
-
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -236,30 +214,25 @@ task GatherBamFiles {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task GatherVcfs {
     input {
-        String? preCommand
         Array[File]+ inputVcfs
         Array[File]+ inputVcfIndexes
         String outputVcfPath
-        String? picardJar
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
-
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         GatherVcfs \
         INPUT=~{sep=' INPUT=' inputVcfs} \
         OUTPUT=~{outputVcfPath}
@@ -270,6 +243,7 @@ task GatherVcfs {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -277,15 +251,14 @@ task GatherVcfs {
 # Mark duplicate reads to avoid counting non-independent observations
 task MarkDuplicates {
     input {
-        String? preCommand
         Array[File]+ inputBams
         Array[File] inputBamIndexes
         String outputBamPath
         String metricsPath
-        String? picardJar
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -297,15 +270,10 @@ task MarkDuplicates {
     # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
     # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
 
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
-
     command {
         set -e -o pipefail
-        ~{preCommand}
         mkdir -p $(dirname ~{outputBamPath})
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         MarkDuplicates \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -329,6 +297,7 @@ task MarkDuplicates {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -336,28 +305,22 @@ task MarkDuplicates {
 # Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
 task MergeVCFs {
     input {
-        String? preCommand
         Array[File]+ inputVCFs
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
         Int? compressionLevel
-        String? picardJar
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
 
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
-
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
         OUTPUT=~{outputVcfPath}
@@ -371,31 +334,26 @@ task MergeVCFs {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task SamToFastq {
     input {
-        String? preCommand
         IndexedBamFile inputBam
         String outputRead1
         String? outputRead2
         String? outputUnpaired
 
-        String? picardJar
         Int memory = 16 # High memory default to avoid crashes.
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
-
-    String toolCommand = if defined(picardJar)
-    then "java -Xmx" + memory + "G -jar " + picardJar
-    else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         SamToFastq \
         I=~{inputBam.file} \
         ~{"FASTQ=" + outputRead1} \
@@ -410,30 +368,25 @@ task SamToFastq {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task ScatterIntervalList {
     input {
-        String? preCommand
         File interval_list
         Int scatter_count
-        String? picardJar
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
     }
-
-    String toolCommand = if defined(picardJar)
-        then "java -Xmx" + memory + "G -jar " + picardJar
-        else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
         mkdir scatter_list
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         IntervalListTools \
         SCATTER_COUNT=~{scatter_count} \
         SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -449,31 +402,26 @@ task ScatterIntervalList {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task SortVcf {
     input {
-        String? preCommand
-        String? picardJar
-
         Array[File]+ vcfFiles
         String outputVcfPath
         File? dict
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "2.18.26--0"
         }
 
-        String toolCommand = if defined(picardJar)
-            then "java -Xmx" + memory + "G -jar " + picardJar
-            else "picard -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        picard -Xmx~{memory}G \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
         ~{"SEQUENCE_DICTIONARY=" + dict} \
@@ -488,6 +436,7 @@ task SortVcf {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/picard:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
