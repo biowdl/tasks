@@ -235,27 +235,21 @@ task ReorderGlobbedScatters {
 
 task ScatterRegions {
     input {
-        String? preCommand
         Reference reference
         String outputDirPath
-        File? toolJar
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.2--0"
     }
-
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-scatterregions -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
         mkdir -p ~{outputDirPath}
-        ~{toolCommand} \
+        biopet-scatterregions -Xmx~{memory}G \
           -R ~{reference.fasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
@@ -268,6 +262,7 @@ task ScatterRegions {
     }
 
     runtime {
+        docker: "quay.io/biopet-scatterregions/gatk:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
