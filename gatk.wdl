@@ -18,6 +18,7 @@ task ApplyBQSR {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{outputBamPath})
         gatk --java-options -Xmx~{memory}G \
         ApplyBQSR \
         --create-output-bam-md5 \
@@ -69,6 +70,7 @@ task BaseRecalibrator {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{recalibrationReportPath})
         gatk --java-options -Xmx~{memory}G \
         BaseRecalibrator \
         -R ~{reference.fasta} \
@@ -107,6 +109,7 @@ task CombineGVCFs {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{outputPath})
         gatk --java-options -Xmx~{memory}G \
         CombineGVCFs \
         -R ~{reference.fasta} \
@@ -141,6 +144,7 @@ task GatherBqsrReports {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{outputReportPath})
         gatk --java-options -Xmx~{memory}G \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
@@ -178,6 +182,7 @@ task GenotypeGVCFs {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{outputPath})
         gatk --java-options -Xmx~{memory}G \
         GenotypeGVCFs \
         -R ~{reference.fasta} \
@@ -266,6 +271,7 @@ task MuTect2 {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{outputVcf})
         gatk --java-options -Xmx~{memory}G \
         Mutect2 \
         -R ~{reference.fasta} \
@@ -303,6 +309,7 @@ task SplitNCigarReads {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{outputBam})
         gatk --java-options -Xmx~{memory}G \
         SplitNCigarReads \
         -I ~{inputBam.file} \
