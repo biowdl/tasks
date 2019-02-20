@@ -266,6 +266,7 @@ task HaplotypeCallerGvcf {
 
     command {
         set -e -o pipefail
+        mkdir -p $(dirname ~{gvcfPath})
         ~{preCommand}
         gatk --java-options -Xmx~{memory}G HaplotypeCaller \
         -R ~{reference.fasta} \
