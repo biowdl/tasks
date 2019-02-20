@@ -258,8 +258,8 @@ task ScatterRegions {
     }
 
     output {
-        Array[File] scatters = glob(scatterDir + "/scatter-*.bed")
         File scatterDir = scatterTempDir
+        Array[File] scatters = glob(scatterDir + "/scatter-*.bed")
     }
 
     runtime {
