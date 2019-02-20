@@ -224,7 +224,7 @@ task ReorderGlobbedScatters {
     >>>
 
     output {
-        Array[String] reorderedScatters = read_lines(stdout())
+        Array[File] reorderedScatters = read_lines(stdout())
     }
 
     runtime {
@@ -259,7 +259,7 @@ task ScatterRegions {
 
     output {
         File scatterDir = scatterTempDir
-        Array[File] scatters = glob(scatterDir + "/scatter-*.bed")
+        Array[File] scatters = glob(scatterTempDir + "/scatter-*.bed")
     }
 
     runtime {
