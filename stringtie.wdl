@@ -13,6 +13,8 @@ task Stringtie {
         Boolean? firstStranded
         Boolean? secondStranded
         String? geneAbundanceFile
+
+        String dockerTag = "1.3.3--py36_3"
     }
 
     command {
@@ -37,6 +39,7 @@ task Stringtie {
 
     runtime {
         cpu: threads
+        docker: "quay.io/biocontainers/stringtie:" + dockerTag
     }
 }
 
@@ -55,6 +58,8 @@ task Merge {
         Float? minimumIsoformFraction
         Boolean keepMergedTranscriptsWithRetainedIntrons = false
         String? label
+
+        String dockerTag = "1.3.3--py36_3"
     }
 
     command {
@@ -76,5 +81,9 @@ task Merge {
 
     output {
         File mergedGtfFile = outputGtfPath
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/stringtie:" + dockerTag
     }
 }
