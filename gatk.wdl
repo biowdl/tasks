@@ -15,7 +15,7 @@ task ApplyBQSR {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     String toolCommand = if defined(gatkJar)
@@ -68,7 +68,7 @@ task BaseRecalibrator {
         Reference reference
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     Array[File]+ knownIndelsSitesVCFsArg = flatten([
@@ -118,7 +118,7 @@ task CombineGVCFs {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     String toolCommand = if defined(gatkJar)
@@ -159,7 +159,7 @@ task GatherBqsrReports {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     String toolCommand = if defined(gatkJar)
@@ -202,7 +202,7 @@ task GenotypeGVCFs {
 
         Int memory = 6
         Float memoryMultiplier = 2.0
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
@@ -255,7 +255,7 @@ task HaplotypeCallerGvcf {
 
         Int memory = 4
         Float memoryMultiplier = 3
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
@@ -267,8 +267,7 @@ task HaplotypeCallerGvcf {
     command {
         set -e -o pipefail
         ~{preCommand}
-        ~{toolCommand} \
-        HaplotypeCaller \
+        gatk --java-options -Xmx~{memory}G HaplotypeCaller \
         -R ~{reference.fasta} \
         -O ~{gvcfPath} \
         -I ~{sep=" -I " inputBams} \
@@ -286,7 +285,7 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -306,7 +305,7 @@ task MuTect2 {
         String? gatkJar
         Int memory = 4
         Float memoryMultiplier = 3
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     String toolCommand = if defined(gatkJar)
@@ -334,7 +333,7 @@ task MuTect2 {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -351,7 +350,7 @@ task SplitNCigarReads {
 
         Int memory = 4
         Float memoryMultiplier = 4
-        String dockerTag = "3.8--5"
+        String dockerTag = "4.1.0.0--0"
     }
 
     String toolCommand = if defined(gatkJar)
@@ -377,7 +376,7 @@ task SplitNCigarReads {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
