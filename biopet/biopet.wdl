@@ -236,7 +236,6 @@ task ReorderGlobbedScatters {
 task ScatterRegions {
     input {
         Reference reference
-        String outputDirPath
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
@@ -245,20 +244,22 @@ task ScatterRegions {
         Float memoryMultiplier = 3.0
         String dockerTag = "0.2--0"
     }
+    String scatterTempDir = "scatters"
 
     command {
         set -e -o pipefail
-        mkdir -p ~{outputDirPath}
+        mkdir -p ~{scatterTempDir}
         biopet-scatterregions -Xmx~{memory}G \
           -R ~{reference.fasta} \
-          -o ~{outputDirPath} \
+          -o ~{scatterTempDir} \
           ~{"-s " + scatterSize} \
           ~{"-L " + regions} \
           ~{true="--notSplitContigs" false="" notSplitContigs}
     }
 
     output {
-        Array[File] scatters = glob(outputDirPath + "/scatter-*.bed")
+        Array[File] scatters = glob(scatterDir + "/scatter-*.bed")
+        File scatterDir = scatterTempDir
     }
 
     runtime {
