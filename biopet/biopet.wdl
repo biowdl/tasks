@@ -205,7 +205,7 @@ task FastqSync {
 task ReorderGlobbedScatters {
     input {
         Array[File]+ scatters
-        String scatterDir
+        File scatterDir
         # Should not be changed from the main pipeline. As it should not influence results.
         String dockerTag = "3.6"
     }
