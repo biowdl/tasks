@@ -190,7 +190,7 @@ task Tabix {
     input {
         String inputFile
         String type = "vcf"
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerTag = "0.2.6--ha92aebf_0"
     }
 
     command {
@@ -202,7 +202,7 @@ task Tabix {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: "quay.io/biocontainers/tabix:" + dockerTag
     }
 }
 
