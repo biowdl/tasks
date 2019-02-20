@@ -7,7 +7,7 @@ task BgzipAndIndex {
         File inputFile
         String outputDir
         String type = "vcf"
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerTag = "0.2.6--ha92aebf_0"
     }
 
     String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
@@ -23,7 +23,7 @@ task BgzipAndIndex {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: "quay.io/biocontainers/tabix:" + dockerTag
     }
 }
 
