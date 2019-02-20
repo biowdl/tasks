@@ -42,7 +42,7 @@ task ApplyBQSR {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -84,7 +84,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -123,7 +123,7 @@ task CombineGVCFs {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -152,7 +152,7 @@ task GatherBqsrReports {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -198,7 +198,7 @@ task GenotypeGVCFs {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk:" + dockerTag
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
