@@ -205,19 +205,24 @@ task FastqSync {
 task ReorderGlobbedScatters {
     input {
         Array[File]+ scatters
-        File scatterDir
         # Should not be changed from the main pipeline. As it should not influence results.
         String dockerTag = "3.6"
     }
 
     command <<<
+       set -e
+       # Copy all the scatter files to the CWD so the output matches paths in
+       # the cwd.
+       for file in ~{sep=" " scatters}
+          do cp $file .
+       done
        python << CODE
        from os.path import basename
        scatters = ['~{sep="','" scatters}']
        splitext = [basename(x).split(".") for x in scatters]
        splitnum = [x.split("-") + [y] for x,y in splitext]
        ordered = sorted(splitnum, key=lambda x: int(x[1]))
-       merged = ["~{scatterDir}/{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
+       merged = ["{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
        for x in merged:
            print(x)
        CODE
@@ -239,27 +244,25 @@ task ScatterRegions {
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
-
         Int memory = 4
         Float memoryMultiplier = 3.0
         String dockerTag = "0.2--0"
     }
-    String scatterTempDir = "scatters"
+    String outputDirPath = "scatters"
 
     command {
         set -e -o pipefail
-        mkdir -p ~{scatterTempDir}
+        mkdir -p ~{outputDirPath}
         biopet-scatterregions -Xmx~{memory}G \
           -R ~{reference.fasta} \
-          -o ~{scatterTempDir} \
+          -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
           ~{"-L " + regions} \
           ~{true="--notSplitContigs" false="" notSplitContigs}
     }
 
     output {
-        File scatterDir = scatterTempDir
-        Array[File] scatters = glob(scatterTempDir + "/scatter-*.bed")
+        Array[File] scatters = glob(outputDirPath + "/scatter-*.bed")
     }
 
     runtime {
