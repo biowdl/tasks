@@ -96,10 +96,7 @@ task CombineGVCFs {
         Array[File]+ gvcfFiles
         Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
-
         String outputPath
-
-
         Reference reference
 
         Int memory = 4
@@ -166,11 +163,8 @@ task GenotypeGVCFs {
         Array[File]+ gvcfFiles
         Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
-
         String outputPath
-
         Reference reference
-
         IndexedVcfFile? dbsnpVCF
 
         Int memory = 6
@@ -217,7 +211,6 @@ task HaplotypeCallerGvcf {
         String gvcfPath
         Reference reference
         Float contamination = 0.0
-
         IndexedVcfFile? dbsnpVCF
 
         Int memory = 4

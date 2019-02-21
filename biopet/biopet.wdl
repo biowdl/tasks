@@ -251,7 +251,6 @@ task ScatterRegions {
         String outputDirPath = "scatters"
     }
 
-
     command {
         set -e -o pipefail
         mkdir -p ~{outputDirPath}
