@@ -248,8 +248,12 @@ task ScatterRegions {
         Int memory = 4
         Float memoryMultiplier = 3.0
         String dockerTag = "0.2--0"
-        String outputDirPath = "scatters"
     }
+
+    # OutDirPath must be defined here because the glob process relies on
+    # linking. This path must be in the containers filesystem, otherwise the
+    # linking does not work.
+    String outputDirPath = "scatters"
 
     command {
         set -e -o pipefail
