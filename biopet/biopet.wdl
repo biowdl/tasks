@@ -205,54 +205,60 @@ task FastqSync {
 task ReorderGlobbedScatters {
     input {
         Array[File]+ scatters
-        String scatterDir
+        # Should not be changed from the main pipeline. As it should not influence results.
+        String dockerTag = "3.6"
     }
 
     command <<<
+       set -e
+       # Copy all the scatter files to the CWD so the output matches paths in
+       # the cwd.
+       for file in ~{sep=" " scatters}
+          do cp $file .
+       done
        python << CODE
        from os.path import basename
        scatters = ['~{sep="','" scatters}']
        splitext = [basename(x).split(".") for x in scatters]
        splitnum = [x.split("-") + [y] for x,y in splitext]
        ordered = sorted(splitnum, key=lambda x: int(x[1]))
-       merged = ["~{scatterDir}/{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
+       merged = ["{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
        for x in merged:
            print(x)
        CODE
     >>>
 
     output {
-        Array[String] reorderedScatters = read_lines(stdout())
+        Array[File] reorderedScatters = read_lines(stdout())
     }
 
     runtime {
-        memory: 1
+        docker: "python:" + dockerTag
+        # 4 gigs of memory to be able to build the docker image in singularity
+        memory: 4
     }
 }
 
 task ScatterRegions {
     input {
-        String? preCommand
         Reference reference
-        String outputDirPath
-        File? toolJar
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
-
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.2--0"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-scatterregions -Xmx" + memory + "G"
+    # OutDirPath must be defined here because the glob process relies on
+    # linking. This path must be in the containers filesystem, otherwise the
+    # linking does not work.
+    String outputDirPath = "scatters"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
         mkdir -p ~{outputDirPath}
-        ~{toolCommand} \
+        biopet-scatterregions -Xmx~{memory}G \
           -R ~{reference.fasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
@@ -265,6 +271,7 @@ task ScatterRegions {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/biopet-scatterregions:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }

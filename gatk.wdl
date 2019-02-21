@@ -5,8 +5,6 @@ import "common.wdl"
 # Apply Base Quality Score Recalibration (BQSR) model
 task ApplyBQSR {
     input {
-        String? preCommand
-        File? gatkJar
         IndexedBamFile inputBam
         String outputBamPath
         File recalibrationReport
@@ -15,28 +13,25 @@ task ApplyBQSR {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "4.1.0.0--0"
     }
-
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
-         ApplyBQSR \
-         --create-output-bam-md5 \
-         --add-output-sam-program-record \
-         -R ~{reference.fasta} \
-         -I ~{inputBam.file} \
-         --use-original-qualities \
-         -O ~{outputBamPath} \
-         -bqsr ~{recalibrationReport} \
-         --static-quantized-quals 10 \
-         --static-quantized-quals 20 \
-         --static-quantized-quals 30 \
-         -L ~{sep=" -L " sequenceGroupInterval}
+        mkdir -p $(dirname ~{outputBamPath})
+        gatk --java-options -Xmx~{memory}G \
+        ApplyBQSR \
+        --create-output-bam-md5 \
+        --add-output-sam-program-record \
+        -R ~{reference.fasta} \
+        -I ~{inputBam.file} \
+        --use-original-qualities \
+        -O ~{outputBamPath} \
+        -bqsr ~{recalibrationReport} \
+        --static-quantized-quals 10 \
+        --static-quantized-quals 20 \
+        --static-quantized-quals 30 \
+        -L ~{sep=" -L " sequenceGroupInterval}
     }
 
     output {
@@ -48,6 +43,7 @@ task ApplyBQSR {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -55,8 +51,6 @@ task ApplyBQSR {
 # Generate Base Quality Score Recalibration (BQSR) model
 task BaseRecalibrator {
     input {
-        String? preCommand
-        File? gatkJar
         IndexedBamFile inputBam
         String recalibrationReportPath
         Array[File]+ sequenceGroupInterval
@@ -66,6 +60,7 @@ task BaseRecalibrator {
         Reference reference
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "4.1.0.0--0"
     }
 
     Array[File]+ knownIndelsSitesVCFsArg = flatten([
@@ -73,14 +68,10 @@ task BaseRecalibrator {
         [select_first([dbsnpVCF]).file]
     ])
 
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
-
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        mkdir -p $(dirname ~{recalibrationReportPath})
+        gatk --java-options -Xmx~{memory}G \
         BaseRecalibrator \
         -R ~{reference.fasta} \
         -I ~{inputBam.file} \
@@ -95,35 +86,28 @@ task BaseRecalibrator {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task CombineGVCFs {
     input {
-        String? preCommand
         Array[File]+ gvcfFiles
         Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
-
         String outputPath
-
-        String? gatkJar
-
         Reference reference
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "4.1.0.0--0"
     }
-
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        mkdir -p $(dirname ~{outputPath})
+        gatk --java-options -Xmx~{memory}G \
         CombineGVCFs \
         -R ~{reference.fasta} \
         -O ~{outputPath} \
@@ -139,6 +123,7 @@ task CombineGVCFs {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -146,23 +131,18 @@ task CombineGVCFs {
 # Combine multiple recalibration tables from scattered BaseRecalibrator runs
 task GatherBqsrReports {
     input {
-        String? preCommand
-        String? gatkJar
         Array[File] inputBQSRreports
         String outputReportPath
 
         Int memory = 4
         Float memoryMultiplier = 3.0
+        String dockerTag = "4.1.0.0--0"
     }
-
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        mkdir -p $(dirname ~{outputReportPath})
+        gatk --java-options -Xmx~{memory}G \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
@@ -173,39 +153,31 @@ task GatherBqsrReports {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task GenotypeGVCFs {
     input {
-        String? preCommand
         Array[File]+ gvcfFiles
         Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
-
         String outputPath
-
-        String? gatkJar
-
         Reference reference
-
         IndexedVcfFile? dbsnpVCF
 
         Int memory = 6
         Float memoryMultiplier = 2.0
+        String dockerTag = "4.1.0.0--0"
     }
 
     File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
 
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
-
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        mkdir -p $(dirname ~{outputPath})
+        gatk --java-options -Xmx~{memory}G \
         GenotypeGVCFs \
         -R ~{reference.fasta} \
         -O ~{outputPath} \
@@ -224,7 +196,8 @@ task GenotypeGVCFs {
         }
     }
 
-    runtime{
+    runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -232,31 +205,25 @@ task GenotypeGVCFs {
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
 task HaplotypeCallerGvcf {
     input {
-        String? preCommand
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         Array[File]+ intervalList
         String gvcfPath
         Reference reference
         Float contamination = 0.0
-        String? gatkJar
-
         IndexedVcfFile? dbsnpVCF
 
         Int memory = 4
         Float memoryMultiplier = 3
+        String dockerTag = "4.1.0.0--0"
     }
 
     File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
 
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
-
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        mkdir -p $(dirname ~{gvcfPath})
+        gatk --java-options -Xmx~{memory}G \
         HaplotypeCaller \
         -R ~{reference.fasta} \
         -O ~{gvcfPath} \
@@ -275,14 +242,13 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task MuTect2 {
     input {
-        String? preCommand
-
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         Reference reference
@@ -291,19 +257,15 @@ task MuTect2 {
         String? normalSample
         Array[File]+ intervals
 
-        String? gatkJar
         Int memory = 4
         Float memoryMultiplier = 3
+        String dockerTag = "4.1.0.0--0"
     }
-
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        mkdir -p $(dirname ~{outputVcf})
+        gatk --java-options -Xmx~{memory}G \
         Mutect2 \
         -R ~{reference.fasta} \
         -I ~{sep=" -I " inputBams} \
@@ -321,32 +283,27 @@ task MuTect2 {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
 
 task SplitNCigarReads {
     input {
-        String? preCommand
-
         IndexedBamFile inputBam
         Reference reference
         String outputBam
-        String? gatkJar
         Array[File]+ intervals
 
         Int memory = 4
         Float memoryMultiplier = 4
+        String dockerTag = "4.1.0.0--0"
     }
-
-    String toolCommand = if defined(gatkJar)
-        then "java -Xmx" + memory + "G -jar " + gatkJar
-        else "gatk --java-options -Xmx" + memory + "G"
 
     command {
         set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        mkdir -p $(dirname ~{outputBam})
+        gatk --java-options -Xmx~{memory}G \
         SplitNCigarReads \
         -I ~{inputBam.file} \
         -R ~{reference.fasta} \
@@ -362,6 +319,7 @@ task SplitNCigarReads {
     }
 
     runtime {
+        docker: "quay.io/biocontainers/gatk4:" + dockerTag
         memory: ceil(memory * memoryMultiplier)
     }
 }
