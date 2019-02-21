@@ -248,8 +248,9 @@ task ScatterRegions {
         Int memory = 4
         Float memoryMultiplier = 3.0
         String dockerTag = "0.2--0"
+        String outputDirPath = "scatters"
     }
-    String outputDirPath = "scatters"
+
 
     command {
         set -e -o pipefail
