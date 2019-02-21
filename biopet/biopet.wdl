@@ -234,8 +234,8 @@ task ReorderGlobbedScatters {
 
     runtime {
         docker: "python:" + dockerTag
-        # 2 gigs of memory to be able to build the docker image in singularity
-        memory: 2
+        # 4 gigs of memory to be able to build the docker image in singularity
+        memory: 4
     }
 }
 
