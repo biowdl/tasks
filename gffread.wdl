@@ -2,7 +2,6 @@ version 1.0
 
 task GffRead {
     input {
-        String? preCommand
         File inputGff
         File genomicSequence
         File? genomicIndex  # Optional. GFFRead can create this by itself.
@@ -11,6 +10,7 @@ task GffRead {
         String? proteinFastaPath
         String? filteredGffPath
         Boolean outputGtfFormat = false
+        String dockerTag = "0.9.12--0"
     }
 
     # The mkdirs below are hackish. it should be
@@ -18,7 +18,6 @@ task GffRead {
     # but this goes wrong. Cromwell will always use ')' even if somepath is not defined. Which leads to crashing.
     command {
         set -e -o pipefail
-        ~{preCommand}
         ~{"mkdir -p $(dirname " + CDSFastaPath}~{true=")" false="" defined(CDSFastaPath)}
         ~{"mkdir -p $(dirname " + exonsFastaPath}~{true=")" false="" defined(exonsFastaPath)}
         ~{"mkdir -p $(dirname " + proteinFastaPath}~{true=")" false="" defined(proteinFastaPath)}
@@ -26,11 +25,11 @@ task GffRead {
         gffread \
         ~{inputGff} \
         -g ~{genomicSequence} \
-        ${"-w " + exonsFastaPath} \
-        ${"-x " + CDSFastaPath} \
-        ${"-y " + proteinFastaPath} \
-        ${"-o " + filteredGffPath} \
-        ${true="-T " false="" outputGtfFormat}
+        ~{"-w " + exonsFastaPath} \
+        ~{"-x " + CDSFastaPath} \
+        ~{"-y " + proteinFastaPath} \
+        ~{"-o " + filteredGffPath} \
+        ~{true="-T " false="" outputGtfFormat}
     }
 
     output {
@@ -38,5 +37,9 @@ task GffRead {
         File? CDSFasta = CDSFastaPath
         File? proteinFasta = proteinFastaPath
         File? filteredGff = filteredGffPath
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/gffread:" + dockerTag
     }
 }
