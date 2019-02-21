@@ -143,11 +143,16 @@ task YamlToJson {
     input {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
+        # TODO: Remove pip install pyyaml and find a small container that
+        # TODO: includes pyyaml.
+        # Unfortunately this seems the best we can do for now to keep the
+        # container small.
+        String dockerTag = "3.6-slim"
     }
-
     command {
         set -e
         mkdir -p $(dirname ~{outputJson})
+        pip install pyyaml
         python <<CODE
         import json
         import yaml
@@ -159,6 +164,10 @@ task YamlToJson {
     }
     output {
         File json = outputJson
+    }
+
+    runtime {
+        docker: "python:" + dockerTag
     }
 }
 
