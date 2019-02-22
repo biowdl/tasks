@@ -2,7 +2,6 @@ version 1.0
 
 task CPAT {
     input {
-        String? preCommand
         File gene
         String outFilePath
         File hex
@@ -20,7 +19,6 @@ task CPAT {
     command {
         set -e
         mkdir -p $(dirname ~{outFilePath})
-        ~{preCommand}
         cpat.py \
         --gene ~{gene} \
         --outfile ~{outFilePath} \
