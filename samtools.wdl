@@ -164,7 +164,6 @@ task Fastq {
     }
 
     parameter_meta {
-        preCommand: "A command that is run before the task. Can be used to activate environments"
         inputBam: "The bam file to process."
         outputRead1: "If only outputRead1 is given '-s' flag is assumed. Else '-1'."
         includeFilter: "Include reads with ALL of these flags. Corresponds to '-f'"
