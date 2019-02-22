@@ -18,7 +18,7 @@ task CPAT {
     # Some WDL magic in the command section to properly output the start and stopcodons to the command.
     # select_first is needed in order to convert the optional arrays to non-optionals.
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outFilePath})
         ~{preCommand}
         cpat.py \
