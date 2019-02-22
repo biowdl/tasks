@@ -7,9 +7,6 @@ task Cutadapt {
         String read1output
         String? read2output
         String? format
-        String? preCommand
-        Int cores = 1
-        Int memory = 8
         Array[String]+? adapter
         Array[String]+? front
         Array[String]+? anywhere
@@ -60,17 +57,20 @@ task Cutadapt {
         Boolean? noZeroCap
         String? reportPath
 
+        Int cores = 1
+        Int memory = 8
         String dockerTag = "1.16--py36_2"
     }
 
-    String read2outputArg = if (defined(read2output)) then "mkdir -p $(dirname " + read2output + ")" else ""
+    String read2outputArg = if (defined(read2output))
+        then "mkdir -p $(dirname " + read2output + ")"
+        else ""
 
     command {
-        set -e -o pipefail
+        set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
         ~{read2outputArg}
         ~{"mkdir -p $(dirname " + reportPath + ")"}
-        ~{preCommand}
         cutadapt \
         ~{"--cores=" + cores} \
         ~{true="-a" false="" defined(adapter)} ~{sep=" -a " adapter} \
@@ -129,7 +129,9 @@ task Cutadapt {
     output{
         File cutRead1 = read1output
         File? cutRead2 = read2output
-        File report = if defined(reportPath) then select_first([reportPath]) else stdout()
+        File report = if defined(reportPath)
+            then select_first([reportPath])
+            else stdout()
         File? tooLongOutput=tooLongOutputPath
         File? tooShortOutput=tooShortOutputPath
         File? untrimmedOutput=untrimmedOutputPath

@@ -4,7 +4,6 @@ task Fastqc {
     input {
         File seqFile
         String outdirPath
-        String? preCommand
         Boolean? casava
         Boolean? nano
         Boolean? noFilter
@@ -12,25 +11,25 @@ task Fastqc {
         Boolean? nogroup
         Int? minLength
         String? format
-        Int threads = 1
         File? contaminants
         File? adapters
         File? limits
         Int? kmers
         String? dir
 
+        Int threads = 1
         String dockerTag = "0.11.7--4"
     }
 
     # Chops of the .gz extension if present.
-    String name = basename(sub(seqFile, "\.gz$","")) # The Basename needs to be taken here. Otherwise paths might differ between similar jobs.
+    # The Basename needs to be taken here. Otherwise paths might differ between similar jobs.
+    String name = basename(sub(seqFile, "\.gz$",""))
     # This regex chops of the extension and replaces it with _fastqc for the reportdir.
     # Just as fastqc does it.
     String reportDir = outdirPath + "/" + sub(name, "\.[^\.]*$", "_fastqc")
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
+        set -e
         mkdir -p ~{outdirPath}
         fastqc \
         ~{"--outdir " + outdirPath} \

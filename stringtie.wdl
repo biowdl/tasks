@@ -4,23 +4,22 @@ import "common.wdl"
 
 task Stringtie {
     input {
-        String? preCommand
         IndexedBamFile bamFile
         File? referenceGtf
         Boolean skipNovelTranscripts = false
-        Int threads = 1
         String assembledTranscriptsFile
         Boolean? firstStranded
         Boolean? secondStranded
         String? geneAbundanceFile
 
-        String dockerTag = "1.3.3--py36_3"
+        Int threads = 1
+        Int memory = 10
+        String dockerTag = "1.3.4--py35_0"
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{assembledTranscriptsFile})
-        ~{preCommand}
         stringtie \
         ~{"-p " + threads} \
         ~{"-G " + referenceGtf} \
@@ -39,17 +38,15 @@ task Stringtie {
 
     runtime {
         cpu: threads
+        memory: memory
         docker: "quay.io/biocontainers/stringtie:" + dockerTag
     }
 }
 
 task Merge {
     input {
-        String? preCommand
-
         Array[File]+ gtfFiles
         String outputGtfPath
-
         File? guideGtf
         Int? minimumLength
         Float? minimumCoverage
@@ -59,13 +56,13 @@ task Merge {
         Boolean keepMergedTranscriptsWithRetainedIntrons = false
         String? label
 
-        String dockerTag = "1.3.3--py36_3"
+        Int memory = 10
+        String dockerTag = "1.3.4--py35_0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputGtfPath})
-        ~{preCommand}
         stringtie --merge \
         -o ~{outputGtfPath} \
         ~{"-G " + guideGtf} \
@@ -84,6 +81,7 @@ task Merge {
     }
 
     runtime {
+        memory: memory
         docker: "quay.io/biocontainers/stringtie:" + dockerTag
     }
 }

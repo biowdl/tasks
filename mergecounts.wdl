@@ -2,8 +2,6 @@ version 1.0
 
 task MergeCounts {
     input {
-        String? preCommand
-
         Array[File] inputFiles
         String outputFile
         Int featureColumn
@@ -16,9 +14,8 @@ task MergeCounts {
 
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
     command <<<
-        set -e -o pipefail
+        set -e
         mkdir -p ~{sub(outputFile, basename(outputFile) + "$", "")}
-        ~{preCommand}
         R --no-save <<CODE
             library(dplyr)
             library(reshape2)
