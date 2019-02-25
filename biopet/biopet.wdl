@@ -275,24 +275,17 @@ task ScatterRegions {
 
 task ValidateAnnotation {
     input {
-        String? preCommand
-        File? toolJar
         File? refRefflat
         File? gtfFile
         Reference reference
 
         Int memory = 3
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.1--0"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-validateannotation -Xmx" + memory + "G"
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        biopet-validateannotation -Xmx~{memory}G \
         ~{"-r " + refRefflat} \
         ~{"-g " + gtfFile} \
         -R ~{reference.fasta}
@@ -304,29 +297,23 @@ task ValidateAnnotation {
 
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-validateannotation:" + dockerTag
     }
 }
 
 task ValidateFastq {
     input {
-        String? preCommand
-        File? toolJar
-        FastqPair inputFastq
-
+        File read1
+        File? read2
         Int memory = 3
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.1--0"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-validatefastq -Xmx" + memory + "G"
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
-        --fastq1 ~{inputFastq.R1} \
-        ~{"--fastq2 " + inputFastq.R2}
+        biopet-validatefastq -Xmx~{memory}G \
+        --fastq1 ~{read1} \
+        ~{"--fastq2 " + read2}
     }
 
     output {
@@ -335,6 +322,7 @@ task ValidateFastq {
 
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-validatefastq" + dockerTag
     }
 }
 
