@@ -307,7 +307,7 @@ task ValidateFastq {
         File? read2
         Int memory = 3
         Float memoryMultiplier = 3.0
-        String dockerTag = "0.1--0"
+        String dockerTag = "0.1.1--1"
     }
 
     command {
@@ -328,23 +328,15 @@ task ValidateFastq {
 
 task ValidateVcf {
     input {
-        String? preCommand
-        File? toolJar
         IndexedVcfFile vcf
         Reference reference
-
         Int memory = 3
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.1--0"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-validatevcf -Xmx" + memory + "G"
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        biopet-validatevcf -Xmx~{memory}G \
         -i ~{vcf.file} \
         -R ~{reference.fasta}
     }
@@ -355,6 +347,7 @@ task ValidateVcf {
 
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-validatevcf:" + dockerTag
     }
 }
 
