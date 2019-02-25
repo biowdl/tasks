@@ -200,7 +200,9 @@ task ReorderGlobbedScatters {
         Array[File]+ scatters
 
         # Should not be changed from the main pipeline. As it should not influence results.
-        String dockerTag = "3.6"
+        # The 3.7-slim container is 143 mb on the filesystem. 3.7 is 927 mb.
+        # The slim container is sufficient for this small task.
+        String dockerTag = "3.7-slim"
     }
 
     command <<<
