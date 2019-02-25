@@ -18,7 +18,7 @@ task GffRead {
     # but this goes wrong. Cromwell will always use ')' even if somepath is not defined.
     # Which leads to crashing.
     command {
-        set -e -o pipefail
+        set -e
         ~{"mkdir -p $(dirname " + CDSFastaPath}~{true=")" false="" defined(CDSFastaPath)}
         ~{"mkdir -p $(dirname " + exonsFastaPath}~{true=")" false="" defined(exonsFastaPath)}
         ~{"mkdir -p $(dirname " + proteinFastaPath}~{true=")" false="" defined(proteinFastaPath)}
