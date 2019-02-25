@@ -25,6 +25,8 @@ task CheckFileMD5 {
     input {
         File file
         File md5
+        # Version not that important as long as it is stable.
+        String dockerTag = "5.0.2"
     }
 
     command {
@@ -32,6 +34,11 @@ task CheckFileMD5 {
         MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
         MD5SUM_CORRECT=$(cat ~{md5} | grep ~{basename(file)} | cut -d ' ' -f 1)
         [ $MD5SUM = $MD5SUM_CORRECT ]
+    }
+
+    runtime {
+        # Apparently there is a bash container for this sort of stuff.
+        docker: "bash:" + dockerTag
     }
 }
 
