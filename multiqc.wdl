@@ -2,7 +2,7 @@ version 1.0
 
 task MultiQC {
     input {
-        String? preCommand
+        String dockerTag = "1.7--py_1"
         File analysisDirectory
         Array[File] dependencies   # This must be used in order to run multiqc after these tasks.
         Boolean force = false
@@ -82,5 +82,9 @@ task MultiQC {
     output {
         File multiqcReport = outDir + "/" + reportFilename + "_report.html"
         File multiqcDataDir = outDir + "/" +reportFilename + "_data"
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/multiqc:" + dockerTag
     }
 }
