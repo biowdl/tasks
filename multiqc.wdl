@@ -3,7 +3,8 @@ version 1.0
 task MultiQC {
     input {
         String dockerTag = "1.7--py_1"
-        File analysisDirectory
+        # Use a string here so cromwell does not relocate an entire analysis directory
+        String analysisDirectory
         Array[File] dependencies   # This must be used in order to run multiqc after these tasks.
         Boolean force = false
         Boolean dirs = false
