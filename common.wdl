@@ -139,8 +139,8 @@ task YamlToJson {
     input {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
+        String dockerTag = "3.13-py37-slim"
     }
-
     command {
         set -e
         mkdir -p $(dirname ~{outputJson})
@@ -155,6 +155,10 @@ task YamlToJson {
     }
     output {
         File json = outputJson
+    }
+
+    runtime {
+        docker: "biowdl/pyyaml:" + dockerTag
     }
 }
 
