@@ -39,8 +39,7 @@ task MultiQC {
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
+        set -e
         mkdir -p ~{outDir}
         multiqc \
         ~{true="--force" false="" force} \
