@@ -2,7 +2,6 @@ version 1.0
 
 task CPAT {
     input {
-        String? preCommand
         File gene
         String outFilePath
         File hex
@@ -12,14 +11,14 @@ task CPAT {
         # CPAT should not index the reference genome.
         Array[String]? startCodons
         Array[String]? stopCodons
+        String dockerTag = "v1.2.4_cv1"
     }
 
     # Some WDL magic in the command section to properly output the start and stopcodons to the command.
     # select_first is needed in order to convert the optional arrays to non-optionals.
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outFilePath})
-        ~{preCommand}
         cpat.py \
         --gene ~{gene} \
         --outfile ~{outFilePath} \
@@ -32,6 +31,10 @@ task CPAT {
 
     output {
         File outFile=outFilePath
+    }
+
+    runtime {
+        docker: "biocontainers/cpat:" + dockerTag
     }
 }
 
