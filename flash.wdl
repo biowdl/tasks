@@ -11,6 +11,7 @@ task Flash {
         Int? minOverlap
         Int? maxOverlap
         Boolean compress = true
+
         Int threads = 2
         Int memory = 2
     }

@@ -15,6 +15,7 @@ task Generate {
         Boolean tsvOutputs = false
         String outputDir
         Reference? reference
+
         Int memory = 8
         Float memoryMultiplier = 2.0
     }

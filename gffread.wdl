@@ -13,9 +13,10 @@ task GffRead {
         String dockerTag = "0.9.12--0"
     }
 
-    # The mkdirs below are hackish. it should be
+    # The mkdirs below are hackish. It should be
     # ~{"mkir -p $(dirname " + somePath + ")"}
-    # but this goes wrong. Cromwell will always use ')' even if somepath is not defined. Which leads to crashing.
+    # but this goes wrong. Cromwell will always use ')' even if somepath is not defined.
+    # Which leads to crashing.
     command {
         set -e -o pipefail
         ~{"mkdir -p $(dirname " + CDSFastaPath}~{true=")" false="" defined(CDSFastaPath)}

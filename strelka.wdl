@@ -55,7 +55,9 @@ task ConfigureSomatic {
         then installDir + "bin/configureStrelkaSomaticWorkflow.py"
         else "configureStrelkaSomaticWorkflow.py"
 
-    String indelCandidatesArg = if (defined(indelCandidates)) then "--indelCandidates " + select_first([indelCandidates]).file else ""
+    String indelCandidatesArg = if (defined(indelCandidates))
+        then "--indelCandidates " + select_first([indelCandidates]).file
+        else ""
 
     command {
         set -e -o pipefail
@@ -82,7 +84,6 @@ task Run {
         Int cores = 1
         Int memory = 4
         Boolean somatic = true
-        #FIXME: This task does not have input files
     }
 
     command {

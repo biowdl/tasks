@@ -7,12 +7,14 @@ task BgzipAndIndex {
         File inputFile
         String outputDir
         String type = "vcf"
+
         String dockerTag = "0.2.6--ha92aebf_0"
     }
 
     String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
 
     command {
+        set -e
         bgzip -c ~{inputFile} > ~{outputGz}
         tabix ~{outputGz} -p ~{type}
     }
@@ -29,7 +31,6 @@ task BgzipAndIndex {
 
 task Index {
     input {
-        String? preCommand
         File bamFile
         String bamIndexPath
 
@@ -37,8 +38,6 @@ task Index {
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
         samtools index ~{bamFile} ~{bamIndexPath}
     }
 
@@ -56,7 +55,6 @@ task Index {
 
 task Merge {
     input {
-        String? preCommand
         Array[File]+ bamFiles
         String outputBamPath
 
@@ -64,8 +62,6 @@ task Merge {
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
         samtools merge ~{outputBamPath} ~{sep=' ' bamFiles}
     }
 
@@ -80,7 +76,6 @@ task Merge {
 
 task Markdup {
     input {
-        String? preCommand
         File inputBam
         String outputBamPath
 
@@ -88,8 +83,6 @@ task Markdup {
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
         samtools markdup ~{inputBam} ~{outputBamPath}
     }
 
@@ -104,7 +97,6 @@ task Markdup {
 
 task Flagstat {
     input {
-        String? preCommand
         File inputBam
         String outputPath
 
@@ -112,8 +104,7 @@ task Flagstat {
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
+        set -e
         mkdir -p $(dirname ~{outputPath})
         samtools flagstat ~{inputBam} > ~{outputPath}
     }
@@ -129,7 +120,6 @@ task Flagstat {
 
 task Fastq {
     input {
-        String? preCommand
         File inputBam
         String outputRead1
         String? outputRead2
@@ -140,14 +130,13 @@ task Fastq {
         Boolean? appendReadNumber
         Boolean? outputQuality
         Int? compressionLevel
+
         Int threads = 1
         Int memory = 1
-
         String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
-        ~{preCommand}
         samtools fastq \
         ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
         ~{"-2 " + outputRead2} \
@@ -175,7 +164,6 @@ task Fastq {
     }
 
     parameter_meta {
-        preCommand: "A command that is run before the task. Can be used to activate environments"
         inputBam: "The bam file to process."
         outputRead1: "If only outputRead1 is given '-s' flag is assumed. Else '-1'."
         includeFilter: "Include reads with ALL of these flags. Corresponds to '-f'"
@@ -208,7 +196,6 @@ task Tabix {
 
 task View {
     input {
-        String? preCommand
         File inFile
         File? referenceFasta
         String outputFileName
@@ -218,15 +205,13 @@ task View {
         Int? excludeFilter
         Int? excludeSpecificFilter
         Int? MAPQthreshold
+
         Int threads = 1
         Int memory = 1
-
         String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
         samtools view \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
@@ -243,6 +228,7 @@ task View {
     output {
         File outputFile = outputFileName
     }
+
     runtime {
         cpu: threads
         memory: memory

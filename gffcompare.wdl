@@ -7,8 +7,8 @@ task GffCompare {
         Array[File] inputGtfFiles
         File referenceAnnotation
         String? outputDir
-        String outPrefix = "gffcmp" # gffcmp is the default used by the program as well. This needs to be
-        # defined in order for the output values to be consistent and correct.
+        String outPrefix = "gffcmp" # gffcmp is the default used by the program as well. This
+        # needs to be defined in order for the output values to be consistent and correct.
         File? genomeSequences
         Int? maxDistanceFreeEndsTerminalExons
         Int? maxDistanceGroupingTranscriptStartSites
@@ -28,12 +28,11 @@ task GffCompare {
         # Issue addressed at https://github.com/openwdl/wdl/pull/263
         File? noneFile # This is a wdl workaround. Please do not assign!
     }
-    # This allows for the creation of output directories"
-    String dirPrefix= if defined(outputDir) then outputDir + "/" else ""
+    # This allows for the creation of output directories
+    String dirPrefix= if defined(outputDir)
+        then outputDir + "/"
+        else ""
     String totalPrefix = dirPrefix + outPrefix
-
-
-    parameter_meta {}
 
     command {
         set -e
@@ -62,10 +61,14 @@ task GffCompare {
     }
 
     # Output of gffcompare is not stable. It depends on the number of files in the input.
-    Int noFilesGtfList = if defined(inputGtfList) then length(read_lines(select_first([inputGtfList]))) else 0
+    Int noFilesGtfList = if defined(inputGtfList)
+        then length(read_lines(select_first([inputGtfList])))
+        else 0
     Int noInputFiles = length(inputGtfFiles)
     Boolean oneFile = (noFilesGtfList + noInputFiles) == 1
-    String annotatedName = if oneFile then "annotated" else "combined"
+    String annotatedName = if oneFile
+        then "annotated"
+        else "combined"
 
     # Check if a redundant .gtf will be created
     Boolean createRedundant = C || A || X
@@ -76,7 +79,11 @@ task GffCompare {
         File stats = totalPrefix + ".stats"
         File tracking = totalPrefix + ".tracking"
         # noneFile is not stable. Please replace this as soon as wdl spec allows
-        File? redundant = if createRedundant then totalPrefix + ".redundant.gtf" else noneFile
-        File? missedIntrons = if debugMode then totalPrefix + ".missed_introns.gtf" else noneFile
+        File? redundant = if createRedundant
+            then totalPrefix + ".redundant.gtf"
+            else noneFile
+        File? missedIntrons = if debugMode
+            then totalPrefix + ".missed_introns.gtf"
+            else noneFile
     }
 }

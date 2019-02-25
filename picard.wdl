@@ -10,12 +10,11 @@ task BedToIntervalList {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-
         String dockerTag = "2.18.26--0"
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname "~{outputPath}")
         picard -Xmx~{memory}G \
         BedToIntervalList \
@@ -57,7 +56,7 @@ task CollectMultipleMetrics {
 
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname "~{basename}")
         picard -Xmx~{memory}G \
         CollectMultipleMetrics \
@@ -117,9 +116,8 @@ task CollectRnaSeqMetrics {
         String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
-
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname "~{basename}")
         picard -Xmx~{memory}G \
         CollectRnaSeqMetrics \
@@ -156,9 +154,8 @@ task CollectTargetedPcrMetrics {
         String dockerTag = "2.18.26--0"
     }
 
-
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname "~{basename}")
         picard -Xmx~{memory}G \
         CollectTargetedPcrMetrics \
@@ -196,7 +193,7 @@ task GatherBamFiles {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         picard -Xmx~{memory}G \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
@@ -231,7 +228,7 @@ task GatherVcfs {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         picard -Xmx~{memory}G \
         GatherVcfs \
         INPUT=~{sep=' INPUT=' inputVcfs} \
@@ -262,16 +259,18 @@ task MarkDuplicates {
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
-        # This can be desirable if you don't mind the estimated library size being wrong and optical duplicate detection is taking >7 days and failing
+        # This can be desirable if you don't mind the estimated library size being wrong and
+        # optical duplicate detection is taking >7 days and failing
         String? read_name_regex
     }
 
-    # Task is assuming query-sorted input so that the Secondary and Supplementary reads get marked correctly
-    # This works because the output of BWA is query-grouped and therefore, so is the output of MergeBamAlignment.
-    # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
+    # Task is assuming query-sorted input so that the Secondary and Supplementary reads get
+    # marked correctly. This works because the output of BWA is query-grouped and therefore,
+    # so is the output of MergeBamAlignment. While query-grouped isn't actually query-sorted,
+    # it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outputBamPath})
         picard -Xmx~{memory}G \
         MarkDuplicates \
@@ -308,7 +307,6 @@ task MergeVCFs {
         Array[File]+ inputVCFs
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
-        Int? compressionLevel
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -319,7 +317,7 @@ task MergeVCFs {
     # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
 
     command {
-        set -e -o pipefail
+        set -e
         picard -Xmx~{memory}G \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
@@ -352,7 +350,7 @@ task SamToFastq {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         picard -Xmx~{memory}G \
         SamToFastq \
         I=~{inputBam.file} \
@@ -384,7 +382,7 @@ task ScatterIntervalList {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir scatter_list
         picard -Xmx~{memory}G \
         IntervalListTools \
@@ -420,7 +418,7 @@ task SortVcf {
 
 
     command {
-        set -e -o pipefail
+        set -e
         picard -Xmx~{memory}G \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \

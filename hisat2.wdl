@@ -32,7 +32,6 @@ task Hisat2 {
         --rg 'PL:~{platform}' \
         ~{true="--dta" false="" downstreamTranscriptomeAssembly} \
         | samtools sort > ~{outputBam}
-
     }
 
     output {
