@@ -373,21 +373,16 @@ task VcfStats {
         Int? sparkExecutorMemory
         Array[String]+? sparkConfigValues
 
+        String dockerTag = "1.2--0"
         Int memory = 4
         Float memoryMultiplier = 2.5
-        File? toolJar
-        String? preCommand
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-vcfstats -Xmx" + memory + "G"
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p ~{outputDir}
-        ~{preCommand}
-        ~{toolCommand} \
+        biopet-vcfstats -Xmx~{memory}G \
         -I ~{vcf.file} \
         -R ~{reference.fasta} \
         -o ~{outputDir} \
@@ -466,5 +461,6 @@ task VcfStats {
     runtime {
         cpu: localThreads
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-vcfstats:" + dockerTag
     }
 }
