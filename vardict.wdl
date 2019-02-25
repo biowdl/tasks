@@ -25,7 +25,9 @@ task VarDict {
         Float memoryMultiplier = 2.0
     }
 
-    String normalArg = if (defined(normalBam)) then "|" + select_first([normalBam]).file else ""
+    String normalArg = if (defined(normalBam))
+        then "|" + select_first([normalBam]).file
+        else ""
 
     String toolCommand = if defined(installDir)
         then installDir + "/VarDict"

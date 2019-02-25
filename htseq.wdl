@@ -1,10 +1,7 @@
 version 1.0
 
-import "common.wdl"
-
 task HTSeqCount {
     input {
-        String? preCommand
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         File gtfFile
@@ -13,14 +10,13 @@ task HTSeqCount {
         String order = "pos"
         String stranded = "no"
 
-        Int memory = 12
+        Int memory = 20
         String dockerTag = "0.9.1--py36h7eb728f_2"
     }
 
     command {
-        set -e -o pipefail
-        mkdir -p ~{sub(outputTable, basename(outputTable), "")}
-        ~{preCommand}
+        set -e
+        mkdir -p $(dirname ~{outputTable})
         htseq-count \
         -f ~{format} \
         -r ~{order} \
