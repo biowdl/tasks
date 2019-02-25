@@ -2,22 +2,19 @@ version 1.0
 
 task Star {
     input {
-        String? preCommand
-
         Array[File] inputR1
         Array[File]? inputR2
         File genomeDir
         String outFileNamePrefix
-
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
-        Int runThreadN = 4
         String? outStd
         String? twopassMode
         Array[String]? outSAMattrRGline
         String? outSAMunmapped = "Within KeepPairs"
         Int? limitBAMsortRAM
 
+        Int runThreadN = 4
         Int memory = 48
         String dockerTag = "2.6.0c--0"
     }
@@ -26,9 +23,8 @@ task Star {
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
     command {
-        set -e -o pipefail
-        mkdir -p ~{sub(outFileNamePrefix, basename(outFileNamePrefix) + "$", "")}
-        ~{preCommand}
+        set -e
+        mkdir -p $(dirname ~{outFileNamePrefix})
         STAR \
         --readFilesIn ~{sep=',' inputR1} ~{sep="," inputR2} \
         --outFileNamePrefix ~{outFileNamePrefix} \

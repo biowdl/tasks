@@ -13,9 +13,10 @@ task GffRead {
         Boolean outputGtfFormat = false
     }
 
-    # The mkdirs below are hackish. it should be
+    # The mkdirs below are hackish. It should be
     # ~{"mkir -p $(dirname " + somePath + ")"}
-    # but this goes wrong. Cromwell will always use ')' even if somepath is not defined. Which leads to crashing.
+    # but this goes wrong. Cromwell will always use ')' even if somepath is not defined.
+    # Which leads to crashing.
     command {
         set -e -o pipefail
         ~{preCommand}
@@ -26,11 +27,11 @@ task GffRead {
         gffread \
         ~{inputGff} \
         -g ~{genomicSequence} \
-        ${"-w " + exonsFastaPath} \
-        ${"-x " + CDSFastaPath} \
-        ${"-y " + proteinFastaPath} \
-        ${"-o " + filteredGffPath} \
-        ${true="-T " false="" outputGtfFormat}
+        ~{"-w " + exonsFastaPath} \
+        ~{"-x " + CDSFastaPath} \
+        ~{"-y " + proteinFastaPath} \
+        ~{"-o " + filteredGffPath} \
+        ~{true="-T " false="" outputGtfFormat}
     }
 
     output {

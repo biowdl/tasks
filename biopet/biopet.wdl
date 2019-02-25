@@ -74,8 +74,6 @@ task BaseCounter {
 
 task ExtractAdaptersFastqc {
     input {
-        File? toolJar
-        String? preCommand
         File inputFile
         String outputDir
         String adapterOutputFilePath = outputDir + "/adapter.list"
@@ -87,19 +85,14 @@ task ExtractAdaptersFastqc {
         Boolean? outputAsFasta
 
         Int memory = 4
-        Float memoryMultiplier = 2.5
+        Float memoryMultiplier = 5 # This is ridiculous...
         String dockerTag = "0.2--1"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-extractadaptersfastqc -Xmx" + memory + "G"
-
     command {
         set -e
-        ~{preCommand}
         mkdir -p ~{outputDir}
-        ~{toolCommand} \
+        biopet-extractadaptersfastqc -Xmx~{memory}G \
         --inputFile ~{inputFile} \
         ~{"--adapterOutputFile " + adapterOutputFilePath } \
         ~{"--contamsOutputFile " + contamsOutputFilePath } \
@@ -205,6 +198,7 @@ task FastqSync {
 task ReorderGlobbedScatters {
     input {
         Array[File]+ scatters
+
         # Should not be changed from the main pipeline. As it should not influence results.
         # The 3.6-slim container is 138 mb on the filesystem. 3.6 is 922 mb.
         # The slim container is sufficient for this small task.
@@ -247,6 +241,7 @@ task ScatterRegions {
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
+
         Int memory = 4
         Float memoryMultiplier = 3.0
         String dockerTag = "0.2--0"

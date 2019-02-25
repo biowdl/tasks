@@ -1,24 +1,21 @@
 version 1.0
 
-import "common.wdl"
-
 task PeakCalling {
     input {
-        String? preCommand
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         Array[File]+? controlBams
         Array[File]+? controlBamsIndex
         String outDir
         String sampleName
+        Boolean nomodel = false
+
         Int threads = 1
         Int memory = 8
-        Boolean nomodel = false
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
+        set -e
         macs2 callpeak \
         --treatment ~{sep = ' ' inputBams} \
         ~{true="--control" false="" defined(controlBams)} ~{sep = ' ' controlBams} \

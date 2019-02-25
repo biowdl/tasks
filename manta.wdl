@@ -19,7 +19,9 @@ task ConfigureSomatic {
         then installDir + "bin/configMata.py"
         else "configManta.py"
 
-    String normalArg = if (defined(normalBam)) then "--normalBam " + select_first([normalBam]).file else ""
+    String normalArg = if (defined(normalBam))
+        then "--normalBam " + select_first([normalBam]).file
+        else ""
 
     command {
         set -e -o pipefail
@@ -42,9 +44,10 @@ task RunSomatic {
     input {
         String? preCommand
         String runDir
+        Boolean paired = true
+
         Int cores = 1
         Int memory = 4
-        Boolean paired = true
     }
 
     command {

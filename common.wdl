@@ -65,6 +65,7 @@ task ConcatenateTextFiles {
 task CreateLink {
     # Making this of type File will create a link to the copy of the file in the execution
     # folder, instead of the actual file.
+    # This cannot be propperly call-cached or used within a container.
     input {
         String inputFile
         String outputPath
@@ -78,10 +79,6 @@ task CreateLink {
         File link = outputPath
     }
 }
-
-# DEPRECATED. USE BUILT-IN FLATTEN FUNCTION
-# task FlattenStringArray {}
-# Commented out to let pipelines that depend on this fail.
 
 task MapMd5 {
     input {
@@ -100,7 +97,6 @@ task MapMd5 {
         memory: 1
     }
 }
-
 
 task ObjectMd5 {
     input {

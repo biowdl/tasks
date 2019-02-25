@@ -22,23 +22,26 @@ task Mem {
         else "picard -Xmx" + picardMemory + "G"
 
     # Post alt script from bwa
-    String altCommand = if (defined(bwaIndex.altIndex)) then "| bwa-postalt " + bwaIndex.altIndex else ""
+    String altCommand = if defined(bwaIndex.altIndex)
+        then "| bwa-postalt " + bwaIndex.altIndex
+        else ""
 
     # setNmMdAndUqTags is only required if alt sequences are added
-    String setNmMdAndUqTagsCommand = picardPrefix + " SetNmMdAndUqTags " +
-                                             " INPUT=/dev/stdin OUTPUT=" + outputPath +
-                                             " CREATE_INDEX=true" +
-                                             " R=" + bwaIndex.fastaFile
+    String setNmMdAndUqTagsCommand = picardPrefix + " SetNmMdAndUqTags INPUT=/dev/stdin OUTPUT=" +
+        outputPath + " CREATE_INDEX=true" + " R=" + bwaIndex.fastaFile
 
-    String sortSamCommand = picardPrefix + " SortSam " +
-                 " INPUT=/dev/stdin SORT_ORDER=coordinate " +
-                 if(defined(bwaIndex.altIndex)) then " OUTPUT=/dev/stdout "
-                 else " OUTPUT=" + outputPath + " CREATE_INDEX=true "
+    String sortSamCommand = picardPrefix + " SortSam INPUT=/dev/stdin SORT_ORDER=coordinate " +
+        if defined(bwaIndex.altIndex)
+            then " OUTPUT=/dev/stdout "
+            else " OUTPUT=" + outputPath + " CREATE_INDEX=true "
 
-    String picardCommand = if (defined(bwaIndex.altIndex)) then sortSamCommand + " | " + setNmMdAndUqTagsCommand
-    else sortSamCommand
+    String picardCommand = if defined(bwaIndex.altIndex)
+        then sortSamCommand + " | " + setNmMdAndUqTagsCommand
+        else sortSamCommand
 
-    String readgroupArg = if (defined(readgroup)) then "-R '" + readgroup + "'" else ""
+    String readgroupArg = if defined(readgroup)
+        then "-R '" + readgroup + "'"
+        else ""
 
     command {
         set -e -o pipefail
@@ -67,6 +70,7 @@ task Mem {
 }
 
 task Index {
+    # Since this task uses `ln` this is not stable or usable with containers
     input {
         File fasta
         String? preCommand
@@ -95,7 +99,11 @@ task Index {
     output {
         BwaIndex outputIndex = object {
             fastaFile: outputFile,
-            indexFiles: [outputFile + ".bwt",outputFile + ".pac",outputFile + ".sa",outputFile + ".amb",outputFile + ".ann"]
+            indexFiles: [outputFile + ".bwt",
+                outputFile + ".pac",
+                outputFile + ".sa",
+                outputFile + ".amb",
+                outputFile + ".ann"]
         }
     }
 

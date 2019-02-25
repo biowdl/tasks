@@ -17,7 +17,7 @@ task ApplyBQSR {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outputBamPath})
         gatk --java-options -Xmx~{memory}G \
         ApplyBQSR \
@@ -58,6 +58,7 @@ task BaseRecalibrator {
         Array[File]? knownIndelsSitesVCFIndexes
         IndexedVcfFile? dbsnpVCF
         Reference reference
+
         Int memory = 4
         Float memoryMultiplier = 3.0
         String dockerTag = "4.1.0.0--0"
@@ -69,7 +70,7 @@ task BaseRecalibrator {
     ])
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{recalibrationReportPath})
         gatk --java-options -Xmx~{memory}G \
         BaseRecalibrator \
@@ -105,7 +106,7 @@ task CombineGVCFs {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outputPath})
         gatk --java-options -Xmx~{memory}G \
         CombineGVCFs \
@@ -140,7 +141,7 @@ task GatherBqsrReports {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outputReportPath})
         gatk --java-options -Xmx~{memory}G \
         GatherBQSRReports \
@@ -172,10 +173,12 @@ task GenotypeGVCFs {
         String dockerTag = "4.1.0.0--0"
     }
 
-    File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
+    File dbsnpFile = if (defined(dbsnpVCF))
+        then select_first([dbsnpVCF]).file
+        else ""
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outputPath})
         gatk --java-options -Xmx~{memory}G \
         GenotypeGVCFs \
@@ -218,10 +221,12 @@ task HaplotypeCallerGvcf {
         String dockerTag = "4.1.0.0--0"
     }
 
-    File dbsnpFile = if (defined(dbsnpVCF)) then select_first([dbsnpVCF]).file else ""
+    File dbsnpFile = if (defined(dbsnpVCF))
+        then select_first([dbsnpVCF]).file
+        else ""
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{gvcfPath})
         gatk --java-options -Xmx~{memory}G \
         HaplotypeCaller \
@@ -263,7 +268,7 @@ task MuTect2 {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outputVcf})
         gatk --java-options -Xmx~{memory}G \
         Mutect2 \
@@ -301,7 +306,7 @@ task SplitNCigarReads {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname ~{outputBam})
         gatk --java-options -Xmx~{memory}G \
         SplitNCigarReads \
