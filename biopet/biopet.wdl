@@ -275,24 +275,17 @@ task ScatterRegions {
 
 task ValidateAnnotation {
     input {
-        String? preCommand
-        File? toolJar
         File? refRefflat
         File? gtfFile
         Reference reference
 
         Int memory = 3
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.1--0"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-validateannotation -Xmx" + memory + "G"
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        biopet-validateannotation -Xmx~{memory}G \
         ~{"-r " + refRefflat} \
         ~{"-g " + gtfFile} \
         -R ~{reference.fasta}
@@ -304,29 +297,23 @@ task ValidateAnnotation {
 
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-validateannotation:" + dockerTag
     }
 }
 
 task ValidateFastq {
     input {
-        String? preCommand
-        File? toolJar
-        FastqPair inputFastq
-
+        File read1
+        File? read2
         Int memory = 3
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.1.1--1"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-validatefastq -Xmx" + memory + "G"
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
-        --fastq1 ~{inputFastq.R1} \
-        ~{"--fastq2 " + inputFastq.R2}
+        biopet-validatefastq -Xmx~{memory}G \
+        --fastq1 ~{read1} \
+        ~{"--fastq2 " + read2}
     }
 
     output {
@@ -335,28 +322,21 @@ task ValidateFastq {
 
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-validatefastq" + dockerTag
     }
 }
 
 task ValidateVcf {
     input {
-        String? preCommand
-        File? toolJar
         IndexedVcfFile vcf
         Reference reference
-
         Int memory = 3
         Float memoryMultiplier = 3.0
+        String dockerTag = "0.1--0"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-validatevcf -Xmx" + memory + "G"
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
+        biopet-validatevcf -Xmx~{memory}G \
         -i ~{vcf.file} \
         -R ~{reference.fasta}
     }
@@ -367,6 +347,7 @@ task ValidateVcf {
 
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-validatevcf:" + dockerTag
     }
 }
 
@@ -392,21 +373,16 @@ task VcfStats {
         Int? sparkExecutorMemory
         Array[String]+? sparkConfigValues
 
+        String dockerTag = "1.2--0"
         Int memory = 4
         Float memoryMultiplier = 2.5
-        File? toolJar
-        String? preCommand
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-vcfstats -Xmx" + memory + "G"
 
     command {
-        set -e -o pipefail
+        set -e
         mkdir -p ~{outputDir}
-        ~{preCommand}
-        ~{toolCommand} \
+        biopet-vcfstats -Xmx~{memory}G \
         -I ~{vcf.file} \
         -R ~{reference.fasta} \
         -o ~{outputDir} \
@@ -485,5 +461,6 @@ task VcfStats {
     runtime {
         cpu: localThreads
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-vcfstats:" + dockerTag
     }
 }

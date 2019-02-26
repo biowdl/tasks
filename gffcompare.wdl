@@ -2,7 +2,7 @@ version 1.0
 
 task GffCompare {
     input {
-        String? preCommand
+        String dockerTag = "0.10.6--h2d50403_0"
         File? inputGtfList
         Array[File] inputGtfFiles
         File referenceAnnotation
@@ -36,7 +36,6 @@ task GffCompare {
 
     command {
         set -e
-        ~{preCommand}
         ~{"mkdir -p " + outputDir}
         gffcompare \
         -r ~{referenceAnnotation} \
@@ -85,5 +84,9 @@ task GffCompare {
         File? missedIntrons = if debugMode
             then totalPrefix + ".missed_introns.gtf"
             else noneFile
+    }
+
+    runtime {
+       docker: "quay.io/biocontainers/gffcompare:" + dockerTag
     }
 }

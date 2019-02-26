@@ -2,8 +2,9 @@ version 1.0
 
 task MultiQC {
     input {
-        String? preCommand
-        File analysisDirectory
+        String dockerTag = "1.7--py_1"
+        # Use a string here so cromwell does not relocate an entire analysis directory
+        String analysisDirectory
         Array[File] dependencies   # This must be used in order to run multiqc after these tasks.
         Boolean force = false
         Boolean dirs = false
@@ -39,8 +40,7 @@ task MultiQC {
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
+        set -e
         mkdir -p ~{outDir}
         multiqc \
         ~{true="--force" false="" force} \
@@ -82,5 +82,9 @@ task MultiQC {
     output {
         File multiqcReport = outDir + "/" + reportFilename + "_report.html"
         File multiqcDataDir = outDir + "/" +reportFilename + "_data"
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/multiqc:" + dockerTag
     }
 }
