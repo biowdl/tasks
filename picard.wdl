@@ -318,6 +318,7 @@ task MergeVCFs {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputVcfPath})
         picard -Xmx~{memory}G \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
@@ -419,6 +420,7 @@ task SortVcf {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputVcfPath})
         picard -Xmx~{memory}G \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \

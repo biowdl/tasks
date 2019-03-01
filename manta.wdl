@@ -2,7 +2,7 @@ version 1.0
 
 import "common.wdl"
 
-task ConfigureSomatic {
+task Somatic {
     input {
         IndexedBamFile tumorBam
         IndexedBamFile? normalBam
@@ -11,48 +11,28 @@ task ConfigureSomatic {
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
-        String? preCommand
-        String? installDir
+
+        Int cores = 1
+        Int memory = 4
+        String dockerTag = "1.4.0--py27_1"
+
+        File? doNotDefineThis #FIXME
     }
 
-    String toolCommand = if defined(installDir)
-        then installDir + "bin/configMata.py"
-        else "configManta.py"
-
-    String normalArg = if (defined(normalBam))
-        then "--normalBam " + select_first([normalBam]).file
-        else ""
+    File? normalBamFile = if defined(normalBam)
+        then select_first([normalBam]).file
+        else doNotDefineThis
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{toolCommand} \
-        ~{normalArg} \
+        set -e
+        configManta.py \
+        ~{"--normalBam " + normalBamFile} \
         ~{"--tumorBam " + tumorBam.file} \
         --referenceFasta ~{reference.fasta} \
         ~{"--callRegions " + callRegions} \
         --runDir ~{runDir} \
         ~{true="--exome" false="" exome}
-    }
 
-    output {
-        String runDirectory = runDir
-    }
-}
-
-task RunSomatic {
-    input {
-        String? preCommand
-        String runDir
-        Boolean paired = true
-
-        Int cores = 1
-        Int memory = 4
-    }
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
@@ -60,7 +40,7 @@ task RunSomatic {
     }
 
     output {
-        IndexedVcfFile condidateSmallIndels = object {
+        IndexedVcfFile candidateSmallIndels = object {
           file: runDir + "/results/variants/candidateSmallIndels.vcf.gz",
           index: runDir + "/results/variants/candidateSmallIndels.vcf.gz.tbi"
         }
@@ -68,7 +48,7 @@ task RunSomatic {
           file: runDir + "/results/variants/candidateSV.vcf.gz",
           index: runDir + "/results/variants/candidateSV.vcf.gz.tbi"
         }
-        IndexedVcfFile tumorSV = if (paired)
+        IndexedVcfFile tumorSV = if defined(normalBam)
             then object {
               file: runDir + "/results/variants/somaticSV.vcf.gz",
               index: runDir + "/results/variants/somaticSV.vcf.gz.tbi"
@@ -86,5 +66,6 @@ task RunSomatic {
     runtime {
         cpu: cores
         memory: memory
+        docker: "quay.io/biocontainers/manta:" + dockerTag
     }
 }
