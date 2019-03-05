@@ -242,7 +242,7 @@ task ScatterRegions {
         File? regions
         Boolean notSplitContigs = false
 
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 3.0
         String dockerTag = "0.2--0"
     }

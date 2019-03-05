@@ -17,7 +17,7 @@ task VarDict {
         Int endColumn = 3
         Int geneColumn = 4
 
-        Int memory = 8
+        Int memory = 16
         Float memoryMultiplier = 2.0
         String dockerTag = "1.5.8--1"
 
