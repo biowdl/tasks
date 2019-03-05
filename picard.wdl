@@ -308,7 +308,7 @@ task MergeVCFs {
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
 
-        Int memory = 4
+        Int memory =
         Float memoryMultiplier = 3.0
         String dockerTag = "2.18.26--0"
     }
@@ -318,6 +318,7 @@ task MergeVCFs {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputVcfPath})
         picard -Xmx~{memory}G \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
@@ -411,7 +412,7 @@ task SortVcf {
         String outputVcfPath
         File? dict
 
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 3.0
         String dockerTag = "2.18.26--0"
         }
@@ -419,6 +420,7 @@ task SortVcf {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputVcfPath})
         picard -Xmx~{memory}G \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
