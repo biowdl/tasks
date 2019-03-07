@@ -308,7 +308,7 @@ task MergeVCFs {
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
 
-        Int memory =
+        Int memory = 8
         Float memoryMultiplier = 3.0
         String dockerTag = "2.18.26--0"
     }
