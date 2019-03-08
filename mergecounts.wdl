@@ -17,6 +17,8 @@ task MergeCounts {
         set -e
         mkdir -p ~{sub(outputFile, basename(outputFile) + "$", "")}
         R --no-save <<CODE
+            Sys.setlocale("LC_ALL","English") #FIXME this should be set in the docker image instead
+
             library(dplyr)
             library(reshape2)
             library(refGenome)
