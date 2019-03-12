@@ -10,6 +10,8 @@ task MergeCounts {
         String featureAttribute = "gene_id"
         File referenceGtf
         Array[String]+? additionalAttributes
+
+        Int? memoryPerSample = 3
     }
 
     # Based on a script by Szymon Kielbasa/Ioannis Moustakas
@@ -66,7 +68,7 @@ task MergeCounts {
     }
 
     runtime {
-        memory: 4 + (2*length(inputFiles))
+        memory: 4 + (memoryPerSample * length(inputFiles))
         docker: "biowdl/mergecounts:1.0"
     }
 }
