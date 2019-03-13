@@ -69,6 +69,31 @@ task ConcatenateTextFiles {
     }
 }
 
+task Copy {
+    input {
+        File inputFile
+        String outputPath
+        Boolean recursive = false
+
+        # Version not that important as long as it is stable.
+        String dockerTag = "5.0.2"
+    }
+
+    command {
+        set -e
+        mkdir -p $(dirname ~{outputPath})
+        cp ~{true="-r" false="" recursive} ~{inputFile} ~{outputPath}
+    }
+
+    output {
+        File outputFile = outputPath
+    }
+
+    runtime {
+        docker: "bash:" + dockerTag
+    }
+}
+
 task CreateLink {
     # Making this of type File will create a link to the copy of the file in the execution
     # folder, instead of the actual file.
