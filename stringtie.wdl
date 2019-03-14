@@ -9,6 +9,7 @@ task Stringtie {
         File? referenceGtf
         Int threads = 1
         String assembledTranscriptsFile
+        Boolean skipNovelTranscripts = true
         Boolean? firstStranded
         Boolean? secondStranded
         String? geneAbundanceFile
@@ -21,8 +22,9 @@ task Stringtie {
         stringtie \
         ~{"-p " + threads} \
         ~{"-G " + referenceGtf} \
+        ~{true="-e" false="" skipNovelTranscripts} \
         ~{true="--rf" false="" firstStranded} \
-        ~{true="fr" false="" secondStranded} \
+        ~{true="--fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
         ~{bamFile.file}
