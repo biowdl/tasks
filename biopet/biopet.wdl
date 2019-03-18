@@ -241,6 +241,7 @@ task ScatterRegions {
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
+        File? bamFile
 
         Int memory = 8
         Float memoryMultiplier = 3.0
@@ -260,6 +261,7 @@ task ScatterRegions {
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
           ~{"-L " + regions} \
+          ~{"--bamFile" + bamFile} \
           ~{true="--notSplitContigs" false="" notSplitContigs}
     }
 
