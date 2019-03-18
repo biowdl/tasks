@@ -242,6 +242,7 @@ task ScatterRegions {
         File? regions
         Boolean notSplitContigs = false
         File? bamFile
+        File? bamIndex
 
         Int memory = 8
         Float memoryMultiplier = 3.0
