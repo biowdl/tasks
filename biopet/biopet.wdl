@@ -261,7 +261,7 @@ task ScatterRegions {
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
           ~{"-L " + regions} \
-          ~{"--bamFile" + bamFile} \
+          ~{"--bamFile " + bamFile} \
           ~{true="--notSplitContigs" false="" notSplitContigs}
     }
 
