@@ -18,7 +18,7 @@ task VarDict {
         Int geneColumn = 4
 
         Int memory = 16
-        Float memoryMultiplier = 2.0
+        Float memoryMultiplier = 2.5
         String dockerTag = "1.5.8--1"
 
         File? doNotDefineThis #FIXME
