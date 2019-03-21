@@ -125,6 +125,7 @@ task FastqSplitter {
 
         Int memory = 4
         Float memoryMultiplier = 2.5
+        String dockerTag = "0.1--2"
     }
 
     String toolCommand = if defined(toolJar)
@@ -150,6 +151,7 @@ task FastqSplitter {
     
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-fastqsplitter:" + dockerTag
     }
 }
 
