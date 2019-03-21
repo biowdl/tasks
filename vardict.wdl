@@ -17,6 +17,7 @@ task VarDict {
         Int endColumn = 3
         Int geneColumn = 4
 
+        Int threads = 1
         Int memory = 16
         Float memoryMultiplier = 2.5
         String dockerTag = "1.5.8--1"
@@ -32,6 +33,7 @@ task VarDict {
         set -e -o pipefail
         export JAVA_OPTS="-Xmx~{memory}G"
         vardict-java \
+        ~{"-th " + threads} \
         -G ~{reference.fasta} \
         -N ~{tumorSampleName} \
         -b "~{tumorBam.file}~{"|" + normalBamFile}" \
@@ -53,6 +55,7 @@ task VarDict {
     }
 
     runtime {
+        cpu: threads + 2
         memory: ceil(memory * memoryMultiplier)
         docker: "quay.io/biocontainers/vardict-java:" + dockerTag
     }
