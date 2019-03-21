@@ -45,7 +45,7 @@ task Mem {
         cpu: threads
         memory: memory + picardMemory + picardMemory
         # A mulled container is needed to have both picard and bwa in one container.
-        # This container contains: picard (2.18.7-SNAPSHOT), bwa (0.7.17-r1188)
+        # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
         docker: "quay.io/biocontainers/mulled-v2-002f51ea92721407ef440b921fb5940f424be842" +
             dockerTag
     }
