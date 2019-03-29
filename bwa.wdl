@@ -4,8 +4,8 @@ import "common.wdl" as common
 
 task Mem {
     input {
-        String? preCommand
-        FastqPair inputFastq
+        File read1
+        File? read2
         BwaIndex bwaIndex
         String outputPath
         String? readgroup
@@ -15,45 +15,23 @@ task Mem {
         Int threads = 2
         Int memory = 8
         Int picardMemory = 4
+        String dockerTag = "43ec6124f9f4f875515f9548733b8b4e5fed9aa6-0"
     }
-
-    String picardPrefix = if defined(picardJar)
-        then "java -Xmx" + picardMemory + "G -jar " + picardJar
-        else "picard -Xmx" + picardMemory + "G"
-
-    # Post alt script from bwa
-    String altCommand = if defined(bwaIndex.altIndex)
-        then "| bwa-postalt " + bwaIndex.altIndex
-        else ""
-
-    # setNmMdAndUqTags is only required if alt sequences are added
-    String setNmMdAndUqTagsCommand = picardPrefix + " SetNmMdAndUqTags INPUT=/dev/stdin OUTPUT=" +
-        outputPath + " CREATE_INDEX=true" + " R=" + bwaIndex.fastaFile
-
-    String sortSamCommand = picardPrefix + " SortSam INPUT=/dev/stdin SORT_ORDER=coordinate " +
-        if defined(bwaIndex.altIndex)
-            then " OUTPUT=/dev/stdout "
-            else " OUTPUT=" + outputPath + " CREATE_INDEX=true "
-
-    String picardCommand = if defined(bwaIndex.altIndex)
-        then sortSamCommand + " | " + setNmMdAndUqTagsCommand
-        else sortSamCommand
-
-    String readgroupArg = if defined(readgroup)
-        then "-R '" + readgroup + "'"
-        else ""
 
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outputPath})
-        ~{preCommand}
-        bwa mem ~{"-t " + threads} \
-        ~{readgroupArg} \
+        bwa mem \
+        ~{"-t " + threads} \
+        ~{"-R '" + readgroup}~{true="'" false="" defined(readgroup)} \
         ~{bwaIndex.fastaFile} \
-        ~{inputFastq.R1} \
-        ~{inputFastq.R2} \
-        ~{altCommand} \
-        | ~{picardCommand}
+        ~{read1} \
+        ~{read2} \
+        | picard -Xmx~{picardMemory}G SortSam \
+        INPUT=/dev/stdin \
+        OUTPUT=~{outputPath} \
+        SORT_ORDER=coordinate \
+        CREATE_INDEX=true
     }
 
     output {
@@ -66,6 +44,10 @@ task Mem {
     runtime{
         cpu: threads
         memory: memory + picardMemory + picardMemory
+        # A mulled container is needed to have both picard and bwa in one container.
+        # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
+        docker: "quay.io/biocontainers/mulled-v2-002f51ea92721407ef440b921fb5940f424be842:" +
+            dockerTag
     }
 }
 
@@ -118,5 +100,4 @@ task Index {
 struct BwaIndex {
     File fastaFile
     Array[File] indexFiles
-    File? altIndex
 }

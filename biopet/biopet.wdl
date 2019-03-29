@@ -125,23 +125,15 @@ task FastqSplitter {
 
         Int memory = 4
         Float memoryMultiplier = 2.5
+        String dockerTag = "0.1--2"
     }
 
-    String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-fastqsplitter -Xmx" + memory + "G"
-
     command {
-        set -e -o pipefail
-        ~{preCommand}
+        set -e
         mkdir -p $(dirname ~{sep=') $(dirname ' outputPaths})
-        if [ ~{length(outputPaths)} -gt 1 ]; then
-            ~{toolCommand} \
-            -I ~{inputFastq} \
-            -o ~{sep=' -o ' outputPaths}
-          else
-            ln -sf ~{inputFastq} ~{outputPaths[0]}
-          fi
+        biopet-fastqsplitter -Xmx~{memory}G \
+        -I ~{inputFastq} \
+        -o ~{sep=' -o ' outputPaths}
     }
 
     output {
@@ -150,6 +142,7 @@ task FastqSplitter {
     
     runtime {
         memory: ceil(memory * memoryMultiplier)
+        docker: "quay.io/biocontainers/biopet-fastqsplitter:" + dockerTag
     }
 }
 
