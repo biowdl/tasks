@@ -83,7 +83,7 @@ task GetConfiguration {
     }
 
     runtime {
-        memory: 4 # Needs more than 1 to pull the docker image
+        memory: 2 # Needs more than 1 to pull the docker image
         docker: "quay.io/biocontainers/fastqc:" + dockerTag
     }
 }
