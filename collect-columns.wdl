@@ -11,7 +11,7 @@ task CollectColumns {
         Boolean header = false
         Array[String]? additionalAttributes
         File? referenceGtf
-        String featureAttribute
+        String? featureAttribute
 
         String dockerTag = "0.1.1--py_0"
     }
