@@ -440,3 +440,31 @@ task SortVcf {
         memory: ceil(memory * memoryMultiplier)
     }
 }
+
+task RenameSample {
+    input {
+        File inputVcf
+        String newSampleName
+            
+        Int memory = 8 
+        Float memoryMultiplier = 3.0 
+    }   
+        
+    command {
+        picard -Xmx~{memory}G \
+        RenameSampleInVcf \
+        I=~{inputVcf} \
+        O=~{newSampleName}.vcf \
+        NEW_SAMPLE_NAME=~{newSampleName}
+    }   
+        
+    output {
+        File renamedVcf = "~{newSampleName}.vcf"
+    }   
+        
+    runtime {
+        docker: "quay.io/biocontainers/picard:2.19.0--0"
+        memory: ceil(memory * memoryMultiplier)
+    }   
+}
+
