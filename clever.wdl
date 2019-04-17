@@ -2,7 +2,7 @@ version 1.0
 
 import "common.wdl"
 
-task CallSV {
+task Prediction {
     input {
         IndexedBamFile bamFile
         Reference reference
@@ -12,15 +12,11 @@ task CallSV {
     
 
     command <<< 
-        clever -T ~{threads} --use_mapq --sorted -I -f ~{bamFile.file} ~{reference.fasta} ~{outputPath}
-        echo ~{outputPath} ~{bamFile} ~{outputPath}/predictions.vcf} none > ~{outputPath}.list
-        mateclever mateclever -k -f -M 100000 -z 30 -o 150 ~{reference} ~{outputPath}.list ~{outputPath}
+        clever -T ~{threads} --use_mapq --sorted -f ~{bamFile.file} ~{reference.fasta} ~{outputPath}
     >>> 
 
     output {
-        File cleverVcf = "~{outputPath}/predictions.vcf"
-        File cleverList = "~{outputPath}.list"
-        File matecleverVcf = "~{outputPath}/deletetions.vcf" 
+        File predictions = "~{outputPath}/predictions.vcf"
     }   
     
     runtime {
@@ -28,4 +24,30 @@ task CallSV {
         docker: "quay.io/biocontainers/clever-toolkit:2.4--py37hcfe0e84_5"
     }   
 
+}
+
+task Mateclever {
+    input {
+        IndexedBamFile bamFile
+        Reference reference
+        File predictions
+        String outputPath
+        Int threads = 10 
+    }
+
+    command <<<
+        echo ~{outputPath} ~{bamFile.file} ~{predictions} none > ~{outputPath}.list
+        mateclever -k -f -M 100000 -z 30 -o 150 ~{reference.fasta} ~{outputPath}.list ~{outputPath}
+    >>>
+    
+    output {
+        File cleverList = "~{outputPath}.list"
+        File matecleverVcf = "~{outputPath}/deletions.vcf" 
+    }
+    
+    runtime {
+        cpu: threads
+        docker: "quay.io/biocontainers/clever-toolkit:2.4--py37hcfe0e84_5"
+
+    }
 }
