@@ -445,7 +445,7 @@ task RenameSample {
     input {
         File inputVcf
         String newSampleName
-            
+        String outputPath 
         Int memory = 8 
         Float memoryMultiplier = 3.0 
     }   
@@ -454,12 +454,12 @@ task RenameSample {
         picard -Xmx~{memory}G \
         RenameSampleInVcf \
         I=~{inputVcf} \
-        O=~{newSampleName}.vcf \
+        O=~{outputPath} \
         NEW_SAMPLE_NAME=~{newSampleName}
     }   
         
     output {
-        File renamedVcf = "~{newSampleName}.vcf"
+        File renamedVcf = "~{outputPath}"
     }   
         
     runtime {
