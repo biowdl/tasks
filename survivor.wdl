@@ -10,6 +10,7 @@ task Merge {
         Int distanceBySvSize = 0
         Int minSize = 30
         String sample
+        String outputPath
     }
 
     command <<< 
@@ -21,11 +22,11 @@ task Merge {
         ~{strandType} \
         ~{distanceBySvSize} \
         ~{minSize} \
-        ~{sample}.merged.vcf
+        ~{outputPath}
     >>> 
 
     output {
-     File mergedVcf = "~{sample}.merged.vcf"
+     File mergedVcf = "~{outputPath}"
     }
     
     runtime {
