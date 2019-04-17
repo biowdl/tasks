@@ -12,7 +12,13 @@ task Prediction {
     
 
     command <<< 
-        clever -T ~{threads} --use_mapq --sorted -f ~{bamFile.file} ~{reference.fasta} ~{outputPath}
+        clever \
+        -T ~{threads} \
+        --use_mapq \
+        --sorted \
+        -f ~{bamFile.file} \
+        ~{reference.fasta} \
+        ~{outputPath}
     >>> 
 
     output {
@@ -37,7 +43,14 @@ task Mateclever {
 
     command <<<
         echo ~{outputPath} ~{bamFile.file} ~{predictions} none > ~{outputPath}.list
-        mateclever -k -f -M 100000 -z 30 -o 150 ~{reference.fasta} ~{outputPath}.list ~{outputPath}
+        mateclever \
+        -k \
+        -f \
+        -M 100000 \
+        -z 30 \
+        -o 150 \
+        ~{reference.fasta} \
+        ~{outputPath}.list ~{outputPath}
     >>>
     
     output {
