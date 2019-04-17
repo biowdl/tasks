@@ -1,7 +1,5 @@
 version 1.0
 
-import "../tasks/common.wdl"
-
 task CallSV {
     input {
         IndexedBamFile bamFile
@@ -11,7 +9,10 @@ task CallSV {
     
 
     command <<<
-        delly call -o ~{outputPath} -g ~{reference.fasta} ~{bamFile.file}
+        delly call \
+        -o ~{outputPath} \
+        -g ~{reference.fasta} \
+        ~{bamFile.file}
     >>>
 
     output {
