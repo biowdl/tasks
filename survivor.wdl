@@ -26,7 +26,7 @@ task Merge {
     >>> 
 
     output {
-     File mergedVcf = "~{outputPath}"
+        File mergedVcf = "~{outputPath}"
     }
     
     runtime {
