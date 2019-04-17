@@ -11,11 +11,11 @@ task CallSV {
     
 
     command <<<
-        delly call -o ~{outputPath}.bcf -g ~{reference.fasta} ~{bamFile.file}
+        delly call -o ~{outputPath} -g ~{reference.fasta} ~{bamFile.file}
     >>>
 
     output {
-        File dellyVcf = "~{outputPath}.bcf" 
+        File dellyVcf = "~{outputPath}" 
     }
     
     runtime {
