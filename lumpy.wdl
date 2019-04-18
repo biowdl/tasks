@@ -13,11 +13,11 @@ task CallSV {
     command <<< 
         lumpyexpress \
         -B ~{bamFile.file} \
-        -o ~{outputPath}.vcf
+        -o ~{outputPath}
     >>> 
 
     output {
-        File lumpyVcf = "~{outputPath}.vcf"
+        File lumpyVcf = "~{outputPath}"
     }   
         
     runtime {
