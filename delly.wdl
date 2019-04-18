@@ -11,6 +11,8 @@ task CallSV {
     
 
     command <<<
+        set -e
+        mkdir -p $(dirname ~{outputPath})
         delly call \
         -o ~{outputPath} \
         -g ~{reference.fasta} \
