@@ -11,7 +11,9 @@ task CallSV {
     
 
     command <<< 
-        lumpyexpress -B ~{bamFile.file} -o ~{outputPath}.vcf
+        lumpyexpress \
+        -B ~{bamFile.file} \
+        -o ~{outputPath}.vcf
     >>> 
 
     output {
