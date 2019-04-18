@@ -4,6 +4,7 @@ import "common.wdl"
 
 task Merge {
     input{
+        Array[File] filePaths
         Int breakpointDistance = 1000
         Int suppVecs = 2
         Int svType = 1
