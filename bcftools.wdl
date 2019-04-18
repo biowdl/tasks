@@ -7,6 +7,7 @@ task Bcf2Vcf {
     }
     
     command <<<
+        set -e
         bcftools view ~{bcf} -O v -o ~{outputPath}
     >>>
     
