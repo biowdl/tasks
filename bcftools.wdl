@@ -7,11 +7,11 @@ task Bcf2Vcf {
     }
     
     command <<<
-        bcftools view ~{bcf} -O v -o ~{outputPath}.vcf
+        bcftools view ~{bcf} -O v -o ~{outputPath}
     >>>
     
     output {
-        File OutputVcf = "~{outputPath}.vcf"
+        File OutputVcf = "~{outputPath}"
     }
     
     runtime {
