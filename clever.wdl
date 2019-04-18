@@ -39,17 +39,21 @@ task Mateclever {
         File predictions
         String outputPath
         Int threads = 10 
+        Int cleverMaxDelLength = 100000
+        Int maxLengthDiff= 30
+        Int maxOffset = 150 
     }
 
     command <<<
         set -e
         echo ~{outputPath} ~{bamFile.file} ~{predictions} none > ~{outputPath}.list
         mateclever \
+        -T ~{threads} \
         -k \
         -f \
-        -M 100000 \
-        -z 30 \
-        -o 150 \
+        -M ~{cleverMaxDelLength} \
+        -z ~{maxLengthDiff} \
+        -o ~{maxOffset} \
         ~{reference.fasta} \
         ~{outputPath}.list ~{outputPath}
     >>>
