@@ -19,7 +19,7 @@ task Merge {
         set -e
         echo '~{sep="\n" filePaths}' > fileList
         SURVIVOR merge \
-        ~{fileList} \
+        fileList \
         ~{breakpointDistance} \
         ~{suppVecs} \
         ~{svType} \
@@ -30,7 +30,6 @@ task Merge {
     >>> 
 
     output {
-        File fileList = "~{fileList}"
         File mergedVcf = "~{outputPath}"
     }
     
