@@ -444,8 +444,8 @@ task SortVcf {
 task RenameSample {
     input {
         File inputVcf
-        String newSampleName
         String outputPath 
+        String newSampleName
         Int memory = 8 
         Float memoryMultiplier = 3.0 
     }   
