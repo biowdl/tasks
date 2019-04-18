@@ -2,7 +2,6 @@ version 1.0
 
 task Merge {
     input{
-        File filePaths
         Int breakpointDistance = 1000
         Int suppVecs = 2
         Int svType = 1
@@ -14,8 +13,10 @@ task Merge {
     }
 
     command <<< 
+        set -e
+        echo '~{sep="\n" filePaths}' > fileList
         SURVIVOR merge \
-        ~{filePaths} \
+        ~{fileList} \
         ~{breakpointDistance} \
         ~{suppVecs} \
         ~{svType} \
@@ -26,6 +27,7 @@ task Merge {
     >>> 
 
     output {
+        File fileList = "~{fileList}"
         File mergedVcf = "~{outputPath}"
     }
     
