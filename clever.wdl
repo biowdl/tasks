@@ -42,6 +42,7 @@ task Mateclever {
     }
 
     command <<<
+        set -e
         echo ~{outputPath} ~{bamFile.file} ~{predictions} none > ~{outputPath}.list
         mateclever \
         -k \
