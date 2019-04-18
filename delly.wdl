@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl"
+
 task CallSV {
     input {
         IndexedBamFile bamFile
