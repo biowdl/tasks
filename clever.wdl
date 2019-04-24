@@ -16,7 +16,8 @@ task Prediction {
         -T ~{threads} \
         --use_mapq \
         --sorted \
-        -f ~{bamFile.file} \
+        -f \
+        ~{bamFile.file} \
         ~{reference.fasta} \
         ~{outputPath}
     >>> 

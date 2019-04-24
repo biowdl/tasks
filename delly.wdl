@@ -1,4 +1,4 @@
-version 1.0
+version 2.0
 
 import "common.wdl"
 
@@ -20,7 +20,7 @@ task CallSV {
     >>>
 
     output {
-        File dellyVcf = "~{outputPath}" 
+        File dellyBcf = "~{outputPath}" 
     }
     
     runtime {
