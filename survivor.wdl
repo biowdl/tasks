@@ -13,6 +13,7 @@ task Merge {
         Int minSize = 30
         String sample
         String outputPath
+        Int memory = 128
     }
 
     command <<< 
@@ -35,5 +36,6 @@ task Merge {
     
     runtime {
         docker: "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
+        memory: memory
     }
 }

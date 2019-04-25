@@ -8,6 +8,7 @@ task Bcf2Vcf {
     
     command <<<
         set -e
+        mkdir -p $(dirname ~{outputPath})
         bcftools view ~{bcf} -O v -o ~{outputPath}
     >>>
     

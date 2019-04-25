@@ -451,6 +451,8 @@ task RenameSample {
     }   
         
     command {
+        set -e
+        mkdir -p $(dirname ~{outputPath})
         picard -Xmx~{memory}G \
         RenameSampleInVcf \
         I=~{inputVcf} \
