@@ -1,24 +1,26 @@
 version 1.0 
 
 import "common.wdl"
-
+import "bwa.wdl"
 task Prediction {
     input {
         IndexedBamFile bamFile
-        Reference reference
+        BwaIndex bwaIndex
         String outputPath        
         Int threads = 10 
     }   
     
 
     command <<< 
+        set -e
+        mkdir -p $(dirname ~{outputPath})
         clever \
         -T ~{threads} \
         --use_mapq \
         --sorted \
         -f \
         ~{bamFile.file} \
-        ~{reference.fasta} \
+        ~{bwaIndex.fastaFile} \
         ~{outputPath}
     >>> 
 
@@ -28,7 +30,7 @@ task Prediction {
     
     runtime {
         cpu: threads
-        docker: "quay.io/biocontainers/clever-toolkit:2.4--py37hcfe0e84_5"
+        docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }   
 
 }
@@ -36,7 +38,7 @@ task Prediction {
 task Mateclever {
     input {
         IndexedBamFile bamFile
-        Reference reference
+        BwaIndex bwaIndex
         File predictions
         String outputPath
         Int threads = 10 
@@ -47,7 +49,8 @@ task Mateclever {
 
     command <<<
         set -e
-        echo ~{outputPath} ~{bamFile.file} ~{predictions} none > ~{outputPath}.list
+        mkdir -p $(dirname ~{outputPath})
+        echo ~{outputPath} ~{bamFile.file} ~{predictions} none > predictions.list
         mateclever \
         -T ~{threads} \
         -k \
@@ -55,18 +58,17 @@ task Mateclever {
         -M ~{cleverMaxDelLength} \
         -z ~{maxLengthDiff} \
         -o ~{maxOffset} \
-        ~{reference.fasta} \
-        ~{outputPath}.list ~{outputPath}
+        ~{bwaIndex.fastaFile} \
+        predictions.list \
+        ~{outputPath}
     >>>
     
     output {
-        File cleverList = "~{outputPath}.list"
         File matecleverVcf = "~{outputPath}/deletions.vcf" 
     }
     
     runtime {
         cpu: threads
-        docker: "quay.io/biocontainers/clever-toolkit:2.4--py37hcfe0e84_5"
-
+        docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }
 }
