@@ -18,6 +18,7 @@ task Merge {
 
     command <<< 
         set -e
+        mkdir -p $(dirname ~{outputPath}) 
         echo '~{sep="\n" filePaths}' > fileList
         SURVIVOR merge \
         fileList \
