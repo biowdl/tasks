@@ -19,6 +19,8 @@ task Fastqc {
 
         Int threads = 1
         String dockerTag = "0.11.7--4"
+        Array[File]? NoneArray
+        File? NoneFile
     }
 
     # Chops of the .gz extension if present.
@@ -50,10 +52,11 @@ task Fastqc {
     }
 
     output {
-        File rawReport = reportDir + "/fastqc_data.txt"
-        File htmlReport = reportDir + "/fastqc_report.html"
-        File summary = reportDir + "/summary.txt"
-        Array[File] images = glob(reportDir + "/Images/*.png")
+        File? rawReport = if extract then reportDir + "/fastqc_data.txt" else NoneFile
+        File htmlReport = reportDir + ".html"
+        File reportZip = reportDir + ".zip"
+        File? summary = if extract then reportDir + "/summary.txt" else NoneFile
+        Array[File]? images = if extract then glob(reportDir + "/Images/*.png") else NoneArray
     }
 
     runtime {
