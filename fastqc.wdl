@@ -4,11 +4,11 @@ task Fastqc {
     input {
         File seqFile
         String outdirPath
-        Boolean? casava
-        Boolean? nano
-        Boolean? noFilter
-        Boolean extract = true
-        Boolean? nogroup
+        Boolean casava = false
+        Boolean nano = false
+        Boolean noFilter = false
+        Boolean extract = false
+        Boolean nogroup = false
         Int? minLength
         String? format
         File? contaminants
