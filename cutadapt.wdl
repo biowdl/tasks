@@ -13,6 +13,10 @@ task Cutadapt {
         Array[String]+? adapterRead2
         Array[String]+? frontRead2
         Array[String]+? anywhereRead2
+        # FIXME: default should be set at the subworkflow level, not here. Needs to wait for cromwell fix.
+        Array[String]+? adapterBoth = ["AGATCGGAAGAG"]
+        # contaminations = anywhereBoth
+        Array[String]+? contaminations
         Boolean? interleaved
         String? pairFilter
         Float? errorRate
@@ -33,7 +37,7 @@ task Cutadapt {
         String? stripSuffix
         String? prefix
         String? suffix
-        Int? minimumLength = 1  # Necessary to prevent creation of empty reads
+        Int? minimumLength = 2  # Necessary to prevent creation of empty reads or 1 base reads.
         Int? maximumLength
         Int? maxN
         Boolean? discardTrimmed
@@ -66,6 +70,16 @@ task Cutadapt {
         then "mkdir -p $(dirname " + read2output + ")"
         else ""
 
+    # Some WDL magic here to set both adapters with one setting.
+    # If then else's are needed to keep the variable optional and undefined
+    Array[String]+? adapterForward = if (defined(adapter) || defined(adapterBoth)) then select_first([adapter, adapterBoth]) else adapter
+    # Assume adapterRead2 will not be set when read2 is not set.
+    Array[String]+? adapterReverse = if defined(read2) then select_first([adapterRead2, adapterBoth]) else adapterRead2
+
+    # Same for contaminations
+    Array[String]+? anywhereForward = if (defined(anywhere) || defined(contaminations)) then select_first([anywhere, contaminations]) else anywhere
+    Array[String]+? anywhereReverse = if (defined(anywhereRead2) || defined(contaminations)) then select_first([anywhereRead2, contaminations]) else anywhereRead2
+
     command {
         set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
@@ -73,12 +87,12 @@ task Cutadapt {
         ~{"mkdir -p $(dirname " + reportPath + ")"}
         cutadapt \
         ~{"--cores=" + cores} \
-        ~{true="-a" false="" defined(adapter)} ~{sep=" -a " adapter} \
-        ~{true="-A" false="" defined(adapterRead2)} ~{sep=" -A " adapterRead2} \
+        ~{true="-a" false="" defined(adapterForward)} ~{sep=" -a " adapterForward} \
+        ~{true="-A" false="" defined(adapterReverse)} ~{sep=" -A " adapterReverse} \
         ~{true="-g" false="" defined(front)} ~{sep=" -g " front} \
         ~{true="-G" false="" defined(frontRead2)} ~{sep=" -G " frontRead2} \
-        ~{true="-b" false="" defined(anywhere)} ~{sep=" -b " anywhere} \
-        ~{true="-B" false="" defined(anywhereRead2)} ~{sep=" -B " anywhereRead2} \
+        ~{true="-b" false="" defined(anywhereForward)} ~{sep=" -b " anywhereForward} \
+        ~{true="-B" false="" defined(anywhereReverse)} ~{sep=" -B " anywhereReverse} \
         --output ~{read1output} ~{"--paired-output " + read2output} \
         ~{"--to-short-output " + tooShortOutputPath} \
         ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
