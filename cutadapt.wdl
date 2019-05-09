@@ -70,15 +70,24 @@ task Cutadapt {
         then "mkdir -p $(dirname " + read2output + ")"
         else ""
 
+    # FIXME: This crappy overengineering can be removed once cromwell can handle subworkflow inputs correctly.
     # Some WDL magic here to set both adapters with one setting.
     # If then else's are needed to keep the variable optional and undefined
-    Array[String]+? adapterForward = if (defined(adapter) || defined(adapterBoth)) then select_first([adapter, adapterBoth]) else adapter
-    # Assume adapterRead2 will not be set when read2 is not set.
-    Array[String]+? adapterReverse = if defined(read2) then select_first([adapterRead2, adapterBoth]) else adapterRead2
+    Array[String]+? adapterForward = if (defined(adapter) || defined(adapterBoth))
+                                     then select_first([adapter, adapterBoth])
+                                     else adapter
+    # Check if read2 is defined before applying adapters.
+    Array[String]+? adapterReverse = if (defined(read2) && (defined(adapterRead2) || defined(adapterBoth)))
+                                     then select_first([adapterRead2, adapterBoth])
+                                     else adapterRead2
 
     # Same for contaminations
-    Array[String]+? anywhereForward = if (defined(anywhere) || defined(contaminations)) then select_first([anywhere, contaminations]) else anywhere
-    Array[String]+? anywhereReverse = if defined(read2) then select_first([anywhereRead2, contaminations]) else anywhereRead2
+    Array[String]+? anywhereForward = if (defined(anywhere) || defined(contaminations))
+                                      then select_first([anywhere, contaminations])
+                                      else anywhere
+    Array[String]+? anywhereReverse = if (defined(read2) && (defined(anywhereRead2) || defined(contaminations)))
+                                      then select_first([anywhereRead2, contaminations])
+                                      else anywhereRead2
 
     command {
         set -e
