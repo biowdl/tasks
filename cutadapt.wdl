@@ -63,7 +63,7 @@ task Cutadapt {
 
         Int cores = 1
         Int memory = 8
-        String dockerTag = "1.16--py36_2"
+        String dockerTag = "2.3--py36h14c3975_0"
     }
 
     String read2outputArg = if (defined(read2output))
