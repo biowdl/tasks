@@ -78,7 +78,7 @@ task Cutadapt {
 
     # Same for contaminations
     Array[String]+? anywhereForward = if (defined(anywhere) || defined(contaminations)) then select_first([anywhere, contaminations]) else anywhere
-    Array[String]+? anywhereReverse = if (defined(anywhereRead2) || defined(contaminations)) then select_first([anywhereRead2, contaminations]) else anywhereRead2
+    Array[String]+? anywhereReverse = if defined(read2) then select_first([anywhereRead2, contaminations]) else anywhereRead2
 
     command {
         set -e
