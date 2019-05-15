@@ -50,7 +50,7 @@ task CollectMultipleMetrics {
         Boolean collectQualityYieldMetrics = true
 
         Int memory = 4
-        Float memoryMultiplier = 3.0
+        Float memoryMultiplier = 3.5
         String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
