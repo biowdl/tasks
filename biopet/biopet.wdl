@@ -124,7 +124,7 @@ task FastqSplitter {
         File? toolJar
 
         Int memory = 4
-        Float memoryMultiplier = 2.5
+        Float memoryMultiplier = 3
         String dockerTag = "0.1--2"
     }
 
@@ -371,7 +371,7 @@ task VcfStats {
 
         String dockerTag = "1.2--0"
         Int memory = 4
-        Float memoryMultiplier = 2.5
+        Float memoryMultiplier = 3
     }
 
 
