@@ -24,7 +24,7 @@ task AppendToStringArray {
 task CheckFileMD5 {
     input {
         File file
-        File md5
+        String md5
         # Version not that important as long as it is stable.
         String dockerTag = "5.0.2"
     }
@@ -32,8 +32,7 @@ task CheckFileMD5 {
     command {
         set -e -o pipefail
         MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
-        MD5SUM_CORRECT=$(cat ~{md5} | grep ~{basename(file)} | cut -d ' ' -f 1)
-        [ $MD5SUM = $MD5SUM_CORRECT ]
+        [ "$MD5SUM" = '~{md5}' ]
     }
 
     runtime {
@@ -203,20 +202,20 @@ struct Reference {
 struct IndexedVcfFile {
     File file
     File index
-    File? md5sum
+    String? md5sum
 }
 
 struct IndexedBamFile {
     File file
     File index
-    File? md5sum
+    String? md5sum
 }
 
 struct FastqPair {
     File R1
-    File? R1_md5
+    String? R1_md5
     File? R2
-    File? R2_md5
+    String? R2_md5
 }
 
 struct CaseControl {
