@@ -57,7 +57,6 @@ task GcCorrect {
         File referenceIndex
         File? binFile
         File inputBed
-        File inputBedIndex
         String outputBed = "output.bed"
         Float? fracN
         Int? iter
@@ -92,8 +91,7 @@ task Newref {
         File reference
         File referenceIndex
         File? binFile
-        File inputBed
-        File inputBedIndex
+        Array[File]+ inputBeds
         String outputBed = "output.bed"
         Int? nBins
     }
@@ -104,7 +102,7 @@ task Newref {
        --reference ~{reference} \
        ~{"--bin-file " + binFile} \
        --output ~{outputBed} \
-       --input ~{inputBed} \
+       ~{sep="-I " inputBeds} \
        ~{"--n-bins " + nBins}
     }
 
@@ -127,17 +125,18 @@ task Zscore {
         File inputBed
         File inputBedIndex
         File dictionaryFile
+        File dictionaryFileIndex
         String outputBed = "output.bed"
     }
 
     command {
         wiseguy zscore \
         ~{"--binsize " + binSize} \
-       --reference ~{reference} \
-       ~{"--bin-file " + binFile} \
-       --output ~{outputBed} \
-       --input ~{inputBed} \
-       ~{"--dictionary-file " + dictionaryFile}
+        --reference ~{reference} \
+        ~{"--bin-file " + binFile} \
+        --output ~{outputBed} \
+        --input ~{inputBed} \
+        ~{"--dictionary-file " + dictionaryFile}
     }
 
     output {
