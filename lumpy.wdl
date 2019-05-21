@@ -10,7 +10,10 @@ task CallSV {
     }   
     
 
-    command <<< 
+    command <<<
+        set -e 
+        HEXDUMP=$(which hexdump)
+        export HEXDUMP 
         lumpyexpress \
         -B ~{bamFile.file} \
         -o ~{outputPath}
