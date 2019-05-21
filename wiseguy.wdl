@@ -27,6 +27,7 @@ task Count {
         File referenceIndex
         File? binFile
         File inputBam
+        File inputBamIndex
         String outputBed = "output.bed"
     }
 
@@ -56,6 +57,7 @@ task GcCorrect {
         File referenceIndex
         File? binFile
         File inputBed
+        File inputBedIndex
         String outputBed = "output.bed"
         Float? fracN
         Int? iter
@@ -91,6 +93,7 @@ task Newref {
         File referenceIndex
         File? binFile
         File inputBed
+        File inputBedIndex
         String outputBed = "output.bed"
         Int? nBins
     }
@@ -122,6 +125,7 @@ task Zscore {
         File referenceIndex
         File? binFile
         File inputBed
+        File inputBedIndex
         File dictionaryFile
         String outputBed = "output.bed"
     }
