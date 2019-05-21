@@ -20,7 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task count {
+task Count {
     input {
         Int? binSize
         File reference
@@ -49,7 +49,7 @@ task count {
     }
 }
 
-task gcCorrect {
+task GcCorrect {
     input {
         Int? binSize
         File reference
@@ -84,7 +84,7 @@ task gcCorrect {
     }
 }
 
-task newref {
+task Newref {
     input {
         Int? binSize
         File reference
@@ -115,7 +115,7 @@ task newref {
     }
 }
 
-task zscore {
+task Zscore {
     input {
         Int? binSize
         File reference
