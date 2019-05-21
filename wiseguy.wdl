@@ -27,11 +27,122 @@ task count {
         File referenceIndex
         File? binFile
         File inputBam
-        String output_bed = "output.bed"
+        String outputBed = "output.bed"
     }
+
     command {
         wiseguy count \
         ~{"--binsize " + binSize} \
+       --reference ~{reference} \
+       ~{"--bin-file " + binFile} \
+       --output ~{outputBed} \
+       --input ~{inputBam}
+    }
 
+    output {
+        File bedFile = outputBed
+    }
+
+    runtime {
+        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
+        docker: "biowdl/wiseguy:latest"
     }
 }
+
+task gcCorrect {
+    input {
+        Int? binSize
+        File reference
+        File referenceIndex
+        File? binFile
+        File inputBed
+        String outputBed = "output.bed"
+        Float? fracN
+        Int? iter
+        Float? fracLowess
+    }
+
+    command {
+        wiseguy gc-correct \
+        ~{"--binsize " + binSize} \
+        --reference ~{reference} \
+        ~{"--bin-file " + binFile} \
+        --output ~{outputBed} \
+        --input ~{inputBed} \
+        ~{"--frac-n " + fracN} \
+        ~{"--iter " + iter} \
+        ~{"--frac-lowess " + fracLowess}
+    }
+
+    output {
+        File bedFile = outputBed
+    }
+
+    runtime {
+        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
+        docker: "biowdl/wiseguy:latest"
+    }
+}
+
+task newref {
+    input {
+        Int? binSize
+        File reference
+        File referenceIndex
+        File? binFile
+        File inputBed
+        String outputBed = "output.bed"
+        Int? nBins
+    }
+
+    command {
+        wiseguy newref \
+        ~{"--binsize " + binSize} \
+       --reference ~{reference} \
+       ~{"--bin-file " + binFile} \
+       --output ~{outputBed} \
+       --input ~{inputBed} \
+       ~{"--n-bins " + nBins}
+    }
+
+    output {
+        File bedFile = outputBed
+    }
+
+    runtime {
+        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
+        docker: "biowdl/wiseguy:latest"
+    }
+}
+
+task zscore {
+    input {
+        Int? binSize
+        File reference
+        File referenceIndex
+        File? binFile
+        File inputBed
+        File dictionaryFile
+        String outputBed = "output.bed"
+    }
+
+    command {
+        wiseguy zscore \
+        ~{"--binsize " + binSize} \
+       --reference ~{reference} \
+       ~{"--bin-file " + binFile} \
+       --output ~{outputBed} \
+       --input ~{inputBed} \
+       ~{"--dictionary-file " + dictionaryFile}
+    }
+
+    output {
+        File bedFile = outputBed
+    }
+
+    runtime {
+        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
+        docker: "biowdl/wiseguy:latest"
+    }
+}
+
