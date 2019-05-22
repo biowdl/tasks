@@ -32,6 +32,8 @@ task Count {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputBed})
         wiseguy count \
         ~{"--binsize " + binSize} \
        --reference ~{reference} \
@@ -64,6 +66,8 @@ task GcCorrect {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputBed})
         wiseguy gc-correct \
         ~{"--binsize " + binSize} \
         --reference ~{reference} \
@@ -97,6 +101,8 @@ task Newref {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputBed})
         wiseguy newref \
         ~{"--binsize " + binSize} \
        --reference ~{reference} \
@@ -130,6 +136,8 @@ task Zscore {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputBed})
         wiseguy zscore \
         ~{"--binsize " + binSize} \
         --reference ~{reference} \
