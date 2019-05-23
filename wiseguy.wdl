@@ -108,7 +108,7 @@ task Newref {
        --reference ~{reference} \
        ~{"--bin-file " + binFile} \
        --output ~{outputBed} \
-       ~{sep="-I " inputBeds} \
+       -I ~{sep=" -I " inputBeds} \
        ~{"--n-bins " + nBins}
     }
 
