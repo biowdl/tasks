@@ -194,6 +194,7 @@ task GatherBamFiles {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputBamPath})
         picard -Xmx~{memory}G \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
