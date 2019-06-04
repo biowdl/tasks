@@ -61,15 +61,18 @@ task Merge {
 
         String dockerTag = "1.8--h46bd0b3_5"
     }
+    String indexPath = sub(outputBamPath, "\.bam$",".bai")
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBamPath})
         samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
+        samtools index ~{outputBamPath} ~{indexPath}
     }
 
     output {
         File outputBam = outputBamPath
+        File outputBamIndex = indexPath
     }
 
     runtime {
