@@ -214,6 +214,7 @@ task HaplotypeCallerGvcf {
         String gvcfPath
         File referenceFasta
         File referenceFastaIndex
+        File referenceFastaDict
         Float contamination = 0.0
         File? dbsnpVCF
         File? dbsnpVCFIndex
