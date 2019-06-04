@@ -187,7 +187,7 @@ task Tabix {
         String type = "vcf"
         String dockerTag = "0.2.6--ha92aebf_0"
     }
-
+    # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
     command {
         set -e
         mkdir -p $(dirname ~{outputFilePath})
