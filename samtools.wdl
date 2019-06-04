@@ -1,7 +1,5 @@
 version 1.0
 
-import "common.wdl"
-
 task BgzipAndIndex {
     input {
         File inputFile
@@ -42,10 +40,8 @@ task Index {
     }
 
     output {
-        IndexedBamFile outputBam = object {
-          file: bamFile,
-          index: bamIndexPath
-        }
+        File indexedBam = bamFile
+        File index = bamIndexPath
     }
 
     runtime {
