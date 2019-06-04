@@ -328,10 +328,8 @@ task MergeVCFs {
     }
 
     output {
-        IndexedVcfFile outputVcf = object {
-          file: outputVcfPath,
-          index: outputVcfPath + ".tbi"
-        }
+        File outputVcf = outputVcfPath
+        File outputVcfIndex = outputVcfPath + ".tbi"
     }
 
     runtime {
