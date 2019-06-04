@@ -1,7 +1,5 @@
 version 1.0
 
-import "common.wdl"
-
 task BedToIntervalList {
     input {
         File bedFile
@@ -35,8 +33,10 @@ task BedToIntervalList {
 
 task CollectMultipleMetrics {
     input {
-        IndexedBamFile bamFile
-        Reference reference
+        File inputBam
+        File inputBamIndex
+        File referenceFasta
+        File referenceFastaDict
         String basename
 
         Boolean collectAlignmentSummaryMetrics = true
@@ -60,8 +60,8 @@ task CollectMultipleMetrics {
         mkdir -p $(dirname "~{basename}")
         picard -Xmx~{memory}G \
         CollectMultipleMetrics \
-        I=~{bamFile.file} \
-        R=~{reference.fasta} \
+        I=~{inputBam} \
+        R=~{referenceFasta} \
         O=~{basename} \
         PROGRAM=null \
         ~{true="PROGRAM=CollectAlignmentSummaryMetrics" false="" collectAlignmentSummaryMetrics} \
@@ -106,7 +106,8 @@ task CollectMultipleMetrics {
 
 task CollectRnaSeqMetrics {
     input {
-        IndexedBamFile bamFile
+        File inputBam
+        File inputBamIndex
         File refRefflat
         String basename
         String strandSpecificity = "NONE"
@@ -121,7 +122,7 @@ task CollectRnaSeqMetrics {
         mkdir -p $(dirname "~{basename}")
         picard -Xmx~{memory}G \
         CollectRnaSeqMetrics \
-        I=~{bamFile.file} \
+        I=~{inputBam} \
         O=~{basename}.RNA_Metrics \
         CHART_OUTPUT=~{basename}.RNA_Metrics.pdf \
         STRAND_SPECIFICITY=~{strandSpecificity} \
@@ -143,8 +144,10 @@ task CollectRnaSeqMetrics {
 
 task CollectTargetedPcrMetrics {
     input {
-        IndexedBamFile bamFile
-        Reference reference
+        File inputBam
+        File inputBamIndex
+        File referenceFasta
+        File referenceFastaDict
         File ampliconIntervals
         Array[File]+ targetIntervals
         String basename
@@ -159,8 +162,8 @@ task CollectTargetedPcrMetrics {
         mkdir -p $(dirname "~{basename}")
         picard -Xmx~{memory}G \
         CollectTargetedPcrMetrics \
-        I=~{bamFile.file} \
-        R=~{reference.fasta} \
+        I=~{inputBam} \
+        R=~{referenceFasta} \
         AMPLICON_INTERVALS=~{ampliconIntervals} \
         TARGET_INTERVALS=~{sep=" TARGET_INTERVALS=" targetIntervals} \
         O=~{basename}.targetPcrMetrics \
@@ -287,11 +290,9 @@ task MarkDuplicates {
     }
 
     output {
-        IndexedBamFile outputBam = object {
-          file: outputBamPath,
-          index: sub(outputBamPath, ".bam$", ".bai"),
-          md5: outputBamPath + ".md5"
-        }
+        File outputBam = outputBamPath
+        File outputBamIndex = sub(outputBamPath, ".bam$", ".bai")
+        File outputBamMd5 = outputBamPath + ".md5"
         File metricsFile = metricsPath
     }
 
@@ -338,7 +339,8 @@ task MergeVCFs {
 
 task SamToFastq {
     input {
-        IndexedBamFile inputBam
+        File inputBam
+        File inputBamIndex
         String outputRead1
         String? outputRead2
         String? outputUnpaired
@@ -352,7 +354,7 @@ task SamToFastq {
         set -e
         picard -Xmx~{memory}G \
         SamToFastq \
-        I=~{inputBam.file} \
+        I=~{inputBam} \
         ~{"FASTQ=" + outputRead1} \
         ~{"SECOND_END_FASTQ=" + outputRead2} \
         ~{"UNPAIRED_FASTQ=" + outputUnpaired}
