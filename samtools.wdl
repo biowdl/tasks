@@ -56,13 +56,15 @@ task Index {
 task Merge {
     input {
         Array[File]+ bamFiles
-        String outputBamPath
+        String outputBamPath = "merged.bam"
         Boolean force = true
 
         String dockerTag = "1.8--h46bd0b3_5"
     }
 
     command {
+        set -e
+        mkdir -p ~{outputBamPath}
         samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
     }
 
