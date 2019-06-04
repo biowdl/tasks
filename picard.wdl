@@ -37,6 +37,7 @@ task CollectMultipleMetrics {
         File inputBamIndex
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
         String basename
 
         Boolean collectAlignmentSummaryMetrics = true
@@ -148,6 +149,7 @@ task CollectTargetedPcrMetrics {
         File inputBamIndex
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
         File ampliconIntervals
         Array[File]+ targetIntervals
         String basename

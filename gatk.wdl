@@ -10,6 +10,7 @@ task ApplyBQSR {
         Array[File]+ sequenceGroupInterval
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -59,6 +60,7 @@ task BaseRecalibrator {
         File? dbsnpVCFIndex
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -101,6 +103,7 @@ task CombineGVCFs {
         String outputPath
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -167,6 +170,7 @@ task GenotypeGVCFs {
         String outputPath
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
         File? dbsnpVCF
         File? dbsnpVCFIndex
         Int memory = 6
@@ -249,6 +253,7 @@ task MuTect2 {
         Array[File]+ inputBamsIndex
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
         String outputVcf
         String tumorSample
         String? normalSample
@@ -289,6 +294,7 @@ task SplitNCigarReads {
         File inputBamIndex
         File referenceFasta
         File referenceFastaDict
+        File referenceFastaFai
         String outputBam
         Array[File]+ intervals
 
