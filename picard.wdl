@@ -204,11 +204,9 @@ task GatherBamFiles {
     }
 
     output {
-        IndexedBamFile outputBam = object {
-          file: outputBamPath,
-          index: sub(outputBamPath, ".bam$", ".bai"),
-          md5: outputBamPath + ".md5"
-        }
+        File outputBam = outputBamPath
+        File outputBamIndex = sub(outputBamPath, ".bam$", ".bai")
+        File outputBamMd5 = outputBamPath + ".md5"
     }
 
     runtime {
@@ -429,10 +427,8 @@ task SortVcf {
     }
 
     output {
-        IndexedVcfFile outputVcf = object {
-          file: outputVcfPath,
-          index: outputVcfPath + ".tbi"
-        }
+        File outputVcf = outputVcfPath
+        File outputVcfIndex = outputVcfPath + ".tbi"
     }
 
     runtime {
