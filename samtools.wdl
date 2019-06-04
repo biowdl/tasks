@@ -182,17 +182,24 @@ task Fastq {
 
 task Tabix {
     input {
-        String inputFile
+        File inputFile
+        String outputFilePath = "indexed.vcf.gz"
         String type = "vcf"
         String dockerTag = "0.2.6--ha92aebf_0"
     }
 
     command {
-        tabix ~{inputFile} -p ~{type}
+        set -e
+        if [ ! -f ~{outputFilePath} ]
+        then
+            ln ~{inputFile} ~{outputFilePath}
+        fi
+        tabix ~{outputFilePath} -p ~{type}
     }
 
     output {
-        File index = inputFile + ".tbi"
+        File indexedFile = outputFilePath
+        File index = outputFilePath + ".tbi"
     }
 
     runtime {
