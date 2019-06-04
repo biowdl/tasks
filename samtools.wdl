@@ -190,6 +190,7 @@ task Tabix {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputFilePath})
         if [ ! -f ~{outputFilePath} ]
         then
             ln ~{inputFile} ~{outputFilePath}
