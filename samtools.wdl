@@ -64,7 +64,7 @@ task Merge {
 
     command {
         set -e
-        mkdir -p ~{outputBamPath}
+        mkdir -p $(dirname ~{outputBamPath})
         samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
     }
 

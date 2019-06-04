@@ -221,7 +221,7 @@ task GatherVcfs {
     input {
         Array[File]+ inputVcfs
         Array[File]+ inputVcfIndexes
-        String outputVcfPath
+        String outputVcfPath = "out.vcf.gz"
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -230,6 +230,7 @@ task GatherVcfs {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputVcfPath})
         picard -Xmx~{memory}G \
         GatherVcfs \
         INPUT=~{sep=' INPUT=' inputVcfs} \
