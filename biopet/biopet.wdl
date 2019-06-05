@@ -452,6 +452,7 @@ task VcfStats {
             "/sample_compare/genotype.non_ref.abs.tsv"
         File? sampleCompareGenotypeRefAbs = outputDir + "/sample_compare/genotype.ref.abs.tsv"
         File? sampleCompareGenotypeRel = outputDir + "/sample_compare/genotype.rel.tsv"
+        Array[File] allStats = glob(outputDir + "/*")
     }
 
     runtime {

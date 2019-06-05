@@ -95,6 +95,7 @@ task CollectMultipleMetrics {
         File qualityDistribution = basename + ".quality_distribution_metrics"
         File qualityDistributionPdf = basename + ".quality_distribution.pdf"
         File qualityYield = basename + ".quality_yield_metrics"
+        Array[File] allStats = glob(basename + "*")
     }
 
     runtime {
