@@ -230,7 +230,7 @@ task GatherBamFiles {
 
     output {
         File outputBam = outputBamPath
-        File outputBamIndex = sub(outputBamPath, ".bam$", ".bai")
+        File outputBamIndex = sub(outputBamPath, "\.bam$", ".bai")
         File outputBamMd5 = outputBamPath + ".md5"
     }
 
@@ -313,7 +313,7 @@ task MarkDuplicates {
 
     output {
         File outputBam = outputBamPath
-        File outputBamIndex = sub(outputBamPath, ".bam$", ".bai")
+        File outputBamIndex = sub(outputBamPath, "\.bam$", ".bai")
         File outputBamMd5 = outputBamPath + ".md5"
         File metricsFile = metricsPath
     }

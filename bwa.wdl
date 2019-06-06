@@ -34,7 +34,7 @@ task Mem {
 
     output {
         File outputBam = outputPath
-        File outputBamIndex = sub(outputPath, ".bam$", ".bai")
+        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
     }
 
     runtime{

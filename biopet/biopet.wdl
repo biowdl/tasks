@@ -452,7 +452,45 @@ task VcfStats {
             "/sample_compare/genotype.non_ref.abs.tsv"
         File? sampleCompareGenotypeRefAbs = outputDir + "/sample_compare/genotype.ref.abs.tsv"
         File? sampleCompareGenotypeRel = outputDir + "/sample_compare/genotype.rel.tsv"
-        Array[File] allStats = glob(outputDir + "/*")
+        # A glob is easier, but duplicates all the outputs
+        Array[File] allStats = select_all([
+            general,
+            genotype,
+            sampleDistributionAvailableAggregate,
+            sampleDistributionAvailable,
+            sampleDistributionCalledAggregate,
+            sampleDistributionCalled,
+            sampleDistributionFilteredAggregate,
+            sampleDistributionFiltered,
+            sampleDistributionHetAggregate,
+            sampleDistributionHetNoNRefAggregate,
+            sampleDistributionHetNonRef,
+            sampleDistributionHet,
+            sampleDistributionHomAggregate,
+            sampleDistributionHomRefAggregate,
+            sampleDistributionHomRef,
+            sampleDistributionHom,
+            sampleDistributionHomVarAggregate,
+            sampleDistributionHomVar,
+            sampleDistributionMixedAggregate,
+            sampleDistributionMixed,
+            sampleDistributionNoCallAggregate,
+            sampleDistributionNoCall,
+            sampleDistributionNonInformativeAggregate,
+            sampleDistributionNonInformative,
+            sampleDistributionToalAggregate,
+            sampleDistributionTotal,
+            sampleDistributionVariantAggregate,
+            sampleDistributionVariant,
+            sampleCompareAlleleAbs,
+            sampleCompareAlleleNonRefAbs,
+            sampleCompareAlleleRefAbs,
+            sampleCompareAlleleRel,
+            sampleCompareGenotypeAbs,
+            sampleCompareGenotypeNonRefAbs,
+            sampleCompareGenotypeRefAbs,
+            sampleCompareGenotypeRel
+        ])
     }
 
     runtime {
