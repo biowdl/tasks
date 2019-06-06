@@ -25,8 +25,10 @@ task CheckFileMD5 {
     input {
         File file
         String md5
-        # Version not that important as long as it is stable.
-        String dockerTag = "5.0.2"
+        # By default cromwell expects /bin/bash to be present in the container
+        # The 'bash' container does not fill this requirement. (It is in /usr/local/bin/bash)
+        # Use a stable version of debian:stretch-slim for this. (Smaller than ubuntu)
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
@@ -36,8 +38,7 @@ task CheckFileMD5 {
     }
 
     runtime {
-        # Apparently there is a bash container for this sort of stuff.
-        docker: "bash:" + dockerTag
+        docker: dockerImage
     }
 }
 

@@ -1,7 +1,5 @@
 version 1.0
 
-import "common.wdl"
-
 task BgzipAndIndex {
     input {
         File inputFile
@@ -42,10 +40,8 @@ task Index {
     }
 
     output {
-        IndexedBamFile outputBam = object {
-          file: bamFile,
-          index: bamIndexPath
-        }
+        File indexedBam = bamFile
+        File index = bamIndexPath
     }
 
     runtime {
@@ -56,18 +52,23 @@ task Index {
 task Merge {
     input {
         Array[File]+ bamFiles
-        String outputBamPath
+        String outputBamPath = "merged.bam"
         Boolean force = true
 
         String dockerTag = "1.8--h46bd0b3_5"
     }
+    String indexPath = sub(outputBamPath, "\.bam$",".bai")
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputBamPath})
         samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
+        samtools index ~{outputBamPath} ~{indexPath}
     }
 
     output {
         File outputBam = outputBamPath
+        File outputBamIndex = indexPath
     }
 
     runtime {
@@ -177,17 +178,25 @@ task Fastq {
 
 task Tabix {
     input {
-        String inputFile
+        File inputFile
+        String outputFilePath = "indexed.vcf.gz"
         String type = "vcf"
         String dockerTag = "0.2.6--ha92aebf_0"
     }
-
+    # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
     command {
-        tabix ~{inputFile} -p ~{type}
+        set -e
+        mkdir -p $(dirname ~{outputFilePath})
+        if [ ! -f ~{outputFilePath} ]
+        then
+            ln ~{inputFile} ~{outputFilePath}
+        fi
+        tabix ~{outputFilePath} -p ~{type}
     }
 
     output {
-        File index = inputFile + ".tbi"
+        File indexedFile = outputFilePath
+        File index = outputFilePath + ".tbi"
     }
 
     runtime {
