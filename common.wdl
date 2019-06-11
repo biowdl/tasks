@@ -32,9 +32,10 @@ task CheckFileMD5 {
     }
 
     command {
+        bash -c '
         set -e -o pipefail
-        MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
-        [ "$MD5SUM" = '~{md5}' ]
+        echo "~{md5}  ~{file}" | md5sum -c
+        '
     }
 
     runtime {
