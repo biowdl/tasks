@@ -2,7 +2,6 @@ version 1.0
 
 task Hisat2 {
     input {
-        File indexDirectory
         String indexBasename
         File inputR1
         File? inputR2
@@ -19,12 +18,15 @@ task Hisat2 {
         String dockerTag = "2388ff67fc407dad75774291ca5038f40cac4be0-0"
     }
 
+    Array[File] indexFiles = glob(indexBasename + "*")
+    String indexPath = sub(indexFiles[0], "\.[0-9]\.ht2", "")
+
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outputBam})
         hisat2 \
         -p ~{threads} \
-        -x ~{indexDirectory}/~{indexBasename} \
+        -x ~{indexPath} \
         ~{true="-1" false="-U" defined(inputR2)} ~{inputR1} \
         ~{"-2" + inputR2} \
         --rg-id ~{readgroup} \
