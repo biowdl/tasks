@@ -84,7 +84,7 @@ task ExtractAdaptersFastqc {
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 5 # This is ridiculous...
         String dockerTag = "0.2--1"
     }
