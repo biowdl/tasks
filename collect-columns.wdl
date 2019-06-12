@@ -13,7 +13,7 @@ task CollectColumns {
         File? referenceGtf
         String? featureAttribute
 
-        String dockerTag = "0.1.1--py_0"
+        String dockerTag = "0.2.0--py_1"
     }
 
     command {

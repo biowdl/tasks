@@ -9,7 +9,7 @@ task Star {
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
         String? outStd
-        String? twopassMode
+        String? twopassMode = "Basic"
         Array[String]? outSAMattrRGline
         String? outSAMunmapped = "Within KeepPairs"
         Int? limitBAMsortRAM
@@ -19,7 +19,7 @@ task Star {
         String dockerTag = "2.6.0c--0"
     }
 
-    # Needs to be extended for all possible output extensions
+    #TODO Needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
     command {
