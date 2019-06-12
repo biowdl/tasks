@@ -24,21 +24,22 @@ task AppendToStringArray {
 task CheckFileMD5 {
     input {
         File file
-        File md5
-        # Version not that important as long as it is stable.
-        String dockerTag = "5.0.2"
+        String md5
+        # By default cromwell expects /bin/bash to be present in the container
+        # The 'bash' container does not fill this requirement. (It is in /usr/local/bin/bash)
+        # Use a stable version of debian:stretch-slim for this. (Smaller than ubuntu)
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
+        bash -c '
         set -e -o pipefail
-        MD5SUM=$(md5sum ~{file} | cut -d ' ' -f 1)
-        MD5SUM_CORRECT=$(cat ~{md5} | grep ~{basename(file)} | cut -d ' ' -f 1)
-        [ $MD5SUM = $MD5SUM_CORRECT ]
+        echo "~{md5}  ~{file}" | md5sum -c
+        '
     }
 
     runtime {
-        # Apparently there is a bash container for this sort of stuff.
-        docker: "bash:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -203,20 +204,20 @@ struct Reference {
 struct IndexedVcfFile {
     File file
     File index
-    File? md5sum
+    String? md5sum
 }
 
 struct IndexedBamFile {
     File file
     File index
-    File? md5sum
+    String? md5sum
 }
 
 struct FastqPair {
     File R1
-    File? R1_md5
+    String? R1_md5
     File? R2
-    File? R2_md5
+    String? R2_md5
 }
 
 struct CaseControl {

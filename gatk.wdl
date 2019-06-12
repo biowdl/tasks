@@ -1,15 +1,16 @@
 version 1.0
 
-import "common.wdl"
-
 # Apply Base Quality Score Recalibration (BQSR) model
 task ApplyBQSR {
     input {
-        IndexedBamFile inputBam
+        File inputBam
+        File inputBamIndex
         String outputBamPath
         File recalibrationReport
         Array[File]+ sequenceGroupInterval
-        Reference reference
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -23,8 +24,8 @@ task ApplyBQSR {
         ApplyBQSR \
         --create-output-bam-md5 \
         --add-output-sam-program-record \
-        -R ~{reference.fasta} \
-        -I ~{inputBam.file} \
+        -R ~{referenceFasta} \
+        -I ~{inputBam} \
         --use-original-qualities \
         -O ~{outputBamPath} \
         -bqsr ~{recalibrationReport} \
@@ -35,11 +36,9 @@ task ApplyBQSR {
     }
 
     output {
-        IndexedBamFile recalibratedBam = {
-            "file": outputBamPath,
-            "index": sub(outputBamPath, "\.bam$", ".bai"),
-            "md5": outputBamPath + ".md5"
-        }
+        File recalibratedBam = outputBamPath
+        File recalibratedBamIndex = sub(outputBamPath, "\.bam$", ".bai")
+        File recalibratedBamMd5 = outputBamPath + ".md5"
     }
 
     runtime {
@@ -51,13 +50,17 @@ task ApplyBQSR {
 # Generate Base Quality Score Recalibration (BQSR) model
 task BaseRecalibrator {
     input {
-        IndexedBamFile inputBam
+        File inputBam
+        File inputBamIndex
         String recalibrationReportPath
         Array[File]+ sequenceGroupInterval
         Array[File]? knownIndelsSitesVCFs
         Array[File]? knownIndelsSitesVCFIndexes
-        IndexedVcfFile? dbsnpVCF
-        Reference reference
+        File? dbsnpVCF
+        File? dbsnpVCFIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -66,7 +69,7 @@ task BaseRecalibrator {
 
     Array[File]+ knownIndelsSitesVCFsArg = flatten([
         select_first([knownIndelsSitesVCFs, []]),
-        [select_first([dbsnpVCF]).file]
+        [select_first([dbsnpVCF])]
     ])
 
     command {
@@ -74,8 +77,8 @@ task BaseRecalibrator {
         mkdir -p $(dirname ~{recalibrationReportPath})
         gatk --java-options -Xmx~{memory}G \
         BaseRecalibrator \
-        -R ~{reference.fasta} \
-        -I ~{inputBam.file} \
+        -R ~{referenceFasta} \
+        -I ~{inputBam} \
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
         --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
@@ -98,7 +101,9 @@ task CombineGVCFs {
         Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
         String outputPath
-        Reference reference
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
 
         Int memory = 4
         Float memoryMultiplier = 3.0
@@ -110,17 +115,15 @@ task CombineGVCFs {
         mkdir -p $(dirname ~{outputPath})
         gatk --java-options -Xmx~{memory}G \
         CombineGVCFs \
-        -R ~{reference.fasta} \
+        -R ~{referenceFasta} \
         -O ~{outputPath} \
         -V ~{sep=' -V ' gvcfFiles} \
         -L ~{sep=' -L ' intervals}
     }
 
     output {
-        IndexedVcfFile outputVCF = {
-            "file": outputPath,
-            "index": outputPath + ".tbi"
-        }
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -165,26 +168,24 @@ task GenotypeGVCFs {
         Array[File]+ gvcfFilesIndex
         Array[File]+ intervals
         String outputPath
-        Reference reference
-        IndexedVcfFile? dbsnpVCF
-
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        File? dbsnpVCF
+        File? dbsnpVCFIndex
         Int memory = 6
         Float memoryMultiplier = 2.0
         String dockerTag = "4.1.0.0--0"
     }
-
-    File dbsnpFile = if (defined(dbsnpVCF))
-        then select_first([dbsnpVCF]).file
-        else ""
 
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
         gatk --java-options -Xmx~{memory}G \
         GenotypeGVCFs \
-        -R ~{reference.fasta} \
+        -R ~{referenceFasta} \
         -O ~{outputPath} \
-        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpFile} \
+        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
         -G StandardAnnotation \
         --only-output-calls-starting-in-intervals \
         -new-qual \
@@ -193,10 +194,9 @@ task GenotypeGVCFs {
     }
 
     output {
-        IndexedVcfFile outputVCF = {
-            "file": outputPath,
-            "index": outputPath + ".tbi"
-        }
+        File outputVCF = outputPath
+        File outputVCFIndex = outputPath + ".tbi"
+
     }
 
     runtime {
@@ -212,38 +212,34 @@ task HaplotypeCallerGvcf {
         Array[File]+ inputBamsIndex
         Array[File]+ intervalList
         String gvcfPath
-        Reference reference
+        File referenceFasta
+        File referenceFastaIndex
+        File referenceFastaDict
         Float contamination = 0.0
-        IndexedVcfFile? dbsnpVCF
-
+        File? dbsnpVCF
+        File? dbsnpVCFIndex
         Int memory = 4
         Float memoryMultiplier = 3
         String dockerTag = "4.1.0.0--0"
     }
-
-    File dbsnpFile = if (defined(dbsnpVCF))
-        then select_first([dbsnpVCF]).file
-        else ""
 
     command {
         set -e
         mkdir -p $(dirname ~{gvcfPath})
         gatk --java-options -Xmx~{memory}G \
         HaplotypeCaller \
-        -R ~{reference.fasta} \
+        -R ~{referenceFasta} \
         -O ~{gvcfPath} \
         -I ~{sep=" -I " inputBams} \
         -L ~{sep=' -L ' intervalList} \
-        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpFile} \
+        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
         -contamination ~{contamination} \
         -ERC GVCF
     }
 
     output {
-        IndexedVcfFile outputGVCF = {
-            "file": gvcfPath,
-            "index": gvcfPath + ".tbi"
-        }
+        File outputGVCF = gvcfPath
+        File outputGVCFIndex = gvcfPath + ".tbi"
     }
 
     runtime {
@@ -256,7 +252,9 @@ task MuTect2 {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
-        Reference reference
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
         String outputVcf
         String tumorSample
         String? normalSample
@@ -272,7 +270,7 @@ task MuTect2 {
         mkdir -p $(dirname ~{outputVcf})
         gatk --java-options -Xmx~{memory}G \
         Mutect2 \
-        -R ~{reference.fasta} \
+        -R ~{referenceFasta} \
         -I ~{sep=" -I " inputBams} \
         -tumor ~{tumorSample} \
         ~{"-normal " + normalSample} \
@@ -281,10 +279,8 @@ task MuTect2 {
     }
 
     output {
-        IndexedVcfFile vcfFile = {
-            "file": outputVcf,
-            "index": outputVcf + ".tbi"
-        }
+        File vcfFile = outputVcf
+        File vcfFileIndex = outputVcf + ".tbi"
     }
 
     runtime {
@@ -295,8 +291,11 @@ task MuTect2 {
 
 task SplitNCigarReads {
     input {
-        IndexedBamFile inputBam
-        Reference reference
+        File inputBam
+        File inputBamIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
         String outputBam
         Array[File]+ intervals
 
@@ -310,17 +309,15 @@ task SplitNCigarReads {
         mkdir -p $(dirname ~{outputBam})
         gatk --java-options -Xmx~{memory}G \
         SplitNCigarReads \
-        -I ~{inputBam.file} \
-        -R ~{reference.fasta} \
+        -I ~{inputBam} \
+        -R ~{referenceFasta} \
         -O ~{outputBam} \
         -L ~{sep=' -L ' intervals}
     }
 
     output {
-        IndexedBamFile bam = {
-            "file": outputBam,
-            "index": sub(outputBam, "\.bam$", ".bai")
-        }
+        File bam = outputBam
+        File bamIndex = sub(outputBam, "\.bam$", ".bai")
     }
 
     runtime {

@@ -1,7 +1,5 @@
 version 1.0
 
-import "common.wdl" as common
-
 task Mem {
     input {
         File read1
@@ -35,10 +33,8 @@ task Mem {
     }
 
     output {
-        IndexedBamFile bamFile = object {
-          file: outputPath,
-          index: sub(outputPath, ".bam$", ".bai")
-        }
+        File outputBam = outputPath
+        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
     }
 
     runtime{
