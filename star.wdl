@@ -2,9 +2,9 @@ version 1.0
 
 task Star {
     input {
-        Array[File] inputR1
+        Array[File]+ inputR1
         Array[File]? inputR2
-        File genomeDir
+        Array[File]+ indexFiles
         String outFileNamePrefix
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
@@ -28,7 +28,7 @@ task Star {
         STAR \
         --readFilesIn ~{sep=',' inputR1} ~{sep="," inputR2} \
         --outFileNamePrefix ~{outFileNamePrefix} \
-        --genomeDir ~{genomeDir} \
+        --genomeDir ~{sub(indexFiles[0], basename(indexFiles[0]), "")} \
         --outSAMtype ~{outSAMtype} \
         --readFilesCommand ~{readFilesCommand} \
         ~{"--outSAMunmapped " + outSAMunmapped} \

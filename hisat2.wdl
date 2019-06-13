@@ -2,7 +2,7 @@ version 1.0
 
 task Hisat2 {
     input {
-        Array[File] indexFiles
+        Array[File]+ indexFiles
         File inputR1
         File? inputR2
         String outputBam
