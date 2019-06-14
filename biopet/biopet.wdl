@@ -179,7 +179,7 @@ task FastqSync {
     output {
         FastqPair out1 = object {
           R1: out1path,
-          R1: out2path
+          R2: out2path
         }
     }
     
