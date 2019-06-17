@@ -2,14 +2,14 @@ version 1.0
 
 task Star {
     input {
-        Array[File] inputR1
+        Array[File]+ inputR1
         Array[File]? inputR2
-        File genomeDir
+        Array[File]+ indexFiles
         String outFileNamePrefix
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
         String? outStd
-        String? twopassMode
+        String? twopassMode = "Basic"
         Array[String]? outSAMattrRGline
         String? outSAMunmapped = "Within KeepPairs"
         Int? limitBAMsortRAM
@@ -19,7 +19,7 @@ task Star {
         String dockerTag = "2.6.0c--0"
     }
 
-    # Needs to be extended for all possible output extensions
+    #TODO Needs to be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
     command {
@@ -28,7 +28,7 @@ task Star {
         STAR \
         --readFilesIn ~{sep=',' inputR1} ~{sep="," inputR2} \
         --outFileNamePrefix ~{outFileNamePrefix} \
-        --genomeDir ~{genomeDir} \
+        --genomeDir ~{sub(indexFiles[0], basename(indexFiles[0]), "")} \
         --outSAMtype ~{outSAMtype} \
         --readFilesCommand ~{readFilesCommand} \
         ~{"--outSAMunmapped " + outSAMunmapped} \

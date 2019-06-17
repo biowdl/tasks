@@ -10,7 +10,7 @@ task HTSeqCount {
         String order = "pos"
         String stranded = "no"
 
-        Int memory = 20
+        Int memory = 40
         String dockerTag = "0.9.1--py36h7eb728f_2"
     }
 

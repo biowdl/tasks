@@ -84,7 +84,7 @@ task ExtractAdaptersFastqc {
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 5 # This is ridiculous...
         String dockerTag = "0.2--1"
     }
@@ -179,7 +179,7 @@ task FastqSync {
     output {
         FastqPair out1 = object {
           R1: out1path,
-          R1: out2path
+          R2: out2path
         }
     }
     

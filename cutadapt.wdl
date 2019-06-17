@@ -62,7 +62,7 @@ task Cutadapt {
         String? reportPath
 
         Int cores = 1
-        Int memory = 8
+        Int memory = 16
         String dockerTag = "2.3--py36h14c3975_0"
     }
 
