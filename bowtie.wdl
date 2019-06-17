@@ -34,6 +34,7 @@ task Bowtie {
         Boolean best = false
         Boolean strata = false
         Boolean sam = true  # Sane default
+        String? samRG
         Int threads = 1
         Int memory = 8
         Int picardMemory = 4
@@ -51,6 +52,9 @@ task Bowtie {
         ~{"-k " + k} \
         ~{true="--best" false="" best} \
         ~{true="--strata" false="" strata} \
+        ~{"--threads " + threads} \
+        ~{true="--sam" false="" sam} \
+        ~{"--sam-RG " + samRG} \
         -1 ~{sep="," readsUpstream} \
         ~{true="-2" false="" defined(readsDownstream)} ~{sep="," readsDownstream} \
         | picard -Xmx~{picardMemory}G SortSam \
