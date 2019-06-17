@@ -30,6 +30,7 @@ task Prediction {
     
     runtime {
         cpu: threads
+        memory: "6G"
         docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }   
 
@@ -69,6 +70,7 @@ task Mateclever {
     
     runtime {
         cpu: threads
+        memory: "6G"
         docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }
 }
