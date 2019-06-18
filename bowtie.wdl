@@ -41,11 +41,12 @@ task Bowtie {
         # Image contains bowtie=1.2.2 and picard=2.9.2
         String dockerImage = "quay.io/biocontainers/mulled-v2-bfe71839265127576d3cd749c056e7b168308d56:1d8bec77b352cdcf3e9ff3d20af238b33ed96eae-0"
     }
-    String indexBasename = sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")
 
     # Assume fastq input with -q flag.
 
     command {
+        set -e -o pipefail
+        mkdir -p $(dirname ~{outputPath})
         bowtie -q \
         ~{"--seedmms " +  seedmms} \
         ~{"--seedlen " + seedlen} \
@@ -54,8 +55,8 @@ task Bowtie {
         ~{true="--strata" false="" strata} \
         ~{"--threads " + threads} \
         ~{true="--sam" false="" sam} \
-        ~{"--sam-RG " + samRG} \
-        ~{indexBasename} \
+        ~{"--sam-RG '" + samRG}~{true="'" false="" defined(samRG)} \
+        ~{sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")} \
         ~{true="-1" false="" defined(readsDownstream)} ~{sep="," readsUpstream} \
         ~{true="-2" false="" defined(readsDownstream)} ~{sep="," readsDownstream} \
         | picard -Xmx~{picardMemory}G SortSam \
@@ -67,7 +68,7 @@ task Bowtie {
 
     output {
         File outputBam = outputPath
-        File outputBamIndex = outputPath + ".bai"
+        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
     }
 
     runtime {
