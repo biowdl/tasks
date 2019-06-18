@@ -27,7 +27,7 @@ task Bowtie {
         Array[File]+ readsUpstream
         Array[File]+? readsDownstream
         String outputPath = "mapped.bam"
-        BowtieIndex index
+        Array[File]+ indexFiles
         Int? seedmms
         Int? seedlen
         Int? k
@@ -41,7 +41,7 @@ task Bowtie {
         # Image contains bowtie=1.2.2 and picard=2.9.2
         String dockerImage = "quay.io/biocontainers/mulled-v2-bfe71839265127576d3cd749c056e7b168308d56:1d8bec77b352cdcf3e9ff3d20af238b33ed96eae"
     }
-    String indexBasename = sub(index.fasta, "\.fa(sta)?$", "")
+    String indexBasename = sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")
 
     # Assume fastq input with -q flag.
 
@@ -55,7 +55,8 @@ task Bowtie {
         ~{"--threads " + threads} \
         ~{true="--sam" false="" sam} \
         ~{"--sam-RG " + samRG} \
-        -1 ~{sep="," readsUpstream} \
+        ~{indexBasename} \
+        ~{true="-1" false="" defined(readsDownstream)} ~{sep="," readsUpstream} \
         ~{true="-2" false="" defined(readsDownstream)} ~{sep="," readsDownstream} \
         | picard -Xmx~{picardMemory}G SortSam \
         INPUT=/dev/stdin \
