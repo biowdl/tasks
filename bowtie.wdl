@@ -33,7 +33,6 @@ task Bowtie {
         Int? k
         Boolean best = false
         Boolean strata = false
-        Boolean sam = true  # Sane default
         String? samRG
         Int threads = 1
         Int memory = 8
@@ -43,18 +42,20 @@ task Bowtie {
     }
 
     # Assume fastq input with -q flag.
+    # The output always needs to be SAM as it is piped into Picard SortSam
+    # Hence, the --sam flag is used.
 
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outputPath})
         bowtie -q \
+        --sam \
         ~{"--seedmms " +  seedmms} \
         ~{"--seedlen " + seedlen} \
         ~{"-k " + k} \
         ~{true="--best" false="" best} \
         ~{true="--strata" false="" strata} \
         ~{"--threads " + threads} \
-        ~{true="--sam" false="" sam} \
         ~{"--sam-RG '" + samRG}~{true="'" false="" defined(samRG)} \
         ~{sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")} \
         ~{true="-1" false="" defined(readsDownstream)} ~{sep="," readsUpstream} \
