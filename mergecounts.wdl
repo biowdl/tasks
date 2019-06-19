@@ -1,5 +1,6 @@
 version 1.0
 
+#DEPRECATED
 task MergeCounts {
     input {
         Array[File] inputFiles

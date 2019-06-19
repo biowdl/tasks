@@ -50,8 +50,8 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        Int memory = 4
-        Float memoryMultiplier = 3.5
+        Int memory = 8
+        Float memoryMultiplier = 4
         String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
@@ -133,8 +133,8 @@ task CollectRnaSeqMetrics {
         String basename
         String strandSpecificity = "NONE"
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        Int memory = 8
+        Float memoryMultiplier = 4.0
         String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
@@ -278,7 +278,7 @@ task MarkDuplicates {
         String outputBamPath
         String metricsPath
 
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 3.0
         String dockerTag = "2.18.26--0"
 

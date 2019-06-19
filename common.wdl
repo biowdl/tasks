@@ -131,23 +131,6 @@ task MapMd5 {
     }
 }
 
-task ObjectMd5 {
-    input {
-        Object the_object
-    }
-
-    command {
-        cat ~{write_object(the_object)} |  md5sum - | sed -e 's/  -//'
-    }
-
-    output {
-        String md5sum = read_string(stdout())
-    }
-
-    runtime {
-        memory: 1
-    }
-}
 
 task StringArrayMd5 {
     input {

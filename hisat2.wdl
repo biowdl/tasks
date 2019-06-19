@@ -2,8 +2,7 @@ version 1.0
 
 task Hisat2 {
     input {
-        File indexDirectory
-        String indexBasename
+        Array[File]+ indexFiles
         File inputR1
         File? inputR2
         String outputBam
@@ -24,7 +23,7 @@ task Hisat2 {
         mkdir -p $(dirname ~{outputBam})
         hisat2 \
         -p ~{threads} \
-        -x ~{indexDirectory}/~{indexBasename} \
+        -x ~{sub(indexFiles[0], "\.[0-9]\.ht2", "")} \
         ~{true="-1" false="-U" defined(inputR2)} ~{inputR1} \
         ~{"-2" + inputR2} \
         --rg-id ~{readgroup} \
