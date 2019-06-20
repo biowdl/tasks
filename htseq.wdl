@@ -5,7 +5,7 @@ task HTSeqCount {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         File gtfFile
-        String outputTable
+        String outputTable = "output.tsv"
         String format = "bam"
         String order = "pos"
         String stranded = "no"
