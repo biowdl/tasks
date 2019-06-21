@@ -1,5 +1,7 @@
 version 1.0
 
+import "common.wdl"
+
 task BedToIntervalList {
     input {
         File bedFile
@@ -460,3 +462,33 @@ task SortVcf {
         memory: ceil(memory * memoryMultiplier)
     }
 }
+
+task RenameSample {
+    input {
+        File inputVcf
+        String outputPath
+        String newSampleName
+        Int memory = 8
+        Float memoryMultiplier = 3.0
+    }
+
+    command {
+        set -e
+        mkdir -p $(dirname ~{outputPath})
+        picard -Xmx~{memory}G \
+        RenameSampleInVcf \
+        I=~{inputVcf} \
+        O=~{outputPath} \
+        NEW_SAMPLE_NAME=~{newSampleName}
+    }
+
+    output {
+        File renamedVcf = "~{outputPath}"
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/picard:2.19.0--0"
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
