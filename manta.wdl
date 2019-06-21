@@ -117,7 +117,7 @@ task Germline {
     runtime {
         cpu: cores
         memory: memory
-        docker: docker: "quay.io/biocontainers/manta:" + dockerTag
+        docker: "quay.io/biocontainers/manta:" + dockerTag
     }
 }
     
