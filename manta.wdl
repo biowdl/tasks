@@ -69,3 +69,55 @@ task Somatic {
         docker: "quay.io/biocontainers/manta:" + dockerTag
     }
 }
+
+task Germline {
+    input {
+        IndexedBamFile normalBam
+        Reference reference
+        String runDir
+        File? callRegions
+        File? callRegionsIndex
+        Boolean exome = false
+        
+        Int cores = 1
+        Int memory = 4
+        String dockerTag = "1.4.0--py27_1"
+    }
+
+    command {
+        set -e
+        configManta.py \
+        ~{"--normalBam " + normalBam.file} \
+        --referenceFasta ~{reference.fasta} \
+        ~{"--callRegions " + callRegions} \
+        --runDir ~{runDir} \
+        ~{true="--exome" false="" exome}
+        
+        ~{runDir}/runWorkflow.py \
+        -m local \
+        -j ~{cores} \
+        -g ~{memory}
+    }
+
+    output {
+        IndexedVcfFile candidateSmallIndels = object {
+            file: runDir + "/results/variants/candidateSmallIndels.vcf.gz",
+            index: runDir + "/results/variants/candidateSmallIndels.vcf.gz.tbi"
+        }
+        IndexedVcfFile candidateSV = object {
+            file: runDir + "/results/variants/candidateSV.vcf.gz",
+            index: runDir + "/results/variants/candidateSV.vcf.gz.tbi"
+        }
+        IndexedVcfFile diploidSV = object {
+            file: runDir + "/results/variants/diploidSV.vcf.gz",
+            index: runDir + "/results/variants/diploidSV.vcf.gz.tbi"
+        }
+    }
+    
+    runtime {
+        cpu: cores
+        memory: memory
+        docker: docker: "quay.io/biocontainers/manta:" + dockerTag
+    }
+}
+    
