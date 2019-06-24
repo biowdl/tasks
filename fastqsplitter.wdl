@@ -29,7 +29,9 @@ task Fastqsplitter {
         String dockerImage = "quay.io/biocontainers/fastqsplitter:1.0.0--py_0"
         Int? compressionLevel
         Int? threadsPerFile
-        Int cores = 2  # fastqplitter utilizes one thread per input file and one or more threads per output file + one thread for the application.
+         # fastqplitter utilizes one thread per input file and one or more threads per output file + one thread for the application.
+         # Since a compression level of 1 is used, each output file uses approx 0.5 cores.
+        Int cores = 1 + ceil(0.5 * len(outputPaths))
     }
 
     command {
