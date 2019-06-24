@@ -62,8 +62,8 @@ task Cutadapt {
         String? reportPath
 
         Int cores = 1
-        Int memory = 16
-        String dockerTag = "2.3--py36h14c3975_0"
+        Int memory = 16  # FIXME: Insane memory. Double-check if needed.
+        String dockerImage = "quay.io/biocontainers/cutadapt:2.3--py36h14c3975_0"
     }
 
     String read2outputArg = if (defined(read2output))
@@ -169,6 +169,6 @@ task Cutadapt {
     runtime {
         cpu: cores
         memory: memory
-        docker: "quay.io/biocontainers/cutadapt:" + dockerTag
+        docker: dockerImage
     }
 }
