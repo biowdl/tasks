@@ -280,7 +280,7 @@ task MarkDuplicates {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -319,7 +319,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
