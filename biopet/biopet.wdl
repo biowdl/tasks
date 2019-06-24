@@ -239,7 +239,7 @@ task ScatterRegions {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerTag = "0.2--0"
+        String dockerImage = "quay.io/biocontainers/biopet-scatterregions:0.2--0"
     }
 
     # OutDirPath must be defined here because the glob process relies on
@@ -264,7 +264,7 @@ task ScatterRegions {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/biopet-scatterregions:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
