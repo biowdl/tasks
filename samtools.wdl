@@ -6,7 +6,7 @@ task BgzipAndIndex {
         String outputDir
         String type = "vcf"
 
-        String dockerTag = "0.2.6--ha92aebf_0"
+        String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
 
     String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
@@ -23,7 +23,7 @@ task BgzipAndIndex {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/tabix:" + dockerTag
+       docker: dockerImage
     }
 }
 
@@ -32,7 +32,7 @@ task Index {
         File bamFile
         String bamIndexPath
 
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
@@ -45,7 +45,7 @@ task Index {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -55,7 +55,7 @@ task Merge {
         String outputBamPath = "merged.bam"
         Boolean force = true
 
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
 
@@ -72,7 +72,7 @@ task Merge {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -81,7 +81,7 @@ task Markdup {
         File inputBam
         String outputBamPath
 
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
@@ -93,7 +93,7 @@ task Markdup {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -102,7 +102,7 @@ task Flagstat {
         File inputBam
         String outputPath
 
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
@@ -116,7 +116,7 @@ task Flagstat {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -135,7 +135,7 @@ task Fastq {
 
         Int threads = 1
         Int memory = 1
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
@@ -162,7 +162,7 @@ task Fastq {
     runtime {
         cpu: threads
         memory: memory
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -181,7 +181,7 @@ task Tabix {
         File inputFile
         String outputFilePath = "indexed.vcf.gz"
         String type = "vcf"
-        String dockerTag = "0.2.6--ha92aebf_0"
+        String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
     # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
     command {
@@ -200,7 +200,7 @@ task Tabix {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/tabix:" + dockerTag
+       docker: dockerImage
     }
 }
 
@@ -218,7 +218,7 @@ task View {
 
         Int threads = 1
         Int memory = 1
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
@@ -242,6 +242,6 @@ task View {
     runtime {
         cpu: threads
         memory: memory
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
