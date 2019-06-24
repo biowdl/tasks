@@ -31,7 +31,7 @@ task Fastqsplitter {
         Int? threadsPerFile
          # fastqplitter utilizes one thread per input file and one or more threads per output file + one thread for the application.
          # Since a compression level of 1 is used, each output file uses approx 0.5 cores.
-        Int cores = 1 + ceil(0.5 * len(outputPaths))
+        Int cores = 1 + ceil(0.5 * length(outputPaths))
     }
 
     command {
@@ -50,7 +50,7 @@ task Fastqsplitter {
 
     # Using very safe margins here. 10MB/300MB per outputfile is used for single-threaded/multi-threaded compression.
     Float memoryPerFile = if select_first([threadsPerFile, 1]) > 1 then 0.02 else 0.40
-    Int fastqsplitterMemory = ceil(0.100 + memoryPerFile * len(outputPaths))
+    Int fastqsplitterMemory = ceil(0.100 + memoryPerFile * length(outputPaths))
     # Make sure a minimum of 2 GB is present to pull the singularity image
     Int memory = if fastqsplitterMemory <= 2 then 2 else fastqsplitterMemory
 
