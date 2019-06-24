@@ -111,6 +111,7 @@ task CollectMultipleMetrics {
             insertSizeHistogramPdf,
             insertSize,
             preAdapterDetail,
+            preAdapterSummary,
             qualityByCycle,
             qualityByCyclePdf,
             qualityDistribution,
