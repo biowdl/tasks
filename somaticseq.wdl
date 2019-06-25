@@ -28,6 +28,7 @@ task ParallelPaired {
         File? strelkaIndel
 
         Int threads = 1
+        String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
     command {
@@ -69,7 +70,7 @@ task ParallelPaired {
 
     runtime {
         cpu: threads
-        docker: "lethalfang/somaticseq:3.1.0"
+        docker: dockerImage
     }
 }
 
@@ -99,6 +100,7 @@ task ParallelPairedTrain {
         File? strelkaIndel
 
         Int threads = 1
+        String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
     command {
@@ -139,7 +141,7 @@ task ParallelPairedTrain {
 
     runtime {
         cpu: threads
-        docker: "lethalfang/somaticseq:3.1.0"
+        docker: dockerImage
     }
 }
 
@@ -162,6 +164,7 @@ task ParallelSingle {
         File? strelkaVCF
 
         Int threads = 1
+        String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
     command {
@@ -196,7 +199,7 @@ task ParallelSingle {
 
     runtime {
         cpu: threads
-        docker: "lethalfang/somaticseq:3.1.0"
+        docker: dockerImage
     }
 }
 
@@ -219,6 +222,7 @@ task ParallelSingleTrain {
         File? strelkaVCF
 
         Int threads = 1
+        String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
     command {
@@ -252,6 +256,6 @@ task ParallelSingleTrain {
 
     runtime {
         cpu: threads
-        docker: "lethalfang/somaticseq:3.1.0"
+        docker: dockerImage
     }
 }
