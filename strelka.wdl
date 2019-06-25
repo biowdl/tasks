@@ -15,7 +15,7 @@ task Germline {
 
         Int cores = 1
         Int memory = 4
-        String dockerTag = "2.9.7--0"
+        String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
     }
 
     command {
@@ -40,7 +40,7 @@ task Germline {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/strelka:" + dockerTag
+        docker: dockerImage
         cpu: cores
         memory: memory
     }
@@ -59,7 +59,7 @@ task Somatic {
 
         Int cores = 1
         Int memory = 4
-        String dockerTag = "2.9.7--0"
+        String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
 
         File? doNotDefineThis #FIXME
     }
@@ -93,7 +93,7 @@ task Somatic {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/strelka:" + dockerTag
+        docker: dockerImage
         cpu: cores
         memory: memory
     }

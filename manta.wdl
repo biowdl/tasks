@@ -14,7 +14,7 @@ task Somatic {
 
         Int cores = 1
         Int memory = 4
-        String dockerTag = "1.4.0--py27_1"
+        String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
 
         File? doNotDefineThis #FIXME
     }
@@ -66,6 +66,6 @@ task Somatic {
     runtime {
         cpu: cores
         memory: memory
-        docker: "quay.io/biocontainers/manta:" + dockerTag
+        docker: dockerImage
     }
 }
