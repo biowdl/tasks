@@ -252,7 +252,7 @@ task ScatterRegions {
         set -e -o pipefail
         mkdir -p ~{outputDirPath}
         biopet-scatterregions -Xmx~{memory}G \
-          -R ~{reference.fasta} \
+          -R ~{referenceFasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
           ~{"-L " + regions} \
