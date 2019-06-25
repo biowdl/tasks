@@ -231,7 +231,7 @@ task ReorderGlobbedScatters {
 task ScatterRegions {
     input {
         File referenceFasta
-        File referenceFastaFai
+        File referenceFastaDict
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
