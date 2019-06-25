@@ -9,6 +9,7 @@ task Somatic {
         File? normalBam
         File? normalBamIndex
         File referenceFasta
+        File referenceFastaFai
         String runDir = "."
         File? callRegions
         File? callRegionsIndex

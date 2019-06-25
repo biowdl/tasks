@@ -8,6 +8,7 @@ task Germline {
         Array[File]+ bams
         Array[File]+ indexes
         File referenceFasta
+        File referenceFastaFai
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
@@ -55,6 +56,7 @@ task Somatic {
         File tumorBam
         File tumorBamIndex
         File referenceFasta
+        File referenceFastaFai
         File? callRegions
         File? callRegionsIndex
         File? indelCandidatesVcf
