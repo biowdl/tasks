@@ -4,10 +4,12 @@ import "common.wdl"
 
 task Somatic {
     input {
-        IndexedBamFile tumorBam
-        IndexedBamFile? normalBam
-        Reference reference
-        String runDir
+        File tumorBam
+        File tumorBamIndex
+        File? normalBam
+        File? normalBamIndex
+        File referenceFasta
+        String runDir = "."
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
@@ -16,19 +18,15 @@ task Somatic {
         Int memory = 4
         String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
 
-        File? doNotDefineThis #FIXME
     }
 
-    File? normalBamFile = if defined(normalBam)
-        then select_first([normalBam]).file
-        else doNotDefineThis
-
     command {
+        mkdir -p ~{runDir}
         set -e
         configManta.py \
-        ~{"--normalBam " + normalBamFile} \
-        ~{"--tumorBam " + tumorBam.file} \
-        --referenceFasta ~{reference.fasta} \
+        ~{"--normalBam " + normalBam} \
+        ~{"--tumorBam " + tumorBam} \
+        --referenceFasta ~{referenceFasta} \
         ~{"--callRegions " + callRegions} \
         --runDir ~{runDir} \
         ~{true="--exome" false="" exome}
@@ -40,25 +38,16 @@ task Somatic {
     }
 
     output {
-        IndexedVcfFile candidateSmallIndels = object {
-          file: runDir + "/results/variants/candidateSmallIndels.vcf.gz",
-          index: runDir + "/results/variants/candidateSmallIndels.vcf.gz.tbi"
-        }
-        IndexedVcfFile candidateSV = object {
-          file: runDir + "/results/variants/candidateSV.vcf.gz",
-          index: runDir + "/results/variants/candidateSV.vcf.gz.tbi"
-        }
-        IndexedVcfFile tumorSV = if defined(normalBam)
-            then object {
-              file: runDir + "/results/variants/somaticSV.vcf.gz",
-              index: runDir + "/results/variants/somaticSV.vcf.gz.tbi"
-            }
-            else object {
-              file: runDir + "/results/variants/tumorSV.vcf.gz",
-              index: runDir + "/results/variants/tumorSV.vcf.gz.tbi"
-            }
-
-        #FIXME: workaround for https://github.com/broadinstitute/cromwell/issues/4111
+        File candidateSmallIndelsVcf = runDir + "/results/variants/candidateSmallIndels.vcf.gz"
+        File candidateSmallIndelsVcfIndex = runDir + "/results/variants/candidateSmallIndels.vcf.gz.tbi"
+        File candidateSVVcf = runDir + "/results/variants/candidateSV.vcf.gz"
+        File candidatSVVcfIndex = runDir + "/results/variants/candidateSV.vcf.gz.tbi"
+        File tumorSVVcf = if defined(normalBam)
+                          then runDir + "/results/variants/somaticSV.vcf.gz"
+                          else runDir + "/results/variants/tumorSV.vcf.gz"
+        File tumorSVVcfIndex = if defined(normalBam)
+                               then runDir + "/results/variants/somaticSV.vcf.gz.tbi"
+                               else runDir + "/results/variants/tumorSV.vcf.gz.tbi"
         File? diploidSV = runDir + "/results/variants/diploidSV.vcf.gz"
         File? diploidSVindex = runDir + "/results/variants/diploidSV.vcf.gz.tbi"
     }
