@@ -20,7 +20,7 @@ task VarDict {
         Int threads = 1
         Int memory = 16
         Float memoryMultiplier = 2.5
-        String dockerTag = "1.5.8--1"
+        String dockerImage = "quay.io/biocontainers/vardict-java:1.5.8--1"
 
         File? doNotDefineThis #FIXME
     }
@@ -57,6 +57,6 @@ task VarDict {
     runtime {
         cpu: threads + 2
         memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/vardict-java:" + dockerTag
+        docker: dockerImage
     }
 }
