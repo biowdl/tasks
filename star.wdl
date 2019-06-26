@@ -16,7 +16,7 @@ task Star {
 
         Int runThreadN = 4
         Int memory = 48
-        String dockerTag = "2.6.0c--0"
+        String dockerImage = "quay.io/biocontainers/star:2.6.0c--0"
     }
 
     #TODO Needs to be extended for all possible output extensions
@@ -48,7 +48,7 @@ task Star {
         # Return memory per CPU here due to SGE backend.
         # Can also work with slurms mem-per-cpu flag
         memory: (memory / runThreadN) + 1
-        docker: "quay.io/biocontainers/star:" + dockerTag
+        docker: dockerImage
     }
 }
 
