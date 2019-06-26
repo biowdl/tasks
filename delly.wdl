@@ -25,6 +25,7 @@ task CallSV {
     
     runtime {
         docker: "quay.io/biocontainers/delly:0.8.1--h4037b6b_1"
+        memory: "5G"
     }
 
 }
