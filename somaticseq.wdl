@@ -1,7 +1,5 @@
 version 1.0
 
-import "common.wdl" as common
-
 task ParallelPaired {
     input {
         String installDir = "/opt/somaticseq" #the location in the docker image
@@ -9,11 +7,13 @@ task ParallelPaired {
         File? classifierSNV
         File? classifierIndel
         String outputDir
-        Reference reference
+        File referenceFasta
         File? inclusionRegion
         File? exclusionRegion
-        IndexedBamFile tumorBam
-        IndexedBamFile normalBam
+        File tumorBam
+        File tumorBamIndex
+        File normalBam
+        File normalBamIndex
         File? mutect2VCF
         File? varscanSNV
         File? varscanIndel
@@ -36,13 +36,13 @@ task ParallelPaired {
         ~{"--classifier-snv " + classifierSNV} \
         ~{"--classifier-indel " + classifierIndel} \
         --output-directory ~{outputDir} \
-        --genome-reference ~{reference.fasta} \
+        --genome-reference ~{referenceFasta} \
         ~{"--inclusion-region " + inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
         --threads ~{threads} \
         paired \
-        --tumor-bam-file ~{tumorBam.file} \
-        --normal-bam-file ~{normalBam.file} \
+        --tumor-bam-file ~{tumorBam} \
+        --normal-bam-file ~{normalBam} \
         ~{"--mutect2-vcf " + mutect2VCF} \
         ~{"--varscan-snv " + varscanSNV} \
         ~{"--varscan-indel " + varscanIndel} \
@@ -81,11 +81,13 @@ task ParallelPairedTrain {
         File truthSNV
         File truthIndel
         String outputDir
-        Reference reference
+        File referenceFasta
         File? inclusionRegion
         File? exclusionRegion
-        IndexedBamFile tumorBam
-        IndexedBamFile normalBam
+        File tumorBam
+        File tumorBamIndex
+        File normalBam
+        File normalBamIndex
         File? mutect2VCF
         File? varscanSNV
         File? varscanIndel
@@ -109,13 +111,13 @@ task ParallelPairedTrain {
         --truth-snv ~{truthSNV} \
         --truth-indel ~{truthIndel} \
         --output-directory ~{outputDir} \
-        --genome-reference ~{reference.fasta} \
+        --genome-reference ~{referenceFasta} \
         ~{"--inclusion-region " + inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
         --threads ~{threads} \
         paired \
-        --tumor-bam-file ~{tumorBam.file} \
-        --normal-bam-file ~{normalBam.file} \
+        --tumor-bam-file ~{tumorBam} \
+        --normal-bam-file ~{normalBam} \
         ~{"--mutect2-vcf " + mutect2VCF} \
         ~{"--varscan-snv " + varscanSNV} \
         ~{"--varscan-indel " + varscanIndel} \
@@ -152,10 +154,11 @@ task ParallelSingle {
         File? classifierSNV
         File? classifierIndel
         String outputDir
-        Reference reference
+        File referenceFasta
         File? inclusionRegion
         File? exclusionRegion
-        IndexedBamFile bam
+        File bam
+        File bamIndex
         File? mutect2VCF
         File? varscanVCF
         File? vardictVCF
@@ -172,12 +175,12 @@ task ParallelSingle {
         ~{"--classifier-snv " + classifierSNV} \
         ~{"--classifier-indel " + classifierIndel} \
         --output-directory ~{outputDir} \
-        --genome-reference ~{reference.fasta} \
+        --genome-reference ~{referenceFasta} \
         ~{"--inclusion-region " + inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
         --threads ~{threads} \
         single \
-        --bam-file ~{bam.file} \
+        --bam-file ~{bam} \
         ~{"--mutect2-vcf " + mutect2VCF} \
         ~{"--varscan-vcf " + varscanVCF} \
         ~{"--vardict-vcf " + vardictVCF} \
@@ -210,10 +213,11 @@ task ParallelSingleTrain {
         File truthSNV
         File truthIndel
         String outputDir
-        Reference reference
+        File referenceFasta
         File? inclusionRegion
         File? exclusionRegion
-        IndexedBamFile bam
+        File bam
+        File bamIndex
         File? mutect2VCF
         File? varscanVCF
         File? vardictVCF
@@ -231,12 +235,12 @@ task ParallelSingleTrain {
         --truth-snv ~{truthSNV} \
         --truth-indel ~{truthIndel} \
         --output-directory ~{outputDir} \
-        --genome-reference ~{reference.fasta} \
+        --genome-reference ~{referenceFasta} \
         ~{"--inclusion-region " + inclusionRegion} \
         ~{"--exclusion-region " + exclusionRegion} \
         --threads ~{threads} \
         single \
-        --bam-file ~{bam.file} \
+        --bam-file ~{bam} \
         ~{"--mutect2-vcf " + mutect2VCF} \
         ~{"--varscan-vcf " + varscanVCF} \
         ~{"--vardict-vcf " + vardictVCF} \
