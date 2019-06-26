@@ -8,6 +8,7 @@ task ParallelPaired {
         File? classifierIndel
         String outputDir
         File referenceFasta
+        File referenceFastaFai
         File? inclusionRegion
         File? exclusionRegion
         File tumorBam
@@ -82,6 +83,7 @@ task ParallelPairedTrain {
         File truthIndel
         String outputDir
         File referenceFasta
+        File referenceFastaFai
         File? inclusionRegion
         File? exclusionRegion
         File tumorBam
@@ -155,6 +157,7 @@ task ParallelSingle {
         File? classifierIndel
         String outputDir
         File referenceFasta
+        File referenceFastaFai
         File? inclusionRegion
         File? exclusionRegion
         File bam
@@ -214,6 +217,7 @@ task ParallelSingleTrain {
         File truthIndel
         String outputDir
         File referenceFasta
+        File referenceFastaFai
         File? inclusionRegion
         File? exclusionRegion
         File bam
