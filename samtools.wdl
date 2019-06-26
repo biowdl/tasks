@@ -13,6 +13,7 @@ task BgzipAndIndex {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputGz})
         bgzip -c ~{inputFile} > ~{outputGz}
         tabix ~{outputGz} -p ~{type}
     }
@@ -36,6 +37,8 @@ task Index {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{bamIndexPath})
         samtools index ~{bamFile} ~{bamIndexPath}
     }
 
@@ -85,6 +88,8 @@ task Markdup {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputBamPath})
         samtools markdup ~{inputBam} ~{outputBamPath}
     }
 
@@ -222,6 +227,8 @@ task View {
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputFileName})
         samtools view \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \

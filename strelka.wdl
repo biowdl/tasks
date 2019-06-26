@@ -4,10 +4,11 @@ import "common.wdl" as common
 
 task Germline {
     input {
-        String runDir
+        String runDir = "."
         Array[File]+ bams
         Array[File]+ indexes
-        Reference reference
+        File referenceFasta
+        File referenceFastaFai
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
@@ -20,9 +21,10 @@ task Germline {
 
     command {
         set -e
+        mkdir -p ~{runDir}
         configureStrelkaGermlineWorkflow.py \
         --bam ~{sep=" --bam " bams} \
-        --ref ~{reference.fasta} \
+        --ref ~{referenceFasta} \
         --runDir ~{runDir} \
         ~{"--callRegions " + callRegions} \
         ~{true="--exome" false="" exome} \
@@ -48,13 +50,17 @@ task Germline {
 
 task Somatic {
     input {
-        String runDir
-        IndexedBamFile normalBam
-        IndexedBamFile tumorBam
-        Reference reference
+        String runDir = "."
+        File normalBam
+        File normalBamIndex
+        File tumorBam
+        File tumorBamIndex
+        File referenceFasta
+        File referenceFastaFai
         File? callRegions
         File? callRegionsIndex
-        IndexedVcfFile? indelCandidates
+        File? indelCandidatesVcf
+        File? indelCandidatesVcfIndex
         Boolean exome = false
 
         Int cores = 1
@@ -64,19 +70,16 @@ task Somatic {
         File? doNotDefineThis #FIXME
     }
 
-    File? indelCandidatesFile = if (defined(indelCandidates))
-        then select_first([indelCandidates]).file
-        else doNotDefineThis
-
     command {
         set -e
+        mkdir -p ~{runDir}
         configureStrelkaSomaticWorkflow.py \
-        --normalBam ~{normalBam.file} \
-        --tumorBam ~{tumorBam.file} \
-        --ref ~{reference.fasta} \
+        --normalBam ~{normalBam} \
+        --tumorBam ~{tumorBam} \
+        --ref ~{referenceFasta} \
         --runDir ~{runDir} \
         ~{"--callRegions " + callRegions} \
-        ~{"--indelCandidates " + indelCandidatesFile} \
+        ~{"--indelCandidates " + indelCandidatesVcf} \
         ~{true="--exome" false="" exome}
 
         ~{runDir}/runWorkflow.py \
