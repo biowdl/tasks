@@ -11,6 +11,7 @@ task VarDict {
         File? normalBam
         File? normalBamIndex
         File referenceFasta
+        File referenceFastaFai
         File bedFile
         String outputVcf
 
