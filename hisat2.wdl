@@ -14,8 +14,10 @@ task Hisat2 {
 
         Int threads = 1
         Int memory = 48
+        # quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1
+        # is a combination of hisat2 and samtools
         # hisat2=2.1.0, samtools=1.8
-        String dockerTag = "2388ff67fc407dad75774291ca5038f40cac4be0-0"
+        String dockerImage = "quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1:2388ff67fc407dad75774291ca5038f40cac4be0-0"
     }
 
     command {
@@ -41,8 +43,6 @@ task Hisat2 {
     runtime {
         memory: (memory / threads) + 1
         cpu: threads + 1
-        # quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1
-        # is a combination of hisat2 and samtools
-        docker: "quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1:" + dockerTag
+        docker: dockerImage
     }
 }
