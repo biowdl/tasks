@@ -1,10 +1,9 @@
 version 1.0
 
-import "common.wdl"
-
 task Stringtie {
     input {
-        IndexedBamFile bamFile
+        File bam
+        File bamIndex
         File? referenceGtf
         Boolean skipNovelTranscripts = false
         String assembledTranscriptsFile
@@ -28,7 +27,7 @@ task Stringtie {
         ~{true="--fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
-        ~{bamFile.file}
+        ~{bam}
     }
 
     output {
