@@ -14,7 +14,7 @@ task Stringtie {
 
         Int threads = 1
         Int memory = 10
-        String dockerTag = "1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
     }
 
     command {
@@ -39,7 +39,7 @@ task Stringtie {
     runtime {
         cpu: threads
         memory: memory
-        docker: "quay.io/biocontainers/stringtie:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -57,7 +57,7 @@ task Merge {
         String? label
 
         Int memory = 10
-        String dockerTag = "1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
     }
 
     command {
@@ -82,6 +82,6 @@ task Merge {
 
     runtime {
         memory: memory
-        docker: "quay.io/biocontainers/stringtie:" + dockerTag
+        docker: dockerImage
     }
 }
