@@ -5,12 +5,12 @@ task HTSeqCount {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         File gtfFile
-        String outputTable
+        String outputTable = "output.tsv"
         String format = "bam"
         String order = "pos"
         String stranded = "no"
 
-        Int memory = 20
+        Int memory = 40
         String dockerTag = "0.9.1--py36h7eb728f_2"
     }
 
