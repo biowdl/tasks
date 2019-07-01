@@ -258,6 +258,7 @@ task MuTect2 {
         String outputVcf
         String tumorSample
         String? normalSample
+        File? panelOfNormals
         Array[File]+ intervals
 
         Int memory = 4
@@ -274,6 +275,7 @@ task MuTect2 {
         -I ~{sep=" -I " inputBams} \
         -tumor ~{tumorSample} \
         ~{"-normal " + normalSample} \
+        ~{"--panel-of-normals " + panelOfNormals} \
         -O ~{outputVcf} \
         -L ~{sep=" -L " intervals}
     }
