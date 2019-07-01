@@ -8,6 +8,7 @@ task Prediction {
         BwaIndex bwaIndex
         String outputPath        
         Int threads = 10 
+        Int mem = 6
     }   
     
 
@@ -30,7 +31,7 @@ task Prediction {
     
     runtime {
         cpu: threads
-        memory: "6G"
+        memory: mem
         docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }   
 
@@ -43,6 +44,7 @@ task Mateclever {
         File predictions
         String outputPath
         Int threads = 10 
+        Int mem = 6
         Int cleverMaxDelLength = 100000
         Int maxLengthDiff= 30
         Int maxOffset = 150 
@@ -70,7 +72,7 @@ task Mateclever {
     
     runtime {
         cpu: threads
-        memory: "6G"
+        memory: mem
         docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }
 }
