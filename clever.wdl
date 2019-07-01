@@ -8,7 +8,7 @@ task Prediction {
         BwaIndex bwaIndex
         String outputPath        
         Int threads = 10 
-        Int mem = 6
+        Int mem = 10
     }   
     
 
@@ -44,7 +44,7 @@ task Mateclever {
         File predictions
         String outputPath
         Int threads = 10 
-        Int mem = 6
+        Int mem = 10
         Int cleverMaxDelLength = 100000
         Int maxLengthDiff= 30
         Int maxOffset = 150 
