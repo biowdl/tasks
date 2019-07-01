@@ -7,7 +7,7 @@ task CallSV {
         IndexedBamFile bamFile
         Reference reference
         String outputPath        
-        Int mem = 5
+        Int mem = 10
     }
     
 
