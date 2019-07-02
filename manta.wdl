@@ -10,7 +10,7 @@ task Somatic {
         File? normalBamIndex
         File referenceFasta
         File referenceFastaFai
-        String runDir = "."
+        String runDir = "./manta_run"
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
@@ -22,8 +22,6 @@ task Somatic {
     }
 
     command {
-        mkdir -p ~{runDir}
-        set -e
         configManta.py \
         ~{"--normalBam " + normalBam} \
         ~{"--tumorBam " + tumorBam} \

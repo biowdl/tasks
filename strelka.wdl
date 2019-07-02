@@ -4,7 +4,7 @@ import "common.wdl" as common
 
 task Germline {
     input {
-        String runDir = "."
+        String runDir = "./strelka_run"
         Array[File]+ bams
         Array[File]+ indexes
         File referenceFasta
@@ -20,8 +20,6 @@ task Germline {
     }
 
     command {
-        set -e
-        mkdir -p ~{runDir}
         configureStrelkaGermlineWorkflow.py \
         --bam ~{sep=" --bam " bams} \
         --ref ~{referenceFasta} \
@@ -50,7 +48,7 @@ task Germline {
 
 task Somatic {
     input {
-        String runDir = "."
+        String runDir = "./strelka_run"
         File normalBam
         File normalBamIndex
         File tumorBam
@@ -71,8 +69,6 @@ task Somatic {
     }
 
     command {
-        set -e
-        mkdir -p ~{runDir}
         configureStrelkaSomaticWorkflow.py \
         --normalBam ~{normalBam} \
         --tumorBam ~{tumorBam} \
