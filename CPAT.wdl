@@ -11,7 +11,7 @@ task CPAT {
         # CPAT should not index the reference genome.
         Array[String]? startCodons
         Array[String]? stopCodons
-        String dockerTag = "v1.2.4_cv1"
+        String dockerImage = "biocontainers/cpat:v1.2.4_cv1"
     }
 
     # Some WDL magic in the command section to properly output the start and stopcodons to the command.
@@ -34,7 +34,7 @@ task CPAT {
     }
 
     runtime {
-        docker: "biocontainers/cpat:" + dockerTag
+        docker: dockerImage
     }
 }
 

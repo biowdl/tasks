@@ -10,7 +10,7 @@ task GffRead {
         String? proteinFastaPath
         String? filteredGffPath
         Boolean outputGtfFormat = false
-        String dockerTag = "0.9.12--0"
+        String dockerImage = "quay.io/biocontainers/gffread:0.9.12--0"
     }
 
     # The mkdirs below are hackish. It should be
@@ -41,6 +41,6 @@ task GffRead {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gffread:" + dockerTag
+        docker: dockerImage
     }
 }
