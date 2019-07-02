@@ -31,20 +31,18 @@ task BgzipAndIndex {
 task Index {
     input {
         File bamFile
-        String bamIndexPath
-
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
+    String bamPath = basename(bamFile)
 
     command {
-        set -e
-        mkdir -p $(dirname ~{bamIndexPath})
-        samtools index ~{bamFile} ~{bamIndexPath}
+        ln ~{bamFile} ~{bamPath}
+        samtools index ~{bamPath}
     }
 
     output {
-        File indexedBam = bamFile
-        File index = bamIndexPath
+        File indexedBam = bamPath
+        File index =  sub(bamPath, "\.bam$", ".bai")
     }
 
     runtime {
