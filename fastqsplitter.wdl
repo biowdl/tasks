@@ -49,7 +49,7 @@ task Fastqsplitter {
     }
 
     # Using very safe margins here. 10MB/300MB per outputfile is used for single-threaded/multi-threaded compression.
-    Float memoryPerFile = if select_first([threadsPerFile, 1]) > 1 then 0.02 else 0.40
+    Float memoryPerFile = if select_first([threadsPerFile, 1]) > 1 then 0.40 else 0.02
     Int fastqsplitterMemory = ceil(0.100 + memoryPerFile * length(outputPaths))
     # Make sure a minimum of 2 GB is present to pull the singularity image
     Int memory = if fastqsplitterMemory <= 2 then 2 else fastqsplitterMemory
