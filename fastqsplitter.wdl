@@ -36,7 +36,7 @@ task Fastqsplitter {
 
     command {
         set -e
-        mkdir -p $(dirname ~{sep=') $(dirname ' outputPaths})
+        mkdir -p $(dirname ~{sep=' ' outputPaths})
         fastqsplitter \
         ~{"-c " + compressionLevel} \
         ~{"-t " + threadsPerFile} \
