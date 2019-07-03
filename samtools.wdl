@@ -31,26 +31,26 @@ task BgzipAndIndex {
 task Index {
     input {
         File bamFile
-        String? bamPath
+        String? outputBamPath
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
-    String bamIndexPath = sub(select_first([bamPath, basename(bamFile)]), "\.bam$", ".bai")
+    String bamIndexPath = sub(select_first([outputBamPath, basename(bamFile)]), "\.bam$", ".bai")
 
     command {
         bash -c '
         set -e
-        # Make sure bamPath does not exist.
-        if [ ! -f ~{bamPath} ]
+        # Make sure outputBamPath does not exist.
+        if [ ! -f ~{outputBamPath} ]
         then
-            mkdir -p $(dirname ~{bamPath})
-            ln ~{bamFile} ~{bamPath}
+            mkdir -p $(dirname ~{outputBamPath})
+            ln ~{bamFile} ~{outputBamPath}
         fi
-        samtools index ~{bamPath} ~{bamIndexPath}
+        samtools index ~{outputBamPath} ~{bamIndexPath}
         '
     }
 
     output {
-        File indexedBam = bamPath
+        File indexedBam = outputBamPath
         File index =  bamIndexPath
     }
 
