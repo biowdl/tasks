@@ -8,7 +8,7 @@ task BedToIntervalList {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
     }
 
     command {
@@ -26,7 +26,7 @@ task BedToIntervalList {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -52,7 +52,9 @@ task CollectMultipleMetrics {
 
         Int memory = 8
         Float memoryMultiplier = 4
-        String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
+        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
+        # Contains r-base=3.4.1,picard=2.18.2
+        String dockerImage = "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
 
@@ -109,6 +111,7 @@ task CollectMultipleMetrics {
             insertSizeHistogramPdf,
             insertSize,
             preAdapterDetail,
+            preAdapterSummary,
             qualityByCycle,
             qualityByCyclePdf,
             qualityDistribution,
@@ -118,9 +121,8 @@ task CollectMultipleMetrics {
     }
 
     runtime {
-        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
-        # Contains r-base=3.4.1,picard=2.18.2
-        docker: "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:" + dockerTag
+
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -135,7 +137,9 @@ task CollectRnaSeqMetrics {
 
         Int memory = 8
         Float memoryMultiplier = 4.0
-        String dockerTag = "8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
+        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
+        # Contains r-base=3.4.1,picard=2.18.2
+        String dockerImage = "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
     }
 
     command {
@@ -156,9 +160,7 @@ task CollectRnaSeqMetrics {
     }
 
     runtime {
-        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
-        # Contains r-base=3.4.1,picard=2.18.2
-        docker: "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -176,7 +178,7 @@ task CollectTargetedPcrMetrics {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
     }
 
     command {
@@ -200,7 +202,7 @@ task CollectTargetedPcrMetrics {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -214,7 +216,7 @@ task GatherBamFiles {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
     }
 
     command {
@@ -235,7 +237,7 @@ task GatherBamFiles {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -248,7 +250,7 @@ task GatherVcfs {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
     }
 
     command {
@@ -265,7 +267,7 @@ task GatherVcfs {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -280,7 +282,7 @@ task MarkDuplicates {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -319,7 +321,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -333,7 +335,7 @@ task MergeVCFs {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
@@ -354,7 +356,7 @@ task MergeVCFs {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -369,7 +371,7 @@ task SamToFastq {
 
         Int memory = 16 # High memory default to avoid crashes.
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
     }
 
     command {
@@ -389,7 +391,7 @@ task SamToFastq {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -401,7 +403,7 @@ task ScatterIntervalList {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
     }
 
     command {
@@ -423,7 +425,7 @@ task ScatterIntervalList {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -436,7 +438,7 @@ task SortVcf {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerTag = "2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
         }
 
 
@@ -456,7 +458,7 @@ task SortVcf {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }

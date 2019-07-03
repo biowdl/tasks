@@ -1,10 +1,9 @@
 version 1.0
 
-import "common.wdl"
-
 task Stringtie {
     input {
-        IndexedBamFile bamFile
+        File bam
+        File bamIndex
         File? referenceGtf
         Boolean skipNovelTranscripts = false
         String assembledTranscriptsFile
@@ -14,7 +13,7 @@ task Stringtie {
 
         Int threads = 1
         Int memory = 10
-        String dockerTag = "1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
     }
 
     command {
@@ -28,7 +27,7 @@ task Stringtie {
         ~{true="--fr" false="" secondStranded} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
-        ~{bamFile.file}
+        ~{bam}
     }
 
     output {
@@ -39,7 +38,7 @@ task Stringtie {
     runtime {
         cpu: threads
         memory: memory
-        docker: "quay.io/biocontainers/stringtie:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -57,7 +56,7 @@ task Merge {
         String? label
 
         Int memory = 10
-        String dockerTag = "1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
     }
 
     command {
@@ -82,6 +81,6 @@ task Merge {
 
     runtime {
         memory: memory
-        docker: "quay.io/biocontainers/stringtie:" + dockerTag
+        docker: dockerImage
     }
 }

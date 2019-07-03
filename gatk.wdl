@@ -14,7 +14,7 @@ task ApplyBQSR {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -42,7 +42,7 @@ task ApplyBQSR {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -64,7 +64,7 @@ task BaseRecalibrator {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     Array[File]+ knownIndelsSitesVCFsArg = flatten([
@@ -90,7 +90,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -107,7 +107,7 @@ task CombineGVCFs {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -127,7 +127,7 @@ task CombineGVCFs {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -140,7 +140,7 @@ task GatherBqsrReports {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -157,7 +157,7 @@ task GatherBqsrReports {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -175,7 +175,7 @@ task GenotypeGVCFs {
         File? dbsnpVCFIndex
         Int memory = 6
         Float memoryMultiplier = 2.0
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -200,7 +200,7 @@ task GenotypeGVCFs {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -220,7 +220,7 @@ task HaplotypeCallerGvcf {
         File? dbsnpVCFIndex
         Int memory = 4
         Float memoryMultiplier = 3
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -243,7 +243,7 @@ task HaplotypeCallerGvcf {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -263,7 +263,7 @@ task MuTect2 {
 
         Int memory = 4
         Float memoryMultiplier = 3
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -286,7 +286,7 @@ task MuTect2 {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
@@ -303,7 +303,7 @@ task SplitNCigarReads {
 
         Int memory = 4
         Float memoryMultiplier = 4
-        String dockerTag = "4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -323,7 +323,7 @@ task SplitNCigarReads {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/gatk4:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }
