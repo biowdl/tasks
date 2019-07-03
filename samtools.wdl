@@ -34,15 +34,16 @@ task Index {
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String bamPath = basename(bamFile)
+    String bamIndexPath = sub(bamPath, "\.bam$", ".bai")
 
     command {
         ln ~{bamFile} ~{bamPath}
-        samtools index ~{bamPath}
+        samtools index ~{bamPath} ~{bamIndexPath}
     }
 
     output {
         File indexedBam = bamPath
-        File index =  sub(bamPath, "\.bam$", ".bai")
+        File index =  bamIndexPath
     }
 
     runtime {
