@@ -25,7 +25,7 @@ version 1.0
 task Bowtie {
     input {
         Array[File]+ readsUpstream
-        Array[File]+? readsDownstream
+        Array[File] readsDownstream = []
         String outputPath = "mapped.bam"
         Array[File]+ indexFiles
         Int? seedmms
@@ -59,7 +59,7 @@ task Bowtie {
         ~{"--sam-RG '" + samRG}~{true="'" false="" defined(samRG)} \
         ~{sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")} \
         ~{true="-1" false="" defined(readsDownstream)} ~{sep="," readsUpstream} \
-        ~{true="-2" false="" defined(readsDownstream)} ~{sep="," readsDownstream} \
+        ~{true="-2" false="" length(readsDownstream) > 0} ~{sep="," readsDownstream} \
         | picard -Xmx~{picardMemory}G SortSam \
         INPUT=/dev/stdin \
         OUTPUT=~{outputPath} \

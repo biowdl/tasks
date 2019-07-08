@@ -4,8 +4,8 @@ task Cutadapt {
     input {
         File read1
         File? read2
-        String read1output
-        String? read2output
+        String read1output = "cut_r1.fq.gz"
+        String? read2output = if defined(read2) then "cut_r2.fq.gz" else read2
         String? format
         Array[String]+? adapter
         Array[String]+? front

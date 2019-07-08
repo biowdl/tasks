@@ -208,8 +208,8 @@ task View {
     input {
         File inFile
         File? referenceFasta
-        String outputFileName
-        Boolean? outputBam
+        String outputFileName = if outputBam then "view.bam" else "view.sam"
+        Boolean outputBam = true
         Boolean? uncompressedBamOutput
         Int? includeFilter
         Int? excludeFilter
