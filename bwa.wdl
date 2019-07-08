@@ -93,6 +93,44 @@ task Index {
     }
 }
 
+task Kit {
+    input {
+        File read1
+        File? read2
+        BwaIndex bwaIndex
+        String outputPrefix
+        String? readgroup
+
+        Int threads = 2
+        Int memory = 10
+        String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
+    }
+
+    command {
+        set -e -o pipefail
+        run-bwamem \
+        -o ~{outputPrefix} \
+        ~{"-t " + threads} \
+        ~{"-R '" + readgroup}~{true="'" false="" defined(readgroup)} \
+        -s \
+        ~{bwaIndex.fastaFile} \
+        ~{read1} \
+        ~{read2} | bash
+        samtools index ~{outputPrefix}.aln.bam ~{outputPrefix}.aln.bai
+    }
+
+    output {
+        File outputBam = outputPrefix + ".aln.bam"
+        File outputBamIndex = outputPrefix + ".aln.bai"
+    }
+
+    runtime{
+        cpu: threads
+        memory: memory
+        docker: dockerImage
+    }
+}
+
 struct BwaIndex {
     File fastaFile
     Array[File] indexFiles
