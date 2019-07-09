@@ -2,10 +2,10 @@ version 1.0
 
 task MultiQC {
     input {
-        String dockerTag = "1.7--py_1"
+        String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
         # Use a string here so cromwell does not relocate an entire analysis directory
         String analysisDirectory
-        Array[File] dependencies   # This must be used in order to run multiqc after these tasks.
+        Array[File] dependencies = []  # This must be used in order to run multiqc after these tasks.
         Boolean force = false
         Boolean dirs = false
         Int? dirsDepth
@@ -37,6 +37,7 @@ task MultiQC {
         String? clConfig
         Boolean verbose  = false
         Boolean quiet = false
+        Array[Boolean] finished = []  # An array of booleans that can be used to let multiqc wait on stuff.
     }
 
     command {
@@ -85,6 +86,6 @@ task MultiQC {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/multiqc:" + dockerTag
+        docker: dockerImage
     }
 }

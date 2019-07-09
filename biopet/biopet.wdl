@@ -84,7 +84,7 @@ task ExtractAdaptersFastqc {
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 5 # This is ridiculous...
         String dockerTag = "0.2--1"
     }
@@ -179,7 +179,7 @@ task FastqSync {
     output {
         FastqPair out1 = object {
           R1: out1path,
-          R1: out2path
+          R2: out2path
         }
     }
     
@@ -230,7 +230,8 @@ task ReorderGlobbedScatters {
 
 task ScatterRegions {
     input {
-        Reference reference
+        File referenceFasta
+        File referenceFastaDict
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
@@ -239,7 +240,7 @@ task ScatterRegions {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerTag = "0.2--0"
+        String dockerImage = "quay.io/biocontainers/biopet-scatterregions:0.2--0"
     }
 
     # OutDirPath must be defined here because the glob process relies on
@@ -251,7 +252,7 @@ task ScatterRegions {
         set -e -o pipefail
         mkdir -p ~{outputDirPath}
         biopet-scatterregions -Xmx~{memory}G \
-          -R ~{reference.fasta} \
+          -R ~{referenceFasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
           ~{"-L " + regions} \
@@ -264,7 +265,7 @@ task ScatterRegions {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/biopet-scatterregions:" + dockerTag
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }

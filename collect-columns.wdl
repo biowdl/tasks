@@ -13,10 +13,12 @@ task CollectColumns {
         File? referenceGtf
         String? featureAttribute
 
-        String dockerTag = "0.1.1--py_0"
+        String dockerImage = "quay.io/biocontainers/collect-columns:0.2.0--py_1"
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputPath})
         collect-columns \
         ~{outputPath} \
         ~{sep=" " inputTables} \
@@ -36,6 +38,6 @@ task CollectColumns {
 
     runtime {
         memory: 4 + ceil(0.5* length(inputTables))
-        docker: "quay.io/biocontainers/collect-columns:" + dockerTag
+        docker: dockerImage
     }
 }
