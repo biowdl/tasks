@@ -6,13 +6,14 @@ task BgzipAndIndex {
         String outputDir
         String type = "vcf"
 
-        String dockerTag = "0.2.6--ha92aebf_0"
+        String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
 
     String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputGz})
         bgzip -c ~{inputFile} > ~{outputGz}
         tabix ~{outputGz} -p ~{type}
     }
@@ -23,29 +24,40 @@ task BgzipAndIndex {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/tabix:" + dockerTag
+       docker: dockerImage
     }
 }
 
 task Index {
     input {
         File bamFile
-        String bamIndexPath
-
-        String dockerTag = "1.8--h46bd0b3_5"
+        String outputBamPath = basename(bamFile)
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
+    # Select_first is needed, otherwise womtool validate fails.
+    String bamIndexPath = sub(select_first([outputBamPath]), "\.bam$", ".bai")
+
     command {
-        samtools index ~{bamFile} ~{bamIndexPath}
+        bash -c '
+        set -e
+        # Make sure outputBamPath does not exist.
+        if [ ! -f ~{outputBamPath} ]
+        then
+            mkdir -p $(dirname ~{outputBamPath})
+            ln ~{bamFile} ~{outputBamPath}
+        fi
+        samtools index ~{outputBamPath} ~{bamIndexPath}
+        '
     }
 
     output {
-        File indexedBam = bamFile
-        File index = bamIndexPath
+        File indexedBam = outputBamPath
+        File index =  bamIndexPath
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -55,7 +67,7 @@ task Merge {
         String outputBamPath = "merged.bam"
         Boolean force = true
 
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
 
@@ -72,7 +84,7 @@ task Merge {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -81,10 +93,12 @@ task Markdup {
         File inputBam
         String outputBamPath
 
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
+        set -e
+        mkdir -p $(dirname ~{outputBamPath})
         samtools markdup ~{inputBam} ~{outputBamPath}
     }
 
@@ -93,7 +107,7 @@ task Markdup {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -102,7 +116,7 @@ task Flagstat {
         File inputBam
         String outputPath
 
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
@@ -116,7 +130,7 @@ task Flagstat {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -135,7 +149,7 @@ task Fastq {
 
         Int threads = 1
         Int memory = 1
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     command {
@@ -162,7 +176,7 @@ task Fastq {
     runtime {
         cpu: threads
         memory: memory
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -181,7 +195,7 @@ task Tabix {
         File inputFile
         String outputFilePath = "indexed.vcf.gz"
         String type = "vcf"
-        String dockerTag = "0.2.6--ha92aebf_0"
+        String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
     # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
     command {
@@ -200,7 +214,7 @@ task Tabix {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/tabix:" + dockerTag
+       docker: dockerImage
     }
 }
 
@@ -217,12 +231,14 @@ task View {
 
         Int threads = 1
         Int memory = 1
-        String dockerTag = "1.8--h46bd0b3_5"
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String outputIndexPath = basename(outputFileName) + ".bai"
 
     # Always output to bam and output header
     command {
+        set -e
+        mkdir -p $(dirname ~{outputFileName})
         samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
@@ -244,6 +260,6 @@ task View {
     runtime {
         cpu: threads
         memory: memory
-        docker: "quay.io/biocontainers/samtools:" + dockerTag
+        docker: dockerImage
     }
 }

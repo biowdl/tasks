@@ -4,10 +4,11 @@ import "common.wdl" as common
 
 task Germline {
     input {
-        String runDir
+        String runDir = "./strelka_run"
         Array[File]+ bams
         Array[File]+ indexes
-        Reference reference
+        File referenceFasta
+        File referenceFastaFai
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
@@ -15,14 +16,13 @@ task Germline {
 
         Int cores = 1
         Int memory = 4
-        String dockerTag = "2.9.7--0"
+        String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
     }
 
     command {
-        set -e
         configureStrelkaGermlineWorkflow.py \
         --bam ~{sep=" --bam " bams} \
-        --ref ~{reference.fasta} \
+        --ref ~{referenceFasta} \
         --runDir ~{runDir} \
         ~{"--callRegions " + callRegions} \
         ~{true="--exome" false="" exome} \
@@ -40,7 +40,7 @@ task Germline {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/strelka:" + dockerTag
+        docker: dockerImage
         cpu: cores
         memory: memory
     }
@@ -48,35 +48,34 @@ task Germline {
 
 task Somatic {
     input {
-        String runDir
-        IndexedBamFile normalBam
-        IndexedBamFile tumorBam
-        Reference reference
+        String runDir = "./strelka_run"
+        File normalBam
+        File normalBamIndex
+        File tumorBam
+        File tumorBamIndex
+        File referenceFasta
+        File referenceFastaFai
         File? callRegions
         File? callRegionsIndex
-        IndexedVcfFile? indelCandidates
+        File? indelCandidatesVcf
+        File? indelCandidatesVcfIndex
         Boolean exome = false
 
         Int cores = 1
         Int memory = 4
-        String dockerTag = "2.9.7--0"
+        String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
 
         File? doNotDefineThis #FIXME
     }
 
-    File? indelCandidatesFile = if (defined(indelCandidates))
-        then select_first([indelCandidates]).file
-        else doNotDefineThis
-
     command {
-        set -e
         configureStrelkaSomaticWorkflow.py \
-        --normalBam ~{normalBam.file} \
-        --tumorBam ~{tumorBam.file} \
-        --ref ~{reference.fasta} \
+        --normalBam ~{normalBam} \
+        --tumorBam ~{tumorBam} \
+        --ref ~{referenceFasta} \
         --runDir ~{runDir} \
         ~{"--callRegions " + callRegions} \
-        ~{"--indelCandidates " + indelCandidatesFile} \
+        ~{"--indelCandidates " + indelCandidatesVcf} \
         ~{true="--exome" false="" exome}
 
         ~{runDir}/runWorkflow.py \
@@ -93,7 +92,7 @@ task Somatic {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/strelka:" + dockerTag
+        docker: dockerImage
         cpu: cores
         memory: memory
     }
