@@ -58,7 +58,7 @@ task Bowtie {
         ~{"--threads " + threads} \
         ~{"--sam-RG '" + samRG}~{true="'" false="" defined(samRG)} \
         ~{sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")} \
-        ~{true="-1" false="" defined(readsDownstream)} ~{sep="," readsUpstream} \
+        ~{true="-1" false="" length(readsDownstream) > 0} ~{sep="," readsUpstream} \
         ~{true="-2" false="" length(readsDownstream) > 0} ~{sep="," readsDownstream} \
         | picard -Xmx~{picardMemory}G SortSam \
         INPUT=/dev/stdin \
