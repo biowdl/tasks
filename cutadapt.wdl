@@ -93,7 +93,6 @@ task Cutadapt {
         set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
         ~{read2outputArg}
-        ~{"mkdir -p $(dirname " + reportPath + ")"}
         cutadapt \
         ~{"--cores=" + cores} \
         ~{true="-a" false="" defined(adapterForward)} ~{sep=" -a " adapterForward} \
