@@ -362,6 +362,7 @@ task MergeVCFs {
 task SamToFastq {
     input {
         File inputBam
+        File inputBamIndex
         Boolean paired = true
 
         Int memory = 16 # High memory default to avoid crashes.

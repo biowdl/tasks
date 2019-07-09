@@ -208,8 +208,7 @@ task View {
     input {
         File inFile
         File? referenceFasta
-        String outputFileName = if outputBam then "view.bam" else "view.sam"
-        Boolean outputBam = true
+        String outputFileName = "view.bam"
         Boolean? uncompressedBamOutput
         Int? includeFilter
         Int? excludeFilter
@@ -220,12 +219,13 @@ task View {
         Int memory = 1
         String dockerTag = "1.8--h46bd0b3_5"
     }
+    String outputIndexPath = basename(outputFileName) + ".bai"
 
+    # Always output to bam and output header
     command {
-        samtools view \
+        samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
-        ~{true="-b " false="" outputBam} \
         ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
@@ -233,10 +233,12 @@ task View {
         ~{"-q " + MAPQthreshold} \
         ~{"--threads " + (threads - 1)} \
         ~{inFile}
+        samtools index ~{outputFileName} ~{outputIndexPath}
     }
 
     output {
-        File outputFile = outputFileName
+        File outputBam = outputFileName
+        File outputBamIndex = outputIndexPath
     }
 
     runtime {
