@@ -107,7 +107,7 @@ task Kit {
     }
 
     command {
-        set -e -o pipefail
+        set -e
         run-bwamem \
         -o ~{outputPrefix} \
         ~{"-t " + threads} \
