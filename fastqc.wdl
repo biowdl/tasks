@@ -18,7 +18,7 @@ task Fastqc {
         String? dir
 
         Int threads = 1
-        String dockerTag = "0.11.7--4"
+        String dockerImage = "quay.io/biocontainers/fastqc:0.11.7--4"
         Array[File]? NoneArray
         File? NoneFile
     }
@@ -61,7 +61,7 @@ task Fastqc {
 
     runtime {
         cpu: threads
-        docker: "quay.io/biocontainers/fastqc:" + dockerTag
+        docker: dockerImage
     }
 }
 

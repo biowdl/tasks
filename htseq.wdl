@@ -11,7 +11,7 @@ task HTSeqCount {
         String stranded = "no"
 
         Int memory = 40
-        String dockerTag = "0.9.1--py36h7eb728f_2"
+        String dockerImage = "quay.io/biocontainers/htseq:0.9.1--py36h7eb728f_2"
     }
 
     command {
@@ -32,6 +32,6 @@ task HTSeqCount {
 
     runtime {
         memory: memory
-        docker: "quay.io/biocontainers/htseq:" + dockerTag
+        docker: dockerImage
     }
 }

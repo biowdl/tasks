@@ -2,7 +2,7 @@ version 1.0
 
 task GffCompare {
     input {
-        String dockerTag = "0.10.6--h2d50403_0"
+        String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
         File? inputGtfList
         Array[File] inputGtfFiles
         File referenceAnnotation
@@ -87,6 +87,6 @@ task GffCompare {
     }
 
     runtime {
-       docker: "quay.io/biocontainers/gffcompare:" + dockerTag
+       docker: dockerImage
     }
 }
