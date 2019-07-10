@@ -5,10 +5,13 @@ import "common.wdl"
 task VarDict {
     input {
         String tumorSampleName
-        IndexedBamFile tumorBam
+        File tumorBam
+        File tumorBamIndex
         String? normalSampleName
-        IndexedBamFile? normalBam
-        Reference reference
+        File? normalBam
+        File? normalBamIndex
+        File referenceFasta
+        File referenceFastaFai
         File bedFile
         String outputVcf
 
@@ -20,23 +23,18 @@ task VarDict {
         Int threads = 1
         Int memory = 16
         Float memoryMultiplier = 2.5
-        String dockerTag = "1.5.8--1"
+        String dockerImage = "quay.io/biocontainers/vardict-java:1.5.8--1"
 
-        File? doNotDefineThis #FIXME
     }
-
-    File? normalBamFile = if defined(normalBam)
-        then select_first([normalBam]).file
-        else doNotDefineThis
 
     command {
         set -e -o pipefail
         export JAVA_OPTS="-Xmx~{memory}G"
         vardict-java \
         ~{"-th " + threads} \
-        -G ~{reference.fasta} \
+        -G ~{referenceFasta} \
         -N ~{tumorSampleName} \
-        -b "~{tumorBam.file}~{"|" + normalBamFile}" \
+        -b "~{tumorBam}~{"|" + normalBam}" \
         ~{true="" false="-z" defined(normalBam)} \
         -c ~{chromosomeColumn} \
         -S ~{startColumn} \
@@ -57,6 +55,6 @@ task VarDict {
     runtime {
         cpu: threads + 2
         memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/vardict-java:" + dockerTag
+        docker: dockerImage
     }
 }
