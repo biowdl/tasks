@@ -29,12 +29,13 @@ task Count {
         File inputBam
         File inputBamIndex
         String outputBed = "output.bed"
+        String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBed})
-        wiseguy count \
+        wisestork count \
         ~{"--binsize " + binSize} \
        --reference ~{reference} \
        ~{"--bin-file " + binFile} \
@@ -47,8 +48,7 @@ task Count {
     }
 
     runtime {
-        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
-        docker: "biowdl/wiseguy:latest"
+        docker: dockerImage
     }
 }
 
@@ -63,12 +63,13 @@ task GcCorrect {
         Float? fracN
         Int? iter
         Float? fracLowess
+        String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBed})
-        wiseguy gc-correct \
+        wisestork gc-correct \
         ~{"--binsize " + binSize} \
         --reference ~{reference} \
         ~{"--bin-file " + binFile} \
@@ -84,8 +85,7 @@ task GcCorrect {
     }
 
     runtime {
-        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
-        docker: "biowdl/wiseguy:latest"
+        docker: dockerImage
     }
 }
 
@@ -98,12 +98,13 @@ task Newref {
         Array[File]+ inputBeds
         String outputBed = "output.bed"
         Int? nBins
+        String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBed})
-        wiseguy newref \
+        wisestork newref \
         ~{"--binsize " + binSize} \
        --reference ~{reference} \
        ~{"--bin-file " + binFile} \
@@ -117,8 +118,7 @@ task Newref {
     }
 
     runtime {
-        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
-        docker: "biowdl/wiseguy:latest"
+        docker: dockerImage
     }
 }
 
@@ -133,12 +133,13 @@ task Zscore {
         File dictionaryFile
         File dictionaryFileIndex
         String outputBed = "output.bed"
+        String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBed})
-        wiseguy zscore \
+        wisestork zscore \
         ~{"--binsize " + binSize} \
         --reference ~{reference} \
         ~{"--bin-file " + binFile} \
@@ -152,8 +153,7 @@ task Zscore {
     }
 
     runtime {
-        # FIXME: Not reproducible. But wiseguy does not have a fix release yet.
-        docker: "biowdl/wiseguy:latest"
+        docker: dockerImage
     }
 }
 
