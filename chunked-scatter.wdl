@@ -8,7 +8,7 @@ task ChunkedScatter {
         Int? overlap
         Int? minimumBasesPerFile
 
-        String dockerImage = "alpine:latest" #TODO
+        String dockerImage = "quay.io/biocontainers/chunked-scatter:0.1.0--py_0"
     }
 
     command {
