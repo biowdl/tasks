@@ -119,6 +119,7 @@ task Newref {
 
     runtime {
         docker: dockerImage
+        memory: 2 + ceil(length(inputBeds) * 0.15)
     }
 }
 
