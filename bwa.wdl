@@ -101,20 +101,28 @@ task Kit {
         String? readgroup
 
         Int threads = 2
+        Int sortThreads = 2
         Int memory = 10
         String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
     }
 
     command {
         set -e
-        run-bwamem \
-        -o ~{outputPrefix} \
-        ~{"-t " + threads} \
-        ~{"-R '" + readgroup}~{true="'" false="" defined(readgroup)} \
-        -s \
-        ~{bwaIndex.fastaFile} \
-        ~{read1} \
-        ~{read2} | bash
+        bwa mem \
+          -t ~{threads} \
+          ~{"-R " + readgroup} \
+          ~{bwaIndex.fastaFile} \
+          ~{read1} \
+          ~{read2} \
+          2> ~{outputPrefix}.log.bwamem | \
+        k8 /opt/conda/bin/bwa-postalt.js \
+          -p ~{outputPrefix}.hla \
+          ~{bwaIndex.fastaFile}.alt | \
+        samtools sort \
+          -@ ~{sortThreads} \
+          -m1G \
+          - \
+          -o ~{outputPrefix}.aln.bam
         samtools index ~{outputPrefix}.aln.bam ~{outputPrefix}.aln.bai
     }
 
@@ -124,7 +132,7 @@ task Kit {
     }
 
     runtime{
-        cpu: threads
+        cpu: threads + sortThreads
         memory: memory
         docker: dockerImage
     }
