@@ -23,7 +23,7 @@ task ChunkedScatter {
     }
 
     output {
-        Array[File] scatters = glob(prefix + "_*.bed")
+        Array[File] scatters = glob(prefix + "*.bed")
     }
 
     runtime {
