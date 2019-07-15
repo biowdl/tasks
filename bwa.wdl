@@ -110,7 +110,7 @@ task Kit {
         set -e
         bwa mem \
           -t ~{threads} \
-          ~{"-R " + readgroup} \
+          ~{"-R '" + readgroup}~{true="'" false="" defined(readgroup)} \
           ~{bwaIndex.fastaFile} \
           ~{read1} \
           ~{read2} \
