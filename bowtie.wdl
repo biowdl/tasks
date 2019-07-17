@@ -33,6 +33,7 @@ task Bowtie {
         Int? k
         Boolean best = false
         Boolean strata = false
+        Boolean allowContain = false
         String? samRG
         Int threads = 1
         Int memory = 8
@@ -55,6 +56,7 @@ task Bowtie {
         ~{"-k " + k} \
         ~{true="--best" false="" best} \
         ~{true="--strata" false="" strata} \
+        ~{true="--allow-contain" false="" allowContain} \
         ~{"--threads " + threads} \
         ~{"--sam-RG '" + samRG}~{true="'" false="" defined(samRG)} \
         ~{sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")} \
