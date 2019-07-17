@@ -4,8 +4,8 @@ task Cutadapt {
     input {
         File read1
         File? read2
-        String read1output
-        String? read2output
+        String read1output = "cut_r1.fq.gz"
+        String? read2output = if defined(read2) then "cut_r2.fq.gz" else read2
         String? format
         Array[String]+? adapter
         Array[String]+? front
@@ -62,8 +62,8 @@ task Cutadapt {
         String? reportPath
 
         Int cores = 1
-        Int memory = 16
-        String dockerTag = "2.3--py36h14c3975_0"
+        Int memory = 16  # FIXME: Insane memory. Double-check if needed.
+        String dockerImage = "quay.io/biocontainers/cutadapt:2.3--py36h14c3975_0"
     }
 
     String read2outputArg = if (defined(read2output))
@@ -93,7 +93,6 @@ task Cutadapt {
         set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
         ~{read2outputArg}
-        ~{"mkdir -p $(dirname " + reportPath + ")"}
         cutadapt \
         ~{"--cores=" + cores} \
         ~{true="-a" false="" defined(adapterForward)} ~{sep=" -a " adapterForward} \
@@ -169,6 +168,6 @@ task Cutadapt {
     runtime {
         cpu: cores
         memory: memory
-        docker: "quay.io/biocontainers/cutadapt:" + dockerTag
+        docker: dockerImage
     }
 }
