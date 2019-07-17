@@ -209,6 +209,7 @@ task View {
         File inFile
         File? referenceFasta
         String outputFileName
+	Boolean? includeHeader
         Boolean? outputBam
         Boolean? uncompressedBamOutput
         Int? includeFilter
@@ -225,6 +226,7 @@ task View {
         samtools view \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
+	~{true="-h " false="" includeHeader} \
         ~{true="-b " false="" outputBam} \
         ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-f " + includeFilter} \
