@@ -26,7 +26,7 @@ task HTSeqCount {
         -s ~{stranded} \
         ~{"--type " + featureType} \
         ~{"--idattr " + idattr} \
-        ~{sep=" " prefix("--additional-attr ",additionalAttributes)}\
+        ~{true="--additional-attr " false="" length(additionalAttributes) > 0 }~{sep=" --additional-attr " additionalAttributes} \
         ~{sep=" " inputBams} \
         ~{gtfFile} \
         > ~{outputTable}
