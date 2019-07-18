@@ -39,7 +39,8 @@ task Prediction {
 
 task Mateclever {
     input {
-        IndexedBamFile bamFile
+        File fiteredBamFile
+        File indexedFiteredBamFile 
         BwaIndex bwaIndex
         File predictions
         String outputPath
@@ -53,7 +54,7 @@ task Mateclever {
     command <<<
         set -e
         mkdir -p $(dirname ~{outputPath})
-        echo ~{outputPath} ~{bamFile.file} ~{predictions} none > predictions.list
+        echo ~{outputPath} ~{fiteredBamFile} ~{predictions} none > predictions.list
         mateclever \
         -T ~{threads} \
         -k \
