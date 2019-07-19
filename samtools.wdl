@@ -223,6 +223,8 @@ task View {
         File inFile
         File? referenceFasta
         String outputFileName = "view.bam"
+	Boolean? includeHeader
+        Boolean? outputBam
         Boolean? uncompressedBamOutput
         Int? includeFilter
         Int? excludeFilter
@@ -242,6 +244,7 @@ task View {
         samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
+        ~{true="-b " false="" outputBam} \
         ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
