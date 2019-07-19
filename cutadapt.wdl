@@ -5,7 +5,7 @@ task Cutadapt {
         File read1
         File? read2
         String read1output = "cut_r1.fq.gz"
-        String? read2output = if defined(read2) then "cut_r2.fq.gz" else read2
+        String? read2output
         String? format
         Array[String]+? adapter
         Array[String]+? front
@@ -59,7 +59,7 @@ task Cutadapt {
         Boolean? bwa
         Boolean? zeroCap
         Boolean? noZeroCap
-        String reportPath = sub(basename(read1), "\.f(ast)?q(\.gz)?$", "") + "_cutadapt_report.txt"
+        String reportPath = "cutadapt_report.txt"
         #Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
         # --compression-level has a bug in 2.4 https://github.com/marcelm/cutadapt/pull/388
         #~{"--compression-level=" + compressionLevel} \
@@ -69,8 +69,9 @@ task Cutadapt {
         String dockerImage = "quay.io/biocontainers/cutadapt:2.4--py37h14c3975_0"
     }
 
-    String read2outputArg = if (defined(read2output))
-        then "mkdir -p $(dirname " + read2output + ")"
+    String realRead2output = select_first([read2output, "cut_r2.fq.gz"])
+    String read2outputArg = if (defined(read2))
+        then "mkdir -p $(dirname " + realRead2output + ")"
         else ""
 
     # FIXME: This crappy overengineering can be removed once cromwell can handle subworkflow inputs correctly.
@@ -105,7 +106,7 @@ task Cutadapt {
         ~{true="-G" false="" defined(frontRead2)} ~{sep=" -G " frontRead2} \
         ~{true="-b" false="" defined(anywhereForward)} ~{sep=" -b " anywhereForward} \
         ~{true="-B" false="" defined(anywhereReverse)} ~{sep=" -B " anywhereReverse} \
-        --output ~{read1output} ~{"--paired-output " + read2output} \
+        --output ~{read1output} ~{if defined(read2) then "-p " + realRead2output else ""} \
         ~{"--to-short-output " + tooShortOutputPath} \
         ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
         ~{"--to-long-output " + tooLongOutputPath} \
