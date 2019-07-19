@@ -59,7 +59,7 @@ task Cutadapt {
         Boolean? bwa
         Boolean? zeroCap
         Boolean? noZeroCap
-        String? reportPath
+        String reportPath = sub(basename(read1), "\.f(ast)?q(\.gz)?$", "") + "_cutadapt_report.txt"
         #Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
         # --compression-level has a bug in 2.4 https://github.com/marcelm/cutadapt/pull/388
         #~{"--compression-level=" + compressionLevel} \
@@ -155,9 +155,7 @@ task Cutadapt {
     output{
         File cutRead1 = read1output
         File? cutRead2 = read2output
-        File report = if defined(reportPath)
-            then select_first([reportPath])
-            else stdout()
+        File report = reportPath
         File? tooLongOutput=tooLongOutputPath
         File? tooShortOutput=tooShortOutputPath
         File? untrimmedOutput=untrimmedOutputPath
