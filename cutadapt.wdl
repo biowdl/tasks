@@ -60,8 +60,10 @@ task Cutadapt {
         Boolean? zeroCap
         Boolean? noZeroCap
         String? reportPath
-        Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
-
+        #Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
+        # --compression-level has a bug in 2.4 https://github.com/marcelm/cutadapt/pull/388
+        #~{"--compression-level=" + compressionLevel} \
+        Boolean Z = true  # equal to compressionLevel=1  # Fixme: replace once upstream is fixed.
         Int cores = 1
         Int memory = 16  # FIXME: Insane memory. Double-check if needed.
         String dockerImage = "quay.io/biocontainers/cutadapt:2.4--py37h14c3975_0"
@@ -96,7 +98,7 @@ task Cutadapt {
         ~{read2outputArg}
         cutadapt \
         ~{"--cores=" + cores} \
-        ~{"--compression-level " + compressionLevel} \
+        ~{true="-Z" false="" Z} \
         ~{true="-a" false="" defined(adapterForward)} ~{sep=" -a " adapterForward} \
         ~{true="-A" false="" defined(adapterReverse)} ~{sep=" -A " adapterReverse} \
         ~{true="-g" false="" defined(front)} ~{sep=" -g " front} \
