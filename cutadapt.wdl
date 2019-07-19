@@ -60,10 +60,11 @@ task Cutadapt {
         Boolean? zeroCap
         Boolean? noZeroCap
         String? reportPath
+        Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
 
         Int cores = 1
         Int memory = 16  # FIXME: Insane memory. Double-check if needed.
-        String dockerImage = "quay.io/biocontainers/cutadapt:2.3--py36h14c3975_0"
+        String dockerImage = "quay.io/biocontainers/cutadapt:2.4--py37h14c3975_0"
     }
 
     String read2outputArg = if (defined(read2output))
@@ -95,6 +96,7 @@ task Cutadapt {
         ~{read2outputArg}
         cutadapt \
         ~{"--cores=" + cores} \
+        ~{"--compression-level " + compressionLevel} \
         ~{true="-a" false="" defined(adapterForward)} ~{sep=" -a " adapterForward} \
         ~{true="-A" false="" defined(adapterReverse)} ~{sep=" -A " adapterReverse} \
         ~{true="-g" false="" defined(front)} ~{sep=" -g " front} \
