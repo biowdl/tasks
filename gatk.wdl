@@ -32,7 +32,7 @@ task ApplyBQSR {
         --static-quantized-quals 10 \
         --static-quantized-quals 20 \
         --static-quantized-quals 30 \
-        ~{true="-L" false="" defined(sequenceGroupInterval)} ~{sep=" -L " select_first([sequenceGroupInterval], [])}
+        ~{true="-L" false="" defined(sequenceGroupInterval)} ~{sep=" -L " select_first([sequenceGroupInterval, []])}
     }
 
     output {
@@ -82,7 +82,7 @@ task BaseRecalibrator {
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
         --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
-        ~{true="-L" false="" defined(sequenceGroupInterval)} ~{sep=" -L " select_first([sequenceGroupInterval], [])}
+        ~{true="-L" false="" defined(sequenceGroupInterval)} ~{sep=" -L " select_first([sequenceGroupInterval, []])}
     }
 
     output {
