@@ -20,10 +20,12 @@ task VarDict {
         Int endColumn = 3
         Int geneColumn = 4
 
-        Float? mappingQuality = 20
-        Int? minimumTotalDepth = 8
-        Int? minimumVariantDepth = 4
-        Float? minimumAlleleFrequency = 0.02
+        Boolean outputCandidateSomaticOnly = true
+        Boolean outputAllVariantsAtSamePosition = true
+        Float mappingQuality = 20
+        Int minimumTotalDepth = 8
+        Int minimumVariantDepth = 4
+        Float minimumAlleleFrequency = 0.02
 
         Int threads = 1
         Int memory = 16
@@ -50,8 +52,8 @@ task VarDict {
         ~{true="var2vcf_paired.pl" false="var2vcf_valid.pl" defined(normalBam)} \
         -N "~{tumorSampleName}~{"|" + normalSampleName}" \
         ~{true="" false="-E" defined(normalBam)} \
-        -M \
-        -A \
+        ~{true="-M" false="" outputCandidateSomaticOnly} \
+        ~{true="-A" false="" outputAllVariantsAtSamePosition} \
         -Q ~{mappingQuality} \
         -d ~{minimumTotalDepth} \
         -v ~{minimumVariantDepth} \
