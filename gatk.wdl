@@ -259,6 +259,7 @@ task MuTect2 {
         String tumorSample
         String? normalSample
         File? panelOfNormals
+        File? panelOfNormalsIndex
         Array[File]+ intervals
 
         Int memory = 4
