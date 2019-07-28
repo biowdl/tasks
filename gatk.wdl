@@ -258,13 +258,16 @@ task MuTect2 {
         String outputVcf
         String tumorSample
         String? normalSample
+        File? germlineResource
+        File? germlineResourceIndex
         File? panelOfNormals
         File? panelOfNormalsIndex
+        String? f1r2TarGz = "f1r2.tar.gz"
         Array[File]+ intervals
 
         Int memory = 4
         Float memoryMultiplier = 3
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
@@ -276,7 +279,9 @@ task MuTect2 {
         -I ~{sep=" -I " inputBams} \
         -tumor ~{tumorSample} \
         ~{"-normal " + normalSample} \
+        ~{"--germline-resource " + germlineResource} \
         ~{"--panel-of-normals " + panelOfNormals} \
+        ~{"--f1r2-tar-gz " + f1r2TarGz} \
         -O ~{outputVcf} \
         -L ~{sep=" -L " intervals}
     }
@@ -284,6 +289,7 @@ task MuTect2 {
     output {
         File vcfFile = outputVcf
         File vcfFileIndex = outputVcf + ".tbi"
+        File f1r2File = f1r2TarGz
     }
 
     runtime {
