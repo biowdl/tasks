@@ -7,7 +7,7 @@ task ApplyBQSR {
         File inputBamIndex
         String outputBamPath
         File recalibrationReport
-        Array[File]+? sequenceGroupInterval
+        Array[File] sequenceGroupInterval = []
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
@@ -32,7 +32,7 @@ task ApplyBQSR {
         --static-quantized-quals 10 \
         --static-quantized-quals 20 \
         --static-quantized-quals 30 \
-        ~{true="-L" false="" defined(sequenceGroupInterval)} ~{sep=" -L " select_first([sequenceGroupInterval, []])}
+        ~{true="-L" false="" length(sequenceGroupInterval) > 0} ~{sep=' -L ' sequenceGroupInterval}
     }
 
     output {
@@ -53,7 +53,7 @@ task BaseRecalibrator {
         File inputBam
         File inputBamIndex
         String recalibrationReportPath
-        Array[File]+? sequenceGroupInterval
+        Array[File] sequenceGroupInterval = []
         Array[File]? knownIndelsSitesVCFs
         Array[File]? knownIndelsSitesVCFIndexes
         File? dbsnpVCF
@@ -82,7 +82,7 @@ task BaseRecalibrator {
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
         --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
-        ~{true="-L" false="" defined(sequenceGroupInterval)} ~{sep=" -L " select_first([sequenceGroupInterval, []])}
+        ~{true="-L" false="" length(sequenceGroupInterval) > 0} ~{sep=' -L ' sequenceGroupInterval}
     }
 
     output {
