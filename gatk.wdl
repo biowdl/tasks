@@ -299,7 +299,7 @@ task SplitNCigarReads {
         File referenceFastaDict
         File referenceFastaFai
         String outputBam
-        Array[File]+? intervals
+        Array[File] intervals = []
 
         Int memory = 4
         Float memoryMultiplier = 4
@@ -314,7 +314,7 @@ task SplitNCigarReads {
         -I ~{inputBam} \
         -R ~{referenceFasta} \
         -O ~{outputBam} \
-        ~{true="-L" false="" defined(intervals)} ~{sep=' -L ' select_first([intervals])}
+        ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals}
     }
 
     output {
