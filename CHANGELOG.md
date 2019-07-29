@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ VarDict: Add user definable flags (-M, -A, -Q, -d, -v, -f) to the paired VCF filtering script.
 + Cutadapt: If the output is a gzipped file, compress with level 1 (instead of default 6).
 + Cutadapt: Fix issues with read2output when using single-end reads.
 + Add feature type, idattr and additional attributes to htseq-count.
