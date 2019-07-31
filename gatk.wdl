@@ -264,6 +264,7 @@ task MuTect2 {
         File? panelOfNormalsIndex
         String? f1r2TarGz = "f1r2.tar.gz"
         Array[File]+ intervals
+        String outputStats = outputVcf + ".stats"
 
         Int memory = 4
         Float memoryMultiplier = 3
@@ -290,6 +291,7 @@ task MuTect2 {
         File vcfFile = outputVcf
         File vcfFileIndex = outputVcf + ".tbi"
         File f1r2File = f1r2TarGz
+        File stats = outputStats
     }
 
     runtime {
@@ -319,6 +321,33 @@ task LearnReadOrientationModel {
         File artifactPriorTable = "artifact-priors.tar.gz"
     }
 
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task MergeStats {
+    input {
+        Array[File]+ stats
+
+        Int memory = 2
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        MergeMutectStats \
+        -stats ~{sep=" -stats " stats} \
+        -O "merged.stats"
+    }
+
+    output {
+        File mergedStats = "merged.stats"
+    }
 
     runtime {
         docker: dockerImage
