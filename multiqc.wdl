@@ -38,8 +38,7 @@ task MultiQC {
         Boolean verbose  = false
         Boolean quiet = false
         Array[Boolean] finished = []  # An array of booleans that can be used to let multiqc wait on stuff.
-        Int? cores = 1
-        Int? memory = 4
+        Int memory = 4
     }
 
     command {
@@ -88,7 +87,6 @@ task MultiQC {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
