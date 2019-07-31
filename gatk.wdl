@@ -262,7 +262,7 @@ task MuTect2 {
         File? germlineResourceIndex
         File? panelOfNormals
         File? panelOfNormalsIndex
-        String? f1r2TarGz = "f1r2.tar.gz"
+        String f1r2TarGz = "f1r2.tar.gz"
         Array[File]+ intervals
         String outputStats = outputVcf + ".stats"
 
@@ -302,10 +302,10 @@ task MuTect2 {
 
 task LearnReadOrientationModel {
     input {
-        Array[File] f1r2TarGz
+        Array[File]+ f1r2TarGz
 
-        Int memory = 4
-        Float memoryMultiplier = 2
+        Int memory = 8
+        Float memoryMultiplier = 1.5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -320,7 +320,6 @@ task LearnReadOrientationModel {
     output {
         File artifactPriorTable = "artifact-priors.tar.gz"
     }
-
 
     runtime {
         docker: dockerImage
