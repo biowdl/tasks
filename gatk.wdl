@@ -298,6 +298,34 @@ task MuTect2 {
     }
 }
 
+task LearnReadOrientationModel {
+    input {
+        Array[File] f1r2TarGz
+
+        Int memory = 4
+        Float memoryMultiplier = 2
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        LearnReadOrientationModel \
+        -I ~{sep=" -I " f1r2TarGz} \
+        -O "artifact-priors.tar.gz"
+    }
+
+    output {
+        File artifactPriorTable = "artifact-priors.tar.gz"
+    }
+
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
 task SplitNCigarReads {
     input {
         File inputBam
