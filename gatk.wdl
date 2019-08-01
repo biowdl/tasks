@@ -356,13 +356,13 @@ task MergeStats {
 
 task GetPileupSummaries {
     input {
-        String sampleName
         File sampleBam
         File sampleBamIndex
         File variantsForContamination
         File variantsForContaminationIndex
         File sitesForContamination
         File sitesForContaminationIndex
+        String outputPrefix
 
         Int memory = 4
         Float memoryMultiplier = 1.5
@@ -376,11 +376,11 @@ task GetPileupSummaries {
         -I ~{sampleBam} \
         -V ~{variantsForContamination} \
         -L ~{sitesForContamination} \
-        -O ~{sampleName + "-pileups.table"}
+        -O ~{outputPrefix + "-pileups.table"}
     }
 
     output {
-        File pileups = sampleName + "-pileups.table"
+        File pileups = outputPrefix + "-pileups.table"
     }
 
     runtime {
