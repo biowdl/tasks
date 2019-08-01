@@ -354,6 +354,41 @@ task MergeStats {
     }
 }
 
+task GetPileupSummaries {
+    input {
+        String sampleName
+        File sampleBam
+        File sampleBamIndex
+        File variantsForContamination
+        File variantsForContaminationIndex
+        File sitesForContamination
+        File sitesForContaminationIndex
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        GetPileupSummaries \
+        -I ~{sampleBam} \
+        -V ~{variantsForContamination} \
+        -L ~{sitesForContamination} \
+        -O ~{sampleName + "-pileups.table"}
+    }
+
+    output {
+        File pileups = sampleName + "-pileups.table"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
 task SplitNCigarReads {
     input {
         File inputBam
