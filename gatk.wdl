@@ -389,6 +389,37 @@ task GetPileupSummaries {
     }
 }
 
+task CalculateContamination {
+    input {
+        File tumorPileups
+        File? normalPileups
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        CalculateContamination \
+        -I ~{tumorPileups} \
+        ~{"-matched " + normalPileups} \
+        -O "contamination.table" \
+        --tumor-segmentation "segments.table"
+    }
+
+    output {
+        File contaminationTable = "contamination.table"
+        File mafTumorSegments = "segments.table"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
 task SplitNCigarReads {
     input {
         File inputBam
