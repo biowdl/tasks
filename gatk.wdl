@@ -318,7 +318,7 @@ task LearnReadOrientationModel {
     }
 
     output {
-        File artifactPriorTable = "artifact-priors.tar.gz"
+        File artifactPriorsTable = "artifact-priors.tar.gz"
     }
 
     runtime {
@@ -412,6 +412,55 @@ task CalculateContamination {
     output {
         File contaminationTable = "contamination.table"
         File mafTumorSegments = "segments.table"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task FilterMutectCalls {
+    input {
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        File unfilteredVcf
+        File unfilteredVcfIndex
+        String outputVcf
+        File? contaminationTable
+        File? mafTumorSegments
+        File? artifactPriors
+        Int uniqueAltReadCount = 4
+        File mutect2Stats
+        String? extraArgs
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        FilterMutectCalls \
+        -R ~{referenceFasta} \
+        -V ~{unfilteredVcf} \
+        -O ${outputVcf} \
+        ~{"--contamination-table " + contaminationTable} \
+        ~{"--tumor-segmentation " + mafTumorSegments} \
+        ~{"--ob-priors " + artifactPriors} \
+        ~{"--unique-alt-read-count " + uniqueAltReadCount} \
+        ~{"-stats " + mutect2Stats} \
+        --filtering-stats "filtering.stats" \
+        --showHidden \
+        ~{extraArgs}
+    }
+
+    output {
+        File filteredVcf = outputVcf
+        File filteredVcfIndex = outputVcf + ".tbi"
+        File filteringStats = "filtering.stats"
     }
 
     runtime {
