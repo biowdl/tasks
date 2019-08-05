@@ -505,3 +505,51 @@ task SplitNCigarReads {
         memory: ceil(memory * memoryMultiplier)
     }
 }
+
+task CombineVariants {
+    input {
+        String installDir = "/usr"
+
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        String genotypeMergeOption = "UNIQUIFY"
+        String filteredRecordsMergeType = "KEEP_IF_ANY_UNFILTERED"
+        Array[String]+ identifiers
+        Array[File]+ variantVcfs # follow "identifiers" array order
+        Array[File]+ variantIndexes
+        String outputPath
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "broadinstitute/gatk3:3.8-1"
+    }
+
+    command <<<
+        set -e -o pipefail
+        mkdir -p $(dirname "~{outputPath}")
+
+        # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
+        ids=(~{sep=" " identifiers})
+        vars=(~{sep=" " variantVcfs})
+        V_lines=`for ((i=0;i<${#ids[@]};++i)); do printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"; done`
+
+        java -Xmx~{memory}G -jar ~{installDir}/GenomeAnalysisTK.jar \
+        -T CombineVariants \
+        -R ~{referenceFasta} \
+        --genotypemergeoption ~{genotypeMergeOption} \
+        --filteredrecordsmergetype ~{filteredRecordsMergeType} \
+        --out ~{outputPath} \
+        $V_lines
+    >>>
+
+    output {
+        File combinedVcf = outputPath
+        File combinedVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
