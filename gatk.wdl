@@ -442,6 +442,7 @@ task FilterMutectCalls {
 
     command {
         set -e
+        mkdir -p $(dirname ~{outputVcf})
         gatk --java-options -Xmx~{memory}G \
         FilterMutectCalls \
         -R ~{referenceFasta} \
