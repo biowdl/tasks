@@ -446,7 +446,7 @@ task FilterMutectCalls {
         FilterMutectCalls \
         -R ~{referenceFasta} \
         -V ~{unfilteredVcf} \
-        -O ${outputVcf} \
+        -O ~{outputVcf} \
         ~{"--contamination-table " + contaminationTable} \
         ~{"--tumor-segmentation " + mafTumorSegments} \
         ~{"--ob-priors " + artifactPriors} \
@@ -508,7 +508,7 @@ task SplitNCigarReads {
 
 task CombineVariants {
     input {
-        String installDir = "/usr"
+        String installDir = "/usr"  # .jar location in the docker image
 
         File referenceFasta
         File referenceFastaFai
