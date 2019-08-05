@@ -280,9 +280,14 @@ task ModifyStrelka {
     }
 
     command {
+        set -e -o pipefail
+
         ~{installDir}/modify_Strelka.py \
         -infile ~{strelkaVCF} \
-        -outfile ~{outputVCFName}
+        -outfile "modified_strelka.vcf"
+
+        first_FORMAT_line_num=$(grep -n -m 1 '##FORMAT' "modified_strelka.vcf" | cut -d : -f 1)
+        sed "$first_FORMAT_line_num"'i##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">' "modified_strelka.vcf" > ~{outputVCFName}
     }
 
     output {
