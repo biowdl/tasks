@@ -533,7 +533,12 @@ task CombineVariants {
         # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
         ids=(~{sep=" " identifiers})
         vars=(~{sep=" " variantVcfs})
-        V_lines=`for ((i=0;i<${#ids[@]};++i)); do printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"; done`
+        V_args=$(
+            for (( i = 0; i < ${#ids[@]}; ++i ))
+              do
+                printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
+              done
+        )
 
         java -Xmx~{memory}G -jar ~{installDir}/GenomeAnalysisTK.jar \
         -T CombineVariants \
@@ -541,7 +546,7 @@ task CombineVariants {
         --genotypemergeoption ~{genotypeMergeOption} \
         --filteredrecordsmergetype ~{filteredRecordsMergeType} \
         --out ~{outputPath} \
-        $V_lines
+        $V_args
     >>>
 
     output {
