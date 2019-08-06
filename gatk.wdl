@@ -7,7 +7,7 @@ task ApplyBQSR {
         File inputBamIndex
         String outputBamPath
         File recalibrationReport
-        Array[File]+ sequenceGroupInterval
+        Array[File] sequenceGroupInterval = []
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
@@ -32,7 +32,7 @@ task ApplyBQSR {
         --static-quantized-quals 10 \
         --static-quantized-quals 20 \
         --static-quantized-quals 30 \
-        -L ~{sep=" -L " sequenceGroupInterval}
+        ~{true="-L" false="" length(sequenceGroupInterval) > 0} ~{sep=' -L ' sequenceGroupInterval}
     }
 
     output {
@@ -53,7 +53,7 @@ task BaseRecalibrator {
         File inputBam
         File inputBamIndex
         String recalibrationReportPath
-        Array[File]+ sequenceGroupInterval
+        Array[File] sequenceGroupInterval = []
         Array[File]? knownIndelsSitesVCFs
         Array[File]? knownIndelsSitesVCFIndexes
         File? dbsnpVCF
@@ -82,7 +82,7 @@ task BaseRecalibrator {
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
         --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
-        -L ~{sep=" -L " sequenceGroupInterval}
+        ~{true="-L" false="" length(sequenceGroupInterval) > 0} ~{sep=' -L ' sequenceGroupInterval}
     }
 
     output {
@@ -478,7 +478,7 @@ task SplitNCigarReads {
         File referenceFastaDict
         File referenceFastaFai
         String outputBam
-        Array[File]+ intervals
+        Array[File] intervals = []
 
         Int memory = 4
         Float memoryMultiplier = 4
@@ -493,7 +493,7 @@ task SplitNCigarReads {
         -I ~{inputBam} \
         -R ~{referenceFasta} \
         -O ~{outputBam} \
-        -L ~{sep=' -L ' intervals}
+        ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals}
     }
 
     output {
