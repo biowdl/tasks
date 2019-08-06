@@ -267,3 +267,35 @@ task ParallelSingleTrain {
         docker: dockerImage
     }
 }
+
+task ModifyStrelka {
+    input {
+        String installDir = "/opt/somaticseq/vcfModifier" #the location in the docker image
+
+        File strelkaVCF
+        String? outputVCFName = basename(strelkaVCF, ".gz")
+
+        Int threads = 1
+        String dockerImage = "lethalfang/somaticseq:3.1.0"
+    }
+
+    command {
+        set -e -o pipefail
+
+        ~{installDir}/modify_Strelka.py \
+        -infile ~{strelkaVCF} \
+        -outfile "modified_strelka.vcf"
+
+        first_FORMAT_line_num=$(grep -n -m 1 '##FORMAT' "modified_strelka.vcf" | cut -d : -f 1)
+        sed "$first_FORMAT_line_num"'i##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">' "modified_strelka.vcf" > ~{outputVCFName}
+    }
+
+    output {
+        File outputVcf = outputVCFName
+    }
+
+    runtime {
+        cpu: threads
+        docker: dockerImage
+    }
+}

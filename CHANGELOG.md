@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ GATK: Add CombineVariants task that allows, e.g., to merge VCFs from different callers.
++ Mutect2: Add GATK tasks related to variant filtering (LearnReadOrientationModel, MergeStats, GetPileupSummaries, CalculateContamination and FilterMutectCalls).
++ Mutect2: Add "--germline-resource" and "--f1r2-tar-gz" inputs, requiring an update to GATK 4.1.2.0. 
++ Mutect2: Add necessary missing index attribute for panel of normals.
 + MultiQC: Add memory variable to multiqc task.
 + GATK: SplitNCigarReads, BaseRecalibration and ApplyBQSR do no longer need regions files as required inputs.
 + VarDict: Add user definable flags (-M, -A, -Q, -d, -v, -f) to the paired VCF filtering script.

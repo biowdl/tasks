@@ -258,12 +258,17 @@ task MuTect2 {
         String outputVcf
         String tumorSample
         String? normalSample
+        File? germlineResource
+        File? germlineResourceIndex
         File? panelOfNormals
+        File? panelOfNormalsIndex
+        String f1r2TarGz = "f1r2.tar.gz"
         Array[File]+ intervals
+        String outputStats = outputVcf + ".stats"
 
         Int memory = 4
         Float memoryMultiplier = 3
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
@@ -275,7 +280,9 @@ task MuTect2 {
         -I ~{sep=" -I " inputBams} \
         -tumor ~{tumorSample} \
         ~{"-normal " + normalSample} \
+        ~{"--germline-resource " + germlineResource} \
         ~{"--panel-of-normals " + panelOfNormals} \
+        ~{"--f1r2-tar-gz " + f1r2TarGz} \
         -O ~{outputVcf} \
         -L ~{sep=" -L " intervals}
     }
@@ -283,6 +290,178 @@ task MuTect2 {
     output {
         File vcfFile = outputVcf
         File vcfFileIndex = outputVcf + ".tbi"
+        File f1r2File = f1r2TarGz
+        File stats = outputStats
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task LearnReadOrientationModel {
+    input {
+        Array[File]+ f1r2TarGz
+
+        Int memory = 8
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        LearnReadOrientationModel \
+        -I ~{sep=" -I " f1r2TarGz} \
+        -O "artifact-priors.tar.gz"
+    }
+
+    output {
+        File artifactPriorsTable = "artifact-priors.tar.gz"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task MergeStats {
+    input {
+        Array[File]+ stats
+
+        Int memory = 2
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        MergeMutectStats \
+        -stats ~{sep=" -stats " stats} \
+        -O "merged.stats"
+    }
+
+    output {
+        File mergedStats = "merged.stats"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task GetPileupSummaries {
+    input {
+        File sampleBam
+        File sampleBamIndex
+        File variantsForContamination
+        File variantsForContaminationIndex
+        File sitesForContamination
+        File sitesForContaminationIndex
+        String outputPrefix
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        GetPileupSummaries \
+        -I ~{sampleBam} \
+        -V ~{variantsForContamination} \
+        -L ~{sitesForContamination} \
+        -O ~{outputPrefix + "-pileups.table"}
+    }
+
+    output {
+        File pileups = outputPrefix + "-pileups.table"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task CalculateContamination {
+    input {
+        File tumorPileups
+        File? normalPileups
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{memory}G \
+        CalculateContamination \
+        -I ~{tumorPileups} \
+        ~{"-matched " + normalPileups} \
+        -O "contamination.table" \
+        --tumor-segmentation "segments.table"
+    }
+
+    output {
+        File contaminationTable = "contamination.table"
+        File mafTumorSegments = "segments.table"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task FilterMutectCalls {
+    input {
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        File unfilteredVcf
+        File unfilteredVcfIndex
+        String outputVcf
+        File? contaminationTable
+        File? mafTumorSegments
+        File? artifactPriors
+        Int uniqueAltReadCount = 4
+        File mutect2Stats
+        String? extraArgs
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        mkdir -p $(dirname ~{outputVcf})
+        gatk --java-options -Xmx~{memory}G \
+        FilterMutectCalls \
+        -R ~{referenceFasta} \
+        -V ~{unfilteredVcf} \
+        -O ~{outputVcf} \
+        ~{"--contamination-table " + contaminationTable} \
+        ~{"--tumor-segmentation " + mafTumorSegments} \
+        ~{"--ob-priors " + artifactPriors} \
+        ~{"--unique-alt-read-count " + uniqueAltReadCount} \
+        ~{"-stats " + mutect2Stats} \
+        --filtering-stats "filtering.stats" \
+        --showHidden \
+        ~{extraArgs}
+    }
+
+    output {
+        File filteredVcf = outputVcf
+        File filteredVcfIndex = outputVcf + ".tbi"
+        File filteringStats = "filtering.stats"
     }
 
     runtime {
@@ -320,6 +499,59 @@ task SplitNCigarReads {
     output {
         File bam = outputBam
         File bamIndex = sub(outputBam, "\.bam$", ".bai")
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: ceil(memory * memoryMultiplier)
+    }
+}
+
+task CombineVariants {
+    input {
+        String installDir = "/usr"  # .jar location in the docker image
+
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        String genotypeMergeOption = "UNIQUIFY"
+        String filteredRecordsMergeType = "KEEP_IF_ANY_UNFILTERED"
+        Array[String]+ identifiers
+        Array[File]+ variantVcfs # follow "identifiers" array order
+        Array[File]+ variantIndexes
+        String outputPath
+
+        Int memory = 4
+        Float memoryMultiplier = 1.5
+        String dockerImage = "broadinstitute/gatk3:3.8-1"
+    }
+
+    command <<<
+        set -e -o pipefail
+        mkdir -p $(dirname "~{outputPath}")
+
+        # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
+        ids=(~{sep=" " identifiers})
+        vars=(~{sep=" " variantVcfs})
+        V_args=$(
+            for (( i = 0; i < ${#ids[@]}; ++i ))
+              do
+                printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
+              done
+        )
+
+        java -Xmx~{memory}G -jar ~{installDir}/GenomeAnalysisTK.jar \
+        -T CombineVariants \
+        -R ~{referenceFasta} \
+        --genotypemergeoption ~{genotypeMergeOption} \
+        --filteredrecordsmergetype ~{filteredRecordsMergeType} \
+        --out ~{outputPath} \
+        $V_args
+    >>>
+
+    output {
+        File combinedVcf = outputPath
+        File combinedVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
