@@ -331,8 +331,8 @@ task MergeStats {
     input {
         Array[File]+ stats
 
-        Int memory = 2
-        Float memoryMultiplier = 1.5
+        Int memory = 14
+        Float memoryMultiplier = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -435,7 +435,7 @@ task FilterMutectCalls {
         File mutect2Stats
         String? extraArgs
 
-        Int memory = 4
+        Int memory = 8
         Float memoryMultiplier = 1.5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
