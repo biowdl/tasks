@@ -99,6 +99,7 @@ task Kit {
         BwaIndex bwaIndex
         String outputPrefix
         String? readgroup
+        Boolean sixtyFour = false
 
         Int threads = 2
         Int sortThreads = 2
@@ -117,7 +118,7 @@ task Kit {
           2> ~{outputPrefix}.log.bwamem | \
         k8 /opt/conda/bin/bwa-postalt.js \
           -p ~{outputPrefix}.hla \
-          ~{bwaIndex.fastaFile}.alt | \
+          ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
         samtools sort \
           -@ ~{sortThreads} \
           -m1G \
