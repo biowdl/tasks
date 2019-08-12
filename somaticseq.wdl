@@ -280,7 +280,7 @@ task ModifyStrelka {
     }
 
     command {
-        set -e -o pipefail
+        set -e
 
         ~{installDir}/modify_Strelka.py \
         -infile ~{strelkaVCF} \
