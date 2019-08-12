@@ -77,7 +77,7 @@ task Copy {
         Boolean recursive = false
 
         # Version not that important as long as it is stable.
-        String dockerTag = "5.0.2"
+        String dockerImage = "bash:5.0.2"
     }
 
     command {
@@ -91,7 +91,7 @@ task Copy {
     }
 
     runtime {
-        docker: "bash:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -155,7 +155,7 @@ task YamlToJson {
     input {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
-        String dockerTag = "3.13-py37-slim"
+        String dockerImage = "biowdl/pyyaml:3.13-py37-slim"
     }
     command {
         set -e
@@ -174,7 +174,7 @@ task YamlToJson {
     }
 
     runtime {
-        docker: "biowdl/pyyaml:" + dockerTag
+        docker: dockerImage
     }
 }
 
