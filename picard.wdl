@@ -8,7 +8,7 @@ task BedToIntervalList {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
@@ -52,9 +52,7 @@ task CollectMultipleMetrics {
 
         Int memory = 8
         Float memoryMultiplier = 4
-        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
-        # Contains r-base=3.4.1,picard=2.18.2
-        String dockerImage = "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
 
@@ -137,9 +135,7 @@ task CollectRnaSeqMetrics {
 
         Int memory = 8
         Float memoryMultiplier = 4.0
-        # https://raw.githubusercontent.com/BioContainers/multi-package-containers/80886dfea00f3cd9e7ae2edf4fc42816a10e5403/combinations/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923%3A8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0.tsv
-        # Contains r-base=3.4.1,picard=2.18.2
-        String dockerImage = "quay.io/biocontainers/mulled-v2-23d9f7c700e78129a769e78521eb86d6b8341923:8dde04faba6c9ac93fae7e846af3bafd2c331b3b-0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
@@ -178,7 +174,7 @@ task CollectTargetedPcrMetrics {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
@@ -216,7 +212,7 @@ task GatherBamFiles {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
@@ -250,7 +246,7 @@ task GatherVcfs {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
@@ -282,7 +278,7 @@ task MarkDuplicates {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -335,7 +331,7 @@ task MergeVCFs {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
@@ -365,14 +361,17 @@ task SamToFastq {
     input {
         File inputBam
         File inputBamIndex
-        String outputRead1
-        String? outputRead2
-        String? outputUnpaired
+        Boolean paired = true
 
         Int memory = 16 # High memory default to avoid crashes.
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        File? NONE
     }
+
+    String outputRead1 = basename(inputBam, "\.[bs]am") + "_R1.fastq.gz"
+    String outputRead2 = basename(inputBam, "\.[bs]am") + "_R2.fastq.gz"
+    String outputUnpaired = basename(inputBam, "\.[bs]am") + "_unpaired.fastq.gz"
 
     command {
         set -e
@@ -380,14 +379,14 @@ task SamToFastq {
         SamToFastq \
         I=~{inputBam} \
         ~{"FASTQ=" + outputRead1} \
-        ~{"SECOND_END_FASTQ=" + outputRead2} \
-        ~{"UNPAIRED_FASTQ=" + outputUnpaired}
+        ~{if paired then "SECOND_END_FASTQ=" + outputRead2 else ""} \
+        ~{if paired then "UNPAIRED_FASTQ=" + outputUnpaired else ""}
     }
 
     output {
         File read1 = outputRead1
-        File? read2 = outputRead2
-        File? unpairedRead = outputUnpaired
+        File? read2 = if paired then outputRead2 else NONE
+        File? unpairedRead = if paired then outputUnpaired else NONE
     }
 
     runtime {
@@ -403,7 +402,7 @@ task ScatterIntervalList {
 
         Int memory = 4
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
@@ -438,7 +437,7 @@ task SortVcf {
 
         Int memory = 8
         Float memoryMultiplier = 3.0
-        String dockerImage = "quay.io/biocontainers/picard:2.18.26--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
         }
 
 

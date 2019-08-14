@@ -222,8 +222,7 @@ task View {
     input {
         File inFile
         File? referenceFasta
-        String outputFileName
-        Boolean? outputBam
+        String outputFileName = "view.bam"
         Boolean? uncompressedBamOutput
         Int? includeFilter
         Int? excludeFilter
@@ -234,14 +233,15 @@ task View {
         Int memory = 1
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
+    String outputIndexPath = basename(outputFileName) + ".bai"
 
+    # Always output to bam and output header
     command {
         set -e
         mkdir -p $(dirname ~{outputFileName})
-        samtools view \
+        samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
-        ~{true="-b " false="" outputBam} \
         ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
@@ -249,10 +249,12 @@ task View {
         ~{"-q " + MAPQthreshold} \
         ~{"--threads " + (threads - 1)} \
         ~{inFile}
+        samtools index ~{outputFileName} ~{outputIndexPath}
     }
 
     output {
-        File outputFile = outputFileName
+        File outputBam = outputFileName
+        File outputBamIndex = outputIndexPath
     }
 
     runtime {

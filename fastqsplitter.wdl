@@ -26,7 +26,7 @@ task Fastqsplitter {
     input {
         File inputFastq
         Array[String]+ outputPaths
-        String dockerImage = "quay.io/biocontainers/fastqsplitter:1.0.0--py_0"
+        String dockerImage = "quay.io/biocontainers/fastqsplitter:1.1.0--py37h516909a_0"
         Int? compressionLevel
         Int? threadsPerFile
          # fastqplitter utilizes one thread per input file and one or more threads per output file + one thread for the application.
