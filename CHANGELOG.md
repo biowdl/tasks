@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ Bigger memory multiplier in mutect to take in account bigger vmem usage
 + Cutadapt: Remove default adapter
 + Fastqsplitter: use version 1.1.
 + Picard: Use version 2.20.5 of the biocontainer as this includes the R dependency
