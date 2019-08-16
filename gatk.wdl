@@ -267,7 +267,7 @@ task MuTect2 {
         String outputStats = outputVcf + ".stats"
 
         Int memory = 4
-        Float memoryMultiplier = 3
+        Float memoryMultiplier = 4
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
