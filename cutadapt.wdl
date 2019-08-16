@@ -70,6 +70,7 @@ task Cutadapt {
         then "mkdir -p $(dirname " + realRead2output + ")"
         else ""
 
+    # FIXME: Use prefix() function for adapter, adapterRead2, etc.
     command {
         set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
