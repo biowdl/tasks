@@ -21,6 +21,6 @@ install:
 
 script:
   - set -e
-  - for FILE in *.wdl; do echo $FILE; womtool validate $FILE; done
+  - for FILE in $(find -name "*.wdl"); do echo $FILE; womtool validate $FILE; done
   - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then git submodule foreach git checkout develop && git submodule foreach git pull; fi'
   - "git diff --exit-code || (echo ERROR: Git changes detected. Please update submodules && exit 1)"
