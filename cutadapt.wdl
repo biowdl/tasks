@@ -13,8 +13,7 @@ task Cutadapt {
         Array[String]+? adapterRead2
         Array[String]+? frontRead2
         Array[String]+? anywhereRead2
-        # FIXME: default should be set at the subworkflow level, not here. Needs to wait for cromwell fix.
-        Array[String]+? adapterBoth = ["AGATCGGAAGAG"]
+        Array[String]+? adapterBoth
         # contaminations = anywhereBoth
         Array[String]+? contaminations
         Boolean? interleaved
