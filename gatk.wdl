@@ -267,7 +267,7 @@ task MuTect2 {
         String outputStats = outputVcf + ".stats"
 
         Int memory = 4
-        Float memoryMultiplier = 4
+        Float memoryMultiplier = 3
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -304,8 +304,8 @@ task LearnReadOrientationModel {
     input {
         Array[File]+ f1r2TarGz
 
-        Int memory = 8
-        Float memoryMultiplier = 1.5
+        Int memory = 12
+        Float memoryMultiplier = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -364,8 +364,8 @@ task GetPileupSummaries {
         File sitesForContaminationIndex
         String outputPrefix
 
-        Int memory = 4
-        Float memoryMultiplier = 1.5
+        Int memory = 12
+        Float memoryMultiplier = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -394,8 +394,8 @@ task CalculateContamination {
         File tumorPileups
         File? normalPileups
 
-        Int memory = 4
-        Float memoryMultiplier = 1.5
+        Int memory = 12
+        Float memoryMultiplier = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -435,8 +435,8 @@ task FilterMutectCalls {
         File mutect2Stats
         String? extraArgs
 
-        Int memory = 8
-        Float memoryMultiplier = 1.5
+        Int memory = 12
+        Float memoryMultiplier = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -521,16 +521,18 @@ task CombineVariants {
         Array[File]+ variantIndexes
         String outputPath
 
-        Int memory = 4
-        Float memoryMultiplier = 1.5
+        Int memory = 12
+        Float memoryMultiplier = 2
         String dockerImage = "broadinstitute/gatk3:3.8-1"
     }
 
     command <<<
-        set -e -o pipefail
+        set -e
         mkdir -p $(dirname "~{outputPath}")
 
         # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
+        # echoing the commands into a file is a workaround to avoid syntax errors when using shell
+        echo '#!/bin/bash
         ids=(~{sep=" " identifiers})
         vars=(~{sep=" " variantVcfs})
         V_args=$(
@@ -539,7 +541,6 @@ task CombineVariants {
                 printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
               done
         )
-
         java -Xmx~{memory}G -jar ~{installDir}/GenomeAnalysisTK.jar \
         -T CombineVariants \
         -R ~{referenceFasta} \
@@ -547,6 +548,11 @@ task CombineVariants {
         --filteredrecordsmergetype ~{filteredRecordsMergeType} \
         --out ~{outputPath} \
         $V_args
+        ' > run_combine.sh
+
+        chmod 700 run_combine.sh
+
+        ./run_combine.sh
     >>>
 
     output {
