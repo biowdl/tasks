@@ -267,7 +267,7 @@ task MuTect2 {
         String outputStats = outputVcf + ".stats"
 
         Int memory = 4
-        Float memoryMultiplier = 3
+        Float memoryMultiplier = 4
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -531,8 +531,9 @@ task CombineVariants {
         mkdir -p $(dirname "~{outputPath}")
 
         # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
-        # echoing the commands into a file is a workaround to avoid syntax errors when using shell
-        echo '#!/bin/bash
+        # Make sure commands are run in bash
+        bash -c '#!/usr/bin/env bash
+        set -eux
         ids=(~{sep=" " identifiers})
         vars=(~{sep=" " variantVcfs})
         V_args=$(
@@ -548,11 +549,7 @@ task CombineVariants {
         --filteredrecordsmergetype ~{filteredRecordsMergeType} \
         --out ~{outputPath} \
         $V_args
-        ' > run_combine.sh
-
-        chmod 700 run_combine.sh
-
-        ./run_combine.sh
+        '
     >>>
 
     output {
