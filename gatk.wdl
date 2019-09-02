@@ -436,7 +436,7 @@ task FilterMutectCalls {
         String? extraArgs
 
         Int memory = 8
-        Float memoryMultiplier = 1.5
+        Float memoryMultiplier = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 

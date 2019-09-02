@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ Bigger memory multiplier for FilterMutectCalls
 + Cutadapt: simplify interface
 + Bigger memory multiplier in mutect to take in account bigger vmem usage
 + Cutadapt: Remove default adapter
