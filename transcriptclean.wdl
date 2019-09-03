@@ -21,7 +21,7 @@ version 1.0
 # SOFTWARE.
 
 task CleanSpliceJns {
-    input{
+    input {
         File SAMfile
         File referenceGenome
         String outputPrefix
@@ -69,7 +69,7 @@ task CleanSpliceJns {
 }
 
 task GetCorrectedSjsFromLog {
-    input{
+    input {
         File TElogFile
         String outputPrefix
         String outputDirPath
@@ -152,7 +152,7 @@ task GetSjsFromGtf {
 }
 
 task GetTranscriptCleanStats {
-    input{
+    input {
         File transcriptCleanSAMfile
         String outputPrefix
         String outputDirPath
