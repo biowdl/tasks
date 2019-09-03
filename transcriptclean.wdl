@@ -20,7 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task CleanSpliceJns {
+task CleanSpliceJunctions {
     input {
         File SAMfile
         File referenceGenome
@@ -68,7 +68,7 @@ task CleanSpliceJns {
     }
 }
 
-task GetCorrectedSjsFromLog {
+task GetCorrectedSJsFromLog {
     input {
         File TElogFile
         String outputPrefix
@@ -88,7 +88,7 @@ task GetCorrectedSjsFromLog {
     }
 
     output {
-        File outputCorrectedSjs = outputDirPath + outputPrefix + ".tsv"
+        File outputCorrectedSJs = outputDirPath + outputPrefix + ".tsv"
     }
 
     runtime {
@@ -102,11 +102,11 @@ task GetCorrectedSjsFromLog {
         outputPrefix: "Output file prefix."
         outputDirPath: "Output directory path."
 
-        outputCorrectedSjs: "Formely noncanonical splice junctions in BED format."
+        outputCorrectedSJs: "Formely noncanonical splice junctions in BED format."
     }
 }
 
-task GetSjsFromGtf {
+task GetSJsFromGtf {
     input {
         File GTFfile
         File genomeFile
@@ -131,7 +131,7 @@ task GetSjsFromGtf {
     }
 
     output {
-        File outputSjsFile = outputDirPath + outputPrefix + ".tsv"
+        File outputSJsFile = outputDirPath + outputPrefix + ".tsv"
     }
 
     runtime {
@@ -147,7 +147,7 @@ task GetSjsFromGtf {
         outputDirPath: "Output directory path."
         minIntronSize: "Minimum size of intron to consider a junction."
 
-        outputSjsFile: "Extracted splice junctions."
+        outputSJsFile: "Extracted splice junctions."
     }
 }
 
@@ -199,10 +199,10 @@ task TranscriptClean {
         File? spliceJunctionAnnotation
         File? variantFile
         Int? maxLenIndel = 5
-        Int? maxSjOffset = 5
+        Int? maxSJoffset = 5
         Boolean? correctMismatches = true
         Boolean? correctIndels = true
-        Boolean? correctSjs
+        Boolean? correctSJs
         Boolean? dryRun = false
         Boolean? primaryOnly = false
 
@@ -221,10 +221,10 @@ task TranscriptClean {
         ~{"-j " + spliceJunctionAnnotation} \
         ~{"-v " + variantFile} \
         ~{"--maxLenIndel=" + maxLenIndel} \
-        ~{"--maxSJOffset=" + maxSjOffset} \
+        ~{"--maxSJOffset=" + maxSJoffset} \
         ~{true="-m CORRECTMISMATCHES" false="-m false" correctMismatches} \
         ~{true="-i CORRECTINDELS" false="-i false" correctIndels} \
-        ~{true="--correctSJs=CORRECTSJS" false="--correctSJs=false" correctSjs} \
+        ~{true="--correctSJs=CORRECTSJS" false="--correctSJs=false" correctSJs} \
         ~{true="--dryRun" false="" dryRun} \
         ~{true="--primaryOnly" false="" primaryOnly}
     }
@@ -249,10 +249,10 @@ task TranscriptClean {
         outputDirPath: "Output directory path."
         spliceJunctionAnnotation: "Splice junction file"
         maxLenIndel: "Maximum size indel to correct."
-        maxSjOffset: "Maximum distance from annotated splice junction to correct."
+        maxSJoffset: "Maximum distance from annotated splice junction to correct."
         correctMismatches: "Set this to make TranscriptClean correct mismatches."
         correctIndels: "Set this to make TranscriptClean correct indels."
-        correctSjs: "Set this to make TranscriptClean correct splice junctions."
+        correctSJs: "Set this to make TranscriptClean correct splice junctions."
         dryRun: "TranscriptClean will read in the data but don't do any correction."
         primaryOnly: "TranscriptClean will only output primary mappings of transcripts."
 
