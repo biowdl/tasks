@@ -20,66 +20,16 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task transcriptclean {
-    input {
-        File SAMfile
-        File referenceFile
-        String outputPrefix
-        String outputDirPath
-        File? spliceJnsFile
-        File? variantsFile
-        Int? maxLenIndel
-        Int? maxSJoffset
-        Boolean? correctMismatches
-        Boolean? correctIndels
-        Boolean? correctSJs
-        Boolean? dryRun
-        Boolean? primaryOnly
-        Int cores = 1
-        Int memory = 25
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
-    }
-
-    command {
-        set -e pipefail
-        mkdir -p ~{outputDirPath}
-        TranscriptClean \
-            ~{"-s " + SAMfile} \
-            ~{"-g " + referenceFile} \
-            ~{"-o " + outputDirPath + outputPrefix} \
-            ~{"-j " + spliceJnsFile} \
-            ~{"-v " + variantsFile} \
-            ~{"--maxLenIndel=" + maxLenIndel} \
-            ~{"--maxSJOffset=" + maxSJoffset} \
-            ~{true="-m CORRECTMISMATCHES" false="-m false" correctMismatches} \
-            ~{true="-i CORRECTINDELS" false="-i false" correctIndels} \
-            ~{true="--correctSJs=CORRECTSJS" false="--correctSJs=false" correctSJs} \
-            ~{true="--dryRun" false="" dryRun} \
-            ~{true="--primaryOnly" false="" primaryOnly}
-    }
-
-    output {
-        File outputTCfasta = outputDirPath + outputPrefix + "_clean.fa"
-        File outputTClog = outputDirPath + outputPrefix + "_clean.log"
-        File outputTCsam = outputDirPath + outputPrefix + "_clean.sam"
-        File outputTCteLog = outputDirPath + outputPrefix + "_clean.TE.log"
-    }
-
-    runtime {
-        cpu: cores
-        memory: memory
-        docker: dockerImage
-    }
-}
-
-task cleansplicejns {
+task CleanSpliceJns {
     input{
         File SAMfile
-        File referenceFile
+        File referenceGenome
         String outputPrefix
         String outputDirPath
-        File spliceJNsFile
-        File? variantsFile
+        File spliceJunctionAnnotation
+
+        File? variantFile
+
         Int cores = 1
         Int memory = 4
         String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
@@ -89,15 +39,15 @@ task cleansplicejns {
         set -e pipefail
         mkdir -p ~{outputDirPath}
         clean_splice_jns \
-            ~{"--f=" + SAMfile} \
-            ~{"--g=" + referenceFile} \
-            ~{"--o=" + outputDirPath + outputPrefix} \
-            ~{"--s=" + spliceJNsFile} \
-            ~{"--v=" + variantsFile}
+        ~{"--f=" + SAMfile} \
+        ~{"--g=" + referenceGenome} \
+        ~{"--o=" + outputDirPath + outputPrefix} \
+        ~{"--s=" + spliceJunctionAnnotation} \
+        ~{"--v=" + variantFile}
     }
 
     output {
-        File outputCleanSJsam = outputDirPath + outputPrefix + "_clean.sam"
+        File outputCleanedSAM = outputDirPath + outputPrefix + "_clean.sam"
     }
 
     runtime {
@@ -105,46 +55,25 @@ task cleansplicejns {
         memory: memory
         docker: dockerImage
     }
-}
 
-task getsjsfromgtf {
-    input {
-        File GTFfile
-        File referenceFile
-        String outputPrefix
-        String outputDirPath
-        Int? minIntronSize
-        Int cores = 1
-        Int memory = 8
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
-    }
+    parameter_meta {
+        SAMfile: "Input SAM file"
+        referenceGenome: "Reference genome fasta file."
+        outputPrefix: "Output file prefix."
+        outputDirPath: "Output directory path."
+        spliceJunctionAnnotation: "Splice junction file"
+        variantFile: "VCF formatted file of variants"
 
-    command {
-        set -e pipefail
-        mkdir -p ~{outputDirPath}
-        get_SJs_from_gtf \
-            ~{"--f=" + GTFfile} \
-            ~{"--g=" + referenceFile} \
-            ~{"--o=" + outputDirPath + outputPrefix + ".tsv"} \
-            ~{"--minIntronSize=" + minIntronSize}
-    }
-
-    output {
-        File outputSJsFile = outputDirPath + outputPrefix + ".tsv"
-    }
-
-    runtime {
-        cpu: cores
-        memory: memory
-        docker: dockerImage
+        outputCleanedSAM: "Cleaned sam output file."
     }
 }
 
-task getcorrectedsjsfromlog {
+task GetCorrectedSjsFromLog {
     input{
         File TElogFile
         String outputPrefix
         String outputDirPath
+
         Int cores = 1
         Int memory = 5
         String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
@@ -154,12 +83,12 @@ task getcorrectedsjsfromlog {
         set -e pipefail
         mkdir -p ~{outputDirPath}
         get_corrected_SJs_from_log \
-            ~{TElogFile} \
-            ~{outputDirPath + outputPrefix + ".tsv"}
+        ~{TElogFile} \
+        ~{outputDirPath + outputPrefix + ".tsv"}
     }
 
     output {
-        File outputCorrectedSJs = outputDirPath + outputPrefix + ".tsv"
+        File outputCorrectedSjs = outputDirPath + outputPrefix + ".tsv"
     }
 
     runtime {
@@ -167,13 +96,67 @@ task getcorrectedsjsfromlog {
         memory: memory
         docker: dockerImage
     }
+
+    parameter_meta {
+        TElogFile: "TE log from TranscriptClean."
+        outputPrefix: "Output file prefix."
+        outputDirPath: "Output directory path."
+
+        outputCorrectedSjs: "Formely noncanonical splice junctions in BED format."
+    }
 }
 
-task gettranscriptcleanstats {
-    input{
-        File minimapSAMfile
+task GetSjsFromGtf {
+    input {
+        File GTFfile
+        File genomeFile
         String outputPrefix
         String outputDirPath
+
+        Int? minIntronSize = 21
+
+        Int cores = 1
+        Int memory = 8
+        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+    }
+
+    command {
+        set -e pipefail
+        mkdir -p ~{outputDirPath}
+        get_SJs_from_gtf \
+        ~{"--f=" + GTFfile} \
+        ~{"--g=" + genomeFile} \
+        ~{"--o=" + outputDirPath + outputPrefix + ".tsv"} \
+        ~{"--minIntronSize=" + minIntronSize}
+    }
+
+    output {
+        File outputSjsFile = outputDirPath + outputPrefix + ".tsv"
+    }
+
+    runtime {
+        cpu: cores
+        memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        GTFfile: "Input GTF file"
+        genomeFile: "Reference genome"
+        outputPrefix: "Output file prefix."
+        outputDirPath: "Output directory path."
+        minIntronSize: "Minimum size of intron to consider a junction."
+
+        outputSjsFile: "Extracted splice junctions."
+    }
+}
+
+task GetTranscriptCleanStats {
+    input{
+        File transcriptCleanSAMfile
+        String outputPrefix
+        String outputDirPath
+
         Int cores = 1
         Int memory = 4
         String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
@@ -183,12 +166,12 @@ task gettranscriptcleanstats {
         set -e pipefail
         mkdir -p ~{outputDirPath}
         get_TranscriptClean_stats \
-            ~{minimapSAMfile} \
-            ~{outputDirPath + outputPrefix}
+        ~{transcriptCleanSAMfile} \
+        ~{outputDirPath + outputPrefix}
     }
 
     output {
-        File outputStat = stdout()
+        File outputStatsFile = stdout()
     }
 
     runtime {
@@ -196,4 +179,86 @@ task gettranscriptcleanstats {
         memory: memory
         docker: dockerImage
     }
+
+    parameter_meta {
+        transcriptCleanSAMfile: "Output SAM file from TranscriptClean"
+        outputPrefix: "Output file prefix."
+        outputDirPath: "Output directory path."
+
+        outputStatsFile: "Summary stats from TranscriptClean run."
+    }
+}
+
+task TranscriptClean {
+    input {
+        File SAMfile
+        File referenceGenome
+        String outputPrefix
+        String outputDirPath
+
+        File? spliceJunctionAnnotation
+        File? variantFile
+        Int? maxLenIndel = 5
+        Int? maxSjOffset = 5
+        Boolean? correctMismatches = true
+        Boolean? correctIndels = true
+        Boolean? correctSjs
+        Boolean? dryRun = false
+        Boolean? primaryOnly = false
+
+        Int cores = 1
+        Int memory = 25
+        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+    }
+
+    command {
+        set -e pipefail
+        mkdir -p ~{outputDirPath}
+        TranscriptClean \
+        ~{"-s " + SAMfile} \
+        ~{"-g " + referenceGenome} \
+        ~{"-o " + outputDirPath + outputPrefix} \
+        ~{"-j " + spliceJunctionAnnotation} \
+        ~{"-v " + variantFile} \
+        ~{"--maxLenIndel=" + maxLenIndel} \
+        ~{"--maxSJOffset=" + maxSjOffset} \
+        ~{true="-m CORRECTMISMATCHES" false="-m false" correctMismatches} \
+        ~{true="-i CORRECTINDELS" false="-i false" correctIndels} \
+        ~{true="--correctSJs=CORRECTSJS" false="--correctSJs=false" correctSjs} \
+        ~{true="--dryRun" false="" dryRun} \
+        ~{true="--primaryOnly" false="" primaryOnly}
+    }
+
+    output {
+        File outputTcFasta = outputDirPath + outputPrefix + "_clean.fa"
+        File outputTcLog = outputDirPath + outputPrefix + "_clean.log"
+        File outputTcSAM = outputDirPath + outputPrefix + "_clean.sam"
+        File outputTcTElog = outputDirPath + outputPrefix + "_clean.TE.log"
+    }
+
+    runtime {
+        cpu: cores
+        memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        SAMfile: "Input SAM file containing transcripts to correct."
+        referenceGenome: "Reference genome fasta file."
+        outputPrefix: "Output file prefix."
+        outputDirPath: "Output directory path."
+        spliceJunctionAnnotation: "Splice junction file"
+        maxLenIndel: "Maximum size indel to correct."
+        maxSjOffset: "Maximum distance from annotated splice junction to correct."
+        correctMismatches: "Set this to make TranscriptClean correct mismatches."
+        correctIndels: "Set this to make TranscriptClean correct indels."
+        correctSjs: "Set this to make TranscriptClean correct splice junctions."
+        dryRun: "TranscriptClean will read in the data but don't do any correction."
+        primaryOnly: "TranscriptClean will only output primary mappings of transcripts."
+
+        outputTcFasta: "Fasta file containing corrected reads."
+        outputTcLog: "Log file of TranscriptClean run."
+        outputTcSAM: "SAM file containing corrected aligned reads."
+        outputTcTElog: "TE log file of TranscriptClean run."
+   }
 }
