@@ -34,9 +34,12 @@ task Fastqsplitter {
         Int cores = 1 + ceil(0.5 * length(outputPaths))
     }
 
+    # Busybox mkdir does not accept multiple paths.
     command <<<
         set -e
-        mkdir -p $(dirname ~{sep=' ' outputPaths})
+        for FILE in ~{sep=' ' outputPaths}
+            do mkdir -p $(dirname $FILE)
+        done
         fastqsplitter \
         ~{"-c " + compressionLevel} \
         ~{"-t " + threadsPerFile} \
