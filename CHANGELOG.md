@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ Add WDL task for TranscriptClean
 + Fastqsplitter: fix mkdir command to work with biocontainer's busybox mkdir
 + Cutadapt: simplify interface
 + Bigger memory multiplier in mutect to take in account bigger vmem usage
