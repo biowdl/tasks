@@ -20,12 +20,26 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+workflow test {
+    input {
+        File GTFfile
+        File genomeFile
+        String outputPrefix
+    }
+
+    call GetSJsFromGtf as GTFgen {
+        input:
+            GTFfile = GTFfile,
+            genomeFile = genomeFile,
+            outputPrefix = outputPrefix
+    }
+}
+
 task CleanSpliceJunctions {
     input {
         File SAMfile
         File referenceGenome
         String outputPrefix
-        String outputDirPath
         File spliceJunctionAnnotation
 
         File? variantFile
@@ -37,17 +51,17 @@ task CleanSpliceJunctions {
 
     command {
         set -e pipefail
-        mkdir -p ~{outputDirPath}
+        mkdir -p $(dirname ~{outputPrefix})
         clean_splice_jns \
         ~{"--f=" + SAMfile} \
         ~{"--g=" + referenceGenome} \
-        ~{"--o=" + outputDirPath + outputPrefix} \
+        ~{"--o=" + outputPrefix} \
         ~{"--s=" + spliceJunctionAnnotation} \
         ~{"--v=" + variantFile}
     }
 
     output {
-        File outputCleanedSAM = outputDirPath + outputPrefix + "_clean.sam"
+        File outputCleanedSAM = outputPrefix + "_clean.sam"
     }
 
     runtime {
@@ -59,8 +73,7 @@ task CleanSpliceJunctions {
     parameter_meta {
         SAMfile: "Input SAM file"
         referenceGenome: "Reference genome fasta file."
-        outputPrefix: "Output file prefix."
-        outputDirPath: "Output directory path."
+        outputPrefix: "Output directory path + output file prefix."
         spliceJunctionAnnotation: "Splice junction file"
         variantFile: "VCF formatted file of variants"
 
@@ -72,7 +85,6 @@ task GetCorrectedSJsFromLog {
     input {
         File TElogFile
         String outputPrefix
-        String outputDirPath
 
         Int cores = 1
         Int memory = 5
@@ -81,14 +93,14 @@ task GetCorrectedSJsFromLog {
 
     command {
         set -e pipefail
-        mkdir -p ~{outputDirPath}
+        mkdir -p $(dirname ~{outputPrefix})
         get_corrected_SJs_from_log \
         ~{TElogFile} \
-        ~{outputDirPath + outputPrefix + ".tsv"}
+        ~{outputPrefix + ".tsv"}
     }
 
     output {
-        File outputCorrectedSJs = outputDirPath + outputPrefix + ".tsv"
+        File outputCorrectedSJs = outputPrefix + ".tsv"
     }
 
     runtime {
@@ -99,8 +111,7 @@ task GetCorrectedSJsFromLog {
 
     parameter_meta {
         TElogFile: "TE log from TranscriptClean."
-        outputPrefix: "Output file prefix."
-        outputDirPath: "Output directory path."
+        outputPrefix: "Output directory path + output file prefix."
 
         outputCorrectedSJs: "Formely noncanonical splice junctions in BED format."
     }
@@ -111,9 +122,7 @@ task GetSJsFromGtf {
         File GTFfile
         File genomeFile
         String outputPrefix
-        String outputDirPath
-
-        Int? minIntronSize = 21
+        Int minIntronSize = 21
 
         Int cores = 1
         Int memory = 8
@@ -122,16 +131,16 @@ task GetSJsFromGtf {
 
     command {
         set -e pipefail
-        mkdir -p ~{outputDirPath}
+        mkdir -p $(dirname ~{outputPrefix})
         get_SJs_from_gtf \
         ~{"--f=" + GTFfile} \
         ~{"--g=" + genomeFile} \
-        ~{"--o=" + outputDirPath + outputPrefix + ".tsv"} \
+        ~{"--o=" + outputPrefix + ".tsv"} \
         ~{"--minIntronSize=" + minIntronSize}
     }
 
     output {
-        File outputSJsFile = outputDirPath + outputPrefix + ".tsv"
+        File outputSJsFile = outputPrefix + ".tsv"
     }
 
     runtime {
@@ -143,8 +152,7 @@ task GetSJsFromGtf {
     parameter_meta {
         GTFfile: "Input GTF file"
         genomeFile: "Reference genome"
-        outputPrefix: "Output file prefix."
-        outputDirPath: "Output directory path."
+        outputPrefix: "Output directory path + output file prefix."
         minIntronSize: "Minimum size of intron to consider a junction."
 
         outputSJsFile: "Extracted splice junctions."
@@ -155,7 +163,6 @@ task GetTranscriptCleanStats {
     input {
         File transcriptCleanSAMfile
         String outputPrefix
-        String outputDirPath
 
         Int cores = 1
         Int memory = 4
@@ -164,10 +171,10 @@ task GetTranscriptCleanStats {
 
     command {
         set -e pipefail
-        mkdir -p ~{outputDirPath}
+        mkdir -p $(dirname ~{outputPrefix})
         get_TranscriptClean_stats \
         ~{transcriptCleanSAMfile} \
-        ~{outputDirPath + outputPrefix}
+        ~{outputPrefix}
     }
 
     output {
@@ -182,8 +189,7 @@ task GetTranscriptCleanStats {
 
     parameter_meta {
         transcriptCleanSAMfile: "Output SAM file from TranscriptClean"
-        outputPrefix: "Output file prefix."
-        outputDirPath: "Output directory path."
+        outputPrefix: "Output directory path + output file prefix."
 
         outputStatsFile: "Summary stats from TranscriptClean run."
     }
@@ -194,17 +200,16 @@ task TranscriptClean {
         File SAMfile
         File referenceGenome
         String outputPrefix
-        String outputDirPath
+        Int maxLenIndel = 5
+        Int maxSJoffset = 5
+        Boolean correctMismatches = true
+        Boolean correctIndels = true
+        Boolean dryRun = false
+        Boolean primaryOnly = false
 
         File? spliceJunctionAnnotation
         File? variantFile
-        Int? maxLenIndel = 5
-        Int? maxSJoffset = 5
-        Boolean? correctMismatches = true
-        Boolean? correctIndels = true
         Boolean? correctSJs
-        Boolean? dryRun = false
-        Boolean? primaryOnly = false
 
         Int cores = 1
         Int memory = 25
@@ -213,11 +218,11 @@ task TranscriptClean {
 
     command {
         set -e pipefail
-        mkdir -p ~{outputDirPath}
+        mkdir -p $(dirname ~{outputPrefix})
         TranscriptClean \
         ~{"-s " + SAMfile} \
         ~{"-g " + referenceGenome} \
-        ~{"-o " + outputDirPath + outputPrefix} \
+        ~{"-o " + outputPrefix} \
         ~{"-j " + spliceJunctionAnnotation} \
         ~{"-v " + variantFile} \
         ~{"--maxLenIndel=" + maxLenIndel} \
@@ -230,10 +235,10 @@ task TranscriptClean {
     }
 
     output {
-        File outputTcFasta = outputDirPath + outputPrefix + "_clean.fa"
-        File outputTcLog = outputDirPath + outputPrefix + "_clean.log"
-        File outputTcSAM = outputDirPath + outputPrefix + "_clean.sam"
-        File outputTcTElog = outputDirPath + outputPrefix + "_clean.TE.log"
+        File outputTranscriptCleanFasta = outputPrefix + "_clean.fa"
+        File outputTranscriptCleanLog = outputPrefix + "_clean.log"
+        File outputTranscriptCleanSAM = outputPrefix + "_clean.sam"
+        File outputTranscriptCleanTElog = outputPrefix + "_clean.TE.log"
     }
 
     runtime {
@@ -245,8 +250,7 @@ task TranscriptClean {
     parameter_meta {
         SAMfile: "Input SAM file containing transcripts to correct."
         referenceGenome: "Reference genome fasta file."
-        outputPrefix: "Output file prefix."
-        outputDirPath: "Output directory path."
+        outputPrefix: "Output directory path + output file prefix."
         spliceJunctionAnnotation: "Splice junction file"
         maxLenIndel: "Maximum size indel to correct."
         maxSJoffset: "Maximum distance from annotated splice junction to correct."
@@ -256,9 +260,9 @@ task TranscriptClean {
         dryRun: "TranscriptClean will read in the data but don't do any correction."
         primaryOnly: "TranscriptClean will only output primary mappings of transcripts."
 
-        outputTcFasta: "Fasta file containing corrected reads."
-        outputTcLog: "Log file of TranscriptClean run."
-        outputTcSAM: "SAM file containing corrected aligned reads."
-        outputTcTElog: "TE log file of TranscriptClean run."
+        outputTranscriptCleanFasta: "Fasta file containing corrected reads."
+        outputTranscriptCleanLog: "Log file of TranscriptClean run."
+        outputTranscriptCleanSAM: "SAM file containing corrected aligned reads."
+        outputTranscriptCleanTElog: "TE log file of TranscriptClean run."
    }
 }
