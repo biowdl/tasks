@@ -20,21 +20,6 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-workflow test {
-    input {
-        File GTFfile
-        File genomeFile
-        String outputPrefix
-    }
-
-    call GetSJsFromGtf as GTFgen {
-        input:
-            GTFfile = GTFfile,
-            genomeFile = genomeFile,
-            outputPrefix = outputPrefix
-    }
-}
-
 task CleanSpliceJunctions {
     input {
         File SAMfile
