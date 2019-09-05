@@ -141,7 +141,7 @@ task CreateGtfFromDatabase {
         mkdir -p $(dirname ~{outputPrefix})
         create_GTF_from_database \
         ~{"--db=" + databaseFile} \
-        ~{"--o=" outputPrefix} \
+        ~{"--o=" + outputPrefix} \
         ~{"-b " + genomeBuild} \
         ~{"-a " + annotationVersion} \
         ~{"--whitelist=" + whitelistFile} \
@@ -330,7 +330,7 @@ task Talon {
         talon \
         ~{"--f " + configFileName} \
         ~{"--db " + databaseFile} \
-        ~{"--o " outputPrefix} \
+        ~{"--o " + outputPrefix} \
         ~{"--build " + genomeBuild} \
         ~{"--cov " + minimumCoverage} \
         ~{"--identity " + minimumIdentity}
