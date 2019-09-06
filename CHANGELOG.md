@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ All inputs to bedtools Sort are now reflected in the generated command
 + Add WDL task for TALON
 + Add WDL task for TranscriptClean
 + Fastqsplitter: fix mkdir command to work with biocontainer's busybox mkdir
