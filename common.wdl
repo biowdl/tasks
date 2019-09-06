@@ -57,8 +57,8 @@ task ConcatenateTextFiles {
 
     command {
         set -e -o pipefail
-        ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ~{cmdPrefix} ~{sep=' ' fileList} ~{cmdSuffix} > ~{combinedFilePath}
+        mkdir -p $(dirname ~{combinedFilePath})
+        ~{cmdPrefix} ~{sep=" " fileList} ~{cmdSuffix} > ~{combinedFilePath}
     }
 
     output {
@@ -77,7 +77,7 @@ task Copy {
         Boolean recursive = false
 
         # Version not that important as long as it is stable.
-        String dockerImage = "bash:5.0.2"
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
@@ -116,6 +116,8 @@ task CreateLink {
 task MapMd5 {
     input {
         Map[String,String] map
+
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
@@ -128,6 +130,7 @@ task MapMd5 {
 
     runtime {
         memory: 1
+        docker: dockerImage
     }
 }
 
@@ -135,6 +138,8 @@ task MapMd5 {
 task StringArrayMd5 {
     input {
         Array[String] stringArray
+
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {

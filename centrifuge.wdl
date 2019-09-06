@@ -174,6 +174,7 @@ task DownloadTaxonomy {
         String executable = "centrifuge-download"
         String? preCommand
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}
