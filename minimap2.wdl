@@ -36,7 +36,6 @@ task Indexing {
     }
 
     command {
-        set -e pipefail
         mkdir -p $(dirname ~{outputPrefix})
         minimap2 \
         ~{true="-H" false="" useHomopolymerCompressedKmer} \
@@ -93,7 +92,6 @@ task Mapping {
     }
 
     command {
-        set -e pipefail
         mkdir -p $(dirname ~{outputPrefix})
         minimap2 \
         ~{"-x " + presetOption} \
@@ -105,7 +103,7 @@ task Mapping {
         ~{"-A " + matchingScore} \
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
-        ~{true="--secondary=yes" false="--secondary=no" secondaryAlignment} \
+        --secondary=~{true="yes" false="no" secondaryAlignment} \
         ~{"-o " + outputPrefix} \
         ~{"-t " + cores} \
         ~{referenceFile} \
