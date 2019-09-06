@@ -39,13 +39,13 @@ task Indexing {
         set -e pipefail
         mkdir -p $(dirname ~{outputPrefix})
         minimap2 \
-            ~{true="-H" false="" useHomopolymerCompressedKmer} \
-            ~{"-k " + kmerSize} \
-            ~{"-w " + minimizerWindowSize} \
-            ~{"-I " + splitIndex} \
-            ~{"-d " + outputPrefix + ".mmi"} \
-            ~{"-t " + cores} \
-            ~{referenceFile}
+        ~{true="-H" false="" useHomopolymerCompressedKmer} \
+        ~{"-k " + kmerSize} \
+        ~{"-w " + minimizerWindowSize} \
+        ~{"-I " + splitIndex} \
+        ~{"-d " + outputPrefix + ".mmi"} \
+        ~{"-t " + cores} \
+        ~{referenceFile}
     }
 
     output {
@@ -96,20 +96,20 @@ task Mapping {
         set -e pipefail
         mkdir -p $(dirname ~{outputPrefix})
         minimap2 \
-            ~{"-x " + presetOption} \
-            ~{true="-a" false="" outputSAM} \
-            ~{"-G " + maxIntronLength} \
-            ~{"-F " + maxFragmentLength} \
-            ~{true="-X" false="" skipSelfAndDualMappings} \
-            ~{"-N " + retainMaxSecondaryAlignments} \
-            ~{"-A " + matchingScore} \
-            ~{"-B " + mismatchPenalty} \
-            ~{"-u " + howToFindGTAG} \
-            ~{true="--secondary=yes" false="--secondary=no" secondaryAlignment} \
-            ~{"-o " + outputPrefix} \
-            ~{"-t " + cores} \
-            ~{referenceFile} \
-            ~{queryFile}
+        ~{"-x " + presetOption} \
+        ~{true="-a" false="" outputSAM} \
+        ~{"-G " + maxIntronLength} \
+        ~{"-F " + maxFragmentLength} \
+        ~{true="-X" false="" skipSelfAndDualMappings} \
+        ~{"-N " + retainMaxSecondaryAlignments} \
+        ~{"-A " + matchingScore} \
+        ~{"-B " + mismatchPenalty} \
+        ~{"-u " + howToFindGTAG} \
+        ~{true="--secondary=yes" false="--secondary=no" secondaryAlignment} \
+        ~{"-o " + outputPrefix} \
+        ~{"-t " + cores} \
+        ~{referenceFile} \
+        ~{queryFile}
     }
 
     output {
