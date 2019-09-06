@@ -40,4 +40,51 @@ task CollectColumns {
         memory: 4 + ceil(0.5* length(inputTables))
         docker: dockerImage
     }
+
+    parameter_meta {
+        inputTables: {
+            description: "The tables from which columns should be taken.",
+            category: "required"
+        }
+        outputPath: {
+            description: "The path to which the output whould be written.",
+            category: "required"
+        }
+        featureColumn: {
+            description: "Equivalent to the -f option of collect-columns.",
+            category: "common" # Should likely be controlled by the calling workflow
+        }
+        valueColumn: {
+            description: "Equivalent to the -c option of collect-columns.",
+            category: "common" # Should likely be controlled by the calling workflow
+        }
+        separator: {
+            description: "Equivalent to the -s option of collect-columns.",
+            category: "common" # Should likely be controlled by the calling workflow
+        }
+        sampleNames: {
+            description: "Equivalent to the -n option of collect-columns.",
+            category: "common" # Should likely be controlled by the calling workflow
+        }
+        header: {
+            description: "Equivalent to the -H flag of collect-columns.",
+            category: "common"
+        }
+        additionalAttributes: {
+            description: "Equivalent to the -a option of collect-columns.",
+            category: "advanced"
+        }
+        referenceGtf: {
+            description: "Equivalent to the -g option of collect-columns.",
+            category: "advanced"
+        }
+        featureAttribute: {
+            description: "Equivalent to the -F option of collect-columns.",
+            category: "advanced"
+        }
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may chose not to address.",
+            category: "advanced"
+        }
+    }
 }
