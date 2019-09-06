@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ Removed BWA index task
++ Removed unused "picardJar" input from bwa.wdl
 + All inputs to bedtools Sort are now reflected in the generated command
 + Add WDL task for TALON
 + Add WDL task for TranscriptClean
