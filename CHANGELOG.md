@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ Removed deprecated tasks:
+  + bioconda.installPrefix
+  + mergecounts.MergeCounts
++ GATK.BaseRecalibrator: "knownIndelsSitesVCFs" and "knownIndelsSitesVCFIndexes" are no longer optional, but now have a default of "[]"
 + Removed BWA index task
 + Removed unused "picardJar" input from bwa.wdl
 + All inputs to bedtools Sort are now reflected in the generated command
