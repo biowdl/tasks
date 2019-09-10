@@ -35,7 +35,7 @@ task CleanSpliceJunctions {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         clean_splice_jns \
         ~{"--f=" + SAMfile} \
@@ -77,7 +77,7 @@ task GetCorrectedSJsFromLog {
     }
 
     command {
-        set -e pipefail
+        set -e 
         mkdir -p $(dirname ~{outputPrefix})
         get_corrected_SJs_from_log \
         ~{TElogFile} \
@@ -115,7 +115,7 @@ task GetSJsFromGtf {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         get_SJs_from_gtf \
         ~{"--f=" + GTFfile} \
@@ -155,7 +155,7 @@ task GetTranscriptCleanStats {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         get_TranscriptClean_stats \
         ~{transcriptCleanSAMfile} \
@@ -202,7 +202,7 @@ task TranscriptClean {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         TranscriptClean \
         ~{"-s " + SAMfile} \

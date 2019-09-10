@@ -36,7 +36,7 @@ task CreateAbundanceFileFromDatabase {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         create_abundance_file_from_database \
         ~{"--db=" + databaseFile} \
@@ -85,7 +85,7 @@ task CreateGtfAbundanceFromDatabase {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         create_GTF_abundance_from_database \
         ~{"--db=" + databaseFile} \
@@ -137,7 +137,7 @@ task CreateGtfFromDatabase {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         create_GTF_from_database \
         ~{"--db=" + databaseFile} \
@@ -189,7 +189,7 @@ task InitializeTalonDatabase {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         initialize_talon_database \
         ~{"--f=" + GTFfile} \
@@ -238,7 +238,7 @@ task MapAntisenseGenesToSense {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         map_antisense_genes_to_sense \
         ~{"--db=" + databaseFile} \
@@ -278,7 +278,7 @@ task SummarizeDatasets {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         summarize_datasets \
         ~{"--db " + databaseFile} \
@@ -323,7 +323,7 @@ task Talon {
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         mv ${configFile} ./${configFileName}
         mv ${SAMfile} ./${SAMfileName}
