@@ -153,6 +153,7 @@ task StringArrayMd5 {
 
     runtime {
         memory: 1
+        docker: dockerImage
     }
 }
 
