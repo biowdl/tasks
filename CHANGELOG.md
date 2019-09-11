@@ -34,3 +34,5 @@ version 1.0.0-dev
 + Add feature type, idattr and additional attributes to htseq-count.
 + Added allow-contain option to bowtie.
 + Added a changelog to keep track of changes.
++ Added sortByName task in samtools to support more memory efficient execution of HTSeqCount.
++ Removed the bam index from HTSeqCount's inputs.
