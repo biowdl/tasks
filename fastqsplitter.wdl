@@ -26,7 +26,7 @@ task Fastqsplitter {
     input {
         File inputFastq
         Array[String]+ outputPaths
-        String dockerImage = "quay.io/biocontainers/fastqsplitter:1.0.0--py_0"
+        String dockerImage = "quay.io/biocontainers/fastqsplitter:1.1.0--py37h516909a_1"
         Int? compressionLevel
         Int? threadsPerFile
          # fastqplitter utilizes one thread per input file and one or more threads per output file + one thread for the application.
@@ -34,15 +34,18 @@ task Fastqsplitter {
         Int cores = 1 + ceil(0.5 * length(outputPaths))
     }
 
-    command {
+    # Busybox mkdir does not accept multiple paths.
+    command <<<
         set -e
-        mkdir -p $(dirname ~{sep=' ' outputPaths})
+        for FILE in ~{sep=' ' outputPaths}
+            do mkdir -p $(dirname $FILE)
+        done
         fastqsplitter \
         ~{"-c " + compressionLevel} \
         ~{"-t " + threadsPerFile} \
         -i ~{inputFastq} \
         -o ~{sep=' -o ' outputPaths}
-    }
+    >>>
 
     output {
         Array[File] chunks = outputPaths

@@ -7,16 +7,12 @@ task Cutadapt {
         String read1output = "cut_r1.fq.gz"
         String? read2output
         String? format
-        Array[String]+? adapter
-        Array[String]+? front
-        Array[String]+? anywhere
-        Array[String]+? adapterRead2
-        Array[String]+? frontRead2
-        Array[String]+? anywhereRead2
-        # FIXME: default should be set at the subworkflow level, not here. Needs to wait for cromwell fix.
-        Array[String]+? adapterBoth = ["AGATCGGAAGAG"]
-        # contaminations = anywhereBoth
-        Array[String]+? contaminations
+        Array[String] adapter = []
+        Array[String] front = []
+        Array[String] anywhere = []
+        Array[String] adapterRead2 = []
+        Array[String] frontRead2 = []
+        Array[String] anywhereRead2 = []
         Boolean? interleaved
         String? pairFilter
         Float? errorRate
@@ -74,25 +70,7 @@ task Cutadapt {
         then "mkdir -p $(dirname " + realRead2output + ")"
         else ""
 
-    # FIXME: This crappy overengineering can be removed once cromwell can handle subworkflow inputs correctly.
-    # Some WDL magic here to set both adapters with one setting.
-    # If then else's are needed to keep the variable optional and undefined
-    Array[String]+? adapterForward = if (defined(adapter) || defined(adapterBoth))
-                                     then select_first([adapter, adapterBoth])
-                                     else adapter
-    # Check if read2 is defined before applying adapters.
-    Array[String]+? adapterReverse = if (defined(read2) && (defined(adapterRead2) || defined(adapterBoth)))
-                                     then select_first([adapterRead2, adapterBoth])
-                                     else adapterRead2
-
-    # Same for contaminations
-    Array[String]+? anywhereForward = if (defined(anywhere) || defined(contaminations))
-                                      then select_first([anywhere, contaminations])
-                                      else anywhere
-    Array[String]+? anywhereReverse = if (defined(read2) && (defined(anywhereRead2) || defined(contaminations)))
-                                      then select_first([anywhereRead2, contaminations])
-                                      else anywhereRead2
-
+    # FIXME: Use prefix() function for adapter, adapterRead2, etc.
     command {
         set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
@@ -100,12 +78,12 @@ task Cutadapt {
         cutadapt \
         ~{"--cores=" + cores} \
         ~{true="-Z" false="" Z} \
-        ~{true="-a" false="" defined(adapterForward)} ~{sep=" -a " adapterForward} \
-        ~{true="-A" false="" defined(adapterReverse)} ~{sep=" -A " adapterReverse} \
-        ~{true="-g" false="" defined(front)} ~{sep=" -g " front} \
-        ~{true="-G" false="" defined(frontRead2)} ~{sep=" -G " frontRead2} \
-        ~{true="-b" false="" defined(anywhereForward)} ~{sep=" -b " anywhereForward} \
-        ~{true="-B" false="" defined(anywhereReverse)} ~{sep=" -B " anywhereReverse} \
+        ~{true="-a" false="" length(adapter) > 0} ~{sep=" -a " adapter} \
+        ~{true="-A" false="" length(adapterRead2) > 0} ~{sep=" -A " adapterRead2} \
+        ~{true="-g" false="" length(front) > 0} ~{sep=" -g " front} \
+        ~{true="-G" false="" length(frontRead2) > 0} ~{sep=" -G " frontRead2} \
+        ~{true="-b" false="" length(anywhere) > 0} ~{sep=" -b " anywhere} \
+        ~{true="-B" false="" length(anywhereRead2) > 0} ~{sep=" -B " anywhereRead2} \
         --output ~{read1output} ~{if defined(read2) then "-p " + realRead2output else ""} \
         ~{"--to-short-output " + tooShortOutputPath} \
         ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
