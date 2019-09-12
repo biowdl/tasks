@@ -31,11 +31,11 @@ task CleanSpliceJunctions {
 
         Int cores = 1
         Int memory = 4
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         clean_splice_jns \
         ~{"--f=" + SAMfile} \
@@ -73,11 +73,11 @@ task GetCorrectedSJsFromLog {
 
         Int cores = 1
         Int memory = 5
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
-        set -e pipefail
+        set -e 
         mkdir -p $(dirname ~{outputPrefix})
         get_corrected_SJs_from_log \
         ~{TElogFile} \
@@ -111,11 +111,11 @@ task GetSJsFromGtf {
 
         Int cores = 1
         Int memory = 8
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         get_SJs_from_gtf \
         ~{"--f=" + GTFfile} \
@@ -151,11 +151,11 @@ task GetTranscriptCleanStats {
 
         Int cores = 1
         Int memory = 4
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         get_TranscriptClean_stats \
         ~{transcriptCleanSAMfile} \
@@ -198,11 +198,11 @@ task TranscriptClean {
 
         Int cores = 1
         Int memory = 25
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
-        set -e pipefail
+        set -e
         mkdir -p $(dirname ~{outputPrefix})
         TranscriptClean \
         ~{"-s " + SAMfile} \

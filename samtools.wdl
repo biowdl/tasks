@@ -88,6 +88,29 @@ task Merge {
     }
 }
 
+task SortByName {
+    input {
+        File bamFile
+        String outputBamPath = "namesorted.bam"
+
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+
+    command {
+        set -e
+        mkdir -p $(dirname ~{outputBamPath})
+        samtools sort -n ~{bamFile} -o ~{outputBamPath}
+    }
+
+    output {
+        File outputBam = outputBamPath
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+}
+
 task Markdup {
     input {
         File inputBam

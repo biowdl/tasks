@@ -18,6 +18,9 @@ version 1.0.0-dev
 + Removed BWA index task
 + Removed unused "picardJar" input from bwa.wdl
 + All inputs to bedtools Sort are now reflected in the generated command
++ TranscriptClean: Update TranscriptClean container to version 1.0.8
++ Removed "pipefail" from command sections TALON and TranscriptClean
++ Add WDL task for Minimap2
 + Add WDL task for TALON
 + Add WDL task for TranscriptClean
 + Fastqsplitter: fix mkdir command to work with biocontainer's busybox mkdir
@@ -39,3 +42,5 @@ version 1.0.0-dev
 + Add feature type, idattr and additional attributes to htseq-count.
 + Added allow-contain option to bowtie.
 + Added a changelog to keep track of changes.
++ Added sortByName task in samtools to support more memory efficient execution of HTSeqCount.
++ Removed the bam index from HTSeqCount's inputs.
