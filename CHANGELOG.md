@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ TranscriptClean: Update TranscriptClean container to version 1.0.8
 + Removed "pipefail" from command sections TALON and TranscriptClean
 + Add WDL task for Minimap2
 + Add WDL task for TALON
