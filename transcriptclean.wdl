@@ -31,7 +31,7 @@ task CleanSpliceJunctions {
 
         Int cores = 1
         Int memory = 4
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
@@ -73,7 +73,7 @@ task GetCorrectedSJsFromLog {
 
         Int cores = 1
         Int memory = 5
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
@@ -111,7 +111,7 @@ task GetSJsFromGtf {
 
         Int cores = 1
         Int memory = 8
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
@@ -151,7 +151,7 @@ task GetTranscriptCleanStats {
 
         Int cores = 1
         Int memory = 4
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
@@ -198,7 +198,7 @@ task TranscriptClean {
 
         Int cores = 1
         Int memory = 25
-        String dockerImage = "biocontainers/transcriptclean:v1.0.7_cv1"
+        String dockerImage = "biocontainers/transcriptclean:v1.0.8_cv1"
     }
 
     command {
