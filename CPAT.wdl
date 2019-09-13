@@ -30,7 +30,7 @@ task CPAT {
     }
 
     output {
-        File outFile=outFilePath
+        File outFile = outFilePath
     }
 
     runtime {

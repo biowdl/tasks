@@ -273,7 +273,7 @@ task ModifyStrelka {
         String installDir = "/opt/somaticseq/vcfModifier" #the location in the docker image
 
         File strelkaVCF
-        String? outputVCFName = basename(strelkaVCF, ".gz")
+        String outputVCFName = basename(strelkaVCF, ".gz")
 
         Int threads = 1
         String dockerImage = "lethalfang/somaticseq:3.1.0"
