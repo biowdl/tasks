@@ -30,7 +30,6 @@ task Sort {
         Boolean chrThenScoreD = false
         File? g
         File? faidx
-        Boolean header = false
         String outputBed = "output.sorted.bed"
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
@@ -40,9 +39,11 @@ task Sort {
         mkdir -p $(dirname ~{outputBed})
         bedtools sort \
         -i ~{inputBed} \
-        ~{if sizeA then "-sizeA" else ""} \
-        ~{if sizeD then "-sizeD" else ""} \
-        ~{if chrThenSizeD then "-chrThenSizeD" else ""} \
+        ~{true="-sizeA" false="" sizeA} \
+        ~{true="-sizeD" false="" sizeD} \
+        ~{true="-chrThenScoreD" false="" chrThenScoreD} \
+        ~{"-g " + g} \
+        ~{"-faidx" + faidx} \
         > ~{outputBed}
     }
 
@@ -53,6 +54,4 @@ task Sort {
     runtime {
         docker: dockerImage
     }
-
-
 }

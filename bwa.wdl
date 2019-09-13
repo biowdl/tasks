@@ -8,8 +8,6 @@ task Mem {
         String outputPath
         String? readgroup
 
-        String? picardJar
-
         Int threads = 2
         Int memory = 8
         Int picardMemory = 4
@@ -39,56 +37,10 @@ task Mem {
         File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
     }
 
-    runtime{
+    runtime {
         cpu: threads
         memory: memory + picardMemory + picardMemory
         docker: dockerImage
-    }
-}
-
-task Index {
-    # Since this task uses `ln` this is not stable or usable with containers
-    input {
-        File fasta
-        String? preCommand
-        String? constructionAlgorithm
-        Int? blockSize
-        String? outputDir
-    }
-
-    String fastaFilename = basename(fasta)
-    String outputFile = if (defined(outputDir)) then outputDir + "/" + fastaFilename else fasta
-
-    command {
-        set -e -o pipefail
-        ~{"mkdir -p " + outputDir}
-        ~{preCommand}
-        if [[ ! '~{outputDir}' =  '' ]]
-        then
-            ln -sf ~{fasta} ~{outputDir + "/"}~{fastaFilename}
-        fi
-        bwa index \
-        ~{"-a " + constructionAlgorithm} \
-        ~{"-b" + blockSize} \
-        ~{outputFile}
-    }
-
-    output {
-        BwaIndex outputIndex = object {
-            fastaFile: outputFile,
-            indexFiles: [outputFile + ".bwt",
-                outputFile + ".pac",
-                outputFile + ".sa",
-                outputFile + ".amb",
-                outputFile + ".ann"]
-        }
-    }
-
-    parameter_meta {
-        fasta: "Fasta file to be indexed"
-        constructionAlgorithm: "-a STR    BWT construction algorithm: bwtsw, is or rb2 [auto]"
-        blockSize: "-b INT    block size for the bwtsw algorithm (effective with -a bwtsw) [10000000]"
-        outputDir: "index will be created in this output directory"
     }
 }
 

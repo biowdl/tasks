@@ -54,8 +54,8 @@ task BaseRecalibrator {
         File inputBamIndex
         String recalibrationReportPath
         Array[File] sequenceGroupInterval = []
-        Array[File]? knownIndelsSitesVCFs
-        Array[File]? knownIndelsSitesVCFIndexes
+        Array[File] knownIndelsSitesVCFs = []
+        Array[File] knownIndelsSitesVCFIndexes = []
         File? dbsnpVCF
         File? dbsnpVCFIndex
         File referenceFasta
@@ -67,11 +67,6 @@ task BaseRecalibrator {
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
-    Array[File]+ knownIndelsSitesVCFsArg = flatten([
-        select_first([knownIndelsSitesVCFs, []]),
-        [select_first([dbsnpVCF])]
-    ])
-
     command {
         set -e
         mkdir -p $(dirname ~{recalibrationReportPath})
@@ -81,7 +76,8 @@ task BaseRecalibrator {
         -I ~{inputBam} \
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
-        --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
+        ~{true="--known-sites" false="" length(knownIndelsSitesVCFs) > 0} ~{sep=" --known-sites " knownIndelsSitesVCFs} \
+        ~{"--known-sites " + dbsnpVCF} \
         ~{true="-L" false="" length(sequenceGroupInterval) > 0} ~{sep=' -L ' sequenceGroupInterval}
     }
 

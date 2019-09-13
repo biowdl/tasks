@@ -11,6 +11,14 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ MultiQC: the "interactive" input is now set to true by default
++ Removed deprecated tasks:
+  + bioconda.installPrefix
+  + mergecounts.MergeCounts
++ GATK.BaseRecalibrator: "knownIndelsSitesVCFs" and "knownIndelsSitesVCFIndexes" are no longer optional, but now have a default of "[]"
++ Removed BWA index task
++ Removed unused "picardJar" input from bwa.wdl
++ All inputs to bedtools Sort are now reflected in the generated command
 + TranscriptClean: Update TranscriptClean container to version 1.0.8
 + Removed "pipefail" from command sections TALON and TranscriptClean
 + Add WDL task for Minimap2
