@@ -318,7 +318,7 @@ task Talon {
         Int minimumIdentity = 0
 
         Int cores = 1
-        Int memory = 4
+        Int memory = 20
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 
