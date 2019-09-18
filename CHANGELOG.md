@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.0.0-dev
 ---------------------------
++ Common: Add "SampleConfigToSampleReadgroupLists" task
 + MultiQC: the "interactive" input is now set to true by default
 + Removed deprecated tasks:
   + bioconda.installPrefix

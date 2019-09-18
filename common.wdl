@@ -134,6 +134,47 @@ task MapMd5 {
     }
 }
 
+task SampleConfigToSampleReadgroupLists {
+    input {
+        File yaml
+        String outputJson = "samples.json"
+
+        String dockerImage = "biowdl/pyyaml:3.13-py37-slim"
+    }
+
+    command <<<
+        set -e
+        mkdir -p $(dirname ~{outputJson})
+        python <<CODE
+        import json
+        import yaml
+        with open("~{yaml}", "r") as input_yaml:
+            sample_config = yaml.load(input_yaml)
+
+        sample_rg_lists = []
+        for sample in sample_config["samples"]:
+            new_sample = {"readgroups": [], "id": sample['id']}
+            for library in sample["libraries"]:
+                for readgroup in library["readgroups"]:
+                    new_readgroup = {'lib_id': library['id'], 'id': readgroup['id']}
+                    # Having a nested "reads" struct does not make any sense.
+                    new_readgroup.update(readgroup["reads"])
+                    new_sample['readgroups'].append(new_readgroup)
+            sample_rg_lists.append(new_sample)
+        sample_mod_config = {"samples": sample_rg_lists}
+        with open("~{outputJson}", "w") as output_json:
+            json.dump(sample_mod_config, output_json)
+        CODE
+    >>>
+
+    output {
+        File json = outputJson
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+}
 
 task StringArrayMd5 {
     input {
