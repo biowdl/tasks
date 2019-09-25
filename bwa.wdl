@@ -89,6 +89,52 @@ task Kit {
         memory: memory
         docker: dockerImage
     }
+
+    parameter_meta {
+        read1: {
+            description: "The first-end fastq file.",
+            category: "required"
+        }
+        read2: {
+            description: "The second-end fastq file.",
+            category: "common"
+        }
+        bwaIndex: {
+            description: "The BWA index, including a .alt file.",
+            category: "required"
+        }
+        outputPrefix: {
+            description: "The prefix of the output files, including any parent directories",
+            category: "required"
+        }
+        readgroup: {
+            description: "A readgroup identifier.",
+            category: "common"
+        }
+        sixtyFour: {
+            description: "Whether or not the index uses the '.64' suffixes.",
+            category: "common"
+        }
+        threads: {
+            description: "The number of threads to use for alignment.",
+            category: "advanced"
+        }
+        sortThreads: {
+            description: "The number of threads to use for sorting.",
+            category: "advanced"
+        }
+        memory: {
+            description: "The amount of memory this job will use.",
+            category: "advanced"
+        }
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may chose not to address.",
+            category: "advanced"
+        }
+
+        outputBam: "The produced BAM file."
+        outputBamIndex: "The index of the produced BAM file."
+    }
 }
 
 struct BwaIndex {
