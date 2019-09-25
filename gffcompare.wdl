@@ -2,7 +2,6 @@ version 1.0
 
 task GffCompare {
     input {
-        String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
         File? inputGtfList
         Array[File] inputGtfFiles
         File referenceAnnotation
@@ -24,6 +23,9 @@ task GffCompare {
         Boolean noTmap = false
         Boolean verbose = false
         Boolean debugMode = false
+
+        String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
+
         # This workaround only works in the input section.
         # Issue addressed at https://github.com/openwdl/wdl/pull/263
         File? noneFile # This is a wdl workaround. Please do not assign!

@@ -37,7 +37,7 @@ task CollectColumns {
     }
 
     runtime {
-        memory: 4 + ceil(0.5* length(inputTables))
+        memory: 4 + ceil(0.5 * length(inputTables))
         docker: dockerImage
     }
 }

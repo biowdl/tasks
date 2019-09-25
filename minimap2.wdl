@@ -86,6 +86,7 @@ task Mapping {
         Int? mismatchPenalty
         String? howToFindGTAG
         Boolean? secondaryAlignment
+        Boolean? addMDtagToSAM
 
         Int cores = 4
         Int memory = 7
@@ -106,6 +107,7 @@ task Mapping {
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
         --secondary=~{true="yes" false="no" secondaryAlignment} \
+        ~{true="--MD" false="" addMDtagToSAM} \
         ~{"-o " + outputPrefix} \
         ~{"-t " + cores} \
         ~{referenceFile} \
@@ -136,6 +138,7 @@ task Mapping {
         mismatchPenalty: "Mismatch penalty."
         howToFindGTAG: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG."
         secondaryAlignment: "Whether to output secondary alignments."
+        addMDtagToSAM: "Adds a MD tag to the SAM output file."
 
         outputAlignmentFile: "Mapping and alignment between collections of DNA sequences file."
     }

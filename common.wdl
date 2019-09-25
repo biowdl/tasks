@@ -57,8 +57,8 @@ task ConcatenateTextFiles {
 
     command {
         set -e -o pipefail
-        ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ~{cmdPrefix} ~{sep=' ' fileList} ~{cmdSuffix} > ~{combinedFilePath}
+        mkdir -p $(dirname ~{combinedFilePath})
+        ~{cmdPrefix} ~{sep=" " fileList} ~{cmdSuffix} > ~{combinedFilePath}
     }
 
     output {
@@ -77,7 +77,7 @@ task Copy {
         Boolean recursive = false
 
         # Version not that important as long as it is stable.
-        String dockerImage = "bash:5.0.2"
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
@@ -116,6 +116,8 @@ task CreateLink {
 task MapMd5 {
     input {
         Map[String,String] map
+
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
@@ -128,13 +130,57 @@ task MapMd5 {
 
     runtime {
         memory: 1
+        docker: dockerImage
     }
 }
 
+task SampleConfigToSampleReadgroupLists {
+    input {
+        File yaml
+        String outputJson = "samples.json"
+
+        String dockerImage = "biowdl/pyyaml:3.13-py37-slim"
+    }
+
+    command <<<
+        set -e
+        mkdir -p $(dirname ~{outputJson})
+        python <<CODE
+        import json
+        import yaml
+        with open("~{yaml}", "r") as input_yaml:
+            sample_config = yaml.load(input_yaml)
+
+        sample_rg_lists = []
+        for sample in sample_config["samples"]:
+            new_sample = {"readgroups": [], "id": sample['id']}
+            for library in sample["libraries"]:
+                for readgroup in library["readgroups"]:
+                    new_readgroup = {'lib_id': library['id'], 'id': readgroup['id']}
+                    # Having a nested "reads" struct does not make any sense.
+                    new_readgroup.update(readgroup["reads"])
+                    new_sample['readgroups'].append(new_readgroup)
+            sample_rg_lists.append(new_sample)
+        sample_mod_config = {"samples": sample_rg_lists}
+        with open("~{outputJson}", "w") as output_json:
+            json.dump(sample_mod_config, output_json)
+        CODE
+    >>>
+
+    output {
+        File json = outputJson
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+}
 
 task StringArrayMd5 {
     input {
         Array[String] stringArray
+
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
@@ -148,6 +194,7 @@ task StringArrayMd5 {
 
     runtime {
         memory: 1
+        docker: dockerImage
     }
 }
 
