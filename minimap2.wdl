@@ -77,6 +77,7 @@ task Mapping {
         String outputPrefix
         String presetOption
         Boolean outputSAM = false
+        Int kmerSize = 15
 
         Int? maxFragmentLength
         Int? maxIntronLength
@@ -101,6 +102,7 @@ task Mapping {
         ~{true="-a" false="" outputSAM} \
         ~{"-G " + maxIntronLength} \
         ~{"-F " + maxFragmentLength} \
+        ~{"-k " + kmerSize} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
         ~{"-N " + retainMaxSecondaryAlignments} \
         ~{"-A " + matchingScore} \
@@ -132,6 +134,7 @@ task Mapping {
         outputSAM: "Output in the SAM format."
         maxFragmentLength: "Max fragment length (effective with -xsr or in the fragment mode)."
         maxIntronLength: "Max intron length (effective with -xsplice; changing -r)."
+        kmerSize: "K-mer size (no larger than 28)."
         skipSelfAndDualMappings: "Skip self and dual mappings (for the all-vs-all mode)."
         retainMaxSecondaryAlignments: "Retain at most INT secondary alignments."
         matchingScore: "Matching score."
