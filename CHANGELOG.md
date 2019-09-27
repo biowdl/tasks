@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.1.0-dev
 ---------------------------
++ GATK.GenotypeGVCFs: Increased memoryMultiplier from 2.0 to 3.0 
 + Minimap2: Add -k option to minimap2 mapping
 + Added bwakit task
 + Minimap2: Add the option for --MD tag
