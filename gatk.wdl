@@ -170,7 +170,7 @@ task GenotypeGVCFs {
         File? dbsnpVCF
         File? dbsnpVCFIndex
         Int memory = 6
-        Float memoryMultiplier = 2.0
+        Float memoryMultiplier = 3.0
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
