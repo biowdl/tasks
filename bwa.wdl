@@ -9,8 +9,8 @@ task Mem {
         String? readgroup
 
         Int threads = 2
-        Int memory = 8
-        Int picardMemory = 4
+        String memory = "16G"
+        String picardXmx = "4G"
         # A mulled container is needed to have both picard and bwa in one container.
         # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
         String dockerImage = "quay.io/biocontainers/mulled-v2-002f51ea92721407ef440b921fb5940f424be842:43ec6124f9f4f875515f9548733b8b4e5fed9aa6-0"
@@ -25,7 +25,7 @@ task Mem {
         ~{bwaIndex.fastaFile} \
         ~{read1} \
         ~{read2} \
-        | picard -Xmx~{picardMemory}G SortSam \
+        | picard -Xmx~{picardXmx} SortSam \
         INPUT=/dev/stdin \
         OUTPUT=~{outputPath} \
         SORT_ORDER=coordinate \
@@ -39,7 +39,7 @@ task Mem {
 
     runtime {
         cpu: threads
-        memory: memory + picardMemory + picardMemory
+        memory: memory
         docker: dockerImage
     }
 }
@@ -55,7 +55,7 @@ task Kit {
 
         Int threads = 2
         Int sortThreads = 2
-        Int memory = 10
+        String memory = "10G"
         String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
     }
 

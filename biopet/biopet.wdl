@@ -84,15 +84,15 @@ task ExtractAdaptersFastqc {
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        Int memory = 8
-        Float memoryMultiplier = 5 # This is ridiculous...
-        String dockerTag = "0.2--1"
+        String memory = "40G" # This is ridiculous, but needed due to vmem monitoring on SGE.
+        String javaXmx = "8G"
+        String dockerImage = "quay.io/biocontainers/biopet-extractadaptersfastqc:0.2--1"
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
-        biopet-extractadaptersfastqc -Xmx~{memory}G \
+        biopet-extractadaptersfastqc -Xmx~{javaXmx} \
         --inputFile ~{inputFile} \
         ~{"--adapterOutputFile " + adapterOutputFilePath } \
         ~{"--contamsOutputFile " + contamsOutputFilePath } \
@@ -111,8 +111,8 @@ task ExtractAdaptersFastqc {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/biopet-extractadaptersfastqc:" + dockerTag
+        memory: memory
+        docker: dockerImage
     }
 }
 
@@ -123,15 +123,15 @@ task FastqSplitter {
         Array[String]+ outputPaths
         File? toolJar
 
-        Int memory = 4
-        Float memoryMultiplier = 3
-        String dockerTag = "0.1--2"
+        String memory = "12G"
+        String javaXmx = "4G"
+        String dockerImage = "quay.io/biocontainers/biopet-fastqsplitter:0.1--2"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{sep=') $(dirname ' outputPaths})
-        biopet-fastqsplitter -Xmx~{memory}G \
+        biopet-fastqsplitter -Xmx~{javaXmx} \
         -I ~{inputFastq} \
         -o ~{sep=' -o ' outputPaths}
     }
@@ -141,8 +141,8 @@ task FastqSplitter {
     }
     
     runtime {
-        memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/biopet-fastqsplitter:" + dockerTag
+        memory: memory
+        docker: dockerImage
     }
 }
 
@@ -195,7 +195,7 @@ task ReorderGlobbedScatters {
         # Should not be changed from the main pipeline. As it should not influence results.
         # The 3.7-slim container is 143 mb on the filesystem. 3.7 is 927 mb.
         # The slim container is sufficient for this small task.
-        String dockerTag = "3.7-slim"
+        String dockerImage = "python:3.7-slim"
     }
 
     command <<<
@@ -222,9 +222,9 @@ task ReorderGlobbedScatters {
     }
 
     runtime {
-        docker: "python:" + dockerTag
+        docker: dockerImage
         # 4 gigs of memory to be able to build the docker image in singularity
-        memory: 4
+        memory: "4G"
     }
 }
 
@@ -238,8 +238,8 @@ task ScatterRegions {
         File? bamFile
         File? bamIndex
 
-        Int memory = 8
-        Float memoryMultiplier = 3.0
+        String memory = "24G"
+        String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/biopet-scatterregions:0.2--0"
     }
 
@@ -251,7 +251,7 @@ task ScatterRegions {
     command {
         set -e -o pipefail
         mkdir -p ~{outputDirPath}
-        biopet-scatterregions -Xmx~{memory}G \
+        biopet-scatterregions -Xmx~{javaXmx} \
           -R ~{referenceFasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
@@ -266,7 +266,7 @@ task ScatterRegions {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -276,13 +276,13 @@ task ValidateAnnotation {
         File? gtfFile
         Reference reference
 
-        Int memory = 3
-        Float memoryMultiplier = 3.0
-        String dockerTag = "0.1--0"
+        String memory = "9G"
+        String javaXmx = "3G"
+        String dockerImage = "quay.io/biocontainers/biopet-validateannotation:0.1--0"
     }
 
     command {
-        biopet-validateannotation -Xmx~{memory}G \
+        biopet-validateannotation -Xmx~{javaXmx} \
         ~{"-r " + refRefflat} \
         ~{"-g " + gtfFile} \
         -R ~{reference.fasta}
@@ -293,8 +293,8 @@ task ValidateAnnotation {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/biopet-validateannotation:" + dockerTag
+        memory: memory
+        docker: dockerImage
     }
 }
 
@@ -302,13 +302,13 @@ task ValidateFastq {
     input {
         File read1
         File? read2
-        Int memory = 3
-        Float memoryMultiplier = 3.0
-        String dockerTag = "0.1.1--1"
+        String memory = "9G"
+        String javaXmx = "3G"
+        String dockerImage = "quay.io/biocontainers/biopet-validatefastq:0.1.1--1"
     }
 
     command {
-        biopet-validatefastq -Xmx~{memory}G \
+        biopet-validatefastq -Xmx~{javaXmx} \
         --fastq1 ~{read1} \
         ~{"--fastq2 " + read2}
     }
@@ -318,8 +318,8 @@ task ValidateFastq {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/biopet-validatefastq" + dockerTag
+        memory: memory
+        docker: dockerImage
     }
 }
 
@@ -327,13 +327,13 @@ task ValidateVcf {
     input {
         IndexedVcfFile vcf
         Reference reference
-        Int memory = 3
-        Float memoryMultiplier = 3.0
-        String dockerTag = "0.1--0"
+        String memory = "9G"
+        String javaXmx = "3G"
+        String dockerImage = "quay.io/biocontainers/biopet-validatevcf:0.1--0"
     }
 
     command {
-        biopet-validatevcf -Xmx~{memory}G \
+        biopet-validatevcf -Xmx~{javaXmx} \
         -i ~{vcf.file} \
         -R ~{reference.fasta}
     }
@@ -343,8 +343,8 @@ task ValidateVcf {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/biopet-validatevcf:" + dockerTag
+        memory: memory
+        docker: dockerImage
     }
 }
 
@@ -370,16 +370,15 @@ task VcfStats {
         Int? sparkExecutorMemory
         Array[String]+? sparkConfigValues
 
-        String dockerTag = "1.2--0"
-        Int memory = 4
-        Float memoryMultiplier = 3
+        String dockerImage = "quay.io/biocontainers/biopet-vcfstats:1.2--0"
+        String memory = "12G"
+        String javaXmx = "4G"
     }
-
 
     command {
         set -e
         mkdir -p ~{outputDir}
-        biopet-vcfstats -Xmx~{memory}G \
+        biopet-vcfstats -Xmx~{javaXmx} \
         -I ~{vcf.file} \
         -R ~{reference.fasta} \
         -o ~{outputDir} \
@@ -496,7 +495,7 @@ task VcfStats {
 
     runtime {
         cpu: localThreads
-        memory: ceil(memory * memoryMultiplier)
-        docker: "quay.io/biocontainers/biopet-vcfstats:" + dockerTag
+        memory: memory
+        docker: dockerImage
     }
 }

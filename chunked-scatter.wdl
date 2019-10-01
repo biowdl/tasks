@@ -27,7 +27,7 @@ task ChunkedScatter {
     }
 
     runtime {
-        memory: 4
+        memory: "4G"
         docker: dockerImage
     }
 }
