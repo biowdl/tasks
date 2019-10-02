@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 1.1.0-dev
 ---------------------------
++ Use the biowdl-input-converter container for JsonToYaml, to reduce the amount of containers needed.
++ Add biowdl-input-converter and remove SampleConfigToSampleReadgroupLists which it replaces.
 + GATK.GenotypeGVCFs: Increased memoryMultiplier from 2.0 to 3.0 
 + Minimap2: Add -k option to minimap2 mapping
 + Added bwakit task
