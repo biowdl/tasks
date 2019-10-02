@@ -9,10 +9,10 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 1.1.0-dev
+version 2.0.0-dev
 ---------------------------
-+ memory runtime attributes are now Strings
-+ memory inputs for most tasks are now Strings, remaining Int memory inputs are renamed to "memoryGb"
++ Memory runtime attributes are now Strings indicating total memory, as opposed to Ints indicating memory per core.
++ Memory inputs for most tasks are now Strings, remaining Int memory inputs are renamed to "memoryGb".
 + Use the biowdl-input-converter container for JsonToYaml, to reduce the amount of containers needed.
 + Add biowdl-input-converter and remove SampleConfigToSampleReadgroupLists which it replaces.
 + GATK.GenotypeGVCFs: Increased memoryMultiplier from 2.0 to 3.0 
