@@ -14,13 +14,13 @@ task Generate {
         String library
         String readgroup
 
-        Int memory = 4
-        Float memoryMultiplier = 2.5
+        String memory = "10G"
+        String javaXmx = "4G"
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-seqstat -Xmx" + memory + "G"
+        then "java -Xmx~{javaXmx} -jar " + toolJar
+        else "biopet-seqstat -Xmx~{javaXmx}"
 
     command {
         set -e -o pipefail
@@ -40,6 +40,6 @@ task Generate {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }

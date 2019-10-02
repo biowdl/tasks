@@ -13,7 +13,7 @@ task Flash {
         Boolean compress = true
 
         Int threads = 2
-        Int memory = 2
+        String memory = "2G"
     }
 
     command {

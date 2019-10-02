@@ -11,13 +11,13 @@ task BaseCounter {
         String outputDir
         String prefix
 
-        Int memory = 4
-        Float memoryMultiplier = 3.5
+        String memory = "14G"
+        String javaXmx = "4G"
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-basecounter -Xmx" + memory + "G"
+        then "java -Xmx~{javaXmx} -jar " + toolJar
+        else "biopet-basecounter -Xmx~{javaXmx}"
 
     command {
         set -e -o pipefail
@@ -68,7 +68,7 @@ task BaseCounter {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -155,13 +155,13 @@ task FastqSync {
         String out2path
         File? toolJar
 
-        Int memory = 4
-        Float memoryMultiplier = 2.5
+        String memory = "10G"
+        String javaXmx = "4G"
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-fastqsync -Xmx" + memory + "G"
+        then "java -Xmx~{javaXmx} -jar " + toolJar
+        else "biopet-fastqsync -Xmx~{javaXmx}"
 
     command {
         set -e -o pipefail
@@ -184,7 +184,7 @@ task FastqSync {
     }
     
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
