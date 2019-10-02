@@ -6,15 +6,15 @@ task BedToIntervalList {
         File dict
         String outputPath
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname "~{outputPath}")
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         BedToIntervalList \
         I=~{bedFile} \
         O=~{outputPath} \
@@ -27,7 +27,7 @@ task BedToIntervalList {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -50,8 +50,8 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        Int memory = 8
-        Float memoryMultiplier = 4
+        String memory = "32G"
+        String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -59,7 +59,7 @@ task CollectMultipleMetrics {
     command {
         set -e
         mkdir -p $(dirname "~{basename}")
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         CollectMultipleMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -121,7 +121,7 @@ task CollectMultipleMetrics {
     runtime {
 
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -133,15 +133,15 @@ task CollectRnaSeqMetrics {
         String basename
         String strandSpecificity = "NONE"
 
-        Int memory = 8
-        Float memoryMultiplier = 4.0
+        String memory = "32G"
+        String javaXmx =  "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname "~{basename}")
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         CollectRnaSeqMetrics \
         I=~{inputBam} \
         O=~{basename}.RNA_Metrics \
@@ -157,7 +157,7 @@ task CollectRnaSeqMetrics {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -172,15 +172,15 @@ task CollectTargetedPcrMetrics {
         Array[File]+ targetIntervals
         String basename
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname "~{basename}")
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         CollectTargetedPcrMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -199,7 +199,7 @@ task CollectTargetedPcrMetrics {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -210,15 +210,15 @@ task GatherBamFiles {
         Array[File]+ inputBamsIndex
         String outputBamPath
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBamPath})
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -234,7 +234,7 @@ task GatherBamFiles {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -244,15 +244,15 @@ task GatherVcfs {
         Array[File]+ inputVcfIndexes
         String outputVcfPath = "out.vcf.gz"
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputVcfPath})
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         GatherVcfs \
         INPUT=~{sep=' INPUT=' inputVcfs} \
         OUTPUT=~{outputVcfPath}
@@ -264,7 +264,7 @@ task GatherVcfs {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -276,8 +276,8 @@ task MarkDuplicates {
         String outputBamPath
         String metricsPath
 
-        Int memory = 8
-        Float memoryMultiplier = 3.0
+        String memory = "24G"
+        String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
@@ -295,7 +295,7 @@ task MarkDuplicates {
     command {
         set -e
         mkdir -p $(dirname ~{outputBamPath})
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         MarkDuplicates \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -318,7 +318,7 @@ task MarkDuplicates {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -329,8 +329,8 @@ task MergeVCFs {
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
 
-        Int memory = 8
-        Float memoryMultiplier = 3.0
+        String memory = "24G"
+        String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -340,7 +340,7 @@ task MergeVCFs {
     command {
         set -e
         mkdir -p $(dirname ~{outputVcfPath})
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
         OUTPUT=~{outputVcfPath}
@@ -353,7 +353,7 @@ task MergeVCFs {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -363,8 +363,8 @@ task SamToFastq {
         File inputBamIndex
         Boolean paired = true
 
-        Int memory = 16 # High memory default to avoid crashes.
-        Float memoryMultiplier = 3.0
+        String memory = "48G"
+        String javaXmx = "16G" # High memory default to avoid crashes.
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
         File? NONE
     }
@@ -375,7 +375,7 @@ task SamToFastq {
 
     command {
         set -e
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         SamToFastq \
         I=~{inputBam} \
         ~{"FASTQ=" + outputRead1} \
@@ -391,7 +391,7 @@ task SamToFastq {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -400,15 +400,15 @@ task ScatterIntervalList {
         File interval_list
         Int scatter_count
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir scatter_list
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         IntervalListTools \
         SCATTER_COUNT=~{scatter_count} \
         SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -425,7 +425,7 @@ task ScatterIntervalList {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -435,8 +435,8 @@ task SortVcf {
         String outputVcfPath
         File? dict
 
-        Int memory = 8
-        Float memoryMultiplier = 3.0
+        String memory = "24G"
+        String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
         }
 
@@ -444,7 +444,7 @@ task SortVcf {
     command {
         set -e
         mkdir -p $(dirname ~{outputVcfPath})
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
         ~{"SEQUENCE_DICTIONARY=" + dict} \
@@ -458,6 +458,6 @@ task SortVcf {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }

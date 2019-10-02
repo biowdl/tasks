@@ -14,13 +14,13 @@ task SampleConfig {
         String? jsonOutputPath
         String? tsvOutputPath
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        String memory = "8G"
+        String javaXmx = "16G"
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " +toolJar
-        else "biopet-sampleconfig -Xmx" + memory + "G"
+        then "java -Xmx~{javaXmx} -jar " + toolJar
+        else "biopet-sampleconfig -Xmx~{javaXmx}"
 
     command {
         set -e -o pipefail
@@ -43,7 +43,7 @@ task SampleConfig {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -54,13 +54,13 @@ task SampleConfigCromwellArrays {
         Array[File]+ inputFiles
         String outputPath
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        String memory = "8G"
+        String javaXmx = "4G"
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-sampleconfig -Xmx" + memory + "G"
+        then "java -Xmx~{javaXmx} -jar " + toolJar
+        else "biopet-sampleconfig -Xmx~{javaXmx}"
 
     command {
         set -e -o pipefail
@@ -76,7 +76,7 @@ task SampleConfigCromwellArrays {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -90,13 +90,13 @@ task CaseControl {
         String outputPath
         String controlTag = "control"
 
-        Int memory = 4
-        Float memoryMultiplier = 2.0
+        String memory = "8G"
+        String javaXmx = "4G"
     }
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-sampleconfig -Xmx" + memory + "G"
+        then "java -Xmx~{javaXmx} -jar " + toolJar
+        else "biopet-sampleconfig -Xmx~{javaXmx}"
 
     command {
         set -e -o pipefail
@@ -115,6 +115,6 @@ task CaseControl {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }

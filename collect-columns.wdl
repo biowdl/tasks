@@ -36,8 +36,10 @@ task CollectColumns {
         File outputTable = outputPath
     }
 
+    Int memoryGb = 4 + ceil(0.5 * length(inputTables))
+
     runtime {
-        memory: 4 + ceil(0.5 * length(inputTables))
+        memory: "~{memoryGb}G"
         docker: dockerImage
     }
 }

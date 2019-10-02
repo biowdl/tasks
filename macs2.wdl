@@ -11,7 +11,8 @@ task PeakCalling {
         Boolean nomodel = false
 
         Int threads = 1
-        Int memory = 8
+        String memory = "8G"
+        String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
     }
 
     command {
@@ -31,6 +32,6 @@ task PeakCalling {
     runtime {
         cpu: threads
         memory: memory
-        docker: "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
+        docker: dockerImage
     }
 }

@@ -171,7 +171,7 @@ task Fastq {
         Int? compressionLevel
 
         Int threads = 1
-        Int memory = 1
+        String memory = "1G"
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -253,7 +253,7 @@ task View {
         Int? MAPQthreshold
 
         Int threads = 1
-        Int memory = 1
+        String memory = "1G"
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String outputIndexPath = basename(outputFileName) + ".bai"

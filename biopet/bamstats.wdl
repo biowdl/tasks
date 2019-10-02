@@ -16,15 +16,15 @@ task Generate {
         String outputDir
         Reference? reference
 
-        Int memory = 8
-        Float memoryMultiplier = 2.0
+        String memory = "16G"
+        String javaXmx = "8G"
     }
 
     File referenceFasta = if defined(reference) then select_first([reference]).fasta else ""
 
     String toolCommand = if defined(toolJar)
-        then "java -Xmx" + memory + "G -jar " + toolJar
-        else "biopet-bamstats -Xmx" + memory + "G"
+        then "java -Xmx~{javaXmx} -jar " + toolJar
+        else "biopet-bamstats -Xmx~{javaXmx}"
 
     command {
         set -e -o pipefail
@@ -46,6 +46,6 @@ task Generate {
     }
 
     runtime {
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
