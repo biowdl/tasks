@@ -24,8 +24,12 @@ task InputConverter {
     input {
         File samplesheet
         String outputFile = "samplesheet.json"
-        Boolean skipFileCheck=false
-        Boolean checkFileMd5sums=true
+        # File checking only works when:
+        # 1. Paths are absolute
+        # 2. When containers have the directory with the files mounted.
+        # Therefore this functionality does not work well with cromwell.
+        Boolean skipFileCheck=true
+        Boolean checkFileMd5sums=false
         Boolean old=false
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.1.0--py_0"
     }
@@ -36,6 +40,7 @@ task InputConverter {
         ~{true="--skip-file-check" false="" skipFileCheck} \
         ~{true="--check-file-md5sums" false="" checkFileMd5sums} \
         ~{true="--old" false="" old} \
+        ~{samplesheet}
     >>>
 
     output {
