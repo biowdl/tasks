@@ -13,7 +13,7 @@ task Hisat2 {
         Boolean downstreamTranscriptomeAssembly = true
 
         Int threads = 1
-        Int memory = 48
+        String memory = "48G"
         # quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1
         # is a combination of hisat2 and samtools
         # hisat2=2.1.0, samtools=1.8
@@ -41,7 +41,7 @@ task Hisat2 {
     }
 
     runtime {
-        memory: (memory / threads) + 1
+        memory: memory
         cpu: threads + 1
         docker: dockerImage
     }

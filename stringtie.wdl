@@ -12,7 +12,7 @@ task Stringtie {
         String? geneAbundanceFile
 
         Int threads = 1
-        Int memory = 10
+        String memory = "10G"
         String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
     }
 

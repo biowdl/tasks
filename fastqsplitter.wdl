@@ -58,7 +58,7 @@ task Fastqsplitter {
     Int memory = if fastqsplitterMemory <= 2 then 2 else fastqsplitterMemory
 
     runtime {
-        memory: memory
+        memory: "~{memory}G"
         docker: dockerImage
         cpu: cores
     }

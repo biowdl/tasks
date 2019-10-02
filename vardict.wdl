@@ -28,15 +28,14 @@ task VarDict {
         Float minimumAlleleFrequency = 0.02
 
         Int threads = 1
-        Int memory = 16
-        Float memoryMultiplier = 2.5
+        String memory = "40G"
+        String javaXmx = "16G"
         String dockerImage = "quay.io/biocontainers/vardict-java:1.5.8--1"
-
     }
 
     command {
         set -e -o pipefail
-        export JAVA_OPTS="-Xmx~{memory}G"
+        export JAVA_OPTS="-Xmx~{javaXmx}"
         vardict-java \
         ~{"-th " + threads} \
         -G ~{referenceFasta} \
@@ -67,7 +66,7 @@ task VarDict {
 
     runtime {
         cpu: threads + 2
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
         docker: dockerImage
     }
 }

@@ -16,7 +16,7 @@ task Somatic {
         Boolean exome = false
 
         Int cores = 1
-        Int memory = 4
+        Int memoryGb = 4
         String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
 
     }
@@ -33,7 +33,7 @@ task Somatic {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
-        -g ~{memory}
+        -g ~{memoryGb}
     }
 
     output {
@@ -53,7 +53,7 @@ task Somatic {
 
     runtime {
         cpu: cores
-        memory: memory
+        memory: "~{memoryGb}G"
         docker: dockerImage
     }
 }

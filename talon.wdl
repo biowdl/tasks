@@ -31,7 +31,7 @@ task CreateAbundanceFileFromDatabase {
         File? filterPairingsFile
 
         Int cores = 1
-        Int memory = 4
+        String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 
@@ -80,7 +80,7 @@ task CreateGtfAbundanceFromDatabase {
         File? filterPairingsFile
 
         Int cores = 1
-        Int memory = 4
+        String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 
@@ -132,7 +132,7 @@ task CreateGtfFromDatabase {
         File? datasetFile
 
         Int cores = 1
-        Int memory = 4
+        String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 
@@ -184,7 +184,7 @@ task InitializeTalonDatabase {
         Int cutoff3p = 300
 
         Int cores = 1
-        Int memory = 10
+        String memory = "10G"
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 
@@ -233,7 +233,7 @@ task MapAntisenseGenesToSense {
         String annotationVersion
 
         Int cores = 1
-        Int memory = 4
+        String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 
@@ -273,7 +273,7 @@ task SummarizeDatasets {
         File? datasetGroupsCSV
 
         Int cores = 1
-        Int memory = 4
+        String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 
@@ -318,7 +318,7 @@ task Talon {
         Int minimumIdentity = 0
 
         Int cores = 1
-        Int memory = 20
+        String memory = "20G"
         String dockerImage = "biocontainers/talon:v4.2_cv2"
     }
 

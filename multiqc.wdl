@@ -38,7 +38,7 @@ task MultiQC {
         Boolean quiet = false
         Array[Boolean] finished = []  # An array of booleans that can be used to let multiqc wait on stuff.
 
-        Int memory = 4
+        String memory = "4G"
 
         String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
     }

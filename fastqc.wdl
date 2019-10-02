@@ -67,7 +67,7 @@ task Fastqc {
 
 task GetConfiguration {
     input {
-        String dockerTag = "0.11.7--4"
+        String dockerImage = "quay.io/biocontainers/fastqc:0.11.7--4"
     }
 
     command <<<
@@ -86,7 +86,7 @@ task GetConfiguration {
     }
 
     runtime {
-        memory: 2 # Needs more than 1 to pull the docker image
-        docker: "quay.io/biocontainers/fastqc:" + dockerTag
+        memory: "2G" # Needs more than 1 to pull the docker image
+        docker: dockerImage
     }
 }

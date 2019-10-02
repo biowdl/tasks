@@ -15,7 +15,7 @@ task Germline {
         Boolean rna = false
 
         Int cores = 1
-        Int memory = 4
+        Int memoryGb = 4
         String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
     }
 
@@ -31,7 +31,7 @@ task Germline {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
-        -g ~{memory}
+        -g ~{memoryGb}
     }
 
     output {
@@ -42,7 +42,7 @@ task Germline {
     runtime {
         docker: dockerImage
         cpu: cores
-        memory: memory
+        memory: "~{memoryGb}G"
     }
 }
 
@@ -62,7 +62,7 @@ task Somatic {
         Boolean exome = false
 
         Int cores = 1
-        Int memory = 4
+        Int memoryGb = 4
         String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
 
         File? doNotDefineThis #FIXME
@@ -81,7 +81,7 @@ task Somatic {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
-        -g ~{memory}
+        -g ~{memoryGb}
     }
 
     output {
@@ -94,6 +94,6 @@ task Somatic {
     runtime {
         docker: dockerImage
         cpu: cores
-        memory: memory
+        memory: "~{memoryGb}G"
     }
 }

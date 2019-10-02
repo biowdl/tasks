@@ -12,8 +12,6 @@ task Unicycler {
         Int? minFastaLength
         Int? keep
         Boolean? vcf
-        Int threads = 1
-        Int memory = 4
         String? mode
         Float? minBridgeQual
         Int? linearSeqs
@@ -45,6 +43,9 @@ task Unicycler {
         File? contamination
         String? scores
         String? lowScore
+
+        Int threads = 1
+        String memory = "4G"
     }
 
     command {

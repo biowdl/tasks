@@ -31,7 +31,7 @@ task Indexing {
         Int? splitIndex
 
         Int cores = 1
-        Int memory = 4
+        String memory = "4G"
         String dockerImage = "quay.io/biocontainers/minimap2:2.17--h84994c4_0"
     }
 
@@ -90,7 +90,7 @@ task Mapping {
         Boolean? addMDtagToSAM
 
         Int cores = 4
-        Int memory = 7
+        String memory = "30G"
         String dockerImage = "quay.io/biocontainers/minimap2:2.17--h84994c4_0"
     }
 

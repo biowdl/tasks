@@ -16,7 +16,7 @@ task AppendToStringArray {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
     }
 }
 
@@ -66,7 +66,7 @@ task ConcatenateTextFiles {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
     }
 }
 
@@ -129,7 +129,7 @@ task MapMd5 {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
         docker: dockerImage
     }
 }
@@ -193,7 +193,7 @@ task StringArrayMd5 {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
         docker: dockerImage
     }
 }
