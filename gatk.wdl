@@ -109,7 +109,7 @@ task CombineGVCFs {
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
-        gatk --java-options -Xmx~{javaXmx}G \
+        gatk --java-options -Xmx~{javaXmx} \
         CombineGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
