@@ -31,7 +31,7 @@ task InputConverter {
         Boolean skipFileCheck=true
         Boolean checkFileMd5sums=false
         Boolean old=false
-        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.1.0--py_0"
+        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.0--py_0"
     }
 
     command <<<
