@@ -9,7 +9,7 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 2.0.0-dev
+version 2.0.0
 ---------------------------
 + Memory runtime attributes are now Strings indicating total memory, as opposed to Ints indicating memory per core.
 + Memory inputs for most tasks are now Strings, remaining Int memory inputs are renamed to "memoryGb".
