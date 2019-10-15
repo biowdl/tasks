@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 1.1.0-dev
 ---------------------------
++ TranscriptClean: Update TranscriptClean to version 2.0.2
 + Added bwakit task
 + Minimap2: Add the option for --MD tag
 + TALON: Update average memory needs for main TALON process
