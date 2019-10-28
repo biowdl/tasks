@@ -9,6 +9,13 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
+version 2.1.0-dev
+---------------------------
++ Updated star default image to 2.7.3a
++ Hisat2 now indexes the resulting BAM file.
++ Samtools index now also works without setting a path for the output
++ Bugfix: Biowdl-input-converter now makes sure the output directory exists
+
 version 2.0.0
 ---------------------------
 + TranscriptClean: Update TranscriptClean to version 2.0.2
