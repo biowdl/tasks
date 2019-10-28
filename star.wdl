@@ -16,7 +16,7 @@ task Star {
 
         Int runThreadN = 4
         String memory = "48G"
-        String dockerImage = "quay.io/biocontainers/star:2.6.0c--0"
+        String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
     #TODO Needs to be extended for all possible output extensions

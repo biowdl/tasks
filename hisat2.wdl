@@ -20,6 +20,8 @@ task Hisat2 {
         String dockerImage = "quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1:2388ff67fc407dad75774291ca5038f40cac4be0-0"
     }
 
+    String bamIndexPath = sub(outputBam, "\.bam$", ".bai")
+
     command {
         set -e -o pipefail
         mkdir -p $(dirname ~{outputBam})
@@ -34,10 +36,12 @@ task Hisat2 {
         --rg 'PL:~{platform}' \
         ~{true="--dta" false="" downstreamTranscriptomeAssembly} \
         | samtools sort > ~{outputBam}
+        samtools index ~{outputBam} ~{bamIndexPath}
     }
 
     output {
         File bamFile = outputBam
+        File bamIndex = bamIndexPath
     }
 
     runtime {

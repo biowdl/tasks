@@ -35,6 +35,8 @@ task InputConverter {
     }
 
     command <<<
+        set -e
+        mkdir -p $(dirname ~{outputFile})
         biowdl-input-converter \
         -o ~{outputFile} \
         ~{true="--skip-file-check" false="" skipFileCheck} \
