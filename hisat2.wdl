@@ -21,7 +21,7 @@ task Hisat2 {
     }
 
     # Select_first is needed, otherwise womtool validate fails.
-    String bamIndexPath = sub(select_first([outputBam]), "\.bam$", ".bai")
+    String bamIndexPath = sub(outputBam, "\.bam$", ".bai")
 
     command {
         set -e -o pipefail
