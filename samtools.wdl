@@ -31,28 +31,29 @@ task BgzipAndIndex {
 task Index {
     input {
         File bamFile
-        String outputBamPath = basename(bamFile)
+        String? outputBamPath
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     # Select_first is needed, otherwise womtool validate fails.
-    String bamIndexPath = sub(select_first([outputBamPath]), "\.bam$", ".bai")
+    String outputPath = select_first([outputBamPath, basename(bamFile)])
+    String bamIndexPath = sub(outputPath, "\.bam$", ".bai")
 
     command {
         bash -c '
         set -e
         # Make sure outputBamPath does not exist.
-        if [ ! -f ~{outputBamPath} ]
+        if [ ! -f ~{outputPath} ]
         then
-            mkdir -p $(dirname ~{outputBamPath})
-            ln ~{bamFile} ~{outputBamPath}
+            mkdir -p $(dirname ~{outputPath})
+            ln ~{bamFile} ~{outputPath}
         fi
-        samtools index ~{outputBamPath} ~{bamIndexPath}
+        samtools index ~{outputPath} ~{bamIndexPath}
         '
     }
 
     output {
-        File indexedBam = outputBamPath
+        File indexedBam = outputPath
         File index =  bamIndexPath
     }
 
