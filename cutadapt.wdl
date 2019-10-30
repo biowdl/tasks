@@ -151,4 +151,239 @@ task Cutadapt {
         memory: memory
         docker: dockerImage
     }
+
+    parameter_meta {
+        read1: {
+            description: "The first or single end FastQ file to be run through cutadapt.",
+            category: "required"
+        }
+        read2: {
+            description: "An optional second end FastQ file to be run through cutadapt.",
+            category: "common"
+        }
+        read1output: {
+            description: "The name of the resulting first or single end FastQ file.",
+            category: "common"
+        }
+        read2output: {
+            description: "The name of the resulting second end FastQ file.",
+            category: "common"
+        }
+        format: {
+            description: "Equivalent to cutadapt's --format option.",
+            catgeory: "advanced"
+        }
+        adapter: {
+            description: "A list of 3' ligated adapter sequences to be cut from the given first or single end fastq file.",
+            category: "common"
+        }
+        front: {
+            description: "A list of 5' ligated adapter sequences to be cut from the given first or single end fastq file.",
+            category: "advanced"
+        }
+        anywhere: {
+            description: "A list of 3' or 5' ligated adapter sequences to be cut from the given first or single end fastq file.",
+            category: "advanced"
+        }
+        adapterRead2: {
+            description: "A list of 3' ligated adapter sequences to be cut from the given second end fastq file.",
+            category: "common"
+        }
+        frontRead2: {
+            description: "A list of 5' ligated adapter sequences to be cut from the given second end fastq file.",
+            category: "advanced"
+        }
+        anywhereRead2: {
+            description: "A list of 3' or 5' ligated adapter sequences to be cut from the given second end fastq file.",
+            category: "advanced"
+        }
+        interleaved: {
+            description: "Equivalent to cutadapt's --interleaved flag.",
+            catgeory: "advanced"
+        }
+        pairFilter: {
+            description: "Equivalent to cutadapt's --pair-filter option.",
+            catgeory: "advanced"
+        }
+        errorRate: {
+            description: "Equivalent to cutadapt's --error-rate option.",
+            catgeory: "advanced"
+        }
+        noIndels: {
+            description: "Equivalent to cutadapt's --no-indels flag.",
+            catgeory: "advanced"
+        }
+        times: {
+            description: "Equivalent to cutadapt's --times option.",
+            catgeory: "advanced"
+        }
+        overlap: {
+            description: "Equivalent to cutadapt's --overlap option.",
+            catgeory: "advanced"
+        }
+        matchReadWildcards: {
+            description: "Equivalent to cutadapt's --match-read-wildcards flag.",
+            catgeory: "advanced"
+        }
+        noMatchAdapterWildcards: {
+            description: "Equivalent to cutadapt's --no-match-adapter-wildcards flag.",
+            catgeory: "advanced"
+        }
+        noTrim: {
+            description: "Equivalent to cutadapt's --no-trim flag.",
+            catgeory: "advanced"
+        }
+        maskAdapter: {
+            description: "Equivalent to cutadapt's --mask-adapter flag.",
+            catgeory: "advanced"
+        }
+        cut: {
+            description: "Equivalent to cutadapt's --cut option.",
+            catgeory: "advanced"
+        }
+        nextseqTrim: {
+            description: "Equivalent to cutadapt's --nextseq-trim  option.",
+            catgeory: "advanced"
+        }
+        qualityCutoff: {
+            description: "Equivalent to cutadapt's --quality-cutoff option.",
+            catgeory: "advanced"
+        }
+        qualityBase: {
+            description: "Equivalent to cutadapt's --quality-base option.",
+            catgeory: "advanced"
+        }
+        length: {
+            description: "Equivalent to cutadapt's --length option.",
+            catgeory: "advanced"
+        }
+        trimN: {
+            description: "Equivalent to cutadapt's --trim-n flag.",
+            catgeory: "advanced"
+        }
+        lengthTag: {
+            description: "Equivalent to cutadapt's --length-tag option.",
+            catgeory: "advanced"
+        }
+        stripSuffix: {
+            description: "Equivalent to cutadapt's --strip-suffix option.",
+            catgeory: "advanced"
+        }
+        prefix: {
+            description: "Equivalent to cutadapt's --prefix option.",
+            catgeory: "advanced"
+        }
+        suffix: {
+            description: "Equivalent to cutadapt's --suffix option.",
+            catgeory: "advanced"
+        }
+        minimumLength: {
+            description: "Equivalent to cutadapt's --minimum-length option.",
+            catgeory: "advanced"
+        }
+        maximumLength: {
+            description: "Equivalent to cutadapt's --maximum-length option.",
+            catgeory: "advanced"
+        }
+        maxN: {
+            description: "Equivalent to cutadapt's --max-n option.",
+            catgeory: "advanced"
+        }
+        discardTrimmed: {
+            description: "Equivalent to cutadapt's --quality-cutoff option.",
+            catgeory: "advanced"
+        }
+        discardUntrimmed: {
+            description: "Equivalent to cutadapt's --discard-untrimmed option.",
+            catgeory: "advanced"
+        }
+        infoFilePath: {
+            description: "Equivalent to cutadapt's --info-file option.",
+            catgeory: "advanced"
+        }
+        restFilePath: {
+            description: "Equivalent to cutadapt's --rest-file option.",
+            catgeory: "advanced"
+        }
+        wildcardFilePath: {
+            description: "Equivalent to cutadapt's --wildcard-file option.",
+            catgeory: "advanced"
+        }
+        tooShortOutputPath: {
+            description: "Equivalent to cutadapt's --too-short-output option.",
+            catgeory: "advanced"
+        }
+        tooLongOutputPath: {
+            description: "Equivalent to cutadapt's --too-long-output option.",
+            catgeory: "advanced"
+        }
+        untrimmedOutputPath: {
+            description: "Equivalent to cutadapt's --untrimmed-output option.",
+            catgeory: "advanced"
+        }
+        tooShortPairedOutputPath: {
+            description: "Equivalent to cutadapt's --too-short-paired-output option.",
+            catgeory: "advanced"
+        }
+        tooLongPairedOutputPath: {
+            description: "Equivalent to cutadapt's --too-long-paired-output option.",
+            catgeory: "advanced"
+        }
+        untrimmedPairedOutputPath: {
+            description: "Equivalent to cutadapt's --untrimmed-paired-output option.",
+            catgeory: "advanced"
+        }
+        colorspace: {
+            description: "Equivalent to cutadapt's --colorspace flag.",
+            catgeory: "advanced"
+        }
+        doubleEncode: {
+            description: "Equivalent to cutadapt's --double-encode flag.",
+            catgeory: "advanced"
+        }
+        trimPrimer: {
+            description: "Equivalent to cutadapt's --trim-primer flag.",
+            catgeory: "advanced"
+        }
+        stripF3: {
+            description: "Equivalent to cutadapt's --strip-f3 flag.",
+            catgeory: "advanced"
+        }
+        maq: {
+            description: "Equivalent to cutadapt's --maq flag.",
+            catgeory: "advanced"
+        }
+        bwa: {
+            description: "Equivalent to cutadapt's --bwa flag.",
+            catgeory: "advanced"
+        }
+        zeroCap: {
+            description: "Equivalent to cutadapt's --zero-cap flag.",
+            catgeory: "advanced"
+        }
+        noZeroCap: {
+            description: "Equivalent to cutadapt's --no-zero-cap flag.",
+            catgeory: "advanced"
+        }
+        reportPath: {
+            description: "The name of the file to write cutadapts's stdout to, this contains some metrics.",
+            catgeory: "common"
+        }
+        Z: {
+            description: "Equivalent to cutadapt's -Z flag.",
+            catgeory: "advanced"
+        }
+        cores: {
+            description: "The number of cores to use",
+            catgeory: "advanced"
+        }
+        memory: {
+            description: "The amount of memory this job will use.",
+            category: "advanced"
+        }
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may chose not to address.",
+            category: "advanced"
+        }
+    }
 }
