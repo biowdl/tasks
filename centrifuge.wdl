@@ -27,7 +27,7 @@ task Build {
         Int? kmerCount
 
         Int threads = 8
-        Int memory = 20
+        String memory = "20G"
     }
 
     command {
@@ -81,7 +81,7 @@ task Classify {
         Array[String]? excludeTaxIds
 
         Int threads = 4
-        Int memory = 8
+        String memory = "8G"
     }
 
     String outputFilePath = outputDir + "/centrifuge.out"
@@ -174,6 +174,7 @@ task DownloadTaxonomy {
         String executable = "centrifuge-download"
         String? preCommand
     }
+
     command {
         set -e -o pipefail
         ~{preCommand}
@@ -204,7 +205,7 @@ task Kreport {
         Int? minLength
 
         Int cores = 1
-        Int memory = 4
+        String memory = "4G"
     }
 
     String kreportFilePath = outputDir + "/" + prefix + "." + suffix

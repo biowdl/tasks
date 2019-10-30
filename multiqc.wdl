@@ -2,7 +2,6 @@ version 1.0
 
 task MultiQC {
     input {
-        String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
         # Use a string here so cromwell does not relocate an entire analysis directory
         String analysisDirectory
         Array[File] dependencies = []  # This must be used in order to run multiqc after these tasks.
@@ -29,7 +28,7 @@ task MultiQC {
         Boolean zipDataDir = false
         Boolean export = false
         Boolean flat = false
-        Boolean interactive = false
+        Boolean interactive = true
         Boolean lint = false
         Boolean pdf = false
         Boolean megaQCUpload = false # This must be actively enabled in my opinion. The tools default is to upload.
@@ -38,7 +37,10 @@ task MultiQC {
         Boolean verbose  = false
         Boolean quiet = false
         Array[Boolean] finished = []  # An array of booleans that can be used to let multiqc wait on stuff.
-        Int memory = 4
+
+        String memory = "4G"
+
+        String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
     }
 
     command {

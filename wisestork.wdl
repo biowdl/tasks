@@ -117,9 +117,11 @@ task Newref {
         File bedFile = outputBed
     }
 
+    Int memory = 2 + ceil(length(inputBeds) * 0.15)
+
     runtime {
         docker: dockerImage
-        memory: 2 + ceil(length(inputBeds) * 0.15)
+        memory: "~{memory}G"
     }
 }
 

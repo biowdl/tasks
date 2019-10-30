@@ -12,15 +12,15 @@ task ApplyBQSR {
         File referenceFastaDict
         File referenceFastaFai
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBamPath})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         ApplyBQSR \
         --create-output-bam-md5 \
         --add-output-sam-program-record \
@@ -43,7 +43,7 @@ task ApplyBQSR {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -54,34 +54,30 @@ task BaseRecalibrator {
         File inputBamIndex
         String recalibrationReportPath
         Array[File] sequenceGroupInterval = []
-        Array[File]? knownIndelsSitesVCFs
-        Array[File]? knownIndelsSitesVCFIndexes
+        Array[File] knownIndelsSitesVCFs = []
+        Array[File] knownIndelsSitesVCFIndexes = []
         File? dbsnpVCF
         File? dbsnpVCFIndex
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
-
-    Array[File]+ knownIndelsSitesVCFsArg = flatten([
-        select_first([knownIndelsSitesVCFs, []]),
-        [select_first([dbsnpVCF])]
-    ])
 
     command {
         set -e
         mkdir -p $(dirname ~{recalibrationReportPath})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         BaseRecalibrator \
         -R ~{referenceFasta} \
         -I ~{inputBam} \
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
-        --known-sites ~{sep=" --known-sites " knownIndelsSitesVCFsArg} \
+        ~{true="--known-sites" false="" length(knownIndelsSitesVCFs) > 0} ~{sep=" --known-sites " knownIndelsSitesVCFs} \
+        ~{"--known-sites " + dbsnpVCF} \
         ~{true="-L" false="" length(sequenceGroupInterval) > 0} ~{sep=' -L ' sequenceGroupInterval}
     }
 
@@ -91,7 +87,7 @@ task BaseRecalibrator {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -105,15 +101,15 @@ task CombineGVCFs {
         File referenceFastaDict
         File referenceFastaFai
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         CombineGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -128,7 +124,7 @@ task CombineGVCFs {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -138,15 +134,15 @@ task GatherBqsrReports {
         Array[File] inputBQSRreports
         String outputReportPath
 
-        Int memory = 4
-        Float memoryMultiplier = 3.0
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputReportPath})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
@@ -158,7 +154,7 @@ task GatherBqsrReports {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -173,15 +169,16 @@ task GenotypeGVCFs {
         File referenceFastaFai
         File? dbsnpVCF
         File? dbsnpVCFIndex
-        Int memory = 6
-        Float memoryMultiplier = 2.0
+
+        String memory = "18G"
+        String javaXmx = "6G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         GenotypeGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -201,7 +198,7 @@ task GenotypeGVCFs {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -218,15 +215,16 @@ task HaplotypeCallerGvcf {
         Float contamination = 0.0
         File? dbsnpVCF
         File? dbsnpVCFIndex
-        Int memory = 4
-        Float memoryMultiplier = 3
+
+        String memory = "12G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{gvcfPath})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         HaplotypeCaller \
         -R ~{referenceFasta} \
         -O ~{gvcfPath} \
@@ -244,7 +242,7 @@ task HaplotypeCallerGvcf {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -266,15 +264,15 @@ task MuTect2 {
         Array[File]+ intervals
         String outputStats = outputVcf + ".stats"
 
-        Int memory = 4
-        Float memoryMultiplier = 4
+        String memory = "16G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputVcf})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         Mutect2 \
         -R ~{referenceFasta} \
         -I ~{sep=" -I " inputBams} \
@@ -296,7 +294,7 @@ task MuTect2 {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -304,14 +302,14 @@ task LearnReadOrientationModel {
     input {
         Array[File]+ f1r2TarGz
 
-        Int memory = 12
-        Float memoryMultiplier = 2
+        String memory = "24G"
+        String javaXmx = "12G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         LearnReadOrientationModel \
         -I ~{sep=" -I " f1r2TarGz} \
         -O "artifact-priors.tar.gz"
@@ -323,7 +321,7 @@ task LearnReadOrientationModel {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -331,14 +329,14 @@ task MergeStats {
     input {
         Array[File]+ stats
 
-        Int memory = 14
-        Float memoryMultiplier = 2
+        String memory = "28G"
+        String javaXmx = "14G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         MergeMutectStats \
         -stats ~{sep=" -stats " stats} \
         -O "merged.stats"
@@ -350,7 +348,7 @@ task MergeStats {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -364,14 +362,14 @@ task GetPileupSummaries {
         File sitesForContaminationIndex
         String outputPrefix
 
-        Int memory = 12
-        Float memoryMultiplier = 2
+        String memory = "24G"
+        String javaXmx = "12G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         GetPileupSummaries \
         -I ~{sampleBam} \
         -V ~{variantsForContamination} \
@@ -385,7 +383,7 @@ task GetPileupSummaries {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -394,14 +392,14 @@ task CalculateContamination {
         File tumorPileups
         File? normalPileups
 
-        Int memory = 12
-        Float memoryMultiplier = 2
+        String memory = "24G"
+        String javaXmx = "12G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         CalculateContamination \
         -I ~{tumorPileups} \
         ~{"-matched " + normalPileups} \
@@ -416,7 +414,7 @@ task CalculateContamination {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -435,15 +433,15 @@ task FilterMutectCalls {
         File mutect2Stats
         String? extraArgs
 
-        Int memory = 12
-        Float memoryMultiplier = 2
+        String memory = "24G"
+        String javaXmx = "12G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputVcf})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         FilterMutectCalls \
         -R ~{referenceFasta} \
         -V ~{unfilteredVcf} \
@@ -466,7 +464,7 @@ task FilterMutectCalls {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -480,15 +478,15 @@ task SplitNCigarReads {
         String outputBam
         Array[File] intervals = []
 
-        Int memory = 4
-        Float memoryMultiplier = 4
+        String memory = "16G"
+        String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputBam})
-        gatk --java-options -Xmx~{memory}G \
+        gatk --java-options -Xmx~{javaXmx} \
         SplitNCigarReads \
         -I ~{inputBam} \
         -R ~{referenceFasta} \
@@ -503,7 +501,7 @@ task SplitNCigarReads {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }
 
@@ -521,8 +519,8 @@ task CombineVariants {
         Array[File]+ variantIndexes
         String outputPath
 
-        Int memory = 12
-        Float memoryMultiplier = 2
+        String memory = "24G"
+        String javaXmx = "12G"
         String dockerImage = "broadinstitute/gatk3:3.8-1"
     }
 
@@ -542,7 +540,7 @@ task CombineVariants {
                 printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
               done
         )
-        java -Xmx~{memory}G -jar ~{installDir}/GenomeAnalysisTK.jar \
+        java -Xmx~{javaXmx} -jar ~{installDir}/GenomeAnalysisTK.jar \
         -T CombineVariants \
         -R ~{referenceFasta} \
         --genotypemergeoption ~{genotypeMergeOption} \
@@ -559,6 +557,6 @@ task CombineVariants {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory: memory
     }
 }

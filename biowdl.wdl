@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2017 Leiden University Medical Center
+# Copyright (c) 2018 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,35 +20,33 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task Sort {
+task InputConverter {
     input {
-        File inputBed
-        Boolean sizeA = false
-        Boolean sizeD = false
-        Boolean chrThenSizeA = false
-        Boolean chrThenSizeD = false
-        Boolean chrThenScoreD = false
-        File? g
-        File? faidx
-        String outputBed = "output.sorted.bed"
-        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+        File samplesheet
+        String outputFile = "samplesheet.json"
+        # File checking only works when:
+        # 1. Paths are absolute
+        # 2. When containers have the directory with the files mounted.
+        # Therefore this functionality does not work well with cromwell.
+        Boolean skipFileCheck=true
+        Boolean checkFileMd5sums=false
+        Boolean old=false
+        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.0--py_0"
     }
 
-    command {
+    command <<<
         set -e
-        mkdir -p $(dirname ~{outputBed})
-        bedtools sort \
-        -i ~{inputBed} \
-        ~{true="-sizeA" false="" sizeA} \
-        ~{true="-sizeD" false="" sizeD} \
-        ~{true="-chrThenScoreD" false="" chrThenScoreD} \
-        ~{"-g " + g} \
-        ~{"-faidx" + faidx} \
-        > ~{outputBed}
-    }
+        mkdir -p $(dirname ~{outputFile})
+        biowdl-input-converter \
+        -o ~{outputFile} \
+        ~{true="--skip-file-check" false="" skipFileCheck} \
+        ~{true="--check-file-md5sums" false="" checkFileMd5sums} \
+        ~{true="--old" false="" old} \
+        ~{samplesheet}
+    >>>
 
     output {
-        File bedFile = outputBed
+        File json = outputFile
     }
 
     runtime {

@@ -3,7 +3,6 @@ version 1.0
 task HTSeqCount {
     input {
         Array[File]+ inputBams
-        Array[File]+ inputBamsIndex
         File gtfFile
         String outputTable = "output.tsv"
         String format = "bam"
@@ -13,7 +12,7 @@ task HTSeqCount {
         String? idattr
         Array[String] additionalAttributes = []
 
-        Int memory = 40
+        String memory = "40G"
         String dockerImage = "quay.io/biocontainers/htseq:0.9.1--py36h7eb728f_2"
     }
 

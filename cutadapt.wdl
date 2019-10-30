@@ -61,7 +61,7 @@ task Cutadapt {
         #~{"--compression-level=" + compressionLevel} \
         Boolean Z = true  # equal to compressionLevel=1  # Fixme: replace once upstream is fixed.
         Int cores = 1
-        Int memory = 16  # FIXME: Insane memory. Double-check if needed.
+        String memory = "4G"
         String dockerImage = "quay.io/biocontainers/cutadapt:2.4--py37h14c3975_0"
     }
 
