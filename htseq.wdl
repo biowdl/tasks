@@ -45,10 +45,6 @@ task HTSeqCount {
             description: "The input BAM files.",
             category: "required"
         }
-        inputBamsIndex: {
-            description: "The index files of the iput BAM files, in the same order as the BAM files.",
-            catgory: "required"
-        }
         gtfFile: {
             description: "A GTF/GFF file containing the features of interest.",
             category: "required"
