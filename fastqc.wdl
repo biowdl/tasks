@@ -75,55 +75,55 @@ task Fastqc {
         }
         casava: {
             description: "Equivalent to fastqc's --casava flag.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         nano: {
             description: "Equivalent to fastqc's --nano flag.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         noFilter: {
             description: "Equivalent to fastqc's --nofilter flag.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         extract: {
             description: "Equivalent to fastqc's --extract flag.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         nogroup: {
             description: "Equivalent to fastqc's --nogroup flag.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         minLength: {
             description: "Equivalent to fastqc's --min_length option.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         format: {
             description: "Equivalent to fastqc's --format option.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         contaminants: {
             description: "Equivalent to fastqc's --contaminants option.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         adapters: {
             description: "Equivalent to fastqc's --adapters option.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         limits: {
             description: "Equivalent to fastqc's --limits option.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         kmers: {
             description: "Equivalent to fastqc's --kmers option.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         dir: {
             description: "Equivalent to fastqc's --dir option.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         threads: {
             description: "The number of cores to use.",
-            catgeory: "advanced"
+            category: "advanced"
         }
         dockerImage: {
             description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
