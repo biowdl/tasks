@@ -116,7 +116,7 @@ task Cutadapt {
         ~{true="--no-trim" false="" noTrim} \
         ~{true="--mask-adapter" false="" maskAdapter} \
         ~{true="--no-indels" false="" noIndels} \
-        ~{true="--trim-n" false="" trimN}  \
+        ~{true="--trim-n" false="" trimN} \
         ~{true="--interleaved" false="" interleaved} \
         ~{true="--discard-trimmed" false="" discardTrimmed } \
         ~{true="--colorspace" false="" colorspace} \
@@ -154,19 +154,19 @@ task Cutadapt {
 
     parameter_meta {
         read1: {
-            description: "The first or single end FastQ file to be run through cutadapt.",
+            description: "The first or single end fastq file to be run through cutadapt.",
             category: "required"
         }
         read2: {
-            description: "An optional second end FastQ file to be run through cutadapt.",
+            description: "An optional second end fastq file to be run through cutadapt.",
             category: "common"
         }
         read1output: {
-            description: "The name of the resulting first or single end FastQ file.",
+            description: "The name of the resulting first or single end fastq file.",
             category: "common"
         }
         read2output: {
-            description: "The name of the resulting second end FastQ file.",
+            description: "The name of the resulting second end fastq file.",
             category: "common"
         }
         format: {
@@ -242,7 +242,7 @@ task Cutadapt {
             category: "advanced"
         }
         nextseqTrim: {
-            description: "Equivalent to cutadapt's --nextseq-trim  option.",
+            description: "Equivalent to cutadapt's --nextseq-trim option.",
             category: "advanced"
         }
         qualityCutoff: {

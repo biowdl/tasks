@@ -59,7 +59,7 @@ task Stringtie {
             category: "common"
         }
         assembledTranscriptsFile: {
-            description: "Where the output of the assembly whould be written.",
+            description: "Where the output of the assembly should be written.",
             category: "required"
         }
         firstStranded: {

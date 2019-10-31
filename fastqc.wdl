@@ -66,7 +66,7 @@ task Fastqc {
 
     parameter_meta {
         seqFile: {
-            description: "A FastQ file.",
+            description: "A fastq file.",
             category: "required"
         }
         outdirPath: {

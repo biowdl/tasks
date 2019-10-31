@@ -49,7 +49,7 @@ task CollectColumns {
             category: "required"
         }
         outputPath: {
-            description: "The path to which the output whould be written.",
+            description: "The path to which the output should be written.",
             category: "required"
         }
         featureColumn: {
