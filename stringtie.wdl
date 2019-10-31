@@ -83,7 +83,7 @@ task Stringtie {
             category: "advanced"
         }
         dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may chose not to address.",
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
             category: "advanced"
         }
     }
@@ -177,7 +177,7 @@ task Merge {
             category: "advanced"
         }
         dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may chose not to address.",
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
             category: "advanced"
         }
     }
