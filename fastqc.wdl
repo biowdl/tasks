@@ -63,6 +63,79 @@ task Fastqc {
         cpu: threads
         docker: dockerImage
     }
+
+    parameter_meta {
+        seqFile: {
+            description: "A fastq file.",
+            category: "required"
+        }
+        outdirPath: {
+            description: "The path to write the output to",
+            catgory: "required"
+        }
+        casava: {
+            description: "Equivalent to fastqc's --casava flag.",
+            category: "advanced"
+        }
+        nano: {
+            description: "Equivalent to fastqc's --nano flag.",
+            category: "advanced"
+        }
+        noFilter: {
+            description: "Equivalent to fastqc's --nofilter flag.",
+            category: "advanced"
+        }
+        extract: {
+            description: "Equivalent to fastqc's --extract flag.",
+            category: "advanced"
+        }
+        nogroup: {
+            description: "Equivalent to fastqc's --nogroup flag.",
+            category: "advanced"
+        }
+        minLength: {
+            description: "Equivalent to fastqc's --min_length option.",
+            category: "advanced"
+        }
+        format: {
+            description: "Equivalent to fastqc's --format option.",
+            category: "advanced"
+        }
+        contaminants: {
+            description: "Equivalent to fastqc's --contaminants option.",
+            category: "advanced"
+        }
+        adapters: {
+            description: "Equivalent to fastqc's --adapters option.",
+            category: "advanced"
+        }
+        limits: {
+            description: "Equivalent to fastqc's --limits option.",
+            category: "advanced"
+        }
+        kmers: {
+            description: "Equivalent to fastqc's --kmers option.",
+            category: "advanced"
+        }
+        dir: {
+            description: "Equivalent to fastqc's --dir option.",
+            category: "advanced"
+        }
+        threads: {
+            description: "The number of cores to use.",
+            category: "advanced"
+        }
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
+
+    meta {
+        WDL_AID: {
+            exclude: ["NoneFile", "NoneArray"]
+        }
+    }
 }
 
 task GetConfiguration {
@@ -88,5 +161,12 @@ task GetConfiguration {
     runtime {
         memory: "2G" # Needs more than 1 to pull the docker image
         docker: dockerImage
+    }
+
+    parameter_meta {
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
     }
 }

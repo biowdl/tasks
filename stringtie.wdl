@@ -40,6 +40,53 @@ task Stringtie {
         memory: memory
         docker: dockerImage
     }
+
+    parameter_meta {
+        bam: {
+            description: "The input BAM file.",
+            category: "required"
+        }
+        bamIndex: {
+            description: "The input BAM file's index.",
+            category: "required"
+        }
+        referenceGtf: {
+            description: "A reference GTF file to be used as guide.",
+            category: "common"
+        }
+        skipNovelTranscripts: {
+            description: "Whether new transcripts should be assembled or not.",
+            category: "common"
+        }
+        assembledTranscriptsFile: {
+            description: "Where the output of the assembly should be written.",
+            category: "required"
+        }
+        firstStranded: {
+            description: "Equivalent to the --rf flag of stringtie.",
+            category: "required"
+        }
+        secondStranded: {
+            description: "Equivalent to the --fr flag of stringtie.",
+            category: "required"
+        }
+        geneAbundanceFile: {
+            description: "Where the abundance file should be written.",
+            category: "common"
+        }
+        threads: {
+            description: "The number of threads to use.",
+            category: "advanced"
+        }
+        memory: {
+            description: "The amount of memory needed for this task in GB.",
+            category: "advanced"
+        }
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
 }
 
 task Merge {
@@ -82,5 +129,56 @@ task Merge {
     runtime {
         memory: memory
         docker: dockerImage
+    }
+
+    parameter_meta {
+        gtfFiles: {
+            description: "The GTF files produced by stringtie.",
+            category: "required"
+        }
+        outputGtfPath: {
+            description: "Where the output should be written.",
+            category: "required"
+        }
+        guideGtf: {
+            description: "Equivalent to the -G option of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        minimumLength: {
+            description: "Equivalent to the -m option of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        minimumCoverage: {
+            description: "Equivalent to the -c option of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        minimumFPKM: {
+            description: "Equivalent to the -F option of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        minimumTPM: {
+            description: "Equivalent to the -T option of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        minimumIsoformFraction: {
+            description: "Equivalent to the -f option of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        keepMergedTranscriptsWithRetainedIntrons: {
+            description: "Equivalent to the -i flag of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        label: {
+            description: "Equivalent to the -l option of 'stringtie --merge'.",
+            category: "advanced"
+        }
+        memory: {
+            description: "The amount of memory needed for this task in GB.",
+            category: "advanced"
+        }
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
     }
 }
