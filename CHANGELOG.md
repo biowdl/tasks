@@ -12,6 +12,12 @@ that users understand how the changes affect the new version.
 version 2.1.0-dev
 ---------------------------
 + Updated TALON to version 4.4
++ Added parameter_meta sections to the following tools:
+    + htseq
+    + cutadapt
+    + collect-columns
+    + stringtie
+    + fastqc
 + Updated star default image to 2.7.3a
 + Hisat2 now indexes the resulting BAM file.
 + Samtools index now also works without setting a path for the output
