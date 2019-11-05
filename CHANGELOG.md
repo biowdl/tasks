@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.1.0-dev
 ---------------------------
++ Updated TALON to version 4.4
 + Added parameter_meta sections to the following tools:
     + htseq
     + cutadapt
