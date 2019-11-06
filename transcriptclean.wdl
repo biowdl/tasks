@@ -38,8 +38,8 @@ task GetSJsFromGtf {
         get_SJs_from_gtf \
         ~{"--f=" + GTFfile} \
         ~{"--g=" + genomeFile} \
-        ~{"--o=" + outputPrefix + ".tsv"} \
-        ~{"--minIntronSize=" + minIntronSize}
+        ~{"--minIntronSize=" + minIntronSize} \
+        ~{"--o=" + outputPrefix + ".tsv"}
     }
 
     output {
@@ -53,12 +53,26 @@ task GetSJsFromGtf {
     }
 
     parameter_meta {
-        GTFfile: "Input GTF file"
-        genomeFile: "Reference genome"
-        outputPrefix: "Output directory path + output file prefix."
-        minIntronSize: "Minimum size of intron to consider a junction."
-
-        outputSJsFile: "Extracted splice junctions."
+        GTFfile: {
+            description: "Input GTF file",
+            category: "required"
+        }
+        genomeFile: {
+            description: "Reference genome",
+            category: "required"
+        }
+        minIntronSize: {
+            description: "Minimum size of intron to consider a junction.",
+            category: "advanced"
+        }
+        outputPrefix: {
+            description: "Output directory path + output file prefix.",
+            category: "required"
+        }
+        outputSJsFile: {
+            description: "Extracted splice junctions.",
+            category: "required"
+        }
     }
 }
 
@@ -91,10 +105,18 @@ task GetTranscriptCleanStats {
     }
 
     parameter_meta {
-        transcriptCleanSAMfile: "Output SAM file from TranscriptClean"
-        outputPrefix: "Output directory path + output file prefix."
-
-        outputStatsFile: "Summary stats from TranscriptClean run."
+        transcriptCleanSAMfile: {
+            description: "Output SAM file from TranscriptClean",
+            category: "required"
+        }
+        outputPrefix: {
+            description: "Output directory path + output file prefix.",
+            category: "required"
+        }
+        outputStatsFile: {
+            description: "Summary stats from TranscriptClean run."
+            category: "required"
+        }
     }
 }
 
@@ -102,9 +124,9 @@ task TranscriptClean {
     input {
         File SAMfile
         File referenceGenome
-        String outputPrefix
         Int maxLenIndel = 5
         Int maxSJoffset = 5
+        String outputPrefix
         Boolean correctMismatches = true
         Boolean correctIndels = true
         Boolean correctSJs = true
@@ -112,6 +134,7 @@ task TranscriptClean {
         Boolean primaryOnly = false
         Boolean canonOnly = false
         Int bufferSize = 100
+        Boolean deleteTmp = true
 
         File? spliceJunctionAnnotation
         File? variantFile
@@ -127,11 +150,10 @@ task TranscriptClean {
         TranscriptClean \
         ~{"-s " + SAMfile} \
         ~{"-g " + referenceGenome} \
-        ~{"-o " + outputPrefix} \
-        ~{"-j " + spliceJunctionAnnotation} \
-        ~{"-v " + variantFile} \
+        ~{"-t " + cores} \
         ~{"--maxLenIndel=" + maxLenIndel} \
         ~{"--maxSJOffset=" + maxSJoffset} \
+        ~{"-o " + outputPrefix} \
         ~{true="-m true" false="-m false" correctMismatches} \
         ~{true="-i true" false="-i false" correctIndels} \
         ~{true="--correctSJs=true" false="--correctSJs=false" correctSJs} \
@@ -139,7 +161,9 @@ task TranscriptClean {
         ~{true="--primaryOnly" false="" primaryOnly} \
         ~{true="--canonOnly" false="" canonOnly} \
         ~{"--bufferSize=" + bufferSize} \
-        ~{"-t " + cores}
+        ~{true="--deleteTmp" false="" deleteTmp} \
+        ~{"-j " + spliceJunctionAnnotation} \
+        ~{"-v " + variantFile}
     }
 
     output {
@@ -156,24 +180,81 @@ task TranscriptClean {
     }
 
     parameter_meta {
-        SAMfile: "Input SAM file containing transcripts to correct."
-        referenceGenome: "Reference genome fasta file."
-        outputPrefix: "Output directory path + output file prefix."
-        spliceJunctionAnnotation: "Splice junction file."
-        variantFile: "VCF formatted file of variants."
-        maxLenIndel: "Maximum size indel to correct."
-        maxSJoffset: "Maximum distance from annotated splice junction to correct."
-        correctMismatches: "Set this to make TranscriptClean correct mismatches."
-        correctIndels: "Set this to make TranscriptClean correct indels."
-        correctSJs: "Set this to make TranscriptClean correct splice junctions."
-        dryRun: "TranscriptClean will read in the data but don't do any correction."
-        primaryOnly: "TranscriptClean will only output primary mappings of transcripts."
-        canonOnly: "TranscriptClean will output only canonical transcripts and transcript containing annotated noncanonical junctions."
-        bufferSize: "Number of lines to output to file at once by each thread during run."
-
-        outputTranscriptCleanFasta: "Fasta file containing corrected reads."
-        outputTranscriptCleanLog: "Log file of TranscriptClean run."
-        outputTranscriptCleanSAM: "SAM file containing corrected aligned reads."
-        outputTranscriptCleanTElog: "TE log file of TranscriptClean run."
+        SAMfile: {
+            description: "Input SAM file containing transcripts to correct.",
+            category: "required"
+        }
+        referenceGenome: {
+            description: "Reference genome fasta file.",
+            category: "required"
+        }
+        maxLenIndel: {
+            description: "Maximum size indel to correct.",
+            category: "advanced"
+        }
+        maxSJoffset: {
+            description: "Maximum distance from annotated splice junction to correct.",
+            category: "advanced"
+        }
+        outputPrefix: {
+            description: "Output directory path + output file prefix.",
+            category: "required"
+        }
+        correctMismatches: {
+            description: "Set this to make TranscriptClean correct mismatches.",
+            category: "common"
+        }
+        correctIndels: {
+            description: "Set this to make TranscriptClean correct indels.",
+            category: "common"
+        }
+        correctSJs: {
+            description: "Set this to make TranscriptClean correct splice junctions.",
+            category: "common"
+        }
+        dryRun: {
+            description: "TranscriptClean will read in the data but don't do any correction.",
+            category: "advanced"
+        }
+        primaryOnly: {
+            description: "Only output primary mappings of transcripts.",
+            category: "advanced"
+        }
+        canonOnly: {
+            description: "Only output canonical transcripts and transcript containing annotated noncanonical junctions.",
+            category: "advanced"
+        }
+        bufferSize: {
+            description: "Number of lines to output to file at once by each thread during run.",
+            category: "common"
+        }
+        deleteTmp: {
+            description: "The temporary directory generated by TranscriptClean will be removed.",
+            category: "common"
+        }
+        spliceJunctionAnnotation: {
+            description: "Splice junction file.",
+            category: "common"
+        }
+        variantFile: {
+            description: "VCF formatted file of variants.",
+            category: "common"
+        }
+        outputTranscriptCleanFasta: {
+            description: "Fasta file containing corrected reads.",
+            category: "required"
+        }
+        outputTranscriptCleanLog: {
+            description: "Log file of TranscriptClean run.",
+            category: "required"
+        }
+        outputTranscriptCleanSAM: {
+            description: "SAM file containing corrected aligned reads.",
+            category: "required"
+        }
+        outputTranscriptCleanTElog: {
+            description: "TE log file of TranscriptClean run.",
+            category: "required"
+        }
    }
 }
