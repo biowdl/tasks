@@ -80,11 +80,11 @@ task Indexing {
             category: "required"
         }
         splitIndex: {
-            description: "Split index for every ~NUM input bases."
+            description: "Split index for every ~NUM input bases.",
             category: "advanced"
         }
         outputIndexFile: {
-            description: "Indexed reference file."
+            description: "Indexed reference file.",
             category: "required"
         }
     }

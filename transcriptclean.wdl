@@ -114,7 +114,7 @@ task GetTranscriptCleanStats {
             category: "required"
         }
         outputStatsFile: {
-            description: "Summary stats from TranscriptClean run."
+            description: "Summary stats from TranscriptClean run.",
             category: "required"
         }
     }
