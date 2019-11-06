@@ -456,7 +456,7 @@ task Talon {
         String configFileName = basename(configFile)
         String SAMfileName = basename(SAMfile)
 
-        Int cores = 1
+        Int cores = 4
         String memory = "20G"
         String dockerImage = "biocontainers/talon:v4.4_cv1"
     }
