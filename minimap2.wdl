@@ -22,11 +22,11 @@ version 1.0
 
 task Indexing {
     input {
-        File referenceFile
-        String outputPrefix
         Boolean useHomopolymerCompressedKmer = false
         Int kmerSize = 15
         Int minimizerWindowSize = 10
+        String outputPrefix
+        File referenceFile
 
         Int? splitIndex
 
@@ -42,9 +42,9 @@ task Indexing {
         ~{true="-H" false="" useHomopolymerCompressedKmer} \
         ~{"-k " + kmerSize} \
         ~{"-w " + minimizerWindowSize} \
-        ~{"-I " + splitIndex} \
         ~{"-d " + outputPrefix + ".mmi"} \
         ~{"-t " + cores} \
+        ~{"-I " + splitIndex} \
         ~{referenceFile}
     }
 
@@ -59,35 +59,55 @@ task Indexing {
     }
 
     parameter_meta {
-        referenceFile: "Reference fasta file."
-        outputPrefix: "Output directory path + output file prefix."
-        useHomopolymerCompressedKmer: "Use homopolymer-compressed k-mer (preferrable for PacBio)."
-        kmerSize: "K-mer size (no larger than 28)."
-        minimizerWindowSize: "Minimizer window size."
-        splitIndex: "Split index for every ~NUM input bases."
-
-        outputIndexFile: "Indexed reference file."
+        useHomopolymerCompressedKmer: {
+            description: "Use homopolymer-compressed k-mer (preferrable for PacBio).",
+            category: "advanced"
+        }
+        kmerSize: {
+            description: "K-mer size (no larger than 28).",
+            category: "advanced"
+        }
+        minimizerWindowSize: {
+            description: "Minimizer window size.",
+            category: "advanced"
+        }
+        outputPrefix: {
+            description: "Output directory path + output file prefix.",
+            category: "required"
+        }
+        referenceFile: {
+            description: "Reference fasta file.",
+            category: "required"
+        }
+        splitIndex: {
+            description: "Split index for every ~NUM input bases.",
+            category: "advanced"
+        }
+        outputIndexFile: {
+            description: "Indexed reference file.",
+            category: "required"
+        }
     }
 }
 
 task Mapping {
     input {
-        File queryFile
-        File referenceFile
-        String outputPrefix
         String presetOption
-        Boolean outputSAM = false
         Int kmerSize = 15
+        Boolean skipSelfAndDualMappings = false
+        Boolean outputSAM = false
+        String outputPrefix
+        Boolean addMDtagToSAM = false
+        Boolean secondaryAlignment = false
+        File referenceFile
+        File queryFile
 
-        Int? maxFragmentLength
         Int? maxIntronLength
-        Boolean? skipSelfAndDualMappings
+        Int? maxFragmentLength
         Int? retainMaxSecondaryAlignments
         Int? matchingScore
         Int? mismatchPenalty
         String? howToFindGTAG
-        Boolean? secondaryAlignment
-        Boolean? addMDtagToSAM
 
         Int cores = 4
         String memory = "30G"
@@ -99,19 +119,19 @@ task Mapping {
         mkdir -p $(dirname ~{outputPrefix})
         minimap2 \
         ~{"-x " + presetOption} \
-        ~{true="-a" false="" outputSAM} \
-        ~{"-G " + maxIntronLength} \
-        ~{"-F " + maxFragmentLength} \
         ~{"-k " + kmerSize} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
+        ~{true="-a" false="" outputSAM} \
+        ~{"-o " + outputPrefix} \
+        ~{true="--MD" false="" addMDtagToSAM} \
+        --secondary=~{true="yes" false="no" secondaryAlignment} \
+        ~{"-t " + cores} \
+        ~{"-G " + maxIntronLength} \
+        ~{"-F " + maxFragmentLength} \
         ~{"-N " + retainMaxSecondaryAlignments} \
         ~{"-A " + matchingScore} \
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
-        --secondary=~{true="yes" false="no" secondaryAlignment} \
-        ~{true="--MD" false="" addMDtagToSAM} \
-        ~{"-o " + outputPrefix} \
-        ~{"-t " + cores} \
         ~{referenceFile} \
         ~{queryFile}
     }
@@ -127,22 +147,69 @@ task Mapping {
     }
 
     parameter_meta {
-        queryFile: "Input fasta file."
-        referenceFile: "Reference fasta file."
-        outputPrefix: "Output directory path + output file prefix."
-        presetOption: "This option applies multiple options at the same time."
-        outputSAM: "Output in the SAM format."
-        maxFragmentLength: "Max fragment length (effective with -xsr or in the fragment mode)."
-        maxIntronLength: "Max intron length (effective with -xsplice; changing -r)."
-        kmerSize: "K-mer size (no larger than 28)."
-        skipSelfAndDualMappings: "Skip self and dual mappings (for the all-vs-all mode)."
-        retainMaxSecondaryAlignments: "Retain at most INT secondary alignments."
-        matchingScore: "Matching score."
-        mismatchPenalty: "Mismatch penalty."
-        howToFindGTAG: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG."
-        secondaryAlignment: "Whether to output secondary alignments."
-        addMDtagToSAM: "Adds a MD tag to the SAM output file."
-
-        outputAlignmentFile: "Mapping and alignment between collections of DNA sequences file."
+        presetOption: {
+            description: "This option applies multiple options at the same time.",
+            category: "common"
+        }
+        kmerSize: {
+            description: "K-mer size (no larger than 28).",
+            category: "advanced"
+        }
+        outputSAM: {
+            description: "Output in the SAM format.",
+            category: "common"
+        }
+        outputPrefix: {
+            description: "Output directory path + output file prefix.",
+            category: "required"
+        }
+        maxIntronLength: {
+            description: "Max intron length (effective with -xsplice; changing -r).",
+            category: "advanced"
+        }
+        maxFragmentLength: {
+            description: "Max fragment length (effective with -xsr or in the fragment mode).",
+            category: "advanced"
+        }
+        skipSelfAndDualMappings: {
+            description: "Skip self and dual mappings (for the all-vs-all mode).",
+            category: "advanced"
+        }
+        retainMaxSecondaryAlignments: {
+            description: "Retain at most INT secondary alignments.",
+            category: "advanced"
+        }
+        matchingScore: {
+            description: "Matching score.",
+            category: "advanced"
+        }
+        mismatchPenalty: {
+            description: "Mismatch penalty.",
+            category: "advanced"
+        }
+        howToFindGTAG: {
+            description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.",
+            category: "common"
+        }
+        addMDtagToSAM: {
+            description: "Adds a MD tag to the SAM output file.",
+            category: "common"
+        }
+        secondaryAlignment: {
+            description: "Whether to output secondary alignments.",
+            category: "advanced"
+        }
+        referenceFile: {
+            description: "Reference fasta file.",
+            category: "required"
+        }
+        queryFile: {
+            description: "Input fasta file.",
+            category: "required"
+        }
+        outputAlignmentFile: {
+            description: "Mapping and alignment between collections of DNA sequences file.",
+            category: "required"
+        }
     }
 }
