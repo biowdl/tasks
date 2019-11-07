@@ -94,6 +94,7 @@ task Mapping {
     input {
         String presetOption
         Int kmerSize = 15
+        Boolean skipSelfAndDualMappings = false
         Boolean outputSAM = false
         String outputPrefix
         Boolean addMDtagToSAM = false
@@ -119,6 +120,7 @@ task Mapping {
         minimap2 \
         ~{"-x " + presetOption} \
         ~{"-k " + kmerSize} \
+        ~{true="-X" false="" skipSelfAndDualMappings} \
         ~{true="-a" false="" outputSAM} \
         ~{"-o " + outputPrefix} \
         ~{true="--MD" false="" addMDtagToSAM} \
@@ -126,7 +128,6 @@ task Mapping {
         ~{"-t " + cores} \
         ~{"-G " + maxIntronLength} \
         ~{"-F " + maxFragmentLength} \
-        ~{true="-X" false="" skipSelfAndDualMappings} \
         ~{"-N " + retainMaxSecondaryAlignments} \
         ~{"-A " + matchingScore} \
         ~{"-B " + mismatchPenalty} \
