@@ -96,18 +96,17 @@ task Mapping {
         Int kmerSize = 15
         Boolean outputSAM = false
         String outputPrefix
+        Boolean addMDtagToSAM = false
+        Boolean secondaryAlignment = false
         File referenceFile
         File queryFile
 
         Int? maxIntronLength
         Int? maxFragmentLength
-        Boolean? skipSelfAndDualMappings
         Int? retainMaxSecondaryAlignments
         Int? matchingScore
         Int? mismatchPenalty
         String? howToFindGTAG
-        Boolean? addMDtagToSAM
-        Boolean? secondaryAlignment
 
         Int cores = 4
         String memory = "30G"
@@ -122,6 +121,8 @@ task Mapping {
         ~{"-k " + kmerSize} \
         ~{true="-a" false="" outputSAM} \
         ~{"-o " + outputPrefix} \
+        ~{true="--MD" false="" addMDtagToSAM} \
+        --secondary=~{true="yes" false="no" secondaryAlignment} \
         ~{"-t " + cores} \
         ~{"-G " + maxIntronLength} \
         ~{"-F " + maxFragmentLength} \
@@ -130,8 +131,6 @@ task Mapping {
         ~{"-A " + matchingScore} \
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
-        ~{true="--MD" false="" addMDtagToSAM} \
-        --secondary=~{true="yes" false="no" secondaryAlignment} \
         ~{referenceFile} \
         ~{queryFile}
     }
