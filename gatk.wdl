@@ -101,7 +101,7 @@ task CombineGVCFs {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "18G"
+        String memory = "24G"
         String javaXmx = "12G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
