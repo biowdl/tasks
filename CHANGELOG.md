@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.1.0-dev
 ---------------------------
++ Make intervals optional for GATK CombineGVCFs
 + Updated biowdl-input-converter version.
 + GATK CombineGVCFs memory was tripled to prevent it from using a lot of CPU in
   Garbage Collection mode.
