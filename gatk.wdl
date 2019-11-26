@@ -95,7 +95,7 @@ task CombineGVCFs {
     input {
         Array[File]+ gvcfFiles
         Array[File]+ gvcfFilesIndex
-        Array[File]+ intervals
+        Array[File] intervals = []
         String outputPath
         File referenceFasta
         File referenceFastaDict
@@ -114,7 +114,7 @@ task CombineGVCFs {
         -R ~{referenceFasta} \
         -O ~{outputPath} \
         -V ~{sep=' -V ' gvcfFiles} \
-        -L ~{sep=' -L ' intervals}
+        ~{true='-L' false='' length(intervals) > 0} ~{sep=' -L ' intervals}
     }
 
     output {
