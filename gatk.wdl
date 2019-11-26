@@ -95,14 +95,14 @@ task CombineGVCFs {
     input {
         Array[File]+ gvcfFiles
         Array[File]+ gvcfFilesIndex
-        Array[File]+ intervals
+        Array[File] intervals = []
         String outputPath
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "12G"
-        String javaXmx = "4G"
+        String memory = "24G"
+        String javaXmx = "12G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -114,7 +114,7 @@ task CombineGVCFs {
         -R ~{referenceFasta} \
         -O ~{outputPath} \
         -V ~{sep=' -V ' gvcfFiles} \
-        -L ~{sep=' -L ' intervals}
+        ~{true='-L' false='' length(intervals) > 0} ~{sep=' -L ' intervals}
     }
 
     output {
