@@ -9,7 +9,7 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 2.1.0-dev
+version 2.1.0
 ---------------------------
 + Make intervals optional for GATK CombineGVCFs
 + Updated biowdl-input-converter version.
