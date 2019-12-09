@@ -11,13 +11,14 @@ that users understand how the changes affect the new version.
 
 version 2.1.0
 ---------------------------
-+ Make intervals optional for GATK CombineGVCFs
++ Update TALON default image to version 4.4.1.
++ Make intervals optional for GATK CombineGVCFs.
 + Updated biowdl-input-converter version.
 + GATK CombineGVCFs memory was tripled to prevent it from using a lot of CPU in
   Garbage Collection mode.
 + Updated parameter_meta sections for Minimap2 and TranscriptClean to wdl-aid format.
 + Updated cores variable for TALON, the default is now 4.
-+ Updated TALON to version 4.4.
++ Updated TALON default image to version 4.4.
 + Added parameter_meta sections to the following tools:
     + htseq
     + cutadapt

@@ -32,7 +32,7 @@ task CreateAbundanceFileFromDatabase {
 
         Int cores = 1
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
@@ -102,7 +102,7 @@ task CreateGtfFromDatabase {
 
         Int cores = 1
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
@@ -174,7 +174,7 @@ task FilterTalonTranscripts {
 
         Int cores = 1
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
@@ -227,7 +227,7 @@ task GetReadAnnotations {
 
         Int cores = 1
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
@@ -287,7 +287,7 @@ task InitializeTalonDatabase {
 
         Int cores = 1
         String memory = "10G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
@@ -360,7 +360,7 @@ task ReformatGtf {
 
         Int cores = 1
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
@@ -397,7 +397,7 @@ task SummarizeDatasets {
 
         Int cores = 1
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
@@ -458,7 +458,7 @@ task Talon {
 
         Int cores = 4
         String memory = "20G"
-        String dockerImage = "biocontainers/talon:v4.4_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
     command {
