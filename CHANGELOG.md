@@ -9,7 +9,7 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 2.2.0
+version 2.2.0-dev
 ---------------------------
 + Update TALON default image to version 4.4.1.
 
