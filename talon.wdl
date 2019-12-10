@@ -446,7 +446,6 @@ task SummarizeDatasets {
 
 task Talon {
     input {
-        File SAMfile
         File configFile
         File databaseFile
         String genomeBuild
@@ -454,10 +453,9 @@ task Talon {
         Int minimumIdentity = 0
         String outputPrefix
         String configFileName = basename(configFile)
-        String SAMfileName = basename(SAMfile)
 
         Int cores = 4
-        String memory = "20G"
+        String memory = "25G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
@@ -465,7 +463,7 @@ task Talon {
         set -e
         mkdir -p $(dirname ~{outputPrefix})
         mv ${configFile} ./${configFileName}
-        mv ${SAMfile} ./${SAMfileName}
+        export TMPDIR=/tmp
         talon \
         ~{"--f " + configFileName} \
         ~{"--db " + databaseFile} \
@@ -473,12 +471,13 @@ task Talon {
         ~{"--threads " + cores} \
         ~{"--cov " + minimumCoverage} \
         ~{"--identity " + minimumIdentity} \
-        ~{"--o " + outputPrefix}
+        ~{"--o " + outputPrefix + "/run"}
     }
 
     output {
         File outputUpdatedDatabase = databaseFile
-        File outputLog = outputPrefix + "_talon_QC.log"
+        File outputLog = outputPrefix + "/run_QC.log"
+        File outputAnnot = outputPrefix + "/run_talon_read_annot.tsv"
     }
 
     runtime {
@@ -488,10 +487,6 @@ task Talon {
     }
 
     parameter_meta {
-        SAMfile: {
-            description: "Input SAM file, same one as described in configFile.",
-            category: "required"
-        }
         configFile: {
             description: "Dataset config file (comma-delimited).",
             category: "required"
@@ -522,6 +517,10 @@ task Talon {
         }
         outputLog: {
             description: "Log file from TALON run.",
+            category: "required"
+        }
+        outputAnnot: {
+            description: "Read annotation file from TALON run.",
             category: "required"
         }
     }
