@@ -24,7 +24,7 @@ task Hisat2 {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname ~{outputBam})
+        mkdir -p "$(dirname ~{outputBam})"
         hisat2 \
         -p ~{threads} \
         -x ~{sub(indexFiles[0], "\.[0-9]\.ht2", "")} \

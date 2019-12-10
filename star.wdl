@@ -24,7 +24,7 @@ task Star {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outFileNamePrefix})
+        mkdir -p "$(dirname ~{outFileNamePrefix})"
         STAR \
         --readFilesIn ~{sep=',' inputR1} ~{sep="," inputR2} \
         --outFileNamePrefix ~{outFileNamePrefix} \

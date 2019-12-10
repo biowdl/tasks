@@ -38,7 +38,7 @@ task Fastqsplitter {
     command <<<
         set -e
         for FILE in ~{sep=' ' outputPaths}
-            do mkdir -p $(dirname $FILE)
+            do mkdir -p "$(dirname $FILE)"
         done
         fastqsplitter \
         ~{"-c " + compressionLevel} \

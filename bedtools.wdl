@@ -37,7 +37,7 @@ task Sort {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBed})
+        mkdir -p "$(dirname ~{outputBed})"
         bedtools sort \
         -i ~{inputBed} \
         ~{true="-sizeA" false="" sizeA} \

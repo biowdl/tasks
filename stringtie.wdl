@@ -18,7 +18,7 @@ task Stringtie {
 
     command {
         set -e
-        mkdir -p $(dirname ~{assembledTranscriptsFile})
+        mkdir -p "$(dirname ~{assembledTranscriptsFile})"
         stringtie \
         ~{"-p " + threads} \
         ~{"-G " + referenceGtf} \
@@ -108,7 +108,7 @@ task Merge {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputGtfPath})
+        mkdir -p "$(dirname ~{outputGtfPath})"
         stringtie --merge \
         -o ~{outputGtfPath} \
         ~{"-G " + guideGtf} \
