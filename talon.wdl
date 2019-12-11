@@ -452,7 +452,6 @@ task Talon {
         Float minimumCoverage = 0.9
         Int minimumIdentity = 0
         String outputPrefix
-        String configFileName = basename(configFile)
 
         Int cores = 4
         String memory = "25G"
@@ -462,10 +461,9 @@ task Talon {
     command {
         set -e
         mkdir -p $(dirname ~{outputPrefix})
-        mv ${configFile} ./${configFileName}
         export TMPDIR=/tmp
         talon \
-        ~{"--f " + configFileName} \
+        ~{"--f " + configFile} \
         ~{"--db " + databaseFile} \
         ~{"--build " + genomeBuild} \
         ~{"--threads " + cores} \
