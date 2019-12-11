@@ -492,8 +492,16 @@ task Talon {
     }
 
     parameter_meta {
-        configFile: {
-            description: "Dataset config file (comma-delimited).",
+        SAMfiles: {
+            description: "Input SAM files.",
+            category: "required"
+        }
+        organism: {
+            description: "The name of the organism from which the samples originated.",
+            category: "required"
+        }
+        sequencingPlatform: {
+            description: "The sequencing platform used to generate long reads.",
             category: "required"
         }
         databaseFile: {
