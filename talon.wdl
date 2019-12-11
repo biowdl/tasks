@@ -446,7 +446,9 @@ task SummarizeDatasets {
 
 task Talon {
     input {
-        File configFile
+        Array[File] SAMfiles
+        String organism
+        String sequencingPlatform = "PacBio-RS-II"
         File databaseFile
         String genomeBuild
         Float minimumCoverage = 0.9
@@ -458,19 +460,24 @@ task Talon {
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
-    command {
+    command <<<
         set -e
         mkdir -p $(dirname ~{outputPrefix})
         export TMPDIR=/tmp
+        for file in ~{sep=" " SAMfiles}
+        do
+            configFileLine="$(basename ${file%.*}),~{organism},~{sequencingPlatform},${file}"
+            echo ${configFileLine} >> ~{outputPrefix}/talonConfigFile.csv
+        done
         talon \
-        ~{"--f " + configFile} \
+        --f + talonConfigFile.csv
         ~{"--db " + databaseFile} \
         ~{"--build " + genomeBuild} \
         ~{"--threads " + cores} \
         ~{"--cov " + minimumCoverage} \
         ~{"--identity " + minimumIdentity} \
         ~{"--o " + outputPrefix + "/run"}
-    }
+    >>>
 
     output {
         File outputUpdatedDatabase = databaseFile
