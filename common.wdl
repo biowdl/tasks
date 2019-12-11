@@ -121,7 +121,8 @@ task MapMd5 {
     }
 
     command {
-        cat ~{write_map(map)} | md5sum - | sed -e 's/  -//'
+        set -e -o pipefail
+        md5sum "~{write_map(map)}" | cut -f 1 -d ' '
     }
 
     output {

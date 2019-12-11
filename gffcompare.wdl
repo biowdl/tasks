@@ -31,8 +31,8 @@ task GffCompare {
         File? noneFile # This is a wdl workaround. Please do not assign!
     }
     # This allows for the creation of output directories
-    String dirPrefix= if defined(outputDir)
-        then outputDir + "/"
+    String dirPrefix = if defined(outputDir)
+        then select_first([outputDir]) + "/"
         else ""
     String totalPrefix = dirPrefix + outPrefix
 

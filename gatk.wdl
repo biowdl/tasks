@@ -530,16 +530,15 @@ task CombineVariants {
 
         # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
         # Make sure commands are run in bash
-        bash -c '#!/usr/bin/env bash
-        set -eux
+        V_args=$(bash -c '
+        set -eu
         ids=(~{sep=" " identifiers})
         vars=(~{sep=" " variantVcfs})
-        V_args=$(
-            for (( i = 0; i < ${#ids[@]}; ++i ))
-              do
-                printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
-              done
-        )
+        for (( i = 0; i < ${#ids[@]}; ++i ))
+          do
+            printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
+          done
+        ')
         java -Xmx~{javaXmx} -jar ~{installDir}/GenomeAnalysisTK.jar \
         -T CombineVariants \
         -R ~{referenceFasta} \
@@ -547,7 +546,6 @@ task CombineVariants {
         --filteredrecordsmergetype ~{filteredRecordsMergeType} \
         --out ~{outputPath} \
         $V_args
-        '
     >>>
 
     output {
