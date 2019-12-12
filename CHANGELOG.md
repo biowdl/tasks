@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Removed unused inputs (trimPrimer and format) for cutadapt.
++ Various minor command tweaks to increase stability.
++ Fixed unused inputs in bedtools sort (inputs are now used).
++ Added miniwdl check to linting.
 + Update TALON default image to version 4.4.1.
 
 version 2.1.0
