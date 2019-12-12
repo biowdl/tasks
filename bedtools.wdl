@@ -23,20 +23,20 @@ version 1.0
 task Complement {
     input {
         File genome
-        File bedFile
+        File inputBed
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
-        String outputFile = basename(bedFile, "\.bed") + ".complement.bed"
+        String outputBed = basename(inputBed, "\.bed") + ".complement.bed"
     }
 
     command {
         bedtools complement \
         -g ~{genome} \
-        -i ~{bedFile} \
-        > ~{outputFile}
+        -i ~{inputBed} \
+        > ~{outputBed}
     }
 
     output {
-        File complementBed = outputFile
+        File complementBed = outputBed
     }
 
     runtime {
@@ -46,9 +46,9 @@ task Complement {
     parameter_meta {
         genome: {description: "Genome file with names and sizes",
                 category: "required"}
-        bedFile: {description: "The bedfile to complement",
+        inputBed: {description: "The inputBed to complement",
                 category: "required"}
-        outputFile: {description: "The path to write the output to",
+        outputBed: {description: "The path to write the output to",
                      category: "advanced"}
         dockerImage: {
             description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -93,6 +93,33 @@ task GetChromSizes {
     }
 }
 
+task Merge {
+    input {
+        Array[File]+ inputBed
+        String outputBed = "merged.bed"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+    }
+
+    command {
+        bedtools merge -i ~{inputBed} > ~{outputBed}
+    }
+
+    output {
+        File mergedBed = outputBed
+    }
+
+    parameter_meta {
+        inputBed: {description: "The inputBed to complement",
+                category: "required"}
+        outputBed: {description: "The path to write the output to",
+                     category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
+}
+
 task Sort {
     input {
         File inputBed
@@ -125,7 +152,7 @@ task Sort {
     }
 
     output {
-        File bedFile = outputBed
+        File sortedBed = outputBed
     }
 
     runtime {
