@@ -20,6 +20,43 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+task Complement {
+    input {
+        File genome
+        File bedFile
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+        String outputFile = basename(bedFile, "\.bed") + ".complement.bed"
+    }
+
+    command {
+        bedtools complement \
+        -g ~{genome} \
+        -i ~{bedFile} \
+        > ~{outputFile}
+    }
+
+    output {
+        File complementBed = outputFile
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        genome: {description: "Genome file with names and sizes",
+                category: "required"}
+        bedFile: {description: "The bedfile to complement",
+                category: "required"}
+        outputFile: {description: "The path to write the output to",
+                     catgory: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
+}
+
 # Technically not a bedtools task, but needed for bedtools complement.
 task GetChromSizes {
     input {
@@ -31,7 +68,8 @@ task GetChromSizes {
 
     # Get first two columns from the fasta index which note name and size.
     command {
-        cut -f1,2 ~{faidx} > ~{outputFile}
+        cut -f1,2 ~{faidx} \
+        > ~{outputFile}
     }
 
     output {
