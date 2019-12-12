@@ -446,39 +446,44 @@ task SummarizeDatasets {
 
 task Talon {
     input {
-        File SAMfile
-        File configFile
+        Array[File] SAMfiles
+        String organism
+        String sequencingPlatform = "PacBio-RS-II"
         File databaseFile
         String genomeBuild
         Float minimumCoverage = 0.9
         Int minimumIdentity = 0
         String outputPrefix
-        String configFileName = basename(configFile)
-        String SAMfileName = basename(SAMfile)
 
         Int cores = 4
-        String memory = "20G"
+        String memory = "25G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        mv ${configFile} ./${configFileName}
-        mv ${SAMfile} ./${SAMfileName}
+        export TMPDIR=/tmp
+        for file in ~{sep=" " SAMfiles}
+        do
+            configFileLine="$(basename ${file%.*}),~{organism},~{sequencingPlatform},${file}"
+            echo ${configFileLine} >> ~{outputPrefix}/talonConfigFile.csv
+        done
         talon \
-        ~{"--f " + configFileName} \
+        ~{"--f " + outputPrefix + "/talonConfigFile.csv"} \
         ~{"--db " + databaseFile} \
         ~{"--build " + genomeBuild} \
         ~{"--threads " + cores} \
         ~{"--cov " + minimumCoverage} \
         ~{"--identity " + minimumIdentity} \
-        ~{"--o " + outputPrefix}
-    }
+        ~{"--o " + outputPrefix + "/run"}
+    >>>
 
     output {
         File outputUpdatedDatabase = databaseFile
-        File outputLog = outputPrefix + "_talon_QC.log"
+        File outputLog = outputPrefix + "/run_QC.log"
+        File outputAnnot = outputPrefix + "/run_talon_read_annot.tsv"
+        File outputConfigFile = outputPrefix + "/talonConfigFile.csv"
     }
 
     runtime {
@@ -488,12 +493,16 @@ task Talon {
     }
 
     parameter_meta {
-        SAMfile: {
-            description: "Input SAM file, same one as described in configFile.",
+        SAMfiles: {
+            description: "Input SAM files.",
             category: "required"
         }
-        configFile: {
-            description: "Dataset config file (comma-delimited).",
+        organism: {
+            description: "The name of the organism from which the samples originated.",
+            category: "required"
+        }
+        sequencingPlatform: {
+            description: "The sequencing platform used to generate long reads.",
             category: "required"
         }
         databaseFile: {
@@ -522,6 +531,14 @@ task Talon {
         }
         outputLog: {
             description: "Log file from TALON run.",
+            category: "required"
+        }
+        outputAnnot: {
+            description: "Read annotation file from TALON run.",
+            category: "required"
+        }
+        outputConfigFile: {
+            description: "The TALON configuration file.",
             category: "required"
         }
     }

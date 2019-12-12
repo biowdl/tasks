@@ -163,7 +163,7 @@ task YamlToJson {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
         # biowdl-input-converter has python and pyyaml.
-        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.0--py_0"
+        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
     command {
         set -e
