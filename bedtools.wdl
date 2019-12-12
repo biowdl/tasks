@@ -102,7 +102,7 @@ task Sort {
         Boolean chrThenSizeD = false
         Boolean chrThenScoreA = false
         Boolean chrThenScoreD = false
-        File? g
+        File? genome
         File? faidx
         String outputBed = "output.sorted.bed"
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
@@ -119,7 +119,7 @@ task Sort {
         ~{true="-chrThenSizeD" false="" chrThenSizeD} \
         ~{true="-chrThenScoreA" false="" chrThenScoreA} \
         ~{true="-chrThenScoreD" false="" chrThenScoreD} \
-        ~{"-g " + g} \
+        ~{"-g " + genome} \
         ~{"-faidx" + faidx} \
         > ~{outputBed}
     }
