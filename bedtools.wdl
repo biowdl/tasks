@@ -20,6 +20,29 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Technically not a bedtools task, but needed for bedtools complement.
+task GetChromSizes {
+    input {
+        File faidx
+        # Debian for proper GNU Coreutils. Busybox sucks!
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
+        String outputFile = basename(faidx, "\.fai") + ".genome"
+    }
+
+    # Get first two columns from the fasta index which note name and size.
+    command {
+        cut -f1,2 ~{faidx} > ~{outputFile}
+    }
+
+    output {
+        File chromSizes = outputFile
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+}
+
 task Sort {
     input {
         File inputBed
