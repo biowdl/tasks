@@ -18,7 +18,7 @@ task CPAT {
     # select_first is needed in order to convert the optional arrays to non-optionals.
     command {
         set -e
-        mkdir -p $(dirname ~{outFilePath})
+        mkdir -p "$(dirname ~{outFilePath})"
         cpat.py \
         --gene ~{gene} \
         --outfile ~{outFilePath} \

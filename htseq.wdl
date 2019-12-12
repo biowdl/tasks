@@ -18,7 +18,7 @@ task HTSeqCount {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputTable})
+        mkdir -p "$(dirname ~{outputTable})"
         htseq-count \
         -f ~{format} \
         -r ~{order} \

@@ -27,6 +27,7 @@ task Sort {
         Boolean sizeD = false
         Boolean chrThenSizeA = false
         Boolean chrThenSizeD = false
+        Boolean chrThenScoreA = false
         Boolean chrThenScoreD = false
         File? g
         File? faidx
@@ -36,11 +37,14 @@ task Sort {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBed})
+        mkdir -p "$(dirname ~{outputBed})"
         bedtools sort \
         -i ~{inputBed} \
         ~{true="-sizeA" false="" sizeA} \
         ~{true="-sizeD" false="" sizeD} \
+        ~{true="-chrThenSizeA" false="" chrThenSizeA} \
+        ~{true="-chrThenSizeD" false="" chrThenSizeD} \
+        ~{true="-chrThenScoreA" false="" chrThenScoreA} \
         ~{true="-chrThenScoreD" false="" chrThenScoreD} \
         ~{"-g " + g} \
         ~{"-faidx" + faidx} \

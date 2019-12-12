@@ -34,7 +34,7 @@ task GetSJsFromGtf {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         get_SJs_from_gtf \
         ~{"--f=" + GTFfile} \
         ~{"--g=" + genomeFile} \
@@ -88,7 +88,7 @@ task GetTranscriptCleanStats {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         get_TranscriptClean_stats \
         ~{transcriptCleanSAMfile} \
         ~{outputPrefix}
@@ -146,7 +146,7 @@ task TranscriptClean {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         TranscriptClean \
         ~{"-s " + SAMfile} \
         ~{"-g " + referenceGenome} \

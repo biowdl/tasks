@@ -13,6 +13,10 @@ version 2.2.0-dev
 ---------------------------
 + Update biowdl-input-converter in common.wdl to version 0.2.1.
 + Update TALON section to now include the new annotation file output, and add config file creation to the TALON task.
++ Removed unused inputs (trimPrimer and format) for cutadapt.
++ Various minor command tweaks to increase stability.
++ Fixed unused inputs in bedtools sort (inputs are now used).
++ Added miniwdl check to linting.
 + Update TALON default image to version 4.4.1.
 
 version 2.1.0

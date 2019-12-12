@@ -34,7 +34,7 @@ task Count {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBed})
+        mkdir -p "$(dirname ~{outputBed})"
         wisestork count \
         ~{"--binsize " + binSize} \
        --reference ~{reference} \

@@ -18,7 +18,7 @@ task Mem {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         bwa mem \
         ~{"-t " + threads} \
         ~{"-R '" + readgroup}~{true="'" false="" defined(readgroup)} \
