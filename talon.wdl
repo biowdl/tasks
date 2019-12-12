@@ -470,7 +470,7 @@ task Talon {
             echo ${configFileLine} >> ~{outputPrefix}/talonConfigFile.csv
         done
         talon \
-        ~{"--f" + outputPrefix + "/talonConfigFile.csv"}
+        ~{"--f " + outputPrefix + "/talonConfigFile.csv"}
         ~{"--db " + databaseFile} \
         ~{"--build " + genomeBuild} \
         ~{"--threads " + cores} \
