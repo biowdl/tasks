@@ -131,6 +131,8 @@ task MergeBedFiles {
         String outputBed = "merged.bed"
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
+
+    # A sorted bed is needed for bedtools merge
     command {
         cat ~{sep=" " bedFiles} | bedtools sort | bedtools merge > ~{outputBed}
     }
