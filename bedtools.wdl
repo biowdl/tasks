@@ -22,15 +22,19 @@ version 1.0
 
 task Complement {
     input {
-        File genome
+        File faidx
         File inputBed
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
         String outputBed = basename(inputBed, "\.bed") + ".complement.bed"
     }
 
+    # Use a fasta index file to get the genome sizes. And convert that to the
+    # bedtools specific "genome" format.
     command {
+        set -e
+        cut -f1,2 ~{faidx} > sizes.genome
         bedtools complement \
-        -g ~{genome} \
+        -g sizes.genome \
         -i ~{inputBed} \
         > ~{outputBed}
     }
@@ -44,7 +48,7 @@ task Complement {
     }
 
     parameter_meta {
-        genome: {description: "Genome file with names and sizes",
+        faidx: {description: "The fasta index (.fai) file from which to extract the genome sizes",
                 category: "required"}
         inputBed: {description: "The inputBed to complement",
                 category: "required"}
@@ -54,42 +58,6 @@ task Complement {
             description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
             category: "advanced"
         }
-    }
-}
-
-# Technically not a bedtools task, but needed for bedtools complement.
-task GetChromSizes {
-    input {
-        File faidx
-        # Debian for proper GNU Coreutils. Busybox sucks!
-        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
-        String outputFile = basename(faidx, "\.fai") + ".genome"
-    }
-
-    # Get first two columns from the fasta index which note name and size.
-    command {
-        cut -f1,2 ~{faidx} \
-        > ~{outputFile}
-    }
-
-    output {
-        File chromSizes = outputFile
-    }
-
-    runtime {
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        faidx: {description: "The fasta index (.fai) file from which to extract the genome sizes",
-                category: "required"}
-        outputFile: {description: "The path to write the output to",
-             category: "advanced"}
-        dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-            category: "advanced"
-        }
-
     }
 }
 
