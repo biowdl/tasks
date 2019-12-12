@@ -470,7 +470,7 @@ task Talon {
             echo ${configFileLine} >> ~{outputPrefix}/talonConfigFile.csv
         done
         talon \
-        --f talonConfigFile.csv
+        --f ~{outputPrefix}/talonConfigFile.csv
         ~{"--db " + databaseFile} \
         ~{"--build " + genomeBuild} \
         ~{"--threads " + cores} \
@@ -483,6 +483,7 @@ task Talon {
         File outputUpdatedDatabase = databaseFile
         File outputLog = outputPrefix + "/run_QC.log"
         File outputAnnot = outputPrefix + "/run_talon_read_annot.tsv"
+        File outputConfigFile = outputPrefix + "/talonConfigFile.csv"
     }
 
     runtime {
