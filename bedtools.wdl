@@ -49,7 +49,7 @@ task Complement {
         bedFile: {description: "The bedfile to complement",
                 category: "required"}
         outputFile: {description: "The path to write the output to",
-                     catgory: "advanced"}
+                     category: "advanced"}
         dockerImage: {
             description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
             category: "advanced"
@@ -78,6 +78,18 @@ task GetChromSizes {
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        faidx: {description: "The fasta index (.fai) file from which to extract the genome sizes",
+                category: "required"}
+        outputFile: {description: "The path to write the output to",
+             category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+
     }
 }
 
