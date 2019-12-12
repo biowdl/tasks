@@ -57,7 +57,7 @@ task ConcatenateTextFiles {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname ~{combinedFilePath})
+        mkdir -p "$(dirname ~{combinedFilePath})"
         ~{cmdPrefix} ~{sep=" " fileList} ~{cmdSuffix} > ~{combinedFilePath}
     }
 
@@ -82,7 +82,7 @@ task Copy {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         cp ~{true="-r" false="" recursive} ~{inputFile} ~{outputPath}
     }
 
@@ -121,7 +121,8 @@ task MapMd5 {
     }
 
     command {
-        cat ~{write_map(map)} | md5sum - | sed -e 's/  -//'
+        set -e -o pipefail
+        md5sum "~{write_map(map)}" | cut -f 1 -d ' '
     }
 
     output {
@@ -166,7 +167,7 @@ task YamlToJson {
     }
     command {
         set -e
-        mkdir -p $(dirname ~{outputJson})
+        mkdir -p "$(dirname ~{outputJson})"
         python <<CODE
         import json
         import yaml

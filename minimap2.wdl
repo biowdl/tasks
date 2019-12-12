@@ -37,7 +37,7 @@ task Indexing {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         minimap2 \
         ~{true="-H" false="" useHomopolymerCompressedKmer} \
         ~{"-k " + kmerSize} \
@@ -116,7 +116,7 @@ task Mapping {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         minimap2 \
         ~{"-x " + presetOption} \
         ~{"-k " + kmerSize} \

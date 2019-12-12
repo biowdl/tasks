@@ -19,7 +19,7 @@ task ApplyBQSR {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         gatk --java-options -Xmx~{javaXmx} \
         ApplyBQSR \
         --create-output-bam-md5 \
@@ -69,7 +69,7 @@ task BaseRecalibrator {
 
     command {
         set -e
-        mkdir -p $(dirname ~{recalibrationReportPath})
+        mkdir -p "$(dirname ~{recalibrationReportPath})"
         gatk --java-options -Xmx~{javaXmx} \
         BaseRecalibrator \
         -R ~{referenceFasta} \
@@ -108,7 +108,7 @@ task CombineGVCFs {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         gatk --java-options -Xmx~{javaXmx} \
         CombineGVCFs \
         -R ~{referenceFasta} \
@@ -141,7 +141,7 @@ task GatherBqsrReports {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputReportPath})
+        mkdir -p "$(dirname ~{outputReportPath})"
         gatk --java-options -Xmx~{javaXmx} \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
@@ -177,7 +177,7 @@ task GenotypeGVCFs {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         gatk --java-options -Xmx~{javaXmx} \
         GenotypeGVCFs \
         -R ~{referenceFasta} \
@@ -223,7 +223,7 @@ task HaplotypeCallerGvcf {
 
     command {
         set -e
-        mkdir -p $(dirname ~{gvcfPath})
+        mkdir -p "$(dirname ~{gvcfPath})"
         gatk --java-options -Xmx~{javaXmx} \
         HaplotypeCaller \
         -R ~{referenceFasta} \
@@ -271,7 +271,7 @@ task MuTect2 {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputVcf})
+        mkdir -p "$(dirname ~{outputVcf})"
         gatk --java-options -Xmx~{javaXmx} \
         Mutect2 \
         -R ~{referenceFasta} \
@@ -440,7 +440,7 @@ task FilterMutectCalls {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputVcf})
+        mkdir -p "$(dirname ~{outputVcf})"
         gatk --java-options -Xmx~{javaXmx} \
         FilterMutectCalls \
         -R ~{referenceFasta} \
@@ -485,7 +485,7 @@ task SplitNCigarReads {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBam})
+        mkdir -p "$(dirname ~{outputBam})"
         gatk --java-options -Xmx~{javaXmx} \
         SplitNCigarReads \
         -I ~{inputBam} \
@@ -526,20 +526,19 @@ task CombineVariants {
 
     command <<<
         set -e
-        mkdir -p $(dirname "~{outputPath}")
+        mkdir -p "$(dirname ~{outputPath})"
 
         # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
         # Make sure commands are run in bash
-        bash -c '#!/usr/bin/env bash
-        set -eux
+        V_args=$(bash -c '
+        set -eu
         ids=(~{sep=" " identifiers})
         vars=(~{sep=" " variantVcfs})
-        V_args=$(
-            for (( i = 0; i < ${#ids[@]}; ++i ))
-              do
-                printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
-              done
-        )
+        for (( i = 0; i < ${#ids[@]}; ++i ))
+          do
+            printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
+          done
+        ')
         java -Xmx~{javaXmx} -jar ~{installDir}/GenomeAnalysisTK.jar \
         -T CombineVariants \
         -R ~{referenceFasta} \
@@ -547,7 +546,6 @@ task CombineVariants {
         --filteredrecordsmergetype ~{filteredRecordsMergeType} \
         --out ~{outputPath} \
         $V_args
-        '
     >>>
 
     output {

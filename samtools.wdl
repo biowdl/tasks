@@ -13,7 +13,7 @@ task BgzipAndIndex {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputGz})
+        mkdir -p "$(dirname ~{outputGz})"
         bgzip -c ~{inputFile} > ~{outputGz}
         tabix ~{outputGz} -p ~{type}
     }
@@ -45,7 +45,7 @@ task Index {
         # Make sure outputBamPath does not exist.
         if [ ! -f ~{outputPath} ]
         then
-            mkdir -p $(dirname ~{outputPath})
+            mkdir -p "$(dirname ~{outputPath})"
             ln ~{bamFile} ~{outputPath}
         fi
         samtools index ~{outputPath} ~{bamIndexPath}
@@ -74,7 +74,7 @@ task Merge {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
         samtools index ~{outputBamPath} ~{indexPath}
     }
@@ -99,7 +99,7 @@ task SortByName {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         samtools sort -n ~{bamFile} -o ~{outputBamPath}
     }
 
@@ -122,7 +122,7 @@ task Markdup {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         samtools markdup ~{inputBam} ~{outputBamPath}
     }
 
@@ -145,7 +145,7 @@ task Flagstat {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         samtools flagstat ~{inputBam} > ~{outputPath}
     }
 
@@ -224,7 +224,7 @@ task Tabix {
     # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
     command {
         set -e
-        mkdir -p $(dirname ~{outputFilePath})
+        mkdir -p "$(dirname ~{outputFilePath})"
         if [ ! -f ~{outputFilePath} ]
         then
             ln ~{inputFile} ~{outputFilePath}
@@ -262,7 +262,7 @@ task View {
     # Always output to bam and output header
     command {
         set -e
-        mkdir -p $(dirname ~{outputFileName})
+        mkdir -p "$(dirname ~{outputFileName})"
         samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \

@@ -49,7 +49,7 @@ task Bowtie {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         bowtie -q \
         --sam \
         ~{"--seedmms " +  seedmms} \

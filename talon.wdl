@@ -37,7 +37,7 @@ task CreateAbundanceFileFromDatabase {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         talon_abundance \
         ~{"--db=" + databaseFile} \
         ~{"-a " + annotationVersion} \
@@ -107,7 +107,7 @@ task CreateGtfFromDatabase {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         talon_create_GTF \
         ~{"--db=" + databaseFile} \
         ~{"-b " + genomeBuild} \
@@ -179,7 +179,7 @@ task FilterTalonTranscripts {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         talon_filter_transcripts \
         ~{"--db=" + databaseFile} \
         ~{"-a " + annotationVersion} \
@@ -232,7 +232,7 @@ task GetReadAnnotations {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         talon_fetch_reads \
         ~{"--db " + databaseFile} \
         ~{"--build " + genomeBuild} \
@@ -292,7 +292,7 @@ task InitializeTalonDatabase {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         talon_initialize_database \
         ~{"--f=" + GTFfile} \
         ~{"--g=" + genomeBuild} \
@@ -402,7 +402,7 @@ task SummarizeDatasets {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         talon_summarize \
         ~{"--db " + databaseFile} \
         ~{true="--verbose" false="" setVerbose} \
@@ -463,7 +463,7 @@ task Talon {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPrefix})
+        mkdir -p "$(dirname ~{outputPrefix})"
         mv ${configFile} ./${configFileName}
         mv ${SAMfile} ./${SAMfileName}
         talon \

@@ -13,7 +13,7 @@ task BedToIntervalList {
 
     command {
         set -e
-        mkdir -p $(dirname "~{outputPath}")
+        mkdir -p "$(dirname ~{outputPath})"
         picard -Xmx~{javaXmx} \
         BedToIntervalList \
         I=~{bedFile} \
@@ -58,7 +58,7 @@ task CollectMultipleMetrics {
 
     command {
         set -e
-        mkdir -p $(dirname "~{basename}")
+        mkdir -p "$(dirname ~{basename})"
         picard -Xmx~{javaXmx} \
         CollectMultipleMetrics \
         I=~{inputBam} \
@@ -140,7 +140,7 @@ task CollectRnaSeqMetrics {
 
     command {
         set -e
-        mkdir -p $(dirname "~{basename}")
+        mkdir -p "$(dirname ~{basename})"
         picard -Xmx~{javaXmx} \
         CollectRnaSeqMetrics \
         I=~{inputBam} \
@@ -179,7 +179,7 @@ task CollectTargetedPcrMetrics {
 
     command {
         set -e
-        mkdir -p $(dirname "~{basename}")
+        mkdir -p "$(dirname ~{basename})"
         picard -Xmx~{javaXmx} \
         CollectTargetedPcrMetrics \
         I=~{inputBam} \
@@ -217,7 +217,7 @@ task GatherBamFiles {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         picard -Xmx~{javaXmx} \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
@@ -251,7 +251,7 @@ task GatherVcfs {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputVcfPath})
+        mkdir -p "$(dirname ~{outputVcfPath})"
         picard -Xmx~{javaXmx} \
         GatherVcfs \
         INPUT=~{sep=' INPUT=' inputVcfs} \
@@ -294,7 +294,7 @@ task MarkDuplicates {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         picard -Xmx~{javaXmx} \
         MarkDuplicates \
         INPUT=~{sep=' INPUT=' inputBams} \
@@ -339,7 +339,7 @@ task MergeVCFs {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputVcfPath})
+        mkdir -p "$(dirname ~{outputVcfPath})"
         picard -Xmx~{javaXmx} \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
@@ -443,7 +443,7 @@ task SortVcf {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputVcfPath})
+        mkdir -p "$(dirname ~{outputVcfPath})"
         picard -Xmx~{javaXmx} \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \

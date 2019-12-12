@@ -145,7 +145,9 @@ task GetConfiguration {
 
     command <<<
         set -e
-        fastqcDir=$(dirname $(readlink -f $(which fastqc)))
+        fastqcExe="$(command -v fastqc)"
+        fastqcPath="$(readlink -f $fastqcExe)"
+        fastqcDir="$(dirname $fastqcPath)"
         mkdir Configuration
         cp ${fastqcDir}/Configuration/adapter_list.txt Configuration/adapter_list.txt
         cp ${fastqcDir}/Configuration/contaminant_list.txt Configuration/contaminant_list.txt

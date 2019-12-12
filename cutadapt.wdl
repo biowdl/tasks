@@ -6,7 +6,6 @@ task Cutadapt {
         File? read2
         String read1output = "cut_r1.fq.gz"
         String? read2output
-        String? format
         Array[String] adapter = []
         Array[String] front = []
         Array[String] anywhere = []
@@ -49,7 +48,6 @@ task Cutadapt {
         String? untrimmedPairedOutputPath
         Boolean? colorspace
         Boolean? doubleEncode
-        Boolean? trimPrimer
         Boolean? stripF3
         Boolean? maq
         Boolean? bwa
@@ -168,10 +166,6 @@ task Cutadapt {
         read2output: {
             description: "The name of the resulting second end fastq file.",
             category: "common"
-        }
-        format: {
-            description: "Equivalent to cutadapt's --format option.",
-            category: "advanced"
         }
         adapter: {
             description: "A list of 3' ligated adapter sequences to be cut from the given first or single end fastq file.",
@@ -339,10 +333,6 @@ task Cutadapt {
         }
         doubleEncode: {
             description: "Equivalent to cutadapt's --double-encode flag.",
-            category: "advanced"
-        }
-        trimPrimer: {
-            description: "Equivalent to cutadapt's --trim-primer flag.",
             category: "advanced"
         }
         stripF3: {
