@@ -95,7 +95,7 @@ task GetChromSizes {
 
 task Merge {
     input {
-        Array[File]+ inputBed
+        File inputBed
         String outputBed = "merged.bed"
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
@@ -108,8 +108,42 @@ task Merge {
         File mergedBed = outputBed
     }
 
+    runtime {
+        docker: dockerImage
+    }
+
     parameter_meta {
-        inputBed: {description: "The inputBed to complement",
+        inputBed: {description: "The bed to merge",
+                category: "required"}
+        outputBed: {description: "The path to write the output to",
+                     category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
+}
+
+# Use cat, bedtools sort and bedtools merge to merge bedfiles in a single task.
+task MergeBedFiles {
+    input {
+        Array[File] bedFiles
+        String outputBed = "merged.bed"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+    }
+    command {
+        cat ~{sep=" " bedFiles} | bedtools sort | bedtools merge > ~{outputBed}
+    }
+
+    output {
+        File mergedBed = outputBed
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+    parameter_meta {
+        bedFiles: {description: "The bed files to merge",
                 category: "required"}
         outputBed: {description: "The path to write the output to",
                      category: "advanced"}
