@@ -537,5 +537,9 @@ task Talon {
             description: "Read annotation file from TALON run.",
             category: "required"
         }
+        outputConfigFile: {
+            description: "The TALON configuration file.",
+            category: "required"
+        }
     }
 }
