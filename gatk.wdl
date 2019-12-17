@@ -216,6 +216,7 @@ task HaplotypeCallerGvcf {
         Float contamination = 0.0
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        Int? ploidy
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -230,6 +231,7 @@ task HaplotypeCallerGvcf {
         -R ~{referenceFasta} \
         -O ~{gvcfPath} \
         -I ~{sep=" -I " inputBams} \
+        ~{"--sample-ploidy " + ploidy} \
         ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
         ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
         ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
