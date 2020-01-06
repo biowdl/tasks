@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Update htseq to default image version 0.11.2
 + Update biowdl-input-converter in common.wdl to version 0.2.1.
 + Update TALON section to now include the new annotation file output, and add config file creation to the TALON task.
 + Removed unused inputs (trimPrimer and format) for cutadapt.
