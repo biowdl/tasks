@@ -13,7 +13,7 @@ task HTSeqCount {
         Array[String] additionalAttributes = []
 
         String memory = "40G"
-        String dockerImage = "quay.io/biocontainers/htseq:0.9.1--py36h7eb728f_2"
+        String dockerImage = "quay.io/biocontainers/htseq:0.11.2--py37h637b7d7_1"
     }
 
     command {
