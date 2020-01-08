@@ -322,6 +322,18 @@ task GatherBamFiles {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputBams: {description: "The BAM files to be merged together.", category: "required"}
+        inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
+        outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task GatherVcfs {
@@ -351,6 +363,18 @@ task GatherVcfs {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputVcfs: {description: "The VCF files to be merged together.", category: "required"}
+        inputVcfIndexes: {description: "The indexes of the input VCF files.", category: "required"}
+        outputVcfPath: {description: "The path where the merged VCF file will be written.", caregory: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

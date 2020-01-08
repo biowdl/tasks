@@ -45,6 +45,25 @@ task ApplyBQSR {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputBam: {description: "The BAM file which should be recalibrated.", category: "required"}
+        inputBamIndex: {description: "The input BAM file's index.", category: "required"}
+        outputBamPath: {description: "The location the resulting BAM file should be written.", category: "required"}
+        recalibrationReport: {description: "The BQSR report the be used for recalibration.", category: "required"}
+        sequenceGroupInterval: {description: "The regions to operate on", category: "advanced"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 # Generate Base Quality Score Recalibration (BQSR) model
