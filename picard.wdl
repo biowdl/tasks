@@ -4,7 +4,7 @@ task BedToIntervalList {
     input {
         File bedFile
         File dict
-        String outputPath
+        String outputPath = "regions.interval_list"
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -28,6 +28,18 @@ task BedToIntervalList {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        bedfile: {description: "A bed file", category: "required"}
+        dict: {description: "A sequence dict file.", category: "required"}
+        outputPath: {description: "The location the output interval list should be written to.",
+                     category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -119,9 +131,43 @@ task CollectMultipleMetrics {
     }
 
     runtime {
-
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file for which metrics will be collected.",
+                   category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).",
+                   category: "required"}
+        collectAlignmentSummaryMetrics: {description: "Equivalent to the `PROGRAM=CollectAlignmentSummaryMetrics` argument.",
+                                         category: "common"}
+        collectInsertSizeMetrics: {description: "Equivalent to the `PROGRAM=CollectInsertSizeMetrics` argument.",
+                                   category: "common"}
+        qualityScoreDistribution: {description: "Equivalent to the `PROGRAM=QualityScoreDistribution` argument.",
+                                   category: "common"}
+        meanQualityByCycle: {description: "Equivalent to the `PROGRAM=MeanQualityByCycle` argument.",
+                             category: "common"}
+        collectBaseDistributionByCycle: {description: "Equivalent to the `PROGRAM=CollectBaseDistributionByCycle` argument.",
+                                         category: "common"}
+        collectGcBiasMetrics: {description: "Equivalent to the `PROGRAM=CollectGcBiasMetrics` argument.",
+                               category: "common"}
+        collectSequencingArtifactMetrics: {description: "Equivalent to the `PROGRAM=CollectSequencingArtifactMetrics` argument.",
+                                           category: "common"}
+        collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.",
+                                     category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -158,6 +204,23 @@ task CollectRnaSeqMetrics {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file for which metrics will be collected.",
+                   category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        refRefflat: {description: "A refflat file containing gene annotations", catehory: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).",
+                   category: "required"}
+        strandSpecificity: {description: "Equivalent to the `STRAND_SPECIFICITY` option of picard's CollectRnaSeqMetrics",
+                            category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -200,6 +263,29 @@ task CollectTargetedPcrMetrics {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file for which metrics will be collected.",
+                   category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        ampliconIntervals: {description: "An interval list describinig the coordinates of the amplicons sequenced.",
+                           category: "required"}
+        targetIntervals: {description: "An interval list describing the coordinates of the targets sequenced.",
+                          category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).",
+                   category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
