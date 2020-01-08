@@ -31,7 +31,7 @@ task BedToIntervalList {
     }
 
     parameter_meta {
-        bedfile: {description: "A bed file.", category: "required"}
+        bedFile: {description: "A bed file.", category: "required"}
         dict: {description: "A sequence dict file.", category: "required"}
         outputPath: {description: "The location the output interval list should be written to.",
                      category: "advanced"}
