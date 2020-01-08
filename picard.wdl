@@ -31,7 +31,7 @@ task BedToIntervalList {
     }
 
     parameter_meta {
-        bedfile: {description: "A bed file", category: "required"}
+        bedfile: {description: "A bed file.", category: "required"}
         dict: {description: "A sequence dict file.", category: "required"}
         outputPath: {description: "The location the output interval list should be written to.",
                      category: "advanced"}
@@ -147,21 +147,21 @@ task CollectMultipleMetrics {
         basename: {description: "The basename/prefix of the output files (may include directories).",
                    category: "required"}
         collectAlignmentSummaryMetrics: {description: "Equivalent to the `PROGRAM=CollectAlignmentSummaryMetrics` argument.",
-                                         category: "common"}
+                                         category: "advanced"}
         collectInsertSizeMetrics: {description: "Equivalent to the `PROGRAM=CollectInsertSizeMetrics` argument.",
-                                   category: "common"}
+                                   category: "advanced"}
         qualityScoreDistribution: {description: "Equivalent to the `PROGRAM=QualityScoreDistribution` argument.",
-                                   category: "common"}
+                                   category: "advanced"}
         meanQualityByCycle: {description: "Equivalent to the `PROGRAM=MeanQualityByCycle` argument.",
-                             category: "common"}
+                             category: "advanced"}
         collectBaseDistributionByCycle: {description: "Equivalent to the `PROGRAM=CollectBaseDistributionByCycle` argument.",
-                                         category: "common"}
+                                         category: "advanced"}
         collectGcBiasMetrics: {description: "Equivalent to the `PROGRAM=CollectGcBiasMetrics` argument.",
-                               category: "common"}
+                               category: "advanced"}
         collectSequencingArtifactMetrics: {description: "Equivalent to the `PROGRAM=CollectSequencingArtifactMetrics` argument.",
-                                           category: "common"}
+                                           category: "advanced"}
         collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.",
-                                     category: "common"}
+                                     category: "advanced"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
@@ -210,10 +210,10 @@ task CollectRnaSeqMetrics {
         inputBam: {description: "The input BAM file for which metrics will be collected.",
                    category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
-        refRefflat: {description: "A refflat file containing gene annotations", catehory: "required"}
+        refRefflat: {description: "A refflat file containing gene annotations.", catehory: "required"}
         basename: {description: "The basename/prefix of the output files (may include directories).",
                    category: "required"}
-        strandSpecificity: {description: "Equivalent to the `STRAND_SPECIFICITY` option of picard's CollectRnaSeqMetrics",
+        strandSpecificity: {description: "Equivalent to the `STRAND_SPECIFICITY` option of picard's CollectRnaSeqMetrics.",
                             category: "common"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
