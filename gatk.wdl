@@ -51,7 +51,7 @@ task ApplyBQSR {
         inputBamIndex: {description: "The input BAM file's index.", category: "required"}
         outputBamPath: {description: "The location the resulting BAM file should be written.", category: "required"}
         recalibrationReport: {description: "The BQSR report the be used for recalibration.", category: "required"}
-        sequenceGroupInterval: {description: "The regions to operate on", category: "advanced"}
+        sequenceGroupInterval: {description: "Bed files describing the regions to operate on.", category: "advanced"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
@@ -59,7 +59,7 @@ task ApplyBQSR {
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -107,6 +107,28 @@ task BaseRecalibrator {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBam: {description: "The BAM file to generate a BQSR report for.", category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        recalibrationReportPath: {description: "The location to write the BQSR report to.", category: "required"}
+        sequenceGroupInterval: {description: "Bed files describing the regions to operate on.", category: "advancded"}
+        knownIndelsSitesVCFs: {description: "VCf files with known indels.", category: "advanced"}
+        knownIndelsSitesVCFIndexes: {description: "The indexed for the known variant VCFs", category: "advanced"}
+        dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
+        dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.)",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

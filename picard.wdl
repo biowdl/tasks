@@ -36,7 +36,7 @@ task BedToIntervalList {
         outputPath: {description: "The location the output interval list should be written to.",
                      category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -164,7 +164,7 @@ task CollectMultipleMetrics {
                                      category: "advanced"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -217,7 +217,7 @@ task CollectRnaSeqMetrics {
                             category: "common"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -282,7 +282,7 @@ task CollectTargetedPcrMetrics {
                    category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -329,7 +329,7 @@ task GatherBamFiles {
         outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -371,7 +371,7 @@ task GatherVcfs {
         outputVcfPath: {description: "The path where the merged VCF file will be written.", caregory: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. (Should be lower than `memory` to accommodate JVM overhead.",
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
