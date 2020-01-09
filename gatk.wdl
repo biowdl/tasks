@@ -344,7 +344,7 @@ task HaplotypeCallerGvcf {
                          category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
-        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        referenceFastaIndex: {description: "The index for the reference fasta file.", category: "required"}
         contamination: {description: "Equivalent to HaplotypeCaller's `-contamination` option.", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
