@@ -430,6 +430,20 @@ task MarkDuplicates {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
+        inputBamIndexes: {description: "Th eindexes for the input BAM files.", category: "required"}
+        outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
+        metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
+        read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 # Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
@@ -464,6 +478,18 @@ task MergeVCFs {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputVCFs: {description: "The VCF files to be merged.", category: "required"}
+        inputVCFsIndexes: {description: "The indexes of the VCF files.", category: "required"}
+        outputVcfPath: {description: "The location the output VCf file should be written to.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
