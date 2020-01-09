@@ -113,7 +113,7 @@ task BaseRecalibrator {
         inputBam: {description: "The BAM file to generate a BQSR report for.", category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
         recalibrationReportPath: {description: "The location to write the BQSR report to.", category: "required"}
-        sequenceGroupInterval: {description: "Bed files describing the regions to operate on.", category: "advancded"}
+        sequenceGroupInterval: {description: "Bed files describing the regions to operate on.", category: "advanced"}
         knownIndelsSitesVCFs: {description: "VCf files with known indels.", category: "advanced"}
         knownIndelsSitesVCFIndexes: {description: "The indexed for the known variant VCFs.", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
@@ -613,6 +613,24 @@ task SplitNCigarReads {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBam: {description: "The BAM file for which spliced reads should be split.", category: "required"}
+        inputBamIndex: {description: "The input BAM file's index.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        outputBam: {description: "The location the output BAM file should be written.", category: "required"}
+        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

@@ -226,6 +226,12 @@ task ReorderGlobbedScatters {
         # 4 gigs of memory to be able to build the docker image in singularity
         memory: "4G"
     }
+
+    parameter_meta {
+        scatters: {description: "The files which should be ordered.", category: "required"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task ScatterRegions {
@@ -267,6 +273,25 @@ task ScatterRegions {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        scatterSize: {description: "Equivalent to biopet scatterregions' `-s` option.", category: "common"}
+        regions: {description: "The regions to be scattered.", category: "advanced"}
+        notSplitContigs: {description: "Equivalent to biopet scatterregions' `--notSplitContigs` flag.",
+                          category: "advanced"}
+        bamFile: {description: "Equivalent to biopet scatterregions' `--bamfile` option.",
+                  category: "advanced"}
+        bamIndex: {description: "The index for the bamfile given through bamFile.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
