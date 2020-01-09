@@ -167,6 +167,24 @@ task CombineGVCFs {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        gvcfFiles: {description: "The GVCF files to be combined.", category: "required"}
+        gvcfFilesIndex: {description: "The indexes for the GVCF files.", caregory: "required"}
+        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "advanced"}
+        outputPath: {description: "The location the combined GVCF should be written to.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 # Combine multiple recalibration tables from scattered BaseRecalibrator runs
@@ -196,6 +214,17 @@ task GatherBqsrReports {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBQSRreports: {description: "The BQSR reports to be merged.", category: "required"}
+        outputReportPath: {description: "The location of the combined BQSR report.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -241,6 +270,26 @@ task GenotypeGVCFs {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        gvcfFiles: {description: "The GVCF files to be genotypes.", category: "required"}
+        gvcfFilesIndex: {description: "The index of the input GVCF files.", category: "required"}
+        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "required"}
+        outputPath: {description: "The location to write the output VCf file to.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
+        dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
@@ -284,6 +333,27 @@ task HaplotypeCallerGvcf {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBams: {description: "The BAM files on which to perform variant calling.", category: "required"}
+        inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
+        intervalList: {description: "Bed files or interval lists describing the regions to operate on.", category: "required"}
+        gvcfPath: {description: "The location to write the output GVCF to.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        contamination: {description: "Equivalent to HaplotypeCaller's `-contamination` option.", category: "advanced"}
+        dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
+        dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
