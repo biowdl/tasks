@@ -184,6 +184,13 @@ task YamlToJson {
     runtime {
         docker: dockerImage
     }
+
+    parameter_meta {
+        yaml: {description: "The YAML file to convert.", category: "required"}
+        outputJson: {description: "The location the output JSON file should be written to.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 struct Reference {
