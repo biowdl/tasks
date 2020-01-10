@@ -407,6 +407,29 @@ task MuTect2 {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputBams: {description: "The BAM files on which to perform variant calling.", category: "required"}
+        inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        outputVcf: {description: "The location to write the output VCF file to.", category: "required"}
+        tumorSample: {description: "The name of the tumor/case sample.", category: "required"}
+        normalSample: {description: "The name of the normal/control sample.", category: "common"}
+        germlineResource: {description: "Equivalent to Mutect2's `--germline-resource` option.", category: "advanced"}
+        germlineResourceIndex: {description: "The index for the germline resource.", category: "advanced"}
+        panelOfNormals: {description: "Equivalent to Mutect2's `--panel-of-normals` option.", category: "advanced"}
+        panelOfNormalsIndex: {description: "The index for the panel of normals.", category: "advanced"}
+        f1r2TarGz: {description: "Equivalent to Mutect2's `--f1r2-tar-gz` option.", category: "advanced"}
+        intervals: {description: "Bed files describing the regiosn to operate on.", category: "required"}
+        outputStats: {description: "The location the output statistics should be written to.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task LearnReadOrientationModel {
@@ -434,6 +457,15 @@ task LearnReadOrientationModel {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        f1r2TarGz: {description: "A f1r2TarGz file outputed by mutect2.", category: "required"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task MergeStats {
@@ -460,6 +492,15 @@ task MergeStats {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        stats: {description: "Statistics files to be merged.", category: "required"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -496,6 +537,22 @@ task GetPileupSummaries {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        sampleBam: {description: "A BAM file for which a pileup should be created.", category: "required"}
+        sampleBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        variantsForContamination: {description: "A VCF file with common variants.", category: "required"}
+        variantsForContaminationIndex: {description: "The index for the common variants VCF file.", category: "required"}
+        sitesForContamination: {description: "A bed file describing regions to operate on.", category: "required"}
+        sitesForContaminationIndex: {description: "The index for the bed file.", category: "required"}
+        outputPrefix: {description: "The prefix for the ouput.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task CalculateContamination {
@@ -527,6 +584,16 @@ task CalculateContamination {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        tumorPileups: {description: "The pileup summary of a tumor/case sample.", category: "required"}
+        normalPileups: {description: "The pileup summary of the normal/control sample.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task FilterMutectCalls {
@@ -542,7 +609,6 @@ task FilterMutectCalls {
         File? artifactPriors
         Int uniqueAltReadCount = 4
         File mutect2Stats
-        String? extraArgs
 
         String memory = "24G"
         String javaXmx = "12G"
@@ -563,8 +629,7 @@ task FilterMutectCalls {
         ~{"--unique-alt-read-count " + uniqueAltReadCount} \
         ~{"-stats " + mutect2Stats} \
         --filtering-stats "filtering.stats" \
-        --showHidden \
-        ~{extraArgs}
+        --showHidden
     }
 
     output {
@@ -576,6 +641,26 @@ task FilterMutectCalls {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        unfilteredVcf: {description: "An unfiltered VCF file as produced by Mutect2.", category: "required"}
+        unfilteredVcfIndex: {description: "The index of the unfiltered VCF file.", category: "required"}
+        outputVcf: {description: "The location the filtered VCf file should be written.", category: "required"}
+        contaminationTable: {description: "Equivalent to FilterMutectCalls' `--contamination-table` option.", category: "advanced"}
+        mafTumorSegments: {description: "Equivalent to FilterMutectCalls' `--tumor-segmentation` option.", category: "advanced"}
+        artifactPriors: {description: "Equivalent to FilterMutectCalls' `--ob-priors` option.", category: "advanced"}
+        uniqueAltReadCount: {description: "Equivalent to FilterMutectCalls' `--unique-alt-read-count` option.", category: "advanced"}
+        mutect2Stats: {description: "Equivalent to FilterMutectCalls' `-stats` option.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -636,8 +721,6 @@ task SplitNCigarReads {
 
 task CombineVariants {
     input {
-        String installDir = "/usr"  # .jar location in the docker image
-
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -668,7 +751,7 @@ task CombineVariants {
             printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
           done
         ')
-        java -Xmx~{javaXmx} -jar ~{installDir}/GenomeAnalysisTK.jar \
+        java -Xmx~{javaXmx} -jar /usr/GenomeAnalysisTK.jar \
         -T CombineVariants \
         -R ~{referenceFasta} \
         --genotypemergeoption ~{genotypeMergeOption} \
@@ -685,5 +768,23 @@ task CombineVariants {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        genotypeMergeOption: {description: "Equivalent to CombineVariants' `--genotypemergeoption` option.", category: "advanced"}
+        filteredRecordsMergeType: {description: "Equivalent to CombineVariants' `--filteredrecordsmergetype` option.", category: "advanced"}
+        identifiers: {description: "The sample identifiers in the same order as variantVcfs.", category: "required"}
+        variantVcfs: {description: "The input VCF files in the same order as identifiers.", category: "required"}
+        variantIndexes: {description: "The indexes of the input VCF files.", category: "required"}
+        outputPath: {description: "The location the output should be written to", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }

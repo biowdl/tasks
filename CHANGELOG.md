@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Removed the "installDir" input from CombineVariants.
++ Removed the "extraArgs" input from FilterMutectCalls.
 + Removed unused "verbose" and "quiet" inputs from multiqc.
 + Added parameter_meta sections to a variety of tasks.
 + Picard's BedToIntervalList outputPath input is now optional (with a default of "regions.interval_list")
