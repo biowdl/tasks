@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Removed unused "threads" input from ModifyStrelka.
++ Removed the "installDir" inputs from the somaticseq tasks.
 + Removed the "installDir" input from CombineVariants.
 + Removed the "extraArgs" input from FilterMutectCalls.
 + Removed unused "verbose" and "quiet" inputs from multiqc.

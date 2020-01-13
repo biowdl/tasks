@@ -18,7 +18,6 @@ task Somatic {
         Int cores = 1
         Int memoryGb = 4
         String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
-
     }
 
     command {
@@ -55,5 +54,23 @@ task Somatic {
         cpu: cores
         memory: "~{memoryGb}G"
         docker: dockerImage
+    }
+
+    parameter_meta {
+        tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
+        tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "common"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
+        callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
+
+        cores: {description: "The number of cores to use.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
