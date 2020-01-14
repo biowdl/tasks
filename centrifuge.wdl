@@ -230,7 +230,7 @@ task Classify {
 
 task Inspect {
     input {
-        String printOption = fasta
+        String printOption = "fasta"
         String indexBasename
         String outputPrefix
 
@@ -265,11 +265,11 @@ task Inspect {
 
     parameter_meta {
         printOption: {
-            description: "",
+            description: "The output option for inspect (fasta, summary, conversionTable, taxonomyTree, nameTable, sizeTable)",
             category: "required"
         }
         indexBasename: {
-            description: "",
+            description: "The basename of the index to be inspected.",
             category: "required"
         }
         outputPrefix: {
@@ -277,7 +277,7 @@ task Inspect {
             category: "required"
         }
         across: {
-            description: "",
+            description: "When printing FASTA output, output a newline character every <int> bases.",
             category: "common"
         }
     }
