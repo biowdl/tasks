@@ -47,7 +47,7 @@ task Build {
         ~{"--threads " + cores} \
         ~{true="--nodc" false="" disableDifferenceCover} \
         ~{"--offrate " + offrate} \
-        ~{"--ftabchars " + ftabChars} \ 
+        ~{"--ftabchars " + ftabChars} \
         ~{"--kmer-count " + kmerCount} \
         ~{"--size-table " + sizeTable} \
         ~{"--conversion-table " + conversionTable} \
