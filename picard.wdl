@@ -574,7 +574,7 @@ task SortVcf {
         String memory = "24G"
         String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
-        }
+    }
 
 
     command {
@@ -595,5 +595,17 @@ task SortVcf {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        vcfFiles: {description: "The VCF files to merge and sort.", category: "required"}
+        outputVcfPath: {description: "The location the sorted VCF files should be written to.", category: "required"}
+        dict: {description: "A sequence dictionary matching the VCF files.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
