@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Removed unused "cores" inputs from transcriptclean tasks.
++ Removed unused "cores" inputs from talon tasks.
 + Removed unused "threads" input from ModifyStrelka.
 + Removed the "installDir" inputs from the somaticseq tasks.
 + Removed the "installDir" input from CombineVariants.

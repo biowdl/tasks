@@ -30,7 +30,6 @@ task CreateAbundanceFileFromDatabase {
         File? whitelistFile
         File? datasetsFile
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
@@ -52,40 +51,25 @@ task CreateAbundanceFileFromDatabase {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        databaseFile: {
-            description: "TALON database.",
-            category: "required"
-        }
-        annotationVersion: {
-            description: "Which annotation version to use.",
-            category: "required"
-        }
-        genomeBuild: {
-            description: "Genome build to use.",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        whitelistFile: {
-            description: "Whitelist file of transcripts to include in the output.",
-            category: "advanced"
-        }
-        datasetsFile: {
-            description: "A file indicating which datasets should be included.",
-            category: "advanced"
-        }
-        outputAbundanceFile: {
-            description: "Abundance for each transcript in the TALON database across datasets.",
-            category: "required"
-        }
+        # inputs
+        databaseFile: {description: "TALON database.", category: "required"}
+        annotationVersion: {description: "Which annotation version to use.", category: "required"}
+        genomeBuild: {description: "Genome build to use.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        whitelistFile: {description: "Whitelist file of transcripts to include in the output.", category: "advanced"}
+        datasetsFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputAbundanceFile: {description: "Abundance for each transcript in the TALON database across datasets."}
+
     }
 }
 
@@ -100,7 +84,6 @@ task CreateGtfFromDatabase {
         File? whitelistFile
         File? datasetFile
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
@@ -123,44 +106,26 @@ task CreateGtfFromDatabase {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        databaseFile: {
-            description: "TALON database.",
-            category: "required"
-        }
-        genomeBuild: {
-            description: "Genome build to use.",
-            category: "required"
-        }
-        annotationVersion: {
-            description: "Which annotation version to use.",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        observedInDataset: {
-            description: "The output will only include transcripts that were observed at least once.",
-            category: "advanced"
-        }
-        whitelistFile: {
-            description: "Whitelist file of transcripts to include in the output.",
-            category: "advanced"
-        }
-        datasetFile: {
-            description: "A file indicating which datasets should be included.",
-            category: "advanced"
-        }
-        outputGTFfile: {
-            description: "The genes, transcripts, and exons stored a TALON database in GTF format.",
-            category: "required"
-        }
+        # inputs
+        databaseFile: {description: "TALON database.", category: "required"}
+        genomeBuild: {description: "Genome build to use.", category: "required"}
+        annotationVersion: {description: "Which annotation version to use.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        observedInDataset: {description: "The output will only include transcripts that were observed at least once.", category: "advanced"}
+        whitelistFile: {description: "Whitelist file of transcripts to include in the output.", category: "advanced"}
+        datasetFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
+        cores: {description: "The number of cores to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputGTFfile: {description: "The genes, transcripts, and exons stored a TALON database in GTF format."}
     }
 }
 
@@ -172,7 +137,6 @@ task FilterTalonTranscripts {
 
         File? pairingsFile
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
@@ -192,28 +156,18 @@ task FilterTalonTranscripts {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        databaseFile: {
-            description: "TALON database.",
-            category: "required"
-        }
-        annotationVersion: {
-            description: "Which annotation version to use.",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        pairingsFile: {
-            description: "A file indicating which datasets should be considered together.",
-            category: "advanced"
-        }
+        databaseFile: {description: "TALON database.", category: "required"}
+        annotationVersion: {description: "Which annotation version to use.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        pairingsFile: {description: "A file indicating which datasets should be considered together.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -225,7 +179,6 @@ task GetReadAnnotations {
 
         File? datasetFile
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
@@ -245,32 +198,22 @@ task GetReadAnnotations {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        databaseFile: {
-            description: "TALON database.",
-            category: "required"
-        }
-        genomeBuild: {
-            description: "Genome build to use.",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        datasetFile: {
-            description: "A file indicating which datasets should be included.",
-            category: "advanced"
-        }
-        outputAnnotation: {
-            description: "Read-specific annotation information from a TALON database.",
-            category: "required"
-        }
+        # inputs
+        databaseFile: { description: "TALON database.", category: "required"}
+        genomeBuild: {description: "Genome build to use.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        datasetFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputAnnotation: {description: "Read-specific annotation information from a TALON database."}
     }
 }
 
@@ -285,7 +228,6 @@ task InitializeTalonDatabase {
         Int cutoff3p = 300
         String outputPrefix
 
-        Int cores = 1
         String memory = "10G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
@@ -309,48 +251,26 @@ task InitializeTalonDatabase {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        GTFfile: {
-            description: "GTF annotation containing genes, transcripts, and edges.",
-            category: "required"
-        }
-        genomeBuild: {
-            description: "Name of genome build that the GTF file is based on (ie hg38).",
-            category: "required"
-        }
-        annotationVersion: {
-            description: "Name of supplied annotation (will be used to label data).",
-            category: "required"
-        }
-        minimumLength: { 
-            description: "Minimum required transcript length.",
-            category: "common"
-        }
-        novelIDprefix: {
-            description: "Prefix for naming novel discoveries in eventual TALON runs.",
-            category: "common"
-        }
-        cutoff5p: { 
-            description: "Maximum allowable distance (bp) at the 5' end during annotation.",
-            category: "advanced"
-        }
-        cutoff3p: {
-            description: "Maximum allowable distance (bp) at the 3' end during annotation.",
-            category: "advanced"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        outputDatabase: {
-            description: "TALON database.",
-            category: "required"
-        }
+        # inputs
+        GTFfile: {description: "GTF annotation containing genes, transcripts, and edges.", category: "required"}
+        genomeBuild: {description: "Name of genome build that the GTF file is based on (ie hg38).", category: "required"}
+        annotationVersion: {description: "Name of supplied annotation (will be used to label data).", category: "required"}
+        minimumLength: { description: "Minimum required transcript length.", category: "common"}
+        novelIDprefix: {description: "Prefix for naming novel discoveries in eventual TALON runs.", category: "common"}
+        cutoff5p: { description: "Maximum allowable distance (bp) at the 5' end during annotation.", category: "advanced"}
+        cutoff3p: {description: "Maximum allowable distance (bp) at the 3' end during annotation.", category: "advanced"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputDatabase: {description: "TALON database."}
     }
 }
 
@@ -358,7 +278,6 @@ task ReformatGtf {
     input {
         File GTFfile
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
@@ -374,16 +293,15 @@ task ReformatGtf {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        GTFfile: {
-            description: "GTF annotation containing genes, transcripts, and edges.",
-            category: "required"
-        }
+        GTFfile: {description: "GTF annotation containing genes, transcripts, and edges.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -395,7 +313,6 @@ task SummarizeDatasets {
 
         File? datasetGroupsCSV
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "biocontainers/talon:v4.4.1_cv1"
     }
@@ -415,32 +332,22 @@ task SummarizeDatasets {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        databaseFile: {
-            description: "TALON database.",
-            category: "required"
-        }
-        setVerbose: {
-            description: "Print out the counts in terminal.",
-            category: "advanced"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        datasetGroupsCSV: {
-            description: "File of comma-delimited dataset groups to process together.",
-            category: "advanced"
-        }
-        outputSummaryFile: {
-            description: "Tab-delimited file of gene and transcript counts for each dataset.",
-            category: "required"
-        }
+        # inputs
+        databaseFile: {description: "TALON database.", category: "required"}
+        setVerbose: {description: "Print out the counts in terminal.", category: "advanced"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        datasetGroupsCSV: {description: "File of comma-delimited dataset groups to process together.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputSummaryFile: {description: "Tab-delimited file of gene and transcript counts for each dataset."}
     }
 }
 
@@ -493,53 +400,24 @@ task Talon {
     }
 
     parameter_meta {
-        SAMfiles: {
-            description: "Input SAM files.",
-            category: "required"
-        }
-        organism: {
-            description: "The name of the organism from which the samples originated.",
-            category: "required"
-        }
-        sequencingPlatform: {
-            description: "The sequencing platform used to generate long reads.",
-            category: "required"
-        }
-        databaseFile: {
-            description: "TALON database. Created using initialize_talon_database.py.",
-            category: "required"
-        }
-        genomeBuild: {
-            description: "Genome build (i.e. hg38) to use.",
-            category: "required"
-        }
-        minimumCoverage: {
-            description: "Minimum alignment coverage in order to use a SAM entry.",
-            category: "common"
-        }
-        minimumIdentity: {
-            description: "Minimum alignment identity in order to use a SAM entry.",
-            category: "common" 
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        outputUpdatedDatabase: {
-            description: "Updated TALON database.",
-            category: "required"
-        }
-        outputLog: {
-            description: "Log file from TALON run.",
-            category: "required"
-        }
-        outputAnnot: {
-            description: "Read annotation file from TALON run.",
-            category: "required"
-        }
-        outputConfigFile: {
-            description: "The TALON configuration file.",
-            category: "required"
-        }
+        # inputs
+        SAMfiles: {description: "Input SAM files.", category: "required"}
+        organism: {description: "The name of the organism from which the samples originated.", category: "required"}
+        sequencingPlatform: {description: "The sequencing platform used to generate long reads.", category: "required"}
+        databaseFile: {description: "TALON database. Created using initialize_talon_database.py.", category: "required"}
+        genomeBuild: {description: "Genome build (i.e. hg38) to use.", category: "required"}
+        minimumCoverage: {description: "Minimum alignment coverage in order to use a SAM entry.", category: "common"}
+        minimumIdentity: {description: "Minimum alignment identity in order to use a SAM entry.", category: "common" }
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        cores: {description: "The number of cores to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputUpdatedDatabase: {description: "Updated TALON database."}
+        outputLog: {description: "Log file from TALON run."}
+        outputAnnot: {description: "Read annotation file from TALON run."}
+        outputConfigFile: {description: "The TALON configuration file."}
     }
 }
