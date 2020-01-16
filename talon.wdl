@@ -119,7 +119,6 @@ task CreateGtfFromDatabase {
         observedInDataset: {description: "The output will only include transcripts that were observed at least once.", category: "advanced"}
         whitelistFile: {description: "Whitelist file of transcripts to include in the output.", category: "advanced"}
         datasetFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
-        cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
