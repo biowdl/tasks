@@ -52,4 +52,17 @@ task InputConverter {
     runtime {
         docker: dockerImage
     }
+
+    parameter_meta {
+        samplesheet: {description: "The samplesheet to be processed.", category: "required"}
+        outputFile: {description: "The location the JSON representation of the samplesheet should be written to.",
+                     category: "advanced"}
+        skipFileCheck: {description: "Whether or not the existance of the files mentioned in the samplesheet should be checked.",
+                        category: "advanced"}
+        checkFileMd5sums: {description: "Whether or not the MD5 sums of the files mentioned in the samplesheet should be checked.",
+                           category: "advanced"}
+        old: {description: "Whether or not the old samplesheet format should be used.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
