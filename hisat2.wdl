@@ -49,4 +49,20 @@ task Hisat2 {
         cpu: threads + 1
         docker: dockerImage
     }
+
+    parameter_meta {
+        indexFiles: {description: "The hisat2 index files.", category: "required"}
+        inputR1: {description: "The first-/single-end FastQ file.", category: "required"}
+        inputR2: {description: "The second-end FastQ file.", category: "common"}
+        outputBam: {description: "The location the output BAM file should be written to.", category: "required"}
+        sample: {description: "The sample id.", category: "required"}
+        library: {description: "The library id.", category: "required"}
+        readgroup: {description: "The readgroup id.", category: "required"}
+        platform: {description: "The platform used for sequencing.", category: "advanced"}
+        downstreamTranscriptomeAssembly: {description: "Equivalent to hisat2's `--dta` flag.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
