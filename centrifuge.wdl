@@ -68,50 +68,17 @@ task Build {
     }
 
     parameter_meta {
-        disableDifferenceCover: {
-            description: "Disable use of the difference-cover sample.",
-            category: "required"
-        }
-        conversionTable: {
-            description: "List of UIDs (unique ID) and corresponding taxonomic IDs.",
-            category: "required"
-        }
-        taxonomyTree: {
-            description: "Taxonomic tree (e.g. nodes.dmp).",
-            category: "required"
-        }
-        nameTable: {
-            description: "Name table (e.g. names.dmp).",
-            category: "required"
-        }
-        referenceFile: {
-            description: "A comma-separated list of FASTA files containing the reference sequences to be aligned to.",
-            category: "required"
-        }
-        indexBasename: {
-            description: "The basename of the index files to write.",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        offrate: {
-            description: "The number of rows marked by the indexer.",
-            category: "common"
-        }
-        ftabChars: {
-            description: "Calculate an initial BW range with respect to this character.",
-            category: "common"
-        }
-        kmerCount: {
-            description: "Use <int> as kmer-size for counting the distinct number of k-mers in the input sequences.",
-            category: "common"
-        }
-        sizeTable: {
-            description: "List of taxonomic IDs and lengths of the sequences belonging to the same taxonomic IDs.",
-            category: "common"
-        }
+        disableDifferenceCover: {description: "Disable use of the difference-cover sample.", category: "required"}
+        conversionTable: {description: "List of UIDs (unique ID) and corresponding taxonomic IDs.", category: "required"}
+        taxonomyTree: {description: "Taxonomic tree (e.g. nodes.dmp).", category: "required"}
+        nameTable: {description: "Name table (e.g. names.dmp).", category: "required"}
+        referenceFile: {description: "A comma-separated list of FASTA files containing the reference sequences to be aligned to.", category: "required"}
+        indexBasename: {description: "The basename of the index files to write.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        offrate: {description: "The number of rows marked by the indexer.", category: "common"}
+        ftabChars: {description: "Calculate an initial BW range with respect to this character.", category: "common"}
+        kmerCount: {description: "Use <int> as kmer-size for counting the distinct number of k-mers in the input sequences.", category: "common"}
+        sizeTable: {description: "List of taxonomic IDs and lengths of the sequences belonging to the same taxonomic IDs.", category: "common"}
     }
 }
 
@@ -173,58 +140,19 @@ task Classify {
     }
 
     parameter_meta {
-        inputFormat: {
-            description: "The format of the read file(s).",
-            category: "required"
-        }
-        phred64: {
-            description: "If set to true, Phred+64 encoding is used.",
-            category: "required"
-        }
-        minHitLength: {
-            description: "Minimum length of partial hits.",
-            category: "required"
-        }
-        indexPrefix: {
-            description: "The basename of the index for the reference genomes.",
-            category: "required"
-        }
-        read1: {
-            description: "List of files containing mate 1s, or unpaired reads.",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        outputName: {
-            description: "The base name of the outputPrefix.",
-            category: "required"
-        }
-        read2: {
-            description: "List of files containing mate 2s.",
-            category: "common"
-        }
-        trim5: {
-            description: "Trim <int> bases from 5' (left) end of each read before alignment.",
-            category: "common"
-        }
-        trim3: {
-            description: "Trim <int> bases from 3' (right) end of each read before alignment.",
-            category: "common"
-        }
-        reportMaxDistinct: {
-            description: "It searches for at most <int> distinct, primary assignments for each read or pair.",
-            category: "common"
-        }
-        hostTaxIDs: {
-            description: "A comma-separated list of taxonomic IDs that will be preferred in classification procedure.",
-            category: "common"
-        }
-        excludeTaxIDs: {
-            description: "A comma-separated list of taxonomic IDs that will be excluded in classification procedure.",
-            category: "common"
-        }
+        inputFormat: {description: "The format of the read file(s).", category: "required"}
+        phred64: {description: "If set to true, Phred+64 encoding is used.", category: "required"}
+        minHitLength: {description: "Minimum length of partial hits.", category: "required"}
+        indexPrefix: {description: "The basename of the index for the reference genomes.", category: "required"}
+        read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        outputName: {description: "The base name of the outputPrefix.", category: "required"}
+        read2: {description: "List of files containing mate 2s.", category: "common"}
+        trim5: {description: "Trim <int> bases from 5' (left) end of each read before alignment.", category: "common"}
+        trim3: {description: "Trim <int> bases from 3' (right) end of each read before alignment.", category: "common"}
+        reportMaxDistinct: {description: "It searches for at most <int> distinct, primary assignments for each read or pair.", category: "common"}
+        hostTaxIDs: {description: "A comma-separated list of taxonomic IDs that will be preferred in classification procedure.", category: "common"}
+        excludeTaxIDs: {description: "A comma-separated list of taxonomic IDs that will be excluded in classification procedure.", category: "common"}
     }
 }
 
@@ -264,22 +192,10 @@ task Inspect {
     }
 
     parameter_meta {
-        printOption: {
-            description: "The output option for inspect (fasta, summary, conversionTable, taxonomyTree, nameTable, sizeTable)",
-            category: "required"
-        }
-        indexBasename: {
-            description: "The basename of the index to be inspected.",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        across: {
-            description: "When printing FASTA output, output a newline character every <int> bases.",
-            category: "common"
-        }
+        printOption: {description: "The output option for inspect (fasta, summary, conversionTable, taxonomyTree, nameTable, sizeTable)", category: "required"}
+        indexBasename: {description: "The basename of the index to be inspected.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        across: {description: "When printing FASTA output, output a newline character every <int> bases.", category: "common"}
     }
 }
 
