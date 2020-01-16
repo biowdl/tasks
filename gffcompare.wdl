@@ -30,6 +30,7 @@ task GffCompare {
         # Issue addressed at https://github.com/openwdl/wdl/pull/263
         File? noneFile # This is a wdl workaround. Please do not assign!
     }
+
     # This allows for the creation of output directories
     String dirPrefix = if defined(outputDir)
         then select_first([outputDir]) + "/"
@@ -90,5 +91,36 @@ task GffCompare {
 
     runtime {
        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputGtfList: {description: "Equivalent to gffcompare's `-i` option.", category: "advanced"}
+        inputGtfFiles: {description: "The input GTF files.", category: "required"}
+        referenceAnnotation: {description: "The GTF file to compare with.", category: "required"}
+        outputDir: {description: "The location the output should be written.", category: "common"}
+        outPrefix: {description: "The prefix for the output.", category: "advanced"}
+        genomeSequences: {description: "Equivalent to gffcompare's `-s` option.", category: "advanced"}
+        maxDistanceFreeEndsTerminalExons: {description: "Equivalent to gffcompare's `-e` option.", category: "advanced"}
+        maxDistanceGroupingTranscriptStartSites: {description: "Equivalent to gffcompare's `-d` option.", category: "advanced"}
+        namePrefix: {description: "Equivalent to gffcompare's `-p` option.", category: "advanced"}
+        C: {description: "Equivalent to gffcompare's `-C` flag.", category: "advanced"}
+        A: {description: "Equivalent to gffcompare's `-A` flag.", category: "advanced"}
+        X: {description: "Equivalent to gffcompare's `-X` flag.", category: "advanced"}
+        K: {description: "Equivalent to gffcompare's `-K` flag.", category: "advanced"}
+        snCorrection: {description: "Equivalent to gffcompare's `-R` flag.", category: "advanced"}
+        precisionCorrection: {description: "Equivalent to gffcompare's `-Q` flag.", category: "advanced"}
+        discardSingleExonTransfragsAndReferenceTranscripts: {description: "Equivalent to gffcompare's `-M` flag.", category: "advanced"}
+        discardSingleExonReferenceTranscripts: {description: "Equivalent to gffcompare's `-N` flag.", category: "advanced"}
+        noTmap: {description: "Equivalent to gffcompare's `-T` flag.", category: "advanced"}
+        verbose: {description: "Equivalent to gffcompare's `-V` flag.", category: "advanced"}
+        debugMode: {description: "Equivalent to gffcompare's `-D` flag.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+
+    meta {
+        WDL_AID: {
+            exclude: ["noneFile"]
+        }
     }
 }
