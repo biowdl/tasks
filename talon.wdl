@@ -369,7 +369,10 @@ task Talon {
     command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        export TMPDIR=/tmp
+        mkdir -p $PWD/tmp #Standard /tmp fills up which makes the SQLite process crash.
+        ln -s $PWD/tmp /tmp/sqltmp #Multiprocessing will crash if the absolute path is too long.
+        export TMPDIR=/tmp/sqltmp
+        printf "" > ~{outputPrefix}/talonConfigFile.csv #File needs to be emptied when task is rerun.
         for file in ~{sep=" " SAMfiles}
         do
             configFileLine="$(basename ${file%.*}),~{organism},~{sequencingPlatform},${file}"

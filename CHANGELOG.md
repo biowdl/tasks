@@ -20,6 +20,7 @@ version 2.2.0-dev
 + Removed unused "verbose" and "quiet" inputs from multiqc.
 + Added parameter_meta sections to a variety of tasks.
 + Picard's BedToIntervalList outputPath input is now optional (with a default of "regions.interval_list")
++ TALON: Fix SQLite error concerning database/disk space being full.
 + Update htseq to default image version 0.11.2
 + Update biowdl-input-converter in common.wdl to version 0.2.1.
 + Update TALON section to now include the new annotation file output, and add config file creation to the TALON task.
