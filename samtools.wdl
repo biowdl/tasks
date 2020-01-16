@@ -26,6 +26,14 @@ task BgzipAndIndex {
     runtime {
        docker: dockerImage
     }
+
+    parameter_meta {
+        inputFile: {description: "The file to be compressed and indexed.", category: "required"}
+        outputDir: {description: "The directory in which the output will be placed.", category: "required"}
+        type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task Index {
@@ -60,6 +68,14 @@ task Index {
     runtime {
         docker: dockerImage
     }
+
+    parameter_meta {
+        bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
+        outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
+                        category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task Merge {
@@ -87,6 +103,14 @@ task Merge {
     runtime {
         docker: dockerImage
     }
+
+    parameter_meta {
+        bamFiles: {description: "The BAM files to merge.", category: "required"}
+        outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
+        force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task SortByName {
@@ -109,6 +133,13 @@ task SortByName {
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFile: {description: "The BAM file to get sorted.", category: "required"}
+        outputBamPath: {description: "The location the sorted BAM file should be written to.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -133,6 +164,13 @@ task Markdup {
     runtime {
         docker: dockerImage
     }
+
+    parameter_meta {
+        inputBam: {description: "The BAM file to be processed.", category: "required"}
+        outputBamPath: {description: "The location of the output BAM file.", category: "required"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task Flagstat {
@@ -155,6 +193,13 @@ task Flagstat {
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
+        outputPath: {description: "The location the ouput should be written to.", category: "required"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -204,13 +249,19 @@ task Fastq {
     }
 
     parameter_meta {
-        inputBam: "The bam file to process."
-        outputRead1: "If only outputRead1 is given '-s' flag is assumed. Else '-1'."
-        includeFilter: "Include reads with ALL of these flags. Corresponds to '-f'"
-        excludeFilter: "Exclude reads with ONE OR MORE of these flags. Corresponds to '-F'"
-        excludeSpecificFilter: "Exclude reads with ALL of these flags. Corresponds to '-G'"
-        appendReadNumber: "Append /1 and /2 to the read name, or don't. Corresponds to '-n/N"
-
+        inputBam: {description: "The bam file to process.", category: "required"}
+        outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
+        outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
+        outputRead0: {description: "The location the unpaired reads should be written to (in case of paired-end sequenicng).", category: "advanced"}
+        includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`", category: "advanced"}
+        excludeFilter: {description: "Exclude reads with ONE OR MORE of these flags. Corresponds to `-F`", category: "advanced"}
+        excludeSpecificFilter: {description: "Exclude reads with ALL of these flags. Corresponds to `-G`", category: "advanced"}
+        appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`", category: "advanced"}
+        outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -239,6 +290,15 @@ task Tabix {
 
     runtime {
        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputFile: {description: "The file to be indexed.", category: "required"}
+        outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.",
+                        category: "common"}
+        type: {description: "The type of file (eg. vcf or bed) to be indexed.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -285,5 +345,21 @@ task View {
         cpu: threads
         memory: memory
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inFile: {description: "A BAM, SAM or CRAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
+        outputFileName: {description: "The location the output BAM file should be written.", category: "common"}
+        uncompressedBamOutput: {description: "Equivalent to samtools view's `-u` flag.", category: "advanced"}
+        includeFilter: {description: "Equivalent to samtools view's `-f` option.", category: "advanced"}
+        excludeFilter: {description: "Equivalent to samtools view's `-F` option.", category: "advanced"}
+        excludeSpecificFilter: {description: "Equivalent to samtools view's `-G` option.", category: "advanced"}
+        MAPQthreshold: {description: "Equivalent to samtools view's `-q` option.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }

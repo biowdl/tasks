@@ -43,4 +43,17 @@ task GffRead {
     runtime {
         docker: dockerImage
     }
+
+    parameter_meta {
+        inputGff: {description: "The input GFF file.", category: "required"}
+        genomicSequence: {description: "The genome.", category: "required"}
+        genomicIndex: {description: "The genome's index.", category: "advanced"}
+        exonsFastaPath: {description: "The location the exons fasta should be written to.", category: "advanced"}
+        CDSFastaPath: {description: "The location the CDS fasta should be written to.", category: "advanced"}
+        proteinFastaPath: {description: "The location the protein fasta should be written to.", category: "advanced"}
+        filteredGffPath: {description: "The location the filtered GFF should be written to.", category: "advanced"}
+        outputGtfFormat: {description: "Equivalent to gffread's `-T` flag.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
