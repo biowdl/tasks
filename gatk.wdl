@@ -114,7 +114,7 @@ task BaseRecalibrator {
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
         recalibrationReportPath: {description: "The location to write the BQSR report to.", category: "required"}
         sequenceGroupInterval: {description: "Bed files describing the regions to operate on.", category: "advanced"}
-        knownIndelsSitesVCFs: {description: "VCf files with known indels.", category: "advanced"}
+        knownIndelsSitesVCFs: {description: "VCF files with known indels.", category: "advanced"}
         knownIndelsSitesVCFIndexes: {description: "The indexed for the known variant VCFs.", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
@@ -275,7 +275,7 @@ task GenotypeGVCFs {
         gvcfFiles: {description: "The GVCF files to be genotypes.", category: "required"}
         gvcfFilesIndex: {description: "The index of the input GVCF files.", category: "required"}
         intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "required"}
-        outputPath: {description: "The location to write the output VCf file to.", category: "required"}
+        outputPath: {description: "The location to write the output VCF file to.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
@@ -649,7 +649,7 @@ task FilterMutectCalls {
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         unfilteredVcf: {description: "An unfiltered VCF file as produced by Mutect2.", category: "required"}
         unfilteredVcfIndex: {description: "The index of the unfiltered VCF file.", category: "required"}
-        outputVcf: {description: "The location the filtered VCf file should be written.", category: "required"}
+        outputVcf: {description: "The location the filtered VCF file should be written.", category: "required"}
         contaminationTable: {description: "Equivalent to FilterMutectCalls' `--contamination-table` option.", category: "advanced"}
         mafTumorSegments: {description: "Equivalent to FilterMutectCalls' `--tumor-segmentation` option.", category: "advanced"}
         artifactPriors: {description: "Equivalent to FilterMutectCalls' `--ob-priors` option.", category: "advanced"}

@@ -483,7 +483,7 @@ task MergeVCFs {
     parameter_meta {
         inputVCFs: {description: "The VCF files to be merged.", category: "required"}
         inputVCFsIndexes: {description: "The indexes of the VCF files.", category: "required"}
-        outputVcfPath: {description: "The location the output VCf file should be written to.", category: "required"}
+        outputVcfPath: {description: "The location the output VCF file should be written to.", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
