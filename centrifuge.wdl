@@ -27,7 +27,7 @@ task Build {
         File taxonomyTree
         File nameTable
         File referenceFile
-        String indexBasename = "NAME"
+        String indexBasename = "centrifuge_index"
         String outputPrefix
 
         Int? offrate
