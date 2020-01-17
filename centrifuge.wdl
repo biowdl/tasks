@@ -134,7 +134,7 @@ task Classify {
     }
 
     runtime {
-        cpu: cores
+        cpu: threads
         memory: memory
         docker: dockerImage
     }
