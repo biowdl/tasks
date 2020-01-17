@@ -132,6 +132,47 @@ task BaseRecalibrator {
     }
 }
 
+task CalculateContamination {
+    input {
+        File tumorPileups
+        File? normalPileups
+
+        String memory = "24G"
+        String javaXmx = "12G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{javaXmx} \
+        CalculateContamination \
+        -I ~{tumorPileups} \
+        ~{"-matched " + normalPileups} \
+        -O "contamination.table" \
+        --tumor-segmentation "segments.table"
+    }
+
+    output {
+        File contaminationTable = "contamination.table"
+        File mafTumorSegments = "segments.table"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        tumorPileups: {description: "The pileup summary of a tumor/case sample.", category: "required"}
+        normalPileups: {description: "The pileup summary of the normal/control sample.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task CombineGVCFs {
     input {
         Array[File]+ gvcfFiles
@@ -178,6 +219,144 @@ task CombineGVCFs {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task CombineVariants {
+    input {
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        String genotypeMergeOption = "UNIQUIFY"
+        String filteredRecordsMergeType = "KEEP_IF_ANY_UNFILTERED"
+        Array[String]+ identifiers
+        Array[File]+ variantVcfs # follow "identifiers" array order
+        Array[File]+ variantIndexes
+        String outputPath
+
+        String memory = "24G"
+        String javaXmx = "12G"
+        String dockerImage = "broadinstitute/gatk3:3.8-1"
+    }
+
+    command <<<
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+
+        # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
+        # Make sure commands are run in bash
+        V_args=$(bash -c '
+        set -eu
+        ids=(~{sep=" " identifiers})
+        vars=(~{sep=" " variantVcfs})
+        for (( i = 0; i < ${#ids[@]}; ++i ))
+          do
+            printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
+          done
+        ')
+        java -Xmx~{javaXmx} -jar /usr/GenomeAnalysisTK.jar \
+        -T CombineVariants \
+        -R ~{referenceFasta} \
+        --genotypemergeoption ~{genotypeMergeOption} \
+        --filteredrecordsmergetype ~{filteredRecordsMergeType} \
+        --out ~{outputPath} \
+        $V_args
+    >>>
+
+    output {
+        File combinedVcf = outputPath
+        File combinedVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        genotypeMergeOption: {description: "Equivalent to CombineVariants' `--genotypemergeoption` option.", category: "advanced"}
+        filteredRecordsMergeType: {description: "Equivalent to CombineVariants' `--filteredrecordsmergetype` option.", category: "advanced"}
+        identifiers: {description: "The sample identifiers in the same order as variantVcfs.", category: "required"}
+        variantVcfs: {description: "The input VCF files in the same order as identifiers.", category: "required"}
+        variantIndexes: {description: "The indexes of the input VCF files.", category: "required"}
+        outputPath: {description: "The location the output should be written to", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task FilterMutectCalls {
+    input {
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        File unfilteredVcf
+        File unfilteredVcfIndex
+        String outputVcf
+        File? contaminationTable
+        File? mafTumorSegments
+        File? artifactPriors
+        Int uniqueAltReadCount = 4
+        File mutect2Stats
+
+        String memory = "24G"
+        String javaXmx = "12G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputVcf})"
+        gatk --java-options -Xmx~{javaXmx} \
+        FilterMutectCalls \
+        -R ~{referenceFasta} \
+        -V ~{unfilteredVcf} \
+        -O ~{outputVcf} \
+        ~{"--contamination-table " + contaminationTable} \
+        ~{"--tumor-segmentation " + mafTumorSegments} \
+        ~{"--ob-priors " + artifactPriors} \
+        ~{"--unique-alt-read-count " + uniqueAltReadCount} \
+        ~{"-stats " + mutect2Stats} \
+        --filtering-stats "filtering.stats" \
+        --showHidden
+    }
+
+    output {
+        File filteredVcf = outputVcf
+        File filteredVcfIndex = outputVcf + ".tbi"
+        File filteringStats = "filtering.stats"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        unfilteredVcf: {description: "An unfiltered VCF file as produced by Mutect2.", category: "required"}
+        unfilteredVcfIndex: {description: "The index of the unfiltered VCF file.", category: "required"}
+        outputVcf: {description: "The location the filtered VCF file should be written.", category: "required"}
+        contaminationTable: {description: "Equivalent to FilterMutectCalls' `--contamination-table` option.", category: "advanced"}
+        mafTumorSegments: {description: "Equivalent to FilterMutectCalls' `--tumor-segmentation` option.", category: "advanced"}
+        artifactPriors: {description: "Equivalent to FilterMutectCalls' `--ob-priors` option.", category: "advanced"}
+        uniqueAltReadCount: {description: "Equivalent to FilterMutectCalls' `--unique-alt-read-count` option.", category: "advanced"}
+        mutect2Stats: {description: "Equivalent to FilterMutectCalls' `-stats` option.", category: "advanced"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
@@ -292,6 +471,57 @@ task GenotypeGVCFs {
     }
 }
 
+task GetPileupSummaries {
+    input {
+        File sampleBam
+        File sampleBamIndex
+        File variantsForContamination
+        File variantsForContaminationIndex
+        File sitesForContamination
+        File sitesForContaminationIndex
+        String outputPrefix
+
+        String memory = "24G"
+        String javaXmx = "12G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{javaXmx} \
+        GetPileupSummaries \
+        -I ~{sampleBam} \
+        -V ~{variantsForContamination} \
+        -L ~{sitesForContamination} \
+        -O ~{outputPrefix + "-pileups.table"}
+    }
+
+    output {
+        File pileups = outputPrefix + "-pileups.table"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        sampleBam: {description: "A BAM file for which a pileup should be created.", category: "required"}
+        sampleBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        variantsForContamination: {description: "A VCF file with common variants.", category: "required"}
+        variantsForContaminationIndex: {description: "The index for the common variants VCF file.", category: "required"}
+        sitesForContamination: {description: "A bed file describing regions to operate on.", category: "required"}
+        sitesForContaminationIndex: {description: "The index for the bed file.", category: "required"}
+        outputPrefix: {description: "The prefix for the ouput.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
 task HaplotypeCallerGvcf {
     input {
@@ -349,6 +579,79 @@ task HaplotypeCallerGvcf {
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
 
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+
+task LearnReadOrientationModel {
+    input {
+        Array[File]+ f1r2TarGz
+
+        String memory = "24G"
+        String javaXmx = "12G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{javaXmx} \
+        LearnReadOrientationModel \
+        -I ~{sep=" -I " f1r2TarGz} \
+        -O "artifact-priors.tar.gz"
+    }
+
+    output {
+        File artifactPriorsTable = "artifact-priors.tar.gz"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        f1r2TarGz: {description: "A f1r2TarGz file outputed by mutect2.", category: "required"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task MergeStats {
+    input {
+        Array[File]+ stats
+
+        String memory = "28G"
+        String javaXmx = "14G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        gatk --java-options -Xmx~{javaXmx} \
+        MergeMutectStats \
+        -stats ~{sep=" -stats " stats} \
+        -O "merged.stats"
+    }
+
+    output {
+        File mergedStats = "merged.stats"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        stats: {description: "Statistics files to be merged.", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -432,238 +735,6 @@ task MuTect2 {
     }
 }
 
-task LearnReadOrientationModel {
-    input {
-        Array[File]+ f1r2TarGz
-
-        String memory = "24G"
-        String javaXmx = "12G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
-    }
-
-    command {
-        set -e
-        gatk --java-options -Xmx~{javaXmx} \
-        LearnReadOrientationModel \
-        -I ~{sep=" -I " f1r2TarGz} \
-        -O "artifact-priors.tar.gz"
-    }
-
-    output {
-        File artifactPriorsTable = "artifact-priors.tar.gz"
-    }
-
-    runtime {
-        docker: dockerImage
-        memory: memory
-    }
-
-    parameter_meta {
-        f1r2TarGz: {description: "A f1r2TarGz file outputed by mutect2.", category: "required"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task MergeStats {
-    input {
-        Array[File]+ stats
-
-        String memory = "28G"
-        String javaXmx = "14G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
-    }
-
-    command {
-        set -e
-        gatk --java-options -Xmx~{javaXmx} \
-        MergeMutectStats \
-        -stats ~{sep=" -stats " stats} \
-        -O "merged.stats"
-    }
-
-    output {
-        File mergedStats = "merged.stats"
-    }
-
-    runtime {
-        docker: dockerImage
-        memory: memory
-    }
-
-    parameter_meta {
-        stats: {description: "Statistics files to be merged.", category: "required"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task GetPileupSummaries {
-    input {
-        File sampleBam
-        File sampleBamIndex
-        File variantsForContamination
-        File variantsForContaminationIndex
-        File sitesForContamination
-        File sitesForContaminationIndex
-        String outputPrefix
-
-        String memory = "24G"
-        String javaXmx = "12G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
-    }
-
-    command {
-        set -e
-        gatk --java-options -Xmx~{javaXmx} \
-        GetPileupSummaries \
-        -I ~{sampleBam} \
-        -V ~{variantsForContamination} \
-        -L ~{sitesForContamination} \
-        -O ~{outputPrefix + "-pileups.table"}
-    }
-
-    output {
-        File pileups = outputPrefix + "-pileups.table"
-    }
-
-    runtime {
-        docker: dockerImage
-        memory: memory
-    }
-
-    parameter_meta {
-        sampleBam: {description: "A BAM file for which a pileup should be created.", category: "required"}
-        sampleBamIndex: {description: "The index of the input BAM file.", category: "required"}
-        variantsForContamination: {description: "A VCF file with common variants.", category: "required"}
-        variantsForContaminationIndex: {description: "The index for the common variants VCF file.", category: "required"}
-        sitesForContamination: {description: "A bed file describing regions to operate on.", category: "required"}
-        sitesForContaminationIndex: {description: "The index for the bed file.", category: "required"}
-        outputPrefix: {description: "The prefix for the ouput.", category: "required"}
-
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task CalculateContamination {
-    input {
-        File tumorPileups
-        File? normalPileups
-
-        String memory = "24G"
-        String javaXmx = "12G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
-    }
-
-    command {
-        set -e
-        gatk --java-options -Xmx~{javaXmx} \
-        CalculateContamination \
-        -I ~{tumorPileups} \
-        ~{"-matched " + normalPileups} \
-        -O "contamination.table" \
-        --tumor-segmentation "segments.table"
-    }
-
-    output {
-        File contaminationTable = "contamination.table"
-        File mafTumorSegments = "segments.table"
-    }
-
-    runtime {
-        docker: dockerImage
-        memory: memory
-    }
-
-    parameter_meta {
-        tumorPileups: {description: "The pileup summary of a tumor/case sample.", category: "required"}
-        normalPileups: {description: "The pileup summary of the normal/control sample.", category: "common"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task FilterMutectCalls {
-    input {
-        File referenceFasta
-        File referenceFastaFai
-        File referenceFastaDict
-        File unfilteredVcf
-        File unfilteredVcfIndex
-        String outputVcf
-        File? contaminationTable
-        File? mafTumorSegments
-        File? artifactPriors
-        Int uniqueAltReadCount = 4
-        File mutect2Stats
-
-        String memory = "24G"
-        String javaXmx = "12G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
-    }
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputVcf})"
-        gatk --java-options -Xmx~{javaXmx} \
-        FilterMutectCalls \
-        -R ~{referenceFasta} \
-        -V ~{unfilteredVcf} \
-        -O ~{outputVcf} \
-        ~{"--contamination-table " + contaminationTable} \
-        ~{"--tumor-segmentation " + mafTumorSegments} \
-        ~{"--ob-priors " + artifactPriors} \
-        ~{"--unique-alt-read-count " + uniqueAltReadCount} \
-        ~{"-stats " + mutect2Stats} \
-        --filtering-stats "filtering.stats" \
-        --showHidden
-    }
-
-    output {
-        File filteredVcf = outputVcf
-        File filteredVcfIndex = outputVcf + ".tbi"
-        File filteringStats = "filtering.stats"
-    }
-
-    runtime {
-        docker: dockerImage
-        memory: memory
-    }
-
-    parameter_meta {
-        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
-        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        unfilteredVcf: {description: "An unfiltered VCF file as produced by Mutect2.", category: "required"}
-        unfilteredVcfIndex: {description: "The index of the unfiltered VCF file.", category: "required"}
-        outputVcf: {description: "The location the filtered VCF file should be written.", category: "required"}
-        contaminationTable: {description: "Equivalent to FilterMutectCalls' `--contamination-table` option.", category: "advanced"}
-        mafTumorSegments: {description: "Equivalent to FilterMutectCalls' `--tumor-segmentation` option.", category: "advanced"}
-        artifactPriors: {description: "Equivalent to FilterMutectCalls' `--ob-priors` option.", category: "advanced"}
-        uniqueAltReadCount: {description: "Equivalent to FilterMutectCalls' `--unique-alt-read-count` option.", category: "advanced"}
-        mutect2Stats: {description: "Equivalent to FilterMutectCalls' `-stats` option.", category: "advanced"}
-
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
 task SplitNCigarReads {
     input {
         File inputBam
@@ -710,76 +781,6 @@ task SplitNCigarReads {
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         outputBam: {description: "The location the output BAM file should be written.", category: "required"}
         intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "advanced"}
-
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task CombineVariants {
-    input {
-        File referenceFasta
-        File referenceFastaFai
-        File referenceFastaDict
-        String genotypeMergeOption = "UNIQUIFY"
-        String filteredRecordsMergeType = "KEEP_IF_ANY_UNFILTERED"
-        Array[String]+ identifiers
-        Array[File]+ variantVcfs # follow "identifiers" array order
-        Array[File]+ variantIndexes
-        String outputPath
-
-        String memory = "24G"
-        String javaXmx = "12G"
-        String dockerImage = "broadinstitute/gatk3:3.8-1"
-    }
-
-    command <<<
-        set -e
-        mkdir -p "$(dirname ~{outputPath})"
-
-        # build "-V:<ID> <file.vcf>" arguments according to IDs and VCFs to merge
-        # Make sure commands are run in bash
-        V_args=$(bash -c '
-        set -eu
-        ids=(~{sep=" " identifiers})
-        vars=(~{sep=" " variantVcfs})
-        for (( i = 0; i < ${#ids[@]}; ++i ))
-          do
-            printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
-          done
-        ')
-        java -Xmx~{javaXmx} -jar /usr/GenomeAnalysisTK.jar \
-        -T CombineVariants \
-        -R ~{referenceFasta} \
-        --genotypemergeoption ~{genotypeMergeOption} \
-        --filteredrecordsmergetype ~{filteredRecordsMergeType} \
-        --out ~{outputPath} \
-        $V_args
-    >>>
-
-    output {
-        File combinedVcf = outputPath
-        File combinedVcfIndex = outputPath + ".tbi"
-    }
-
-    runtime {
-        docker: dockerImage
-        memory: memory
-    }
-
-    parameter_meta {
-        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
-        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        genotypeMergeOption: {description: "Equivalent to CombineVariants' `--genotypemergeoption` option.", category: "advanced"}
-        filteredRecordsMergeType: {description: "Equivalent to CombineVariants' `--filteredrecordsmergetype` option.", category: "advanced"}
-        identifiers: {description: "The sample identifiers in the same order as variantVcfs.", category: "required"}
-        variantVcfs: {description: "The input VCF files in the same order as identifiers.", category: "required"}
-        variantIndexes: {description: "The indexes of the input VCF files.", category: "required"}
-        outputPath: {description: "The location the output should be written to", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
