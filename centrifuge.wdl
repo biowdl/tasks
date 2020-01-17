@@ -35,7 +35,7 @@ task Build {
         Int? kmerCount
         File? sizeTable
 
-        Int cores = 5
+        Int threads = 5
         String memory = "20G"
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
     }
@@ -44,7 +44,7 @@ task Build {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         centrifuge-build \
-        ~{"--threads " + cores} \
+        ~{"--threads " + threads} \
         ~{true="--nodc" false="" disableDifferenceCover} \
         ~{"--offrate " + offrate} \
         ~{"--ftabchars " + ftabChars} \
@@ -62,7 +62,7 @@ task Build {
     }
 
     runtime {
-        cpu: cores
+        cpu: threads
         memory: memory
         docker: dockerImage
     }
@@ -99,7 +99,7 @@ task Classify {
         String? hostTaxIDs
         String? excludeTaxIDs
 
-        Int cores = 4
+        Int threads = 4
         String memory = "16G"
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
     }
@@ -114,7 +114,7 @@ task Classify {
         ~{true="--phred64" false="--phred33" phred64} \
         ~{"--min-hitlen " + minHitLength} \
         ~{"--met-file " + outputPrefix + "/" + outputName + "_alignment_metrics.tsv"} \
-        ~{"--threads " + cores} \
+        ~{"--threads " + threads} \
         ~{"--trim5 " + trim5} \
         ~{"--trim3 " + trim3} \
         ~{"-k " + reportMaxDistinct} \
@@ -164,7 +164,6 @@ task Inspect {
 
         Int? across
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
     }
@@ -186,7 +185,6 @@ task Inspect {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
