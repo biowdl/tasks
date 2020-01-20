@@ -1,5 +1,83 @@
 version 1.0
 
+# Copyright (c) 2018 Leiden University Medical Center
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+task AnnotateIntervals {
+    input {
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        String annotatedIntervalsPath = "intervals.annotated.tsv"
+        File intervals
+        String intervalMergingRule = "OVERLAPPING_ONLY"
+        File? mappabilityTrack
+        File? segmentalDuplicationTrack
+        Int featureQueryLookahead = 1000000
+
+        String memory = "120"
+        String javaXmx = "2G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{annotatedIntervalsPath}"
+        gatk --java-options -Xmx~{javaXmx} \
+        AnnotateIntervals \
+        -R ~{referenceFasta} \
+        -L ~{intervals} \
+        ~{"--mappability-track  " + mappabilityTrack} \
+        ~{"--segmental-duplication-track " + segmentalDuplicationTrack} \
+        --feature-query-lookahead ~{featureQueryLookahead} \
+        --interval-merging-rule ~{intervalMergingRule} \
+        -O ~{annotatedIntervalsPath}
+    }
+
+    output {
+        File annotatedIntervals = annotatedIntervalsPath
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        annotatedIntervalsPath: {description: "The location the output should be written to.", category: "advanced"}
+        intervals: {description: "An interval list describinig the intervals to annotate.", category: "required"}
+        intervalMergingRule: {description: "Equivalent to gatk AnnotateIntervals' `--interval-merging-rule` option.", category: "advanced"}
+        mappabilityTrack: {description: "Equivalent to gatk AnnotateIntervals' `--mappability-track` option.", category: "common"}
+        segmentalDuplicationTrack: {description: "Equivalent to gatk AnnotateIntervals' `--segmenta-duplicarion-track` option.", category: "common"}
+        featureQueryLookahead: {description: "Equivalent to gatk AnnotateIntervals' `--feature-query-lookahead` option", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 # Apply Base Quality Score Recalibration (BQSR) model
 task ApplyBQSR {
     input {
@@ -173,6 +251,61 @@ task CalculateContamination {
     }
 }
 
+task CollectReadCounts {
+    input {
+        String countsPath = "readcounts.hdf5"
+        File intervals
+        File inputBam
+        File inputBamIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        String intervalMergingRule = "OVERLAPPING_ONLY"
+
+        String memory = "35G"
+        String javaXmx = "7G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{countsPath})"
+        gatk --java-options -Xmx~{javaXmx} \
+        CollectReadCounts \
+        -L ~{intervals} \
+        -I ~{inputBam} \
+        -R ~{referenceFasta} \
+        --format HDF5 \
+        --interval-merging-rule ~{intervalMergingRule} \
+        -O ~{countsPath}
+    }
+
+    output {
+        File counts = countsPath
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        countsPath: {description: "The location the output should be written to.", category: "required"}
+        intervals: {description: "The intervals to collect counts for.", category: "required"}
+        inputBam: {description: "The BAM file to determine the coverage for.", category: "required"}
+        inputBamIndex: {description: "The input BAM file's index.", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        intervalMergingRule: {description: "Equivalent to gatk CollectReadCounts' `--interval-merging-rule` option.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task CombineGVCFs {
     input {
         Array[File]+ gvcfFiles
@@ -290,6 +423,49 @@ task CombineVariants {
         variantIndexes: {description: "The indexes of the input VCF files.", category: "required"}
         outputPath: {description: "The location the output should be written to", category: "required"}
 
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task CreateReadCountPanelOfNormals {
+    input {
+        String PONpath = "PON.hdf5"
+        Array[File]+ readCountsFiles
+        File? annotatedIntervals
+
+        String memory = "21G"
+        String javaXmx = "7G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{PONpath}
+        gatk --java-options -Xmx~{javaXmx} \
+        CreateReadCountPanelOfNormals \
+        -I ~{sep=" -I " readCountsFiles} \
+        ~{"--annotated-intervals " + annotatedIntervals} \
+        -O ~{PONpath}
+    }
+
+    output {
+        File PON = PONpath
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        PONpath: {description: "The location the PON should be written to.", category: "common"}
+        readCountsFiles: {description: "The read counts files as generated by CollectReadCounts.", category: "advanced"}
+        annotatedIntervals: {description: "An annotation set of intervals as generated by AnnotateIntervals. If provided, explicit GC correction will be performed.",
+                             category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -727,6 +903,62 @@ task MuTect2 {
         f1r2TarGz: {description: "Equivalent to Mutect2's `--f1r2-tar-gz` option.", category: "advanced"}
         intervals: {description: "Bed files describing the regiosn to operate on.", category: "required"}
         outputStats: {description: "The location the output statistics should be written to.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task PreprocessIntervals {
+    input {
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        File? intervals
+        String outputIntervalList = "bins.interval_list"
+        Int binLength = if defined(intervals) then 0 else 1000
+        Int padding = if defined(intervals) then 250 else 0
+        String intervalMergingRule = "OVERLAPPING_ONLY"
+
+        String memory = "10G"
+        String javaXmx = "2G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputIntervalList})"
+        gatk --java-options -Xmx~{javaXmx} \
+        PreprocessIntervals \
+        -R ~{referenceFasta} \
+        --sequence-dictinary ~{referenceFastaDict} \
+        --bin-length ~{binLength} \
+        --padding ~{padding}
+        ~{"-L " + intervals} \
+        --interval-merging-rule ~{intervalMergingRule} \
+        -O ~{outputIntervalList}
+    }
+
+    output {
+        File intervalList = outputIntervalList
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file..", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        intervals: {description: "Bed files describing the regiosn to operate on.", category: "common"}
+        outputIntervalList: {description: "The location the output should be written to.", category: "advanced"}
+        binLength: {description: "The size of the bins to be created. Should be 0 for targeted/exome sequencing.", category: "advanced"}
+        padding: {description: "The padding to be added to the bins. Should be 0 if contiguos binning is used, eg with WGS.", category: "advanced"}
+        intervalMergingRule: {description: "Equivalent to gatk PreprocessIntervals' `--interval-merging-rule` option.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
