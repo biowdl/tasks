@@ -95,7 +95,7 @@ task Merge {
 # Use cat, bedtools sort and bedtools merge to merge bedfiles in a single task.
 task MergeBedFiles {
     input {
-        Array[File] bedFiles
+        Array[File]+ bedFiles
         String outputBed = "merged.bed"
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
