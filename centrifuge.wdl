@@ -1,124 +1,199 @@
 version 1.0
 
-# Copyright Sequencing Analysis Support Core - Leiden University Medical Center 2018
+# Copyright (c) 2018 Sequencing Analysis Support Core - Leiden University Medical Center
 #
-# Tasks from centrifuge
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 task Build {
     input {
+        Boolean disableDifferenceCover = false
         File conversionTable
         File taxonomyTree
-        File inputFasta
-        String centrifugeIndexBase
-        String? preCommand
-        String centrifugeBuildExecutable = "centrifuge-build"
-        #Boolean? c = false
-        Boolean largeIndex = false
-        Boolean noAuto = false
-        Int? bMax
-        Int? bMaxDivn
-        Boolean noDiffCover = false
-        Boolean noRef = false
-        Boolean justRef = false
-        Int? offRate
-        Int? fTabChars
-        File? nameTable
-        File? sizeTable
-        Int? seed
-        Int? kmerCount
+        File nameTable
+        File referenceFile
+        String indexBasename = "centrifuge_index"
+        String outputPrefix
 
-        Int threads = 8
+        Int? offrate
+        Int? ftabChars
+        Int? kmerCount
+        File? sizeTable
+
+        Int threads = 5
         String memory = "20G"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
     }
 
     command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{"mkdir -p $(dirname " + centrifugeIndexBase + ")"}
-        ~{centrifugeBuildExecutable} \
-        ~{true='--large-index' false='' largeIndex} \
-        ~{true='--noauto' false='' noAuto} \
-        ~{'--bmax ' + bMax} \
-        ~{'--bmaxdivn ' + bMaxDivn} \
-        ~{true='--nodc' false='' noDiffCover} \
-        ~{true='--noref' false='' noRef} \
-        ~{true='--justref' false='' justRef} \
-        ~{'--offrate ' + offRate} \
-        ~{'--ftabchars ' + fTabChars} \
-        ~{'--name-table ' + nameTable } \
-        ~{'--size-table ' + sizeTable} \
-        ~{'--seed ' + seed} \
-        ~{'--kmer-count' + kmerCount} \
-        ~{'--threads ' + threads} \
-        --conversion-table ~{conversionTable} \
-        --taxonomy-tree ~{taxonomyTree} \
-        ~{inputFasta} \
-        ~{centrifugeIndexBase}
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+        centrifuge-build \
+        ~{"--threads " + threads} \
+        ~{true="--nodc" false="" disableDifferenceCover} \
+        ~{"--offrate " + offrate} \
+        ~{"--ftabchars " + ftabChars} \
+        ~{"--kmer-count " + kmerCount} \
+        ~{"--size-table " + sizeTable} \
+        ~{"--conversion-table " + conversionTable} \
+        ~{"--taxonomy-tree " + taxonomyTree} \
+        ~{"--name-table " + nameTable} \
+        ~{referenceFile} \
+        ~{outputPrefix + "/" + indexBasename}
+    }
+
+    output {
+        Array[File] outputIndex = glob(outputPrefix + "/" + indexBasename + "*.cf")
     }
 
     runtime {
         cpu: threads
         memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        disableDifferenceCover: {description: "Disable use of the difference-cover sample.", category: "required"}
+        conversionTable: {description: "List of UIDs (unique ID) and corresponding taxonomic IDs.", category: "required"}
+        taxonomyTree: {description: "Taxonomic tree (e.g. nodes.dmp).", category: "required"}
+        nameTable: {description: "Name table (e.g. names.dmp).", category: "required"}
+        referenceFile: {description: "A comma-separated list of FASTA files containing the reference sequences to be aligned to.", category: "required"}
+        indexBasename: {description: "The basename of the index files to write.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        offrate: {description: "The number of rows marked by the indexer.", category: "common"}
+        ftabChars: {description: "Calculate an initial BW range with respect to this character.", category: "common"}
+        kmerCount: {description: "Use <int> as kmer-size for counting the distinct number of k-mers in the input sequences.", category: "common"}
+        sizeTable: {description: "List of taxonomic IDs and lengths of the sequences belonging to the same taxonomic IDs.", category: "common"}
     }
 }
 
 task Classify {
     input {
-        String outputDir
-        Boolean compressOutput = true
-        String? preCommand
+        String inputFormat = "fastq"
+        Boolean phred64 = false
+        Int minHitLength = 22
         String indexPrefix
-        Array[File]? unpairedReads
         Array[File]+ read1
-        Array[File]? read2
-        Boolean? fastaInput
-        # Variables for handling output
+        String outputPrefix
+        String outputName = basename(outputPrefix)
 
-        String? metFilePath # If this is specified, the report file is empty
-        Int? assignments
-        Int? minHitLen
-        Int? minTotalLen
-        Array[String]? hostTaxIds
-        Array[String]? excludeTaxIds
+        Array[File]? read2
+        Int? trim5
+        Int? trim3
+        Int? reportMaxDistinct
+        String? hostTaxIDs
+        String? excludeTaxIDs
 
         Int threads = 4
-        String memory = "8G"
+        String memory = "16G"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
     }
 
-    String outputFilePath = outputDir + "/centrifuge.out"
-    String reportFilePath = outputDir + "/centrifuge_report.tsv"
-    String finalOutputPath = if (compressOutput == true)
-            then outputFilePath + ".gz"
-            else outputFilePath
+    Map[String, String] inputFormatOptions = {"fastq": "-q", "fasta": "-f", "qseq": "--qseq", "raw": "-r", "sequences": "-c"}
 
     command {
-        set -e -o pipefail
-        mkdir -p ~{outputDir}
-        ~{preCommand}
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
         centrifuge \
-        ~{"-p " + threads} \
+        ~{inputFormatOptions[inputFormat]} \
+        ~{true="--phred64" false="--phred33" phred64} \
+        ~{"--min-hitlen " + minHitLength} \
+        ~{"--met-file " + outputPrefix + "/" + outputName + "_alignment_metrics.tsv"} \
+        ~{"--threads " + threads} \
+        ~{"--trim5 " + trim5} \
+        ~{"--trim3 " + trim3} \
+        ~{"-k " + reportMaxDistinct} \
+        ~{"--host-taxids " + hostTaxIDs} \
+        ~{"--exclude-taxids " + excludeTaxIDs} \
         ~{"-x " + indexPrefix} \
-        ~{true="-f" false="" fastaInput} \
-        ~{true="-k" false="" defined(assignments)} ~{assignments} \
-        ~{true="-1" false="-U" defined(read2)} ~{sep=',' read1} \
-        ~{true="-2" false="" defined(read2)} ~{sep=',' read2} \
-        ~{true="-U" false="" length(select_first([unpairedReads])) > 0} ~{sep=',' unpairedReads} \
-        ~{"--report-file " + reportFilePath} \
-        ~{"--min-hitlen " + minHitLen} \
-        ~{"--min-totallen " + minTotalLen} \
-        ~{"--met-file " + metFilePath} \
-        ~{true="--host-taxids " false="" defined(hostTaxIds)} ~{sep=',' hostTaxIds} \
-        ~{true="--exclude-taxids " false="" defined(excludeTaxIds)} ~{sep=',' excludeTaxIds} \
-        ~{true="| gzip -c >" false="-S" compressOutput} ~{finalOutputPath}
+        ~{true="-1 " false="-U " defined(read2)} ~{sep="," read1} \
+        ~{"-2 "} ~{sep="," read2} \
+        ~{"-S " + outputPrefix + "/" + outputName + "_classification.tsv"} \
+        ~{"--report-file " + outputPrefix + "/" + outputName + "_output_report.tsv"}
     }
 
     output {
-        File classifiedReads = finalOutputPath
-        File reportFile = reportFilePath
+        File outputMetrics = outputPrefix + "/" + outputName + "_alignment_metrics.tsv"
+        File outputClassification = outputPrefix + "/" + outputName + "_classification.tsv"
+        File outputReport = outputPrefix + "/" + outputName + "_output_report.tsv"
     }
 
     runtime {
         cpu: threads
         memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputFormat: {description: "The format of the read file(s).", category: "required"}
+        phred64: {description: "If set to true, Phred+64 encoding is used.", category: "required"}
+        minHitLength: {description: "Minimum length of partial hits.", category: "required"}
+        indexPrefix: {description: "The basename of the index for the reference genomes.", category: "required"}
+        read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        outputName: {description: "The base name of the outputPrefix.", category: "required"}
+        read2: {description: "List of files containing mate 2s.", category: "common"}
+        trim5: {description: "Trim <int> bases from 5' (left) end of each read before alignment.", category: "common"}
+        trim3: {description: "Trim <int> bases from 3' (right) end of each read before alignment.", category: "common"}
+        reportMaxDistinct: {description: "It searches for at most <int> distinct, primary assignments for each read or pair.", category: "common"}
+        hostTaxIDs: {description: "A comma-separated list of taxonomic IDs that will be preferred in classification procedure.", category: "common"}
+        excludeTaxIDs: {description: "A comma-separated list of taxonomic IDs that will be excluded in classification procedure.", category: "common"}
+    }
+}
+
+task Inspect {
+    input {
+        String printOption = "fasta"
+        String indexBasename
+        String outputPrefix
+
+        Int? across
+
+        String memory = "4G"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+    }
+
+    Map[String, String] outputOptions = {"fasta": "", "names": "--names", "summary": "--summary", "conversionTable": "--conversion-table", "taxonomyTree": "--taxonomy-tree", "nameTable": "--name-table", "sizeTable": "--size-table"}
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+        centrifuge-inspect \
+        ~{outputOptions[printOption]} \
+        ~{"--across " + across} \
+        ~{indexBasename} \
+        > ~{outputPrefix + "/" + printOption}
+    }
+
+    output {
+        File outputInspect = outputPrefix + "/" + printOption
+    }
+
+    runtime {
+        memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        printOption: {description: "The output option for inspect (fasta, summary, conversionTable, taxonomyTree, nameTable, sizeTable)", category: "required"}
+        indexBasename: {description: "The basename of the index to be inspected.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        across: {description: "When printing FASTA output, output a newline character every <int> bases.", category: "common"}
     }
 }
 

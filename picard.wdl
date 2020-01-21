@@ -4,7 +4,7 @@ task BedToIntervalList {
     input {
         File bedFile
         File dict
-        String outputPath
+        String outputPath = "regions.interval_list"
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -28,6 +28,18 @@ task BedToIntervalList {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        bedFile: {description: "A bed file.", category: "required"}
+        dict: {description: "A sequence dict file.", category: "required"}
+        outputPath: {description: "The location the output interval list should be written to.",
+                     category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -119,9 +131,43 @@ task CollectMultipleMetrics {
     }
 
     runtime {
-
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file for which metrics will be collected.",
+                   category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).",
+                   category: "required"}
+        collectAlignmentSummaryMetrics: {description: "Equivalent to the `PROGRAM=CollectAlignmentSummaryMetrics` argument.",
+                                         category: "advanced"}
+        collectInsertSizeMetrics: {description: "Equivalent to the `PROGRAM=CollectInsertSizeMetrics` argument.",
+                                   category: "advanced"}
+        qualityScoreDistribution: {description: "Equivalent to the `PROGRAM=QualityScoreDistribution` argument.",
+                                   category: "advanced"}
+        meanQualityByCycle: {description: "Equivalent to the `PROGRAM=MeanQualityByCycle` argument.",
+                             category: "advanced"}
+        collectBaseDistributionByCycle: {description: "Equivalent to the `PROGRAM=CollectBaseDistributionByCycle` argument.",
+                                         category: "advanced"}
+        collectGcBiasMetrics: {description: "Equivalent to the `PROGRAM=CollectGcBiasMetrics` argument.",
+                               category: "advanced"}
+        collectSequencingArtifactMetrics: {description: "Equivalent to the `PROGRAM=CollectSequencingArtifactMetrics` argument.",
+                                           category: "advanced"}
+        collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.",
+                                     category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -158,6 +204,23 @@ task CollectRnaSeqMetrics {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file for which metrics will be collected.",
+                   category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        refRefflat: {description: "A refflat file containing gene annotations.", catehory: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).",
+                   category: "required"}
+        strandSpecificity: {description: "Equivalent to the `STRAND_SPECIFICITY` option of picard's CollectRnaSeqMetrics.",
+                            category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -201,6 +264,29 @@ task CollectTargetedPcrMetrics {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file for which metrics will be collected.",
+                   category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        ampliconIntervals: {description: "An interval list describinig the coordinates of the amplicons sequenced.",
+                           category: "required"}
+        targetIntervals: {description: "An interval list describing the coordinates of the targets sequenced.",
+                          category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).",
+                   category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
@@ -236,6 +322,18 @@ task GatherBamFiles {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputBams: {description: "The BAM files to be merged together.", category: "required"}
+        inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
+        outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task GatherVcfs {
@@ -265,6 +363,18 @@ task GatherVcfs {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputVcfs: {description: "The VCF files to be merged together.", category: "required"}
+        inputVcfIndexes: {description: "The indexes of the input VCF files.", category: "required"}
+        outputVcfPath: {description: "The path where the merged VCF file will be written.", caregory: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -320,6 +430,20 @@ task MarkDuplicates {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
+        inputBamIndexes: {description: "Th eindexes for the input BAM files.", category: "required"}
+        outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
+        metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
+        read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 # Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
@@ -354,6 +478,18 @@ task MergeVCFs {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        inputVCFs: {description: "The VCF files to be merged.", category: "required"}
+        inputVCFsIndexes: {description: "The indexes of the VCF files.", category: "required"}
+        outputVcfPath: {description: "The location the output VCF file should be written to.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -438,7 +574,7 @@ task SortVcf {
         String memory = "24G"
         String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
-        }
+    }
 
 
     command {
@@ -459,5 +595,17 @@ task SortVcf {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+
+    parameter_meta {
+        vcfFiles: {description: "The VCF files to merge and sort.", category: "required"}
+        outputVcfPath: {description: "The location the sorted VCF files should be written to.", category: "required"}
+        dict: {description: "A sequence dictionary matching the VCF files.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }

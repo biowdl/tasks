@@ -27,7 +27,6 @@ task GetSJsFromGtf {
         String outputPrefix
         Int minIntronSize = 21
 
-        Int cores = 1
         String memory = "8G"
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
@@ -47,32 +46,21 @@ task GetSJsFromGtf {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        GTFfile: {
-            description: "Input GTF file",
-            category: "required"
-        }
-        genomeFile: {
-            description: "Reference genome",
-            category: "required"
-        }
-        minIntronSize: {
-            description: "Minimum size of intron to consider a junction.",
-            category: "advanced"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        outputSJsFile: {
-            description: "Extracted splice junctions.",
-            category: "required"
-        }
+        # inputs
+        GTFfile: {description: "Input GTF file", category: "required"}
+        genomeFile: {description: "Reference genome", category: "required"}
+        minIntronSize: {description: "Minimum size of intron to consider a junction.", category: "advanced"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+        # outputs
+        outputSJsFile: {description: "Extracted splice junctions."}
     }
 }
 
@@ -81,7 +69,6 @@ task GetTranscriptCleanStats {
         File transcriptCleanSAMfile
         String outputPrefix
 
-        Int cores = 1
         String memory = "4G"
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
@@ -99,24 +86,20 @@ task GetTranscriptCleanStats {
     }
 
     runtime {
-        cpu: cores
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        transcriptCleanSAMfile: {
-            description: "Output SAM file from TranscriptClean",
-            category: "required"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        outputStatsFile: {
-            description: "Summary stats from TranscriptClean run.",
-            category: "required"
-        }
+        # inputs
+        transcriptCleanSAMfile: {description: "Output SAM file from TranscriptClean", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputStatsFile: {description: "Summary stats from TranscriptClean run."}
     }
 }
 
@@ -180,81 +163,31 @@ task TranscriptClean {
     }
 
     parameter_meta {
-        SAMfile: {
-            description: "Input SAM file containing transcripts to correct.",
-            category: "required"
-        }
-        referenceGenome: {
-            description: "Reference genome fasta file.",
-            category: "required"
-        }
-        maxLenIndel: {
-            description: "Maximum size indel to correct.",
-            category: "advanced"
-        }
-        maxSJoffset: {
-            description: "Maximum distance from annotated splice junction to correct.",
-            category: "advanced"
-        }
-        outputPrefix: {
-            description: "Output directory path + output file prefix.",
-            category: "required"
-        }
-        correctMismatches: {
-            description: "Set this to make TranscriptClean correct mismatches.",
-            category: "common"
-        }
-        correctIndels: {
-            description: "Set this to make TranscriptClean correct indels.",
-            category: "common"
-        }
-        correctSJs: {
-            description: "Set this to make TranscriptClean correct splice junctions.",
-            category: "common"
-        }
-        dryRun: {
-            description: "TranscriptClean will read in the data but don't do any correction.",
-            category: "advanced"
-        }
-        primaryOnly: {
-            description: "Only output primary mappings of transcripts.",
-            category: "advanced"
-        }
-        canonOnly: {
-            description: "Only output canonical transcripts and transcript containing annotated noncanonical junctions.",
-            category: "advanced"
-        }
-        bufferSize: {
-            description: "Number of lines to output to file at once by each thread during run.",
-            category: "common"
-        }
-        deleteTmp: {
-            description: "The temporary directory generated by TranscriptClean will be removed.",
-            category: "common"
-        }
-        spliceJunctionAnnotation: {
-            description: "Splice junction file.",
-            category: "common"
-        }
-        variantFile: {
-            description: "VCF formatted file of variants.",
-            category: "common"
-        }
-        outputTranscriptCleanFasta: {
-            description: "Fasta file containing corrected reads.",
-            category: "required"
-        }
-        outputTranscriptCleanLog: {
-            description: "Log file of TranscriptClean run.",
-            category: "required"
-        }
-        outputTranscriptCleanSAM: {
-            description: "SAM file containing corrected aligned reads.",
-            category: "required"
-        }
-        outputTranscriptCleanTElog: {
-            description: "TE log file of TranscriptClean run.",
-            category: "required"
-        }
+        # inputs
+        SAMfile: {description: "Input SAM file containing transcripts to correct.", category: "required"}
+        referenceGenome: {description: "Reference genome fasta file.", category: "required"}
+        maxLenIndel: {description: "Maximum size indel to correct.", category: "advanced"}
+        maxSJoffset: {description: "Maximum distance from annotated splice junction to correct.", category: "advanced"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        correctMismatches: {description: "Set this to make TranscriptClean correct mismatches.", category: "common"}
+        correctIndels: {description: "Set this to make TranscriptClean correct indels.", category: "common"}
+        correctSJs: {description: "Set this to make TranscriptClean correct splice junctions.", category: "common"}
+        dryRun: {description: "TranscriptClean will read in the data but don't do any correction.", category: "advanced"}
+        primaryOnly: {description: "Only output primary mappings of transcripts.", category: "advanced"}
+        canonOnly: {description: "Only output canonical transcripts and transcript containing annotated noncanonical junctions.", category: "advanced"}
+        bufferSize: {description: "Number of lines to output to file at once by each thread during run.", category: "common"}
+        deleteTmp: {description: "The temporary directory generated by TranscriptClean will be removed.", category: "common"}
+        spliceJunctionAnnotation: {description: "Splice junction file.", category: "common"}
+        variantFile: {description: "VCF formatted file of variants.", category: "common"}
+        cores: {description: "The number of cores to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+        
+        # outputs
+        outputTranscriptCleanFasta: {description: "Fasta file containing corrected reads."}
+        outputTranscriptCleanLog: {description: "Log file of TranscriptClean run."}
+        outputTranscriptCleanSAM: {description: "SAM file containing corrected aligned reads."}
+        outputTranscriptCleanTElog: {description: "TE log file of TranscriptClean run."}
    }
 }
