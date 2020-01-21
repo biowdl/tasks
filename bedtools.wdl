@@ -82,9 +82,9 @@ task Merge {
 
     parameter_meta {
         inputBed: {description: "The bed to merge",
-                category: "required"}
+                   category: "required"}
         outputBed: {description: "The path to write the output to",
-                     category: "advanced"}
+                    category: "advanced"}
         dockerImage: {
             description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
             category: "advanced"
