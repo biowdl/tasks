@@ -297,7 +297,8 @@ task HaplotypeCallerGvcf {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
-        Array[File]+ intervalList
+        Array[File]+? intervalList
+        Array[File]+? excludeIntervalList
         String gvcfPath
         File referenceFasta
         File referenceFastaIndex
@@ -305,6 +306,7 @@ task HaplotypeCallerGvcf {
         Float contamination = 0.0
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        Int? ploidy
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -319,7 +321,9 @@ task HaplotypeCallerGvcf {
         -R ~{referenceFasta} \
         -O ~{gvcfPath} \
         -I ~{sep=" -I " inputBams} \
-        -L ~{sep=' -L ' intervalList} \
+        ~{"--sample-ploidy " + ploidy} \
+        ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
+        ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
         ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
         -contamination ~{contamination} \
         -ERC GVCF

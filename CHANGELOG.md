@@ -11,6 +11,11 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
+  bed files called bedtools.MergeBedFiles. This task combines bedtools merge 
+  and sort.
++ Change `g` parameter on bedtools.Sort to `genome`.
++ Add `ploidity` and `excludeIntervalList` to gatk.HaplotypeCallerGvcf.
 + Update centrifuge tasks.
 + Removed unused "cores" inputs from transcriptclean tasks.
 + Removed unused "cores" inputs from talon tasks.
