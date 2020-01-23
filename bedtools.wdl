@@ -182,7 +182,7 @@ task Intersect {
         bedtools intersect \
         -a ~{regionsA} \
         -b ~{regionsB} \
-        ~{true="--sorted" false="" sorted} \
+        ~{true="-sorted" false="" sorted} \
         ~{true="-g sorted.genome" false="" sorted} \
         > ~{outputBed}
     }
