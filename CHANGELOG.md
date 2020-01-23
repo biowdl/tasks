@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Centrifuge: Fix -1/-U options for single end data.
 + Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
   bed files called bedtools.MergeBedFiles. This task combines bedtools merge 
   and sort.
