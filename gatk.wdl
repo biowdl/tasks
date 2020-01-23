@@ -32,7 +32,7 @@ task AnnotateIntervals {
         File? segmentalDuplicationTrack
         Int featureQueryLookahead = 1000000
 
-        String memory = "120"
+        String memory = "10G"
         String javaXmx = "2G"
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -1242,7 +1242,7 @@ task PreprocessIntervals {
         gatk --java-options -Xmx~{javaXmx} \
         PreprocessIntervals \
         -R ~{referenceFasta} \
-        --sequence-dictinary ~{referenceFastaDict} \
+        --sequence-dictionary ~{referenceFastaDict} \
         --bin-length ~{binLength} \
         --padding ~{padding} \
         ~{"-L " + intervals} \
