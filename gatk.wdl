@@ -534,7 +534,7 @@ task CreateReadCountPanelOfNormals {
 
     command {
         set -e
-        mkdir -p ~{PONpath}
+        mkdir -p "$(dirname ~{PONpath})"
         gatk --java-options -Xmx~{javaXmx} \
         CreateReadCountPanelOfNormals \
         -I ~{sep=" -I " readCountsFiles} \
