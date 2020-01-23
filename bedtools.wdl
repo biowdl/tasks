@@ -102,6 +102,7 @@ task MergeBedFiles {
 
     # A sorted bed is needed for bedtools merge
     command {
+        set -e -o pipefail
         cat ~{sep=" " bedFiles} | bedtools sort | bedtools merge > ~{outputBed}
     }
 
