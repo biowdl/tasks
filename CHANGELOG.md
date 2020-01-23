@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add bedtools.Intersect
 + Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
   from going unnoticed.
 + Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
