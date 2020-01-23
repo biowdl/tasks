@@ -1244,7 +1244,7 @@ task PreprocessIntervals {
         -R ~{referenceFasta} \
         --sequence-dictinary ~{referenceFastaDict} \
         --bin-length ~{binLength} \
-        --padding ~{padding}
+        --padding ~{padding} \
         ~{"-L " + intervals} \
         --interval-merging-rule ~{intervalMergingRule} \
         -O ~{outputIntervalList}
