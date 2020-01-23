@@ -34,7 +34,7 @@ task AnnotateIntervals {
 
         String memory = "10G"
         String javaXmx = "2G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -258,7 +258,7 @@ task CallCopyRatioSegments {
 
         String memory = "21G"
         String javaXmx = "6G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -302,7 +302,7 @@ task CollectAllelicCounts {
         File referenceFastaFai
         String memory = "90G"
         String javaXmx = "30G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -354,7 +354,7 @@ task CollectReadCounts {
 
         String memory = "35G"
         String javaXmx = "7G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -529,7 +529,7 @@ task CreateReadCountPanelOfNormals {
 
         String memory = "21G"
         String javaXmx = "7G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -573,7 +573,7 @@ task DenoiseReadCounts {
 
         String memory = "39G"
         String javaXmx = "13G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -988,7 +988,7 @@ task ModelSegments {
 
         String memory = "64G"
         String javaXmx = "10G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -1126,7 +1126,7 @@ task PlotDenoisedCopyRatios {
 
         String memory = "21G"
         String javaXmx = "7G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -1180,7 +1180,7 @@ task PlotModeledSegments {
 
         String memory = "21G"
         String javaXmx = "7G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
@@ -1233,7 +1233,7 @@ task PreprocessIntervals {
 
         String memory = "10G"
         String javaXmx = "2G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0"
     }
 
     command {
