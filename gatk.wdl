@@ -342,8 +342,10 @@ task HaplotypeCallerGvcf {
     parameter_meta {
         inputBams: {description: "The BAM files on which to perform variant calling.", category: "required"}
         inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
-        intervalList: {description: "Bed files or interval lists describing the regions to operate on.", category: "required"}
+        intervalList: {description: "Bed files or interval lists describing the regions to operate on.", category: "common"}
+        excludeIntervalList: {description: "Bed files or interval lists describing the regions to NOT operate on.", category: "common"}
         gvcfPath: {description: "The location to write the output GVCF to.", category: "required"}
+        ploidy: {description: "The ploidy with which the variants should be called.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",

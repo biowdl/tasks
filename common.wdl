@@ -174,6 +174,12 @@ task TextToFile {
         File out = outputFile
     }
 
+    parameter_meta {
+        text: {description: "The text to print", category: "required"}
+        outputFile: {description: "The name of the output file", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
     runtime {
         memory: "1G"
         docker: dockerImage
