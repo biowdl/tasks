@@ -39,7 +39,7 @@ task AnnotateIntervals {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{annotatedIntervalsPath}"
+        mkdir -p "$(dirname ~{annotatedIntervalsPath})"
         gatk --java-options -Xmx~{javaXmx} \
         AnnotateIntervals \
         -R ~{referenceFasta} \
