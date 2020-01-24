@@ -34,7 +34,7 @@ task AnnotateIntervals {
 
         String memory = "10G"
         String javaXmx = "2G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -258,7 +258,7 @@ task CallCopyRatioSegments {
 
         String memory = "21G"
         String javaXmx = "6G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -302,7 +302,7 @@ task CollectAllelicCounts {
         File referenceFastaFai
         String memory = "90G"
         String javaXmx = "30G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -354,7 +354,7 @@ task CollectReadCounts {
 
         String memory = "35G"
         String javaXmx = "7G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -465,7 +465,7 @@ task CombineVariants {
 
         String memory = "24G"
         String javaXmx = "12G"
-        String dockerImage = "broadinstitute/gatk3:3.8-1"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command <<<
@@ -529,7 +529,7 @@ task CreateReadCountPanelOfNormals {
 
         String memory = "21G"
         String javaXmx = "7G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer causes a spark related error for some reason...
     }
 
     command {
@@ -573,7 +573,7 @@ task DenoiseReadCounts {
 
         String memory = "39G"
         String javaXmx = "13G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -944,7 +944,7 @@ task MergeStats {
 
         String memory = "28G"
         String javaXmx = "14G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -988,7 +988,7 @@ task ModelSegments {
 
         String memory = "64G"
         String javaXmx = "10G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -1061,7 +1061,7 @@ task MuTect2 {
 
         String memory = "16G"
         String javaXmx = "4G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -1126,13 +1126,13 @@ task PlotDenoisedCopyRatios {
 
         String memory = "21G"
         String javaXmx = "7G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-options -XmX~{javaXmx} \
+        gatk --java-options -Xmx~{javaXmx} \
         PlotDenoisedCopyRatios \
         --standardized-copy-ratios ~{standardizedCopyRatios} \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
@@ -1180,7 +1180,7 @@ task PlotModeledSegments {
 
         String memory = "21G"
         String javaXmx = "7G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
@@ -1233,7 +1233,7 @@ task PreprocessIntervals {
 
         String memory = "10G"
         String javaXmx = "2G"
-        String dockerImage = "broadinstitute/gatk:4.1.4.0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
