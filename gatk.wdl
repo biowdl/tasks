@@ -263,7 +263,7 @@ task CallCopyRatioSegments {
 
     command {
         set -e
-        mkdir -p "$(~{outputPrefix})"
+        mkdir -p "$(dirname ~{outputPrefix})"
         gatk --java-options -Xmx~{javaXmx} \
         CallCopyRatioSegments \
         -I ~{copyRatioSegments} \
@@ -999,15 +999,15 @@ task ModelSegments {
         --denoised-copy-ratios ~{denoisedCopyRatios} \
         --allelic-counts ~{allelicCounts} \
         ~{"--normal-allelic-counts " + normalAllelicCounts} \
-        --minimum-total-allele-count-case ~{minimumTotalAlleleCountCase}
-        --maximum-number-of-smoothing-iterations ~{maximumNumberOfSmoothingIterations}
+        --minimum-total-allele-count-case ~{minimumTotalAlleleCountCase} \
+        --maximum-number-of-smoothing-iterations ~{maximumNumberOfSmoothingIterations} \
         --output ~{outputDir} \
         --output-prefix ~{outputPrefix}
     }
 
     output {
         File hetrozygousAllelicCounts = outputDir + "/" + outputPrefix + ".hets.tsv"
-        File normalHetrozygousAllelicCounts = outputDir + "/" + outputPrefix + ".hets.normal.tsv"
+        File? normalHetrozygousAllelicCounts = outputDir + "/" + outputPrefix + ".hets.normal.tsv"
         File copyRatioSegments = outputDir + "/" + outputPrefix + ".cr.seg"
         File copyRatioCBS = outputDir + "/" + outputPrefix + ".cr.igv.seg"
         File alleleFractionCBS = outputDir + "/" + outputPrefix + ".af.igv.seg"
@@ -1124,9 +1124,9 @@ task PlotDenoisedCopyRatios {
         File standardizedCopyRatios
         File denoisedCopyRatios
 
-        String memory = "21G"
+        String memory = "32G"
         String javaXmx = "7G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
 
     command {
@@ -1180,13 +1180,13 @@ task PlotModeledSegments {
 
         String memory = "21G"
         String javaXmx = "7G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-option -Xmx~{javaXmx} \
+        gatk --java-options -Xmx~{javaXmx} \
         PlotModeledSegments \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
         --allelic-counts ~{allelicCounts} \
