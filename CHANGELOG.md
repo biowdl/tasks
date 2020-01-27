@@ -11,6 +11,17 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Added GATK CNV calling tasks:
+    + AnnotateIntervals
+    + CallCopyRatioSegments
+    + CollectAllelicCounts
+    + CollectReadCounts
+    + CreateReadCountPanelOfNormals
+    + DenoiseReadCounts
+    + ModelSegments
+    + PlotDenoisedCopyRatios
+    + PlotModeledSegments
+    + PreprocessIntervals
 + Update centrifuge tasks.
 + Removed unused "cores" inputs from transcriptclean tasks.
 + Removed unused "cores" inputs from talon tasks.
