@@ -91,8 +91,8 @@ task Classify {
         Array[File]+ read1
         String outputPrefix
         String outputName = basename(outputPrefix)
+        Array[File] read2 = []
 
-        Array[File]? read2
         Int? trim5
         Int? trim3
         Int? reportMaxDistinct
@@ -121,8 +121,8 @@ task Classify {
         ~{"--host-taxids " + hostTaxIDs} \
         ~{"--exclude-taxids " + excludeTaxIDs} \
         ~{"-x " + indexPrefix} \
-        ~{true="-1 " false="-U " defined(read2)} ~{sep="," read1} \
-        ~{"-2 "} ~{sep="," read2} \
+        ~{true="-1" false="-U" length(read2) > 0} ~{sep="," read1} \
+        ~{true="-2" false="" length(read2) > 0} ~{sep="," read2} \
         ~{"-S " + outputPrefix + "/" + outputName + "_classification.tsv"} \
         ~{"--report-file " + outputPrefix + "/" + outputName + "_output_report.tsv"}
     }
