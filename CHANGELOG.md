@@ -11,6 +11,17 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Added GATK CNV calling tasks:
+    + AnnotateIntervals
+    + CallCopyRatioSegments
+    + CollectAllelicCounts
+    + CollectReadCounts
+    + CreateReadCountPanelOfNormals
+    + DenoiseReadCounts
+    + ModelSegments
+    + PlotDenoisedCopyRatios
+    + PlotModeledSegments
+    + PreprocessIntervals
 + Add common.TextToFile task.
 + Add bedtools.Intersect.
 + Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
