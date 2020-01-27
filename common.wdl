@@ -158,6 +158,34 @@ task StringArrayMd5 {
     }
 }
 
+task TextToFile {
+
+    input {
+        String text
+        String outputFile = "out.txt"
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
+    }
+
+    command <<<
+        echo $'~{text}' > ~{outputFile}
+    >>>
+
+    output {
+        File out = outputFile
+    }
+
+    parameter_meta {
+        text: {description: "The text to print", category: "required"}
+        outputFile: {description: "The name of the output file", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+    runtime {
+        memory: "1G"
+        docker: dockerImage
+    }
+}
+
 task YamlToJson {
     input {
         File yaml

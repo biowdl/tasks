@@ -841,7 +841,8 @@ task HaplotypeCallerGvcf {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
-        Array[File]+ intervalList
+        Array[File]+? intervalList
+        Array[File]+? excludeIntervalList
         String gvcfPath
         File referenceFasta
         File referenceFastaIndex
@@ -849,6 +850,7 @@ task HaplotypeCallerGvcf {
         Float contamination = 0.0
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        Int? ploidy
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -863,7 +865,9 @@ task HaplotypeCallerGvcf {
         -R ~{referenceFasta} \
         -O ~{gvcfPath} \
         -I ~{sep=" -I " inputBams} \
-        -L ~{sep=' -L ' intervalList} \
+        ~{"--sample-ploidy " + ploidy} \
+        ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
+        ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
         ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
         -contamination ~{contamination} \
         -ERC GVCF
@@ -882,8 +886,10 @@ task HaplotypeCallerGvcf {
     parameter_meta {
         inputBams: {description: "The BAM files on which to perform variant calling.", category: "required"}
         inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
-        intervalList: {description: "Bed files or interval lists describing the regions to operate on.", category: "required"}
+        intervalList: {description: "Bed files or interval lists describing the regions to operate on.", category: "common"}
+        excludeIntervalList: {description: "Bed files or interval lists describing the regions to NOT operate on.", category: "common"}
         gvcfPath: {description: "The location to write the output GVCF to.", category: "required"}
+        ploidy: {description: "The ploidy with which the variants should be called.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",

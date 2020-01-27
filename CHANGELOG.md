@@ -22,6 +22,16 @@ version 2.2.0-dev
     + PlotDenoisedCopyRatios
     + PlotModeledSegments
     + PreprocessIntervals
++ Add common.TextToFile task.
++ Add bedtools.Intersect.
++ Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
+  from going unnoticed.
++ Centrifuge: Fix -1/-U options for single end data.
++ Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
+  bed files called bedtools.MergeBedFiles. This task combines bedtools merge 
+  and sort.
++ Change `g` parameter on bedtools.Sort to `genome`.
++ Add `ploidity` and `excludeIntervalList` to gatk.HaplotypeCallerGvcf.
 + Update centrifuge tasks.
 + Removed unused "cores" inputs from transcriptclean tasks.
 + Removed unused "cores" inputs from talon tasks.
