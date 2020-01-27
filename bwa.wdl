@@ -9,7 +9,7 @@ task Mem {
         String? readgroup
 
         Int threads = 2
-        String memory = "16G"
+        String memory = "32G"
         String picardXmx = "4G"
         # A mulled container is needed to have both picard and bwa in one container.
         # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
