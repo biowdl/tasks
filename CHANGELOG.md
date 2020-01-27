@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Increase default memory of BWA mem to 32G (was 16G).
 + Add common.TextToFile task.
 + Add bedtools.Intersect.
 + Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
