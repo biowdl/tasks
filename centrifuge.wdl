@@ -90,7 +90,6 @@ task Classify {
         String indexPrefix
         Array[File]+ read1
         String outputPrefix
-        String outputName = basename(outputPrefix)
         Array[File] read2 = []
 
         Int? trim5
@@ -113,7 +112,7 @@ task Classify {
         ~{inputFormatOptions[inputFormat]} \
         ~{true="--phred64" false="--phred33" phred64} \
         ~{"--min-hitlen " + minHitLength} \
-        ~{"--met-file " + outputPrefix + "/" + outputName + "_alignment_metrics.tsv"} \
+        ~{"--met-file " + outputPrefix + "_alignment_metrics.tsv"} \
         ~{"--threads " + threads} \
         ~{"--trim5 " + trim5} \
         ~{"--trim3 " + trim3} \
@@ -123,14 +122,14 @@ task Classify {
         ~{"-x " + indexPrefix} \
         ~{true="-1" false="-U" length(read2) > 0} ~{sep="," read1} \
         ~{true="-2" false="" length(read2) > 0} ~{sep="," read2} \
-        ~{"-S " + outputPrefix + "/" + outputName + "_classification.tsv"} \
-        ~{"--report-file " + outputPrefix + "/" + outputName + "_output_report.tsv"}
+        ~{"-S " + outputPrefix + "_classification.tsv"} \
+        ~{"--report-file " + outputPrefix + "_output_report.tsv"}
     }
 
     output {
-        File outputMetrics = outputPrefix + "/" + outputName + "_alignment_metrics.tsv"
-        File outputClassification = outputPrefix + "/" + outputName + "_classification.tsv"
-        File outputReport = outputPrefix + "/" + outputName + "_output_report.tsv"
+        File outputMetrics = outputPrefix + "_alignment_metrics.tsv"
+        File outputClassification = outputPrefix + "_classification.tsv"
+        File outputReport = outputPrefix + "_output_report.tsv"
     }
 
     runtime {
@@ -146,7 +145,6 @@ task Classify {
         indexPrefix: {description: "The basename of the index for the reference genomes.", category: "required"}
         read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        outputName: {description: "The base name of the outputPrefix.", category: "required"}
         read2: {description: "List of files containing mate 2s.", category: "common"}
         trim5: {description: "Trim <int> bases from 5' (left) end of each read before alignment.", category: "common"}
         trim3: {description: "Trim <int> bases from 3' (right) end of each read before alignment.", category: "common"}
