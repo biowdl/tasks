@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add `memory` input to fastqc task.
 + Add common.TextToFile task.
 + Add bedtools.Intersect.
 + Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
