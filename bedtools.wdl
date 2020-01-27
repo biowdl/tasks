@@ -102,6 +102,7 @@ task MergeBedFiles {
 
     # A sorted bed is needed for bedtools merge
     command {
+        set -e -o pipefail
         cat ~{sep=" " bedFiles} | bedtools sort | bedtools merge > ~{outputBed}
     }
 
@@ -161,5 +162,51 @@ task Sort {
 
     runtime {
         docker: dockerImage
+    }
+}
+
+task Intersect {
+    input {
+        File regionsA
+        File regionsB
+        # Giving a faidx file will set the sorted option.
+        File? faidx
+        String outputBed = "intersect.bed"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+    }
+    Boolean sorted = defined(faidx)
+
+    command {
+        set -e
+        ~{"cut -f1,2 " + faidx} ~{true="> sorted.genome" false ="" sorted}
+        bedtools intersect \
+        -a ~{regionsA} \
+        -b ~{regionsB} \
+        ~{true="-sorted" false="" sorted} \
+        ~{true="-g sorted.genome" false="" sorted} \
+        > ~{outputBed}
+    }
+
+    output {
+        File intersectedBed = outputBed
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        faidx: {description: "The fasta index (.fai) file that is used to create the genome file required for sorted output. Implies sorted option.",
+                category: "common"}
+        regionsA: {description: "Region file a to intersect",
+                   category: "required"}
+        regionsB: {description: "Region file b to intersect",
+                   category: "required"}
+        outputBed: {description: "The path to write the output to",
+                    category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
     }
 }

@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add common.TextToFile task.
++ Add bedtools.Intersect.
++ Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
+  from going unnoticed.
 + Centrifuge: Fix -1/-U options for single end data.
 + Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
   bed files called bedtools.MergeBedFiles. This task combines bedtools merge 
