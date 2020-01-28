@@ -12,6 +12,7 @@ that users understand how the changes affect the new version.
 version 2.2.0-dev
 ---------------------------
 + Add `memory` input to fastqc task.
++ Centrifuge: Fix issue where centrifuge would fail on incorrect paths.
 + Added GATK CNV calling tasks:
     + AnnotateIntervals
     + CallCopyRatioSegments
