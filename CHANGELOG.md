@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Increase default memory of BWA mem to 32G (was 16G).
 + Add `memory` input to fastqc task.
 + Centrifuge: Fix issue where centrifuge would fail on incorrect paths.
 + Added GATK CNV calling tasks:
