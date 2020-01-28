@@ -87,7 +87,7 @@ task Classify {
         String inputFormat = "fastq"
         Boolean phred64 = false
         Int minHitLength = 22
-        String indexPrefix
+        Array[File]+ indexFiles
         Array[File]+ read1
         String outputPrefix
         Array[File] read2 = []
@@ -119,7 +119,7 @@ task Classify {
         ~{"-k " + reportMaxDistinct} \
         ~{"--host-taxids " + hostTaxIDs} \
         ~{"--exclude-taxids " + excludeTaxIDs} \
-        ~{"-x " + indexPrefix} \
+        ~{"-x " + sub(indexFiles[0], "\.[0-9]\.cf", "")} \
         ~{true="-1" false="-U" length(read2) > 0} ~{sep="," read1} \
         ~{true="-2" false="" length(read2) > 0} ~{sep="," read2} \
         ~{"-S " + outputPrefix + "_classification.tsv"} \
@@ -142,7 +142,7 @@ task Classify {
         inputFormat: {description: "The format of the read file(s).", category: "required"}
         phred64: {description: "If set to true, Phred+64 encoding is used.", category: "required"}
         minHitLength: {description: "Minimum length of partial hits.", category: "required"}
-        indexPrefix: {description: "The basename of the index for the reference genomes.", category: "required"}
+        indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
         read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         read2: {description: "List of files containing mate 2s.", category: "common"}

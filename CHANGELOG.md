@@ -13,6 +13,7 @@ version 2.2.0-dev
 ---------------------------
 + Add `minimumContigLength` input to PlotDenoisedCopyRatios and PlotModeledSegments.
 + Add `commonVariantSitesIndex` input to CollectAllelicCounts
++ Centrifuge: Fix issue where Centrifuge could not locate index files.
 + Increase default memory of BWA mem to 32G (was 16G).
 + Add `memory` input to fastqc task.
 + Centrifuge: Fix issue where centrifuge would fail on incorrect paths.
