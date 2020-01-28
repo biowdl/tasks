@@ -12,6 +12,19 @@ that users understand how the changes affect the new version.
 version 2.2.0-dev
 ---------------------------
 + Increase default memory of BWA mem to 32G (was 16G).
++ Add `memory` input to fastqc task.
++ Centrifuge: Fix issue where centrifuge would fail on incorrect paths.
++ Added GATK CNV calling tasks:
+    + AnnotateIntervals
+    + CallCopyRatioSegments
+    + CollectAllelicCounts
+    + CollectReadCounts
+    + CreateReadCountPanelOfNormals
+    + DenoiseReadCounts
+    + ModelSegments
+    + PlotDenoisedCopyRatios
+    + PlotModeledSegments
+    + PreprocessIntervals
 + Add common.TextToFile task.
 + Add bedtools.Intersect.
 + Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
