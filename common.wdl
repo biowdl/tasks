@@ -167,7 +167,7 @@ task TextToFile {
     }
 
     command <<<
-        echo $'~{text}' > ~{outputFile}
+        echo ~{text} > ~{outputFile}
     >>>
 
     output {
