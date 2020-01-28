@@ -295,6 +295,7 @@ task CollectAllelicCounts {
     input {
         String allelicCountsPath = "allelic_counts.tsv"
         File commonVariantSites
+        File? commonVariantSitesIndex
         File inputBam
         File inputBamIndex
         File referenceFasta
@@ -1129,6 +1130,7 @@ task PlotDenoisedCopyRatios {
         String outputPrefix
         File standardizedCopyRatios
         File denoisedCopyRatios
+        Int? minimumContigLength
 
         String memory = "32G"
         String javaXmx = "7G"
@@ -1143,6 +1145,7 @@ task PlotDenoisedCopyRatios {
         --standardized-copy-ratios ~{standardizedCopyRatios} \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
         --sequence-dictionary ~{referenceFastaDict} \
+        ~{"--minimum-contig-length " + minimumContigLength} \
         --output ~{outputDir} \
         --output-prefix ~{outputPrefix}
     }
@@ -1183,6 +1186,7 @@ task PlotModeledSegments {
         File denoisedCopyRatios
         File segments
         File allelicCounts
+        Int? minimumContigLength
 
         String memory = "21G"
         String javaXmx = "7G"
@@ -1198,6 +1202,7 @@ task PlotModeledSegments {
         --allelic-counts ~{allelicCounts} \
         --segments ~{segments} \
         --sequence-dictionary ~{referenceFastaDict} \
+        ~{"--minimum-contig-length " + minimumContigLength} \
         --output ~{outputDir} \
         --output-prefix ~{outputPrefix}
     }
