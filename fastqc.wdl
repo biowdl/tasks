@@ -18,6 +18,7 @@ task Fastqc {
         String? dir
 
         Int threads = 1
+        String memory = "4G"
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.7--4"
         Array[File]? NoneArray
         File? NoneFile
@@ -61,74 +62,29 @@ task Fastqc {
 
     runtime {
         cpu: threads
+        memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        seqFile: {
-            description: "A fastq file.",
-            category: "required"
-        }
-        outdirPath: {
-            description: "The path to write the output to",
-            catgory: "required"
-        }
-        casava: {
-            description: "Equivalent to fastqc's --casava flag.",
-            category: "advanced"
-        }
-        nano: {
-            description: "Equivalent to fastqc's --nano flag.",
-            category: "advanced"
-        }
-        noFilter: {
-            description: "Equivalent to fastqc's --nofilter flag.",
-            category: "advanced"
-        }
-        extract: {
-            description: "Equivalent to fastqc's --extract flag.",
-            category: "advanced"
-        }
-        nogroup: {
-            description: "Equivalent to fastqc's --nogroup flag.",
-            category: "advanced"
-        }
-        minLength: {
-            description: "Equivalent to fastqc's --min_length option.",
-            category: "advanced"
-        }
-        format: {
-            description: "Equivalent to fastqc's --format option.",
-            category: "advanced"
-        }
-        contaminants: {
-            description: "Equivalent to fastqc's --contaminants option.",
-            category: "advanced"
-        }
-        adapters: {
-            description: "Equivalent to fastqc's --adapters option.",
-            category: "advanced"
-        }
-        limits: {
-            description: "Equivalent to fastqc's --limits option.",
-            category: "advanced"
-        }
-        kmers: {
-            description: "Equivalent to fastqc's --kmers option.",
-            category: "advanced"
-        }
-        dir: {
-            description: "Equivalent to fastqc's --dir option.",
-            category: "advanced"
-        }
-        threads: {
-            description: "The number of cores to use.",
-            category: "advanced"
-        }
-        dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-            category: "advanced"
-        }
+        seqFile: {description: "A fastq file.", category: "required"}
+        outdirPath: {description: "The path to write the output to", catgory: "required"}
+        casava: {description: "Equivalent to fastqc's --casava flag.", category: "advanced"}
+        nano: {description: "Equivalent to fastqc's --nano flag.", category: "advanced"}
+        noFilter: {description: "Equivalent to fastqc's --nofilter flag.", category: "advanced"}
+        extract: {description: "Equivalent to fastqc's --extract flag.", category: "advanced"}
+        nogroup: {description: "Equivalent to fastqc's --nogroup flag.", category: "advanced"}
+        minLength: {description: "Equivalent to fastqc's --min_length option.", category: "advanced"}
+        format: {description: "Equivalent to fastqc's --format option.", category: "advanced"}
+        contaminants: {description: "Equivalent to fastqc's --contaminants option.", category: "advanced"}
+        adapters: {description: "Equivalent to fastqc's --adapters option.", category: "advanced"}
+        limits: {description: "Equivalent to fastqc's --limits option.", category: "advanced"}
+        kmers: {description: "Equivalent to fastqc's --kmers option.", category: "advanced"}
+        dir: {description: "Equivalent to fastqc's --dir option.", category: "advanced"}
+        threads: {description: "The number of cores to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 
     meta {
