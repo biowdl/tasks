@@ -68,8 +68,7 @@ task Indexing {
         splitIndex: {description: "Split index for every ~NUM input bases.", category: "advanced"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output
         outputIndexFile: {description: "Indexed reference file."}
@@ -150,8 +149,7 @@ task Mapping {
         queryFile: {description: "Input fasta file.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output
         outputAlignmentFile: {description: "Mapping and alignment between collections of DNA sequences file."}

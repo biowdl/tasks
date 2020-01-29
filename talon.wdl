@@ -64,8 +64,7 @@ task CreateAbundanceFileFromDatabase {
         whitelistFile: {description: "Whitelist file of transcripts to include in the output.", category: "advanced"}
         datasetsFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         outputAbundanceFile: {description: "Abundance for each transcript in the TALON database across datasets."}
@@ -120,8 +119,7 @@ task CreateGtfFromDatabase {
         whitelistFile: {description: "Whitelist file of transcripts to include in the output.", category: "advanced"}
         datasetFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         outputGTFfile: {description: "The genes, transcripts, and exons stored a TALON database in GTF format."}
@@ -160,13 +158,16 @@ task FilterTalonTranscripts {
     }
 
     parameter_meta {
+        # inputs
         databaseFile: {description: "TALON database.", category: "required"}
         annotationVersion: {description: "Which annotation version to use.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         pairingsFile: {description: "A file indicating which datasets should be considered together.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputTranscriptWhitelist: {description: "A transcript whitelist produced from the TALON database."}
     }
 }
 
@@ -208,8 +209,7 @@ task GetReadAnnotations {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         datasetFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         outputAnnotation: {description: "Read-specific annotation information from a TALON database."}
@@ -265,8 +265,7 @@ task InitializeTalonDatabase {
         cutoff3p: {description: "Maximum allowable distance (bp) at the 3' end during annotation.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         outputDatabase: {description: "TALON database."}
@@ -297,10 +296,13 @@ task ReformatGtf {
     }
 
     parameter_meta {
+        # inputs
         GTFfile: {description: "GTF annotation containing genes, transcripts, and edges.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputReformattedGTF: {description: "Reformatted GTF file."}
     }
 }
 
@@ -342,8 +344,7 @@ task SummarizeDatasets {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         datasetGroupsCSV: {description: "File of comma-delimited dataset groups to process together.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         outputSummaryFile: {description: "Tab-delimited file of gene and transcript counts for each dataset."}
@@ -413,8 +414,7 @@ task Talon {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         outputUpdatedDatabase: {description: "Updated TALON database."}
