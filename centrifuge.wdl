@@ -206,7 +206,7 @@ task Inspect {
     parameter_meta {
         # inputs
         printOption: {description: "The output option for inspect (fasta, summary, conversionTable, taxonomyTree, nameTable, sizeTable)", category: "required"}
-        indexBasename: {description: "The basename of the index to be inspected.", category: "required"}
+        indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         across: {description: "When printing FASTA output, output a newline character every <int> bases.", category: "common"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}

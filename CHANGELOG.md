@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Update parameter_meta for TALON, Centrifuge and Minimap2.
++ Centrifuge: Fix issue where Centrifuge Inspect did not get the correct index files location.
 + Add `minimumContigLength` input to PlotDenoisedCopyRatios and PlotModeledSegments.
 + Add `commonVariantSitesIndex` input to CollectAllelicCounts
 + Centrifuge: Fix issue where Centrifuge could not locate index files.
