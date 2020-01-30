@@ -115,9 +115,11 @@ task Classify {
     command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        indexPath=~{sub(indexFiles[0], "\.[0-9]\.cf", "")}
         indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
-        mv ${indexPath}* $PWD/
+        for file in ~{sep=" " indexFiles}
+        do
+            ln ${file} $PWD/"$(basename ${file})"
+        done
         centrifuge \
         ~{inputFormatOptions[inputFormat]} \
         ~{true="--phred64" false="--phred33" phred64} \
@@ -190,9 +192,11 @@ task Inspect {
     command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        indexPath=~{sub(indexFiles[0], "\.[0-9]\.cf", "")}
         indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
-        mv ${indexPath}* $PWD/
+        for file in ~{sep=" " indexFiles}
+        do
+            ln ${file} $PWD/"$(basename ${file})"
+        done
         centrifuge-inspect \
         ~{outputOptions[printOption]} \
         ~{"--across " + across} \
