@@ -837,20 +837,21 @@ task GetPileupSummaries {
 }
 
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
-task HaplotypeCallerGvcf {
+task HaplotypeCaller {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         Array[File]+? intervalList
         Array[File]+? excludeIntervalList
-        String gvcfPath
+        String outputPath
         File referenceFasta
         File referenceFastaIndex
         File referenceFastaDict
-        Float contamination = 0.0
+        Float? contamination
         File? dbsnpVCF
         File? dbsnpVCFIndex
         Int? ploidy
+        Boolean gvcf = false
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -859,23 +860,23 @@ task HaplotypeCallerGvcf {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{gvcfPath})"
+        mkdir -p "$(dirname ~{outputPath})"
         gatk --java-options -Xmx~{javaXmx} \
         HaplotypeCaller \
         -R ~{referenceFasta} \
-        -O ~{gvcfPath} \
+        -O ~{outputPath} \
         -I ~{sep=" -I " inputBams} \
         ~{"--sample-ploidy " + ploidy} \
         ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
         ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
         ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
-        -contamination ~{contamination} \
-        -ERC GVCF
+        ~{"--contamination-fraction-per-sample-file " + contamination} \
+        ~{true="-ERC GVCF" false="" gvcf}
     }
 
     output {
-        File outputGVCF = gvcfPath
-        File outputGVCFIndex = gvcfPath + ".tbi"
+        File outputVCF = outputPath
+        File outputVCFIndex = outputPath + ".tbi"
     }
 
     runtime {
