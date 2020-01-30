@@ -68,6 +68,7 @@ task Build {
     }
 
     parameter_meta {
+        # inputs
         disableDifferenceCover: {description: "Disable use of the difference-cover sample.", category: "required"}
         conversionTable: {description: "List of UIDs (unique ID) and corresponding taxonomic IDs.", category: "required"}
         taxonomyTree: {description: "Taxonomic tree (e.g. nodes.dmp).", category: "required"}
@@ -79,6 +80,12 @@ task Build {
         ftabChars: {description: "Calculate an initial BW range with respect to this character.", category: "common"}
         kmerCount: {description: "Use <int> as kmer-size for counting the distinct number of k-mers in the input sequences.", category: "common"}
         sizeTable: {description: "List of taxonomic IDs and lengths of the sequences belonging to the same taxonomic IDs.", category: "common"}
+        threads: {description: "The number of threads to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputIndex: {description: "Generated Centrifuge index."}
     }
 }
 
@@ -87,7 +94,7 @@ task Classify {
         String inputFormat = "fastq"
         Boolean phred64 = false
         Int minHitLength = 22
-        String indexPrefix
+        Array[File]+ indexFiles
         Array[File]+ read1
         String outputPrefix
         Array[File] read2 = []
@@ -119,7 +126,7 @@ task Classify {
         ~{"-k " + reportMaxDistinct} \
         ~{"--host-taxids " + hostTaxIDs} \
         ~{"--exclude-taxids " + excludeTaxIDs} \
-        ~{"-x " + indexPrefix} \
+        ~{"-x " + sub(indexFiles[0], "\.[0-9]\.cf", "")} \
         ~{true="-1" false="-U" length(read2) > 0} ~{sep="," read1} \
         ~{true="-2" false="" length(read2) > 0} ~{sep="," read2} \
         ~{"-S " + outputPrefix + "_classification.tsv"} \
@@ -139,10 +146,11 @@ task Classify {
     }
 
     parameter_meta {
+        # inputs
         inputFormat: {description: "The format of the read file(s).", category: "required"}
         phred64: {description: "If set to true, Phred+64 encoding is used.", category: "required"}
         minHitLength: {description: "Minimum length of partial hits.", category: "required"}
-        indexPrefix: {description: "The basename of the index for the reference genomes.", category: "required"}
+        indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
         read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         read2: {description: "List of files containing mate 2s.", category: "common"}
@@ -151,13 +159,21 @@ task Classify {
         reportMaxDistinct: {description: "It searches for at most <int> distinct, primary assignments for each read or pair.", category: "common"}
         hostTaxIDs: {description: "A comma-separated list of taxonomic IDs that will be preferred in classification procedure.", category: "common"}
         excludeTaxIDs: {description: "A comma-separated list of taxonomic IDs that will be excluded in classification procedure.", category: "common"}
+        threads: {description: "The number of threads to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputMetrics: {description: "File with Centrifuge metrics."}
+        outputClassification: {description: "File with the classification results."}
+        outputReport: {description: "File with a classification summary."}
     }
 }
 
 task Inspect {
     input {
         String printOption = "fasta"
-        String indexBasename
+        Array[File]+ indexFiles
         String outputPrefix
 
         Int? across
@@ -174,7 +190,7 @@ task Inspect {
         centrifuge-inspect \
         ~{outputOptions[printOption]} \
         ~{"--across " + across} \
-        ~{indexBasename} \
+        ~{sub(indexFiles[0], "\.[0-9]\.cf", "")} \
         > ~{outputPrefix + "/" + printOption}
     }
 
@@ -188,10 +204,16 @@ task Inspect {
     }
 
     parameter_meta {
+        # inputs
         printOption: {description: "The output option for inspect (fasta, summary, conversionTable, taxonomyTree, nameTable, sizeTable)", category: "required"}
-        indexBasename: {description: "The basename of the index to be inspected.", category: "required"}
+        indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         across: {description: "When printing FASTA output, output a newline character every <int> bases.", category: "common"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputInspect: {description: "Output file according to output option."}
     }
 }
 
