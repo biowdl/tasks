@@ -112,9 +112,14 @@ task Classify {
 
     Map[String, String] inputFormatOptions = {"fastq": "-q", "fasta": "-f", "qseq": "--qseq", "raw": "-r", "sequences": "-c"}
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
+        indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
+        for file in ~{sep=" " indexFiles}
+        do
+            ln ${file} $PWD/"$(basename ${file})"
+        done
         centrifuge \
         ~{inputFormatOptions[inputFormat]} \
         ~{true="--phred64" false="--phred33" phred64} \
@@ -126,12 +131,12 @@ task Classify {
         ~{"-k " + reportMaxDistinct} \
         ~{"--host-taxids " + hostTaxIDs} \
         ~{"--exclude-taxids " + excludeTaxIDs} \
-        ~{"-x " + sub(indexFiles[0], "\.[0-9]\.cf", "")} \
+        -x $PWD/${indexBasename} \
         ~{true="-1" false="-U" length(read2) > 0} ~{sep="," read1} \
         ~{true="-2" false="" length(read2) > 0} ~{sep="," read2} \
         ~{"-S " + outputPrefix + "_classification.tsv"} \
         ~{"--report-file " + outputPrefix + "_output_report.tsv"}
-    }
+    >>>
 
     output {
         File outputMetrics = outputPrefix + "_alignment_metrics.tsv"
@@ -184,15 +189,20 @@ task Inspect {
 
     Map[String, String] outputOptions = {"fasta": "", "names": "--names", "summary": "--summary", "conversionTable": "--conversion-table", "taxonomyTree": "--taxonomy-tree", "nameTable": "--name-table", "sizeTable": "--size-table"}
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
+        indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
+        for file in ~{sep=" " indexFiles}
+        do
+            ln ${file} $PWD/"$(basename ${file})"
+        done
         centrifuge-inspect \
         ~{outputOptions[printOption]} \
         ~{"--across " + across} \
-        ~{sub(indexFiles[0], "\.[0-9]\.cf", "")} \
+        $PWD/${indexBasename} \
         > ~{outputPrefix + "/" + printOption}
-    }
+    >>>
 
     output {
         File outputInspect = outputPrefix + "/" + printOption
