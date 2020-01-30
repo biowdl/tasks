@@ -187,7 +187,7 @@ task Inspect {
 
     Map[String, String] outputOptions = {"fasta": "", "names": "--names", "summary": "--summary", "conversionTable": "--conversion-table", "taxonomyTree": "--taxonomy-tree", "nameTable": "--name-table", "sizeTable": "--size-table"}
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         indexPath=~{sub(indexFiles[0], "\.[0-9]\.cf", "")}
@@ -198,7 +198,7 @@ task Inspect {
         ~{"--across " + across} \
         $PWD/${indexBasename} \
         > ~{outputPrefix + "/" + printOption}
-    }
+    >>>
 
     output {
         File outputInspect = outputPrefix + "/" + printOption
