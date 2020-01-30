@@ -112,9 +112,12 @@ task Classify {
 
     Map[String, String] inputFormatOptions = {"fastq": "-q", "fasta": "-f", "qseq": "--qseq", "raw": "-r", "sequences": "-c"}
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
+        indexPath=~{sub(indexFiles[0], "\.[0-9]\.cf", "")}
+        indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
+        mv ${indexPath}* $PWD/
         centrifuge \
         ~{inputFormatOptions[inputFormat]} \
         ~{true="--phred64" false="--phred33" phred64} \
@@ -126,12 +129,12 @@ task Classify {
         ~{"-k " + reportMaxDistinct} \
         ~{"--host-taxids " + hostTaxIDs} \
         ~{"--exclude-taxids " + excludeTaxIDs} \
-        ~{"-x " + sub(indexFiles[0], "\.[0-9]\.cf", "")} \
+        -x $PWD/${indexBasename} \
         ~{true="-1" false="-U" length(read2) > 0} ~{sep="," read1} \
         ~{true="-2" false="" length(read2) > 0} ~{sep="," read2} \
         ~{"-S " + outputPrefix + "_classification.tsv"} \
         ~{"--report-file " + outputPrefix + "_output_report.tsv"}
-    }
+    >>>
 
     output {
         File outputMetrics = outputPrefix + "_alignment_metrics.tsv"
@@ -187,10 +190,13 @@ task Inspect {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
+        indexPath=~{sub(indexFiles[0], "\.[0-9]\.cf", "")}
+        indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
+        mv ${indexPath}* $PWD/
         centrifuge-inspect \
         ~{outputOptions[printOption]} \
         ~{"--across " + across} \
-        ~{sub(indexFiles[0], "\.[0-9]\.cf", "")} \
+        $PWD/${indexBasename} \
         > ~{outputPrefix + "/" + printOption}
     }
 
