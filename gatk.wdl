@@ -732,6 +732,7 @@ task GenotypeGVCFs {
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
+        Array[String] annotationGroups = ["StandardAnnotation"]
         File? dbsnpVCF
         File? dbsnpVCFIndex
 
@@ -747,10 +748,9 @@ task GenotypeGVCFs {
         GenotypeGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
-        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
-        -G StandardAnnotation \
+        ~{"-D " + dbsnpVCF} \
+        ~{true="-G" false="" length(annotationGroups) > 0} ~{sep=" -G " annotationGroups} \
         --only-output-calls-starting-in-intervals \
-        -new-qual \
         -V ~{gvcfFile} \
         -L ~{sep=' -L ' intervals}
     }
