@@ -725,8 +725,8 @@ task GatherBqsrReports {
 
 task GenotypeGVCFs {
     input {
-        Array[File]+ gvcfFiles
-        Array[File]+ gvcfFilesIndex
+        File gvcfFile
+        File gvcfFileIndex
         Array[File]+ intervals
         String outputPath
         File referenceFasta
@@ -751,7 +751,7 @@ task GenotypeGVCFs {
         -G StandardAnnotation \
         --only-output-calls-starting-in-intervals \
         -new-qual \
-        -V ~{sep=' -V ' gvcfFiles} \
+        -V ~{gvcfFile} \
         -L ~{sep=' -L ' intervals}
     }
 
