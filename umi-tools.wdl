@@ -41,7 +41,7 @@ task Extract {
         ~{"bc-pattern2 " + bcPattern2} \
         ~{true="--3prime" false="" threePrime} \
         --stdout ~{read1Output} \
-        ~{"--read2-out " + read2Output}
+        ~{if defined(read2) then "--read2-out " + read2Output else ""}
     }
 
     output {
@@ -82,6 +82,7 @@ task Dedup {
 
     command {
         set -e
+        mkdir -p "$(dirname ~{outputBamPath})"
         umi_tools dedup \
         --stdin ~{inputBam} \
         --stdout ~{outputBamPath} \
