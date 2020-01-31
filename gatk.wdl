@@ -871,7 +871,7 @@ task HaplotypeCaller {
         ~{"--sample-ploidy " + ploidy} \
         ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
         ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
-        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
+        ~{"-D" + dbsnpVCF} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
         ~{true="-ERC GVCF" false="" gvcf}
     }
