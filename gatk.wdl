@@ -723,6 +723,39 @@ task GatherBqsrReports {
     }
 }
 
+task GenomicsDBImport {
+    input {
+        Array[File] gvcfFiles
+        Array[File] gvcfFilesIndex
+        Array[File]+ intervals
+        String genomicsDBWorkspacePath = "genomics_db"
+        String? tmpDir
+        String memory = "12G"
+        String javaXmx = "4G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{genomicsDBWorkspacePath})"
+        gatk --java-options -Xmx~{javaXmx} \
+        GenomicsDBImport \
+        -V ~{sep=" -V " gvcfFiles} \
+        --genomicsdb-workspace-path ~{genomicsDBWorkspacePath} \
+        ~{"--tmp-dir " + tmpDir} \
+        -L ~{sep=" -L " intervals}
+    }
+
+    output {
+        Array[File] genomicsDbFiles = glob(genomicsDBWorkspacePath + "/*")
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+}
+
 task GenotypeGVCFs {
     input {
         File gvcfFile
