@@ -37,7 +37,7 @@ task Build {
 
         Int threads = 5
         String memory = "20G"
-        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
     command {
@@ -107,7 +107,7 @@ task Classify {
 
         Int threads = 4
         String memory = "16G"
-        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
     Map[String, String] inputFormatOptions = {"fastq": "-q", "fasta": "-f", "qseq": "--qseq", "raw": "-r", "sequences": "-c"}
@@ -184,7 +184,7 @@ task Inspect {
         Int? across
 
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
     Map[String, String] outputOptions = {"fasta": "", "names": "--names", "summary": "--summary", "conversionTable": "--conversion-table", "taxonomyTree": "--taxonomy-tree", "nameTable": "--name-table", "sizeTable": "--size-table"}
@@ -307,7 +307,7 @@ task Kreport {
         Int? minimumLength
 
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
     command <<< 
@@ -362,7 +362,7 @@ task KTimportTaxonomy {
         String outputPrefix
 
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/krona:2.7.1--pl526_1"
+        String dockerImage = "biocontainers/krona:v2.7.1_cv1"
     }
 
     command {
