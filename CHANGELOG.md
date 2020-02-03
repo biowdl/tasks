@@ -18,6 +18,7 @@ version 2.2.0-dev
   one input file. 
 + Rename HaplotypeCallerGVCF to HaplotypeCaller. Add `gvcf` option to set 
   whether output should be a GVCF.
++ Centrifuge: Add Krona task specific to Centrifuge.
 + Centrifuge: Fix Centrifuge tests, where sometimes the index files could still not be located.
 + Update parameter_meta for TALON, Centrifuge and Minimap2.
 + Centrifuge: Fix issue where Centrifuge Inspect did not get the correct index files location.
