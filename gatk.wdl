@@ -756,6 +756,21 @@ task GenomicsDBImport {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        gvcfFiles: {description: "The gvcfFiles to be merged.", category: "required"}
+        gvcfFilesIndex: {description: "Indexes for the gvcfFiles.", category: "required"}
+        intervals: {description: "intervals over which to operate.", category: "required"}
+        genomicsDBWorkspacePath: {description: "Where the genomicsDB files should be stored", category: "advanced"}
+        genomicsDBTarFile: {description: "Where the .tar file containing the genomicsDB should be stored", category: "advanced"}
+        tmpDir: {description: "Alternate temporary directory in case there is not enough space. Must be mounted when using containers",
+        category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task GenotypeGVCFs {
