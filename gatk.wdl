@@ -729,6 +729,7 @@ task GenomicsDBImport {
         Array[File] gvcfFilesIndex
         Array[File]+ intervals
         String genomicsDBWorkspacePath = "genomics_db"
+        String genomicsDBTarFile = "genomics_db.tar.gz"
         String? tmpDir
         String memory = "12G"
         String javaXmx = "4G"
@@ -744,10 +745,11 @@ task GenomicsDBImport {
         --genomicsdb-workspace-path ~{genomicsDBWorkspacePath} \
         ~{"--tmp-dir " + tmpDir} \
         -L ~{sep=" -L " intervals}
+        bash -c 'tar -cvzf ~{genomicsDBTarFile} ~{genomicsDBWorkspacePath}/*'
     }
 
     output {
-        Array[File] genomicsDbFiles = glob(genomicsDBWorkspacePath + "/*")
+        Array[File] genomicsDbTarArchive = genomicsDBTarFile
     }
 
     runtime {
