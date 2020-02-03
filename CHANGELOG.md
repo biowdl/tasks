@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Centrifuge: Add Krona task specific to Centrifuge.
 + Centrifuge: Fix Centrifuge tests, where sometimes the index files could still not be located.
 + Update parameter_meta for TALON, Centrifuge and Minimap2.
 + Centrifuge: Fix issue where Centrifuge Inspect did not get the correct index files location.
