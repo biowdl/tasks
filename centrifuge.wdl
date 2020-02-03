@@ -37,7 +37,7 @@ task Build {
 
         Int threads = 5
         String memory = "20G"
-        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
     command {
@@ -107,7 +107,7 @@ task Classify {
 
         Int threads = 4
         String memory = "16G"
-        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
     Map[String, String] inputFormatOptions = {"fastq": "-q", "fasta": "-f", "qseq": "--qseq", "raw": "-r", "sequences": "-c"}
@@ -184,7 +184,7 @@ task Inspect {
         Int? across
 
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he860b03_3"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
     Map[String, String] outputOptions = {"fasta": "", "names": "--names", "summary": "--summary", "conversionTable": "--conversion-table", "taxonomyTree": "--taxonomy-tree", "nameTable": "--name-table", "sizeTable": "--size-table"}
@@ -296,45 +296,100 @@ task DownloadTaxonomy {
 
 task Kreport {
     input {
-        String? preCommand
-        File centrifugeOut
-        Boolean inputIsCompressed
-        String outputDir
-        String suffix = "kreport"
-        String prefix = "centrifuge"
-        String indexPrefix
-        Boolean? onlyUnique ## removed in 1.0.4
-        Boolean? showZeros
-        Boolean? isCountTable
-        Int? minScore
-        Int? minLength
+        File centrifugeClassification
+        String outputPrefix
+        Array[File]+ indexFiles
+        Boolean noLCA = false
+        Boolean showZeros = false
+        Boolean isCountTable = false
 
-        Int cores = 1
+        Int? minimumScore
+        Int? minimumLength
+
         String memory = "4G"
+        String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
-    String kreportFilePath = outputDir + "/" + prefix + "." + suffix
-    command {
-        set -e -o pipefail
-        ~{preCommand}
+    command <<< 
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+        indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
+        for file in ~{sep=" " indexFiles}
+        do
+            ln ${file} $PWD/"$(basename ${file})"
+        done
         centrifuge-kreport \
-        -x ~{indexPrefix} \
-        ~{true="--only-unique" false="" onlyUnique} \
+        -x $PWD/${indexBasename} \
+        ~{true="--no-lca" false="" noLCA} \
         ~{true="--show-zeros" false="" showZeros} \
         ~{true="--is-count-table" false="" isCountTable} \
-        ~{"--min-score " + minScore} \
-        ~{"--min-length " + minLength} \
-        ~{true="<(zcat" false="" inputIsCompressed} ~{centrifugeOut}\
-        ~{true=")" false="" inputIsCompressed} \
-        > ~{kreportFilePath}
-    }
+        ~{"--min-score " + minimumScore} \
+        ~{"--min-length " + minimumLength} \
+        ~{centrifugeClassification} \
+        > ~{outputPrefix + "_kreport.tsv"}
+    >>>
 
     output {
-        File kreport = kreportFilePath
+        File outputKreport = outputPrefix + "_kreport.tsv"
     }
 
     runtime {
-        cpu: cores
         memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        centrifugeClassification: {description: "File with Centrifuge classification results.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
+        noLCA: {description: "Do not report the LCA of multiple assignments, but report count fractions at the taxa.", category: "advanced"}
+        showZeros: {description: "Show clades that have zero reads.", category: "advanced"}
+        isCountTable: {description: "The format of the file is taxID<tab>COUNT.", category: "advanced"}
+        minimumScore: {description: "Require a minimum score for reads to be counted.", category: "advanced"}
+        minimumLength: {description: "Require a minimum alignment length to the read.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputKreport: {description: "File with kraken style report."}
+    }
+}
+
+task KTimportTaxonomy {
+    input {
+        File inputFile
+        String outputPrefix
+
+        String memory = "4G"
+        String dockerImage = "biocontainers/krona:v2.7.1_cv1"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+        cat ~{inputFile} | cut -f 1,3 > kronaInput.krona
+        ktImportTaxonomy kronaInput.krona
+        cp taxonomy.krona.html ~{outputPrefix + "_krona.html"}
+    }
+
+    output {
+        File outputKronaPlot = outputPrefix + "_krona.html"
+    }
+
+    runtime {
+        memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "File with Centrifuge classification results.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputKronaPlot: {description: "Krona taxonomy plot html file."}
     }
 }
