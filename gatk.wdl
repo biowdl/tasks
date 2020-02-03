@@ -826,6 +826,7 @@ task GenotypeGVCFs {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        annotationGroups: {description: "Which annotation groups will be used for the annotation", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
 
@@ -943,6 +944,7 @@ task HaplotypeCaller {
         excludeIntervalList: {description: "Bed files or interval lists describing the regions to NOT operate on.", category: "common"}
         outputPath: {description: "The location to write the output to.", category: "required"}
         ploidy: {description: "The ploidy with which the variants should be called.", category: "common"}
+        gvcf: {description: "Whether the output should be a gvcf", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
