@@ -749,7 +749,7 @@ task GenomicsDBImport {
     }
 
     output {
-        Array[File] genomicsDbTarArchive = genomicsDBTarFile
+        File genomicsDbTarArchive = genomicsDBTarFile
     }
 
     runtime {
