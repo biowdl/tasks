@@ -11,6 +11,14 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add `GenomicsDBImport` task for GATK.
++ Add `annotationGroups` input to `GenotypeGVCFs` to allow setting multiple 
+  annotation groups. The `StandardAnnotation` group is still used as default.
++ GenotypeGVCFs, only allow one input GVCF file, as the tool also only allows
+  one input file. 
++ Rename HaplotypeCallerGVCF to HaplotypeCaller. Add `gvcf` option to set 
+  whether output should be a GVCF.
++ Centrifuge: Add Krona task specific to Centrifuge.
 + Centrifuge: Fix Centrifuge tests, where sometimes the index files could still not be located.
 + Update parameter_meta for TALON, Centrifuge and Minimap2.
 + Centrifuge: Fix issue where Centrifuge Inspect did not get the correct index files location.

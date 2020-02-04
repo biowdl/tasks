@@ -723,15 +723,66 @@ task GatherBqsrReports {
     }
 }
 
+task GenomicsDBImport {
+    input {
+        Array[File] gvcfFiles
+        Array[File] gvcfFilesIndex
+        Array[File]+ intervals
+        String genomicsDBWorkspacePath = "genomics_db"
+        String genomicsDBTarFile = "genomics_db.tar.gz"
+        String? tmpDir
+        String memory = "12G"
+        String javaXmx = "4G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{genomicsDBWorkspacePath})"
+        gatk --java-options -Xmx~{javaXmx} \
+        GenomicsDBImport \
+        -V ~{sep=" -V " gvcfFiles} \
+        --genomicsdb-workspace-path ~{genomicsDBWorkspacePath} \
+        ~{"--tmp-dir " + tmpDir} \
+        -L ~{sep=" -L " intervals}
+        bash -c 'tar -cvzf ~{genomicsDBTarFile} ~{genomicsDBWorkspacePath}/*'
+    }
+
+    output {
+        File genomicsDbTarArchive = genomicsDBTarFile
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        gvcfFiles: {description: "The gvcfFiles to be merged.", category: "required"}
+        gvcfFilesIndex: {description: "Indexes for the gvcfFiles.", category: "required"}
+        intervals: {description: "intervals over which to operate.", category: "required"}
+        genomicsDBWorkspacePath: {description: "Where the genomicsDB files should be stored", category: "advanced"}
+        genomicsDBTarFile: {description: "Where the .tar file containing the genomicsDB should be stored", category: "advanced"}
+        tmpDir: {description: "Alternate temporary directory in case there is not enough space. Must be mounted when using containers",
+        category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task GenotypeGVCFs {
     input {
-        Array[File]+ gvcfFiles
-        Array[File]+ gvcfFilesIndex
+        File gvcfFile
+        File gvcfFileIndex
         Array[File]+ intervals
         String outputPath
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
+        Array[String] annotationGroups = ["StandardAnnotation"]
         File? dbsnpVCF
         File? dbsnpVCFIndex
 
@@ -747,11 +798,10 @@ task GenotypeGVCFs {
         GenotypeGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
-        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
-        -G StandardAnnotation \
+        ~{"-D " + dbsnpVCF} \
+        ~{true="-G" false="" length(annotationGroups) > 0} ~{sep=" -G " annotationGroups} \
         --only-output-calls-starting-in-intervals \
-        -new-qual \
-        -V ~{sep=' -V ' gvcfFiles} \
+        -V ~{gvcfFile} \
         -L ~{sep=' -L ' intervals}
     }
 
@@ -767,8 +817,8 @@ task GenotypeGVCFs {
     }
 
     parameter_meta {
-        gvcfFiles: {description: "The GVCF files to be genotypes.", category: "required"}
-        gvcfFilesIndex: {description: "The index of the input GVCF files.", category: "required"}
+        gvcfFile: {description: "The GVCF file to be genotyped.", category: "required"}
+        gvcfFileIndex: {description: "The index of the input GVCF file.", category: "required"}
         intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "required"}
         outputPath: {description: "The location to write the output VCF file to.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
@@ -776,6 +826,7 @@ task GenotypeGVCFs {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        annotationGroups: {description: "Which annotation groups will be used for the annotation", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
 
@@ -839,20 +890,21 @@ task GetPileupSummaries {
 }
 
 # Call variants on a single sample with HaplotypeCaller to produce a GVCF
-task HaplotypeCallerGvcf {
+task HaplotypeCaller {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         Array[File]+? intervalList
         Array[File]+? excludeIntervalList
-        String gvcfPath
+        String outputPath
         File referenceFasta
         File referenceFastaIndex
         File referenceFastaDict
-        Float contamination = 0.0
+        Float? contamination
         File? dbsnpVCF
         File? dbsnpVCFIndex
         Int? ploidy
+        Boolean gvcf = false
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -861,23 +913,23 @@ task HaplotypeCallerGvcf {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{gvcfPath})"
+        mkdir -p "$(dirname ~{outputPath})"
         gatk --java-options -Xmx~{javaXmx} \
         HaplotypeCaller \
         -R ~{referenceFasta} \
-        -O ~{gvcfPath} \
+        -O ~{outputPath} \
         -I ~{sep=" -I " inputBams} \
         ~{"--sample-ploidy " + ploidy} \
         ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
         ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
-        ~{true="-D" false="" defined(dbsnpVCF)} ~{dbsnpVCF} \
-        -contamination ~{contamination} \
-        -ERC GVCF
+        ~{"-D" + dbsnpVCF} \
+        ~{"--contamination-fraction-per-sample-file " + contamination} \
+        ~{true="-ERC GVCF" false="" gvcf}
     }
 
     output {
-        File outputGVCF = gvcfPath
-        File outputGVCFIndex = gvcfPath + ".tbi"
+        File outputVCF = outputPath
+        File outputVCFIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -890,8 +942,9 @@ task HaplotypeCallerGvcf {
         inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
         intervalList: {description: "Bed files or interval lists describing the regions to operate on.", category: "common"}
         excludeIntervalList: {description: "Bed files or interval lists describing the regions to NOT operate on.", category: "common"}
-        gvcfPath: {description: "The location to write the output GVCF to.", category: "required"}
+        outputPath: {description: "The location to write the output to.", category: "required"}
         ploidy: {description: "The ploidy with which the variants should be called.", category: "common"}
+        gvcf: {description: "Whether the output should be a gvcf", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
