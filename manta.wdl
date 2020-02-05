@@ -62,6 +62,7 @@ task Germline {
     input {
         File bamFile
         File referenceFasta
+        File referenceFastaFai
         String runDir
         File? callRegions
         File? callRegionsIndex
