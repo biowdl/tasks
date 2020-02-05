@@ -75,7 +75,7 @@ task Germline {
     command {
         set -e
         configManta.py \
-        ~{"--bamFile " + bamFile} \
+        ~{"--normalBam " + bamFile} \
         --referenceFasta ~{referenceFasta} \
         ~{"--callRegions " + callRegions} \
         --runDir ~{runDir} \
