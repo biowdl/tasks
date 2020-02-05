@@ -55,7 +55,7 @@ task Mateclever {
     command <<<
         set -e
         mkdir -p $(dirname ~{outputPath})
-        echo ~{outputPath} ~{fiteredBamFile} ~{predictions} none > predictions.list
+        echo ~{outputPath} ~{fiteredBam} ~{predictions} none > predictions.list
         mateclever \
         -T ~{threads} \
         -k \
