@@ -4,7 +4,8 @@ import "common.wdl"
 import "bwa.wdl"
 task Prediction {
     input {
-        IndexedBamFile bamFile
+        File bamFile
+        File bamIndex
         BwaIndex bwaIndex
         String outputPath        
         Int threads = 10 
@@ -20,7 +21,7 @@ task Prediction {
         --use_mapq \
         --sorted \
         -f \
-        ~{bamFile.file} \
+        ~{bamFile} \
         ~{bwaIndex.fastaFile} \
         ~{outputPath}
     >>> 

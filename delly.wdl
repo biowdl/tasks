@@ -4,8 +4,11 @@ import "common.wdl"
 
 task CallSV {
     input {
-        IndexedBamFile bamFile
-        Reference reference
+        File bamFile
+        File bamIndex
+        File referenceFasta
+        File referenceFastaFai
+        #Reference reference
         String outputPath        
         Int mem = 15
     }
@@ -16,8 +19,8 @@ task CallSV {
         mkdir -p $(dirname ~{outputPath})
         delly call \
         -o ~{outputPath} \
-        -g ~{reference.fasta} \
-        ~{bamFile.file}
+        -g ~{referenceFasta} \
+        ~{bamFile}
     >>>
 
     output {
