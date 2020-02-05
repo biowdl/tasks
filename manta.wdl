@@ -60,8 +60,8 @@ task Somatic {
 
 task Germline {
     input {
-        IndexedBamFile normalBam
-        Reference reference
+        File bamFile
+        File referenceFasta
         String runDir
         File? callRegions
         File? callRegionsIndex
@@ -75,8 +75,8 @@ task Germline {
     command {
         set -e
         configManta.py \
-        ~{"--normalBam " + normalBam.file} \
-        --referenceFasta ~{reference.fasta} \
+        ~{"--bamFile " + bamFile} \
+        --referenceFasta ~{referenceFasta} \
         ~{"--callRegions " + callRegions} \
         --runDir ~{runDir} \
         ~{true="--exome" false="" exome}
