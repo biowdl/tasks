@@ -40,8 +40,8 @@ task Prediction {
 
 task Mateclever {
     input {
-        File fiteredBamFile
-        File indexedFiteredBamFile 
+        File fiteredBam
+        File indexedFiteredBam
         BwaIndex bwaIndex
         File predictions
         String outputPath
