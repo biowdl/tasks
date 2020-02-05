@@ -61,6 +61,7 @@ task Somatic {
 task Germline {
     input {
         File bamFile
+        File bamIndex
         File referenceFasta
         File referenceFastaFai
         String runDir
