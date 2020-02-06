@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add tasks for umi-tools dedup and extract.
 + Add `GenomicsDBImport` task for GATK.
 + Add `annotationGroups` input to `GenotypeGVCFs` to allow setting multiple 
   annotation groups. The `StandardAnnotation` group is still used as default.
