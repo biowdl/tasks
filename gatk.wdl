@@ -903,6 +903,7 @@ task HaplotypeCaller {
         Float? contamination
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        File? pedigree
         Int? ploidy
         Boolean gvcf = false
 
@@ -922,7 +923,8 @@ task HaplotypeCaller {
         ~{"--sample-ploidy " + ploidy} \
         ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
         ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
-        ~{"-D" + dbsnpVCF} \
+        ~{"-D " + dbsnpVCF} \
+        ~{"--pedigree " + pedigree} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
         ~{true="-ERC GVCF" false="" gvcf}
     }
