@@ -92,19 +92,7 @@ task Germline {
     output {
 
         File mantaVCF = runDir + "/results/variants/diploidSV.vcf.gz"
-        # File mantaVCFindex = runDir + "/results/variants/diploidSV.vcf.gz.tbi"
-        # IndexedVcfFile candidateSmallIndels = object {
-        #     file: runDir + "/results/variants/candidateSmallIndels.vcf.gz",
-        #     index: runDir + "/results/variants/candidateSmallIndels.vcf.gz.tbi"
-        # }
-        # IndexedVcfFile candidateSV = object {
-        #     file: runDir + "/results/variants/candidateSV.vcf.gz",
-        #     index: runDir + "/results/variants/candidateSV.vcf.gz.tbi"
-        # }
-        # IndexedVcfFile diploidSV = object {
-        #     file: runDir + "/results/variants/diploidSV.vcf.gz",
-        #     index: runDir + "/results/variants/diploidSV.vcf.gz.tbi"
-        # }
+        File mantaVCFindex = runDir + "/results/variants/diploidSV.vcf.gz.tbi"
     }
     
     runtime {
