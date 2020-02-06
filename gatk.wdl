@@ -785,6 +785,7 @@ task GenotypeGVCFs {
         Array[String] annotationGroups = ["StandardAnnotation"]
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        File? pedigree
 
         String memory = "18G"
         String javaXmx = "6G"
@@ -799,6 +800,7 @@ task GenotypeGVCFs {
         -R ~{referenceFasta} \
         -O ~{outputPath} \
         ~{"-D " + dbsnpVCF} \
+        ~{"--pedigree " + pedigree} \
         ~{true="-G" false="" length(annotationGroups) > 0} ~{sep=" -G " annotationGroups} \
         --only-output-calls-starting-in-intervals \
         -V ~{gvcfFile} \
@@ -829,7 +831,7 @@ task GenotypeGVCFs {
         annotationGroups: {description: "Which annotation groups will be used for the annotation", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
-
+        pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -903,6 +905,7 @@ task HaplotypeCaller {
         Float? contamination
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        File? pedigree
         Int? ploidy
         Boolean gvcf = false
 
@@ -922,7 +925,8 @@ task HaplotypeCaller {
         ~{"--sample-ploidy " + ploidy} \
         ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
         ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
-        ~{"-D" + dbsnpVCF} \
+        ~{"-D " + dbsnpVCF} \
+        ~{"--pedigree " + pedigree} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
         ~{true="-ERC GVCF" false="" gvcf}
     }
@@ -953,7 +957,7 @@ task HaplotypeCaller {
         contamination: {description: "Equivalent to HaplotypeCaller's `-contamination` option.", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
-
+        pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}

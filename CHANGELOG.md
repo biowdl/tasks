@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add pedigree input for HaplotypeCaller and GenotypeGVCFs.
++ Combined biopet.ScatterRegions and biopet.ReorderedGlobbedScatters into one.
+  biopet.ScatterRegions now always returns correctly ordered scatters.
 + Add tasks for umi-tools dedup and extract.
 + Add `GenomicsDBImport` task for GATK.
 + Add `annotationGroups` input to `GenotypeGVCFs` to allow setting multiple 
