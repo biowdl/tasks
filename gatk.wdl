@@ -831,7 +831,7 @@ task GenotypeGVCFs {
         annotationGroups: {description: "Which annotation groups will be used for the annotation", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
-
+        pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -957,7 +957,7 @@ task HaplotypeCaller {
         contamination: {description: "Equivalent to HaplotypeCaller's `-contamination` option.", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
-
+        pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
