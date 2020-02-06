@@ -268,18 +268,13 @@ task ScatterRegions {
         # Glob messes with order of scatters (10 comes before 1), which causes
         # problems at gatherGvcfs
         # Therefore we reorder the scatters with python.
-        # Copy all the scatter files to the CWD so the output matches paths in
-        # the cwd.
-        for file in ~{outputDirPath}/*
-          do cp $file .
-        done
         python << CODE
         import os
         scatters = os.listdir("~{outputDirPath}")
         splitext = [ x.split(".") for x in scatters]
         splitnum = [x.split("-") + [y] for x,y in splitext]
         ordered = sorted(splitnum, key=lambda x: int(x[1]))
-        merged = ["{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
+        merged = ["~{outputDirPath}/{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
         for x in merged:
           print(x)
         CODE
