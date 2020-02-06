@@ -785,6 +785,7 @@ task GenotypeGVCFs {
         Array[String] annotationGroups = ["StandardAnnotation"]
         File? dbsnpVCF
         File? dbsnpVCFIndex
+        File? pedigree
 
         String memory = "18G"
         String javaXmx = "6G"
@@ -799,6 +800,7 @@ task GenotypeGVCFs {
         -R ~{referenceFasta} \
         -O ~{outputPath} \
         ~{"-D " + dbsnpVCF} \
+        ~{"--pedigree " + pedigree} \
         ~{true="-G" false="" length(annotationGroups) > 0} ~{sep=" -G " annotationGroups} \
         --only-output-calls-starting-in-intervals \
         -V ~{gvcfFile} \
