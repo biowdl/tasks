@@ -15,16 +15,16 @@ task Star {
         Int? limitBAMsortRAM
 
         Int runThreadN = 4
-        Int memory = 48
-        String dockerImage = "quay.io/biocontainers/star:2.6.0c--0"
+        String memory = "48G"
+        String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
-    #TODO Needs to be extended for all possible output extensions
+    #TODO Could be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
     command {
         set -e
-        mkdir -p $(dirname ~{outFileNamePrefix})
+        mkdir -p "$(dirname ~{outFileNamePrefix})"
         STAR \
         --readFilesIn ~{sep=',' inputR1} ~{sep="," inputR2} \
         --outFileNamePrefix ~{outFileNamePrefix} \
@@ -45,10 +45,26 @@ task Star {
 
     runtime {
         cpu: runThreadN
-        # Return memory per CPU here due to SGE backend.
-        # Can also work with slurms mem-per-cpu flag
-        memory: (memory / runThreadN) + 1
+        memory: memory
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inputR1: {description: "The first-/single-end FastQ files.", category: "required"}
+        inputR2: {description: "The second-end FastQ files (in the same order as the first-end files).", category: "common"}
+        indexFiles: {description: "The star index files.", category: "required"}
+        outFileNamePrefix: {description: "The prefix for the output files. May include directories.", category: "required"}
+        outSAMtype: {description: "The type of alignment file to be produced. Currently only `BAM SortedByCoordinate` is supported.", category: "advanced"}
+        readFilesCommand: {description: "Equivalent to star's `--readFilesCommand` option.", category: "advanced"}
+        outStd: {description: "Equivalent to star's `--outStd` option.", category: "advanced"}
+        twopassMode: {description: "Equivalent to star's `--twopassMode` option.", category: "advanced"}
+        outSAMattrRGline: {description: "The readgroup lines for the fastq pairs given (in the same order as the fastq files).", category: "common"}
+        outSAMunmapped: {description: "Equivalent to star's `--outSAMunmapped` option.", category: "advanced"}
+        limitBAMsortRAM: {description: "Equivalent to star's `--limitBAMsortRAM` option.", category: "advanced"}
+        runThreadN: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

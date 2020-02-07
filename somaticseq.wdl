@@ -2,8 +2,6 @@ version 1.0
 
 task ParallelPaired {
     input {
-        String installDir = "/opt/somaticseq" #the location in the docker image
-
         File? classifierSNV
         File? classifierIndel
         String outputDir
@@ -33,7 +31,7 @@ task ParallelPaired {
     }
 
     command {
-        ~{installDir}/somaticseq_parallel.py \
+        /opt/somaticseq/somaticseq_parallel.py \
         ~{"--classifier-snv " + classifierSNV} \
         ~{"--classifier-indel " + classifierIndel} \
         --output-directory ~{outputDir} \
@@ -72,13 +70,41 @@ task ParallelPaired {
     runtime {
         cpu: threads
         docker: dockerImage
+    }
+
+    parameter_meta {
+        classifierSNV: {description: "A somaticseq SNV classifier.", category: "common"}
+        classifierIndel: {description: "A somaticseq Indel classifier.", category: "common"}
+        outputDir: {description: "The directory to write the output to.", category: "common"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
+        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
+        tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
+        tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
+        mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
+        varscanSNV: {description: "An SNV VCF as produced by varscan.", category: "advanced"}
+        varscanIndel: {description: "An indel VCF as produced by varscan.", category: "advanced"}
+        jsmVCF: {description: "A VCF as produced by jsm.", category: "advanced"}
+        somaticsniperVCF: {description: "A VCF as produced by somaticsniper.", category: "advanced"}
+        vardictVCF: {description: "A VCF as produced by vardict.", category: "advanced"}
+        museVCF: {description: "A VCF as produced by muse.", category: "advanced"}
+        lofreqSNV: {description: "An SNV VCF as produced by lofreq.", category: "advanced"}
+        lofreqIndel: {description: "An indel VCF as produced by lofreq.", category: "advanced"}
+        scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
+        strelkaSNV: {description: "An SNV VCF as produced by strelka.", category: "advanced"}
+        strelkaIndel: {description: "An indel VCF as produced by somaticsniper.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
 task ParallelPairedTrain {
     input {
-        String installDir = "/opt/somaticseq" #the location in the docker image
-
         File truthSNV
         File truthIndel
         String outputDir
@@ -108,7 +134,7 @@ task ParallelPairedTrain {
     }
 
     command {
-        ~{installDir}/somaticseq_parallel.py \
+        /opt/somaticseq/somaticseq_parallel.py \
         --somaticseq-train \
         --truth-snv ~{truthSNV} \
         --truth-indel ~{truthIndel} \
@@ -147,12 +173,40 @@ task ParallelPairedTrain {
         cpu: threads
         docker: dockerImage
     }
+
+    parameter_meta {
+        truthSNV: {description: "A VCF of true SNVs.", category: "required"}
+        truthIndel: {description: "A VCF of true indels.", category: "required"}
+        outputDir: {description: "The directory to write the output to.", category: "common"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
+        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
+        tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
+        tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
+        mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
+        varscanSNV: {description: "An SNV VCF as produced by varscan.", category: "advanced"}
+        varscanIndel: {description: "An indel VCF as produced by varscan.", category: "advanced"}
+        jsmVCF: {description: "A VCF as produced by jsm.", category: "advanced"}
+        somaticsniperVCF: {description: "A VCF as produced by somaticsniper.", category: "advanced"}
+        vardictVCF: {description: "A VCF as produced by vardict.", category: "advanced"}
+        museVCF: {description: "A VCF as produced by muse.", category: "advanced"}
+        lofreqSNV: {description: "An SNV VCF as produced by lofreq.", category: "advanced"}
+        lofreqIndel: {description: "An indel VCF as produced by lofreq.", category: "advanced"}
+        scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
+        strelkaSNV: {description: "An SNV VCF as produced by strelka.", category: "advanced"}
+        strelkaIndel: {description: "An indel VCF as produced by somaticsniper.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task ParallelSingle {
     input {
-        String installDir = "/opt/somaticseq" #the location in the docker image
-
         File? classifierSNV
         File? classifierIndel
         String outputDir
@@ -174,7 +228,7 @@ task ParallelSingle {
     }
 
     command {
-        ~{installDir}/somaticseq_parallel.py \
+        /opt/somaticseq/somaticseq_parallel.py \
         ~{"--classifier-snv " + classifierSNV} \
         ~{"--classifier-indel " + classifierIndel} \
         --output-directory ~{outputDir} \
@@ -207,12 +261,32 @@ task ParallelSingle {
         cpu: threads
         docker: dockerImage
     }
+
+    parameter_meta {
+        classifierSNV: {description: "A somaticseq SNV classifier.", category: "common"}
+        classifierIndel: {description: "A somaticseq Indel classifier.", category: "common"}
+        outputDir: {description: "The directory to write the output to.", category: "common"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
+        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
+        bam: {description: "The input BAM file.", category: "required"}
+        bamIndex: {description: "The index for the input BAM file.", category: "required"}
+        mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
+        varscanVCF: {description: "A VCF as produced by varscan.", category: "advanced"}
+        vardictVCF: {description: "A VCF as produced by vardict.", category: "advanced"}
+        lofreqVCF: {description: "A VCF as produced by lofreq.", category: "advanced"}
+        scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
+        strelkaVCF: {description: "A VCF as produced by strelka.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task ParallelSingleTrain {
     input {
-        String installDir = "/opt/somaticseq" #the location in the docker image
-
         File truthSNV
         File truthIndel
         String outputDir
@@ -234,7 +308,7 @@ task ParallelSingleTrain {
     }
 
     command {
-        ~{installDir}/somaticseq_parallel.py \
+        /opt/somaticseq/somaticseq_parallel.py \
         --somaticseq-train \
         --truth-snv ~{truthSNV} \
         --truth-indel ~{truthIndel} \
@@ -265,5 +339,61 @@ task ParallelSingleTrain {
     runtime {
         cpu: threads
         docker: dockerImage
+    }
+
+    parameter_meta {
+        truthSNV: {description: "A VCF of true SNVs.", category: "required"}
+        truthIndel: {description: "A VCF of true indels.", category: "required"}
+        outputDir: {description: "The directory to write the output to.", category: "common"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
+        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
+        bam: {description: "The input BAM file.", category: "required"}
+        bamIndex: {description: "The index for the input BAM file.", category: "required"}
+        mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
+        varscanVCF: {description: "A VCF as produced by varscan.", category: "advanced"}
+        vardictVCF: {description: "A VCF as produced by vardict.", category: "advanced"}
+        lofreqVCF: {description: "A VCF as produced by lofreq.", category: "advanced"}
+        scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
+        strelkaVCF: {description: "A VCF as produced by strelka.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task ModifyStrelka {
+    input {
+        File strelkaVCF
+        String outputVCFName = basename(strelkaVCF, ".gz")
+        String dockerImage = "lethalfang/somaticseq:3.1.0"
+    }
+
+    command {
+        set -e
+
+        /opt/somaticseq/vcfModifier/modify_Strelka.py \
+        -infile ~{strelkaVCF} \
+        -outfile "modified_strelka.vcf"
+
+        first_FORMAT_line_num=$(grep -n -m 1 '##FORMAT' "modified_strelka.vcf" | cut -d : -f 1)
+        sed "$first_FORMAT_line_num"'i##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">' "modified_strelka.vcf" > ~{outputVCFName}
+    }
+
+    output {
+        File outputVcf = outputVCFName
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        strelkaVCF: {description: "A vcf file as produced by strelka.", category: "required"}
+        outputVCFName: {description: "The location the output VCF file should be written to.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }

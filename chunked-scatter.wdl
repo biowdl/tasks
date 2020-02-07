@@ -27,7 +27,17 @@ task ChunkedScatter {
     }
 
     runtime {
-        memory: 4
+        memory: "4G"
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inputFile: {description: "Either a bed file describing regiosn of intrest or a sequence dictionary.", category: "required"}
+        prefix: {description: "The prefix for the output files.", category: "advanced"}
+        chunkSize: {description: "Equivalent to chunked-scatter's `-c` option.", category: "advanced"}
+        overlap: {description: "Equivalent to chunked-scatter's `-o` option.", category: "advanced"}
+        minimumBasesPerFile: {description: "Equivalent to chunked-scatter's `-m` option.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }

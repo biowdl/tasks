@@ -5,18 +5,13 @@ task Cutadapt {
         File read1
         File? read2
         String read1output = "cut_r1.fq.gz"
-        String? read2output = if defined(read2) then "cut_r2.fq.gz" else read2
-        String? format
-        Array[String]+? adapter
-        Array[String]+? front
-        Array[String]+? anywhere
-        Array[String]+? adapterRead2
-        Array[String]+? frontRead2
-        Array[String]+? anywhereRead2
-        # FIXME: default should be set at the subworkflow level, not here. Needs to wait for cromwell fix.
-        Array[String]+? adapterBoth = ["AGATCGGAAGAG"]
-        # contaminations = anywhereBoth
-        Array[String]+? contaminations
+        String? read2output
+        Array[String] adapter = []
+        Array[String] front = []
+        Array[String] anywhere = []
+        Array[String] adapterRead2 = []
+        Array[String] frontRead2 = []
+        Array[String] anywhereRead2 = []
         Boolean? interleaved
         String? pairFilter
         Float? errorRate
@@ -53,55 +48,41 @@ task Cutadapt {
         String? untrimmedPairedOutputPath
         Boolean? colorspace
         Boolean? doubleEncode
-        Boolean? trimPrimer
         Boolean? stripF3
         Boolean? maq
         Boolean? bwa
         Boolean? zeroCap
         Boolean? noZeroCap
-        String? reportPath
-
+        String reportPath = "cutadapt_report.txt"
+        #Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
+        # --compression-level has a bug in 2.4 https://github.com/marcelm/cutadapt/pull/388
+        #~{"--compression-level=" + compressionLevel} \
+        Boolean Z = true  # equal to compressionLevel=1  # Fixme: replace once upstream is fixed.
         Int cores = 1
-        Int memory = 16  # FIXME: Insane memory. Double-check if needed.
-        String dockerImage = "quay.io/biocontainers/cutadapt:2.3--py36h14c3975_0"
+        String memory = "4G"
+        String dockerImage = "quay.io/biocontainers/cutadapt:2.4--py37h14c3975_0"
     }
 
-    String read2outputArg = if (defined(read2output))
-        then "mkdir -p $(dirname " + read2output + ")"
+    String realRead2output = select_first([read2output, "cut_r2.fq.gz"])
+    String read2outputArg = if (defined(read2))
+        then "mkdir -p $(dirname " + realRead2output + ")"
         else ""
 
-    # FIXME: This crappy overengineering can be removed once cromwell can handle subworkflow inputs correctly.
-    # Some WDL magic here to set both adapters with one setting.
-    # If then else's are needed to keep the variable optional and undefined
-    Array[String]+? adapterForward = if (defined(adapter) || defined(adapterBoth))
-                                     then select_first([adapter, adapterBoth])
-                                     else adapter
-    # Check if read2 is defined before applying adapters.
-    Array[String]+? adapterReverse = if (defined(read2) && (defined(adapterRead2) || defined(adapterBoth)))
-                                     then select_first([adapterRead2, adapterBoth])
-                                     else adapterRead2
-
-    # Same for contaminations
-    Array[String]+? anywhereForward = if (defined(anywhere) || defined(contaminations))
-                                      then select_first([anywhere, contaminations])
-                                      else anywhere
-    Array[String]+? anywhereReverse = if (defined(read2) && (defined(anywhereRead2) || defined(contaminations)))
-                                      then select_first([anywhereRead2, contaminations])
-                                      else anywhereRead2
-
+    # FIXME: Use prefix() function for adapter, adapterRead2, etc.
     command {
         set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
         ~{read2outputArg}
         cutadapt \
         ~{"--cores=" + cores} \
-        ~{true="-a" false="" defined(adapterForward)} ~{sep=" -a " adapterForward} \
-        ~{true="-A" false="" defined(adapterReverse)} ~{sep=" -A " adapterReverse} \
-        ~{true="-g" false="" defined(front)} ~{sep=" -g " front} \
-        ~{true="-G" false="" defined(frontRead2)} ~{sep=" -G " frontRead2} \
-        ~{true="-b" false="" defined(anywhereForward)} ~{sep=" -b " anywhereForward} \
-        ~{true="-B" false="" defined(anywhereReverse)} ~{sep=" -B " anywhereReverse} \
-        --output ~{read1output} ~{"--paired-output " + read2output} \
+        ~{true="-Z" false="" Z} \
+        ~{true="-a" false="" length(adapter) > 0} ~{sep=" -a " adapter} \
+        ~{true="-A" false="" length(adapterRead2) > 0} ~{sep=" -A " adapterRead2} \
+        ~{true="-g" false="" length(front) > 0} ~{sep=" -g " front} \
+        ~{true="-G" false="" length(frontRead2) > 0} ~{sep=" -G " frontRead2} \
+        ~{true="-b" false="" length(anywhere) > 0} ~{sep=" -b " anywhere} \
+        ~{true="-B" false="" length(anywhereRead2) > 0} ~{sep=" -B " anywhereRead2} \
+        --output ~{read1output} ~{if defined(read2) then "-p " + realRead2output else ""} \
         ~{"--to-short-output " + tooShortOutputPath} \
         ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
         ~{"--to-long-output " + tooLongOutputPath} \
@@ -133,7 +114,7 @@ task Cutadapt {
         ~{true="--no-trim" false="" noTrim} \
         ~{true="--mask-adapter" false="" maskAdapter} \
         ~{true="--no-indels" false="" noIndels} \
-        ~{true="--trim-n" false="" trimN}  \
+        ~{true="--trim-n" false="" trimN} \
         ~{true="--interleaved" false="" interleaved} \
         ~{true="--discard-trimmed" false="" discardTrimmed } \
         ~{true="--colorspace" false="" colorspace} \
@@ -151,9 +132,7 @@ task Cutadapt {
     output{
         File cutRead1 = read1output
         File? cutRead2 = read2output
-        File report = if defined(reportPath)
-            then select_first([reportPath])
-            else stdout()
+        File report = reportPath
         File? tooLongOutput=tooLongOutputPath
         File? tooShortOutput=tooShortOutputPath
         File? untrimmedOutput=untrimmedOutputPath
@@ -169,5 +148,232 @@ task Cutadapt {
         cpu: cores
         memory: memory
         docker: dockerImage
+    }
+
+    parameter_meta {
+        read1: {
+            description: "The first or single end fastq file to be run through cutadapt.",
+            category: "required"
+        }
+        read2: {
+            description: "An optional second end fastq file to be run through cutadapt.",
+            category: "common"
+        }
+        read1output: {
+            description: "The name of the resulting first or single end fastq file.",
+            category: "common"
+        }
+        read2output: {
+            description: "The name of the resulting second end fastq file.",
+            category: "common"
+        }
+        adapter: {
+            description: "A list of 3' ligated adapter sequences to be cut from the given first or single end fastq file.",
+            category: "common"
+        }
+        front: {
+            description: "A list of 5' ligated adapter sequences to be cut from the given first or single end fastq file.",
+            category: "advanced"
+        }
+        anywhere: {
+            description: "A list of 3' or 5' ligated adapter sequences to be cut from the given first or single end fastq file.",
+            category: "advanced"
+        }
+        adapterRead2: {
+            description: "A list of 3' ligated adapter sequences to be cut from the given second end fastq file.",
+            category: "common"
+        }
+        frontRead2: {
+            description: "A list of 5' ligated adapter sequences to be cut from the given second end fastq file.",
+            category: "advanced"
+        }
+        anywhereRead2: {
+            description: "A list of 3' or 5' ligated adapter sequences to be cut from the given second end fastq file.",
+            category: "advanced"
+        }
+        interleaved: {
+            description: "Equivalent to cutadapt's --interleaved flag.",
+            category: "advanced"
+        }
+        pairFilter: {
+            description: "Equivalent to cutadapt's --pair-filter option.",
+            category: "advanced"
+        }
+        errorRate: {
+            description: "Equivalent to cutadapt's --error-rate option.",
+            category: "advanced"
+        }
+        noIndels: {
+            description: "Equivalent to cutadapt's --no-indels flag.",
+            category: "advanced"
+        }
+        times: {
+            description: "Equivalent to cutadapt's --times option.",
+            category: "advanced"
+        }
+        overlap: {
+            description: "Equivalent to cutadapt's --overlap option.",
+            category: "advanced"
+        }
+        matchReadWildcards: {
+            description: "Equivalent to cutadapt's --match-read-wildcards flag.",
+            category: "advanced"
+        }
+        noMatchAdapterWildcards: {
+            description: "Equivalent to cutadapt's --no-match-adapter-wildcards flag.",
+            category: "advanced"
+        }
+        noTrim: {
+            description: "Equivalent to cutadapt's --no-trim flag.",
+            category: "advanced"
+        }
+        maskAdapter: {
+            description: "Equivalent to cutadapt's --mask-adapter flag.",
+            category: "advanced"
+        }
+        cut: {
+            description: "Equivalent to cutadapt's --cut option.",
+            category: "advanced"
+        }
+        nextseqTrim: {
+            description: "Equivalent to cutadapt's --nextseq-trim option.",
+            category: "advanced"
+        }
+        qualityCutoff: {
+            description: "Equivalent to cutadapt's --quality-cutoff option.",
+            category: "advanced"
+        }
+        qualityBase: {
+            description: "Equivalent to cutadapt's --quality-base option.",
+            category: "advanced"
+        }
+        length: {
+            description: "Equivalent to cutadapt's --length option.",
+            category: "advanced"
+        }
+        trimN: {
+            description: "Equivalent to cutadapt's --trim-n flag.",
+            category: "advanced"
+        }
+        lengthTag: {
+            description: "Equivalent to cutadapt's --length-tag option.",
+            category: "advanced"
+        }
+        stripSuffix: {
+            description: "Equivalent to cutadapt's --strip-suffix option.",
+            category: "advanced"
+        }
+        prefix: {
+            description: "Equivalent to cutadapt's --prefix option.",
+            category: "advanced"
+        }
+        suffix: {
+            description: "Equivalent to cutadapt's --suffix option.",
+            category: "advanced"
+        }
+        minimumLength: {
+            description: "Equivalent to cutadapt's --minimum-length option.",
+            category: "advanced"
+        }
+        maximumLength: {
+            description: "Equivalent to cutadapt's --maximum-length option.",
+            category: "advanced"
+        }
+        maxN: {
+            description: "Equivalent to cutadapt's --max-n option.",
+            category: "advanced"
+        }
+        discardTrimmed: {
+            description: "Equivalent to cutadapt's --quality-cutoff option.",
+            category: "advanced"
+        }
+        discardUntrimmed: {
+            description: "Equivalent to cutadapt's --discard-untrimmed option.",
+            category: "advanced"
+        }
+        infoFilePath: {
+            description: "Equivalent to cutadapt's --info-file option.",
+            category: "advanced"
+        }
+        restFilePath: {
+            description: "Equivalent to cutadapt's --rest-file option.",
+            category: "advanced"
+        }
+        wildcardFilePath: {
+            description: "Equivalent to cutadapt's --wildcard-file option.",
+            category: "advanced"
+        }
+        tooShortOutputPath: {
+            description: "Equivalent to cutadapt's --too-short-output option.",
+            category: "advanced"
+        }
+        tooLongOutputPath: {
+            description: "Equivalent to cutadapt's --too-long-output option.",
+            category: "advanced"
+        }
+        untrimmedOutputPath: {
+            description: "Equivalent to cutadapt's --untrimmed-output option.",
+            category: "advanced"
+        }
+        tooShortPairedOutputPath: {
+            description: "Equivalent to cutadapt's --too-short-paired-output option.",
+            category: "advanced"
+        }
+        tooLongPairedOutputPath: {
+            description: "Equivalent to cutadapt's --too-long-paired-output option.",
+            category: "advanced"
+        }
+        untrimmedPairedOutputPath: {
+            description: "Equivalent to cutadapt's --untrimmed-paired-output option.",
+            category: "advanced"
+        }
+        colorspace: {
+            description: "Equivalent to cutadapt's --colorspace flag.",
+            category: "advanced"
+        }
+        doubleEncode: {
+            description: "Equivalent to cutadapt's --double-encode flag.",
+            category: "advanced"
+        }
+        stripF3: {
+            description: "Equivalent to cutadapt's --strip-f3 flag.",
+            category: "advanced"
+        }
+        maq: {
+            description: "Equivalent to cutadapt's --maq flag.",
+            category: "advanced"
+        }
+        bwa: {
+            description: "Equivalent to cutadapt's --bwa flag.",
+            category: "advanced"
+        }
+        zeroCap: {
+            description: "Equivalent to cutadapt's --zero-cap flag.",
+            category: "advanced"
+        }
+        noZeroCap: {
+            description: "Equivalent to cutadapt's --no-zero-cap flag.",
+            category: "advanced"
+        }
+        reportPath: {
+            description: "The name of the file to write cutadapts's stdout to, this contains some metrics.",
+            category: "common"
+        }
+        Z: {
+            description: "Equivalent to cutadapt's -Z flag.",
+            category: "advanced"
+        }
+        cores: {
+            description: "The number of cores to use.",
+            category: "advanced"
+        }
+        memory: {
+            description: "The amount of memory this job will use.",
+            category: "advanced"
+        }
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
     }
 }

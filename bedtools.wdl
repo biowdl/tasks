@@ -20,6 +20,111 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+task Complement {
+    input {
+        File faidx
+        File inputBed
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+        String outputBed = basename(inputBed, "\.bed") + ".complement.bed"
+    }
+
+    # Use a fasta index file to get the genome sizes. And convert that to the
+    # bedtools specific "genome" format.
+    command {
+        set -e
+        cut -f1,2 ~{faidx} > sizes.genome
+        bedtools complement \
+        -g sizes.genome \
+        -i ~{inputBed} \
+        > ~{outputBed}
+    }
+
+    output {
+        File complementBed = outputBed
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        faidx: {description: "The fasta index (.fai) file from which to extract the genome sizes",
+                category: "required"}
+        inputBed: {description: "The inputBed to complement",
+                category: "required"}
+        outputBed: {description: "The path to write the output to",
+                     category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
+}
+
+task Merge {
+    input {
+        File inputBed
+        String outputBed = "merged.bed"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+    }
+
+    command {
+        bedtools merge -i ~{inputBed} > ~{outputBed}
+    }
+
+    output {
+        File mergedBed = outputBed
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBed: {description: "The bed to merge",
+                   category: "required"}
+        outputBed: {description: "The path to write the output to",
+                    category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
+}
+
+# Use cat, bedtools sort and bedtools merge to merge bedfiles in a single task.
+task MergeBedFiles {
+    input {
+        Array[File]+ bedFiles
+        String outputBed = "merged.bed"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+    }
+
+    # A sorted bed is needed for bedtools merge
+    command {
+        set -e -o pipefail
+        cat ~{sep=" " bedFiles} | bedtools sort | bedtools merge > ~{outputBed}
+    }
+
+    output {
+        File mergedBed = outputBed
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+    parameter_meta {
+        bedFiles: {description: "The bed files to merge",
+                category: "required"}
+        outputBed: {description: "The path to write the output to",
+                     category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
+}
+
 task Sort {
     input {
         File inputBed
@@ -27,32 +132,81 @@ task Sort {
         Boolean sizeD = false
         Boolean chrThenSizeA = false
         Boolean chrThenSizeD = false
+        Boolean chrThenScoreA = false
         Boolean chrThenScoreD = false
-        File? g
+        File? genome
         File? faidx
-        Boolean header = false
         String outputBed = "output.sorted.bed"
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBed})
+        mkdir -p "$(dirname ~{outputBed})"
         bedtools sort \
         -i ~{inputBed} \
-        ~{if sizeA then "-sizeA" else ""} \
-        ~{if sizeD then "-sizeD" else ""} \
-        ~{if chrThenSizeD then "-chrThenSizeD" else ""} \
+        ~{true="-sizeA" false="" sizeA} \
+        ~{true="-sizeD" false="" sizeD} \
+        ~{true="-chrThenSizeA" false="" chrThenSizeA} \
+        ~{true="-chrThenSizeD" false="" chrThenSizeD} \
+        ~{true="-chrThenScoreA" false="" chrThenScoreA} \
+        ~{true="-chrThenScoreD" false="" chrThenScoreD} \
+        ~{"-g " + genome} \
+        ~{"-faidx" + faidx} \
         > ~{outputBed}
     }
 
     output {
-        File bedFile = outputBed
+        File sortedBed = outputBed
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+}
+
+task Intersect {
+    input {
+        File regionsA
+        File regionsB
+        # Giving a faidx file will set the sorted option.
+        File? faidx
+        String outputBed = "intersect.bed"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+    }
+    Boolean sorted = defined(faidx)
+
+    command {
+        set -e
+        ~{"cut -f1,2 " + faidx} ~{true="> sorted.genome" false ="" sorted}
+        bedtools intersect \
+        -a ~{regionsA} \
+        -b ~{regionsB} \
+        ~{true="-sorted" false="" sorted} \
+        ~{true="-g sorted.genome" false="" sorted} \
+        > ~{outputBed}
+    }
+
+    output {
+        File intersectedBed = outputBed
     }
 
     runtime {
         docker: dockerImage
     }
 
-
+    parameter_meta {
+        faidx: {description: "The fasta index (.fai) file that is used to create the genome file required for sorted output. Implies sorted option.",
+                category: "common"}
+        regionsA: {description: "Region file a to intersect",
+                   category: "required"}
+        regionsB: {description: "Region file b to intersect",
+                   category: "required"}
+        outputBed: {description: "The path to write the output to",
+                    category: "advanced"}
+        dockerImage: {
+            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+            category: "advanced"
+        }
+    }
 }

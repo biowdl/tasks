@@ -18,7 +18,7 @@ task CPAT {
     # select_first is needed in order to convert the optional arrays to non-optionals.
     command {
         set -e
-        mkdir -p $(dirname ~{outFilePath})
+        mkdir -p "$(dirname ~{outFilePath})"
         cpat.py \
         --gene ~{gene} \
         --outfile ~{outFilePath} \
@@ -30,11 +30,25 @@ task CPAT {
     }
 
     output {
-        File outFile=outFilePath
+        File outFile = outFilePath
     }
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        gene: {description: "Equivalent to CPAT's `--gene` option.", category: "required"}
+        outFilePath: {description: "Equivalent to CPAT's `--outfile` option.", category: "required"}
+        hex: {description: "Equivalent to CPAT's `--hex` option.", category: "required"}
+        logitModel: {description: "Equivalent to CPAT's `--logitModel` option.", category: "required"}
+        referenceGenome: {description: "Equivalent to CPAT's `--ref` option.", category: "advanced"}
+        referenceGenomeIndex: {description: "The index of the reference. Should be added as input if CPAT should not index the reference genome.",
+                               category: "advanced"}
+        startCodons: {description: "Equivalent to CPAT's `--start` option.", category: "advanced"}
+        stopCodons: {description: "Equivalent to CPAT's `--stop` option.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

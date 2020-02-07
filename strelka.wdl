@@ -15,7 +15,7 @@ task Germline {
         Boolean rna = false
 
         Int cores = 1
-        Int memory = 4
+        Int memoryGb = 4
         String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
     }
 
@@ -31,7 +31,7 @@ task Germline {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
-        -g ~{memory}
+        -g ~{memoryGb}
     }
 
     output {
@@ -42,7 +42,24 @@ task Germline {
     runtime {
         docker: dockerImage
         cpu: cores
-        memory: memory
+        memory: "~{memoryGb}G"
+    }
+
+    parameter_meta {
+        runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        bams: {description: "The input BAM files.", category: "required"}
+        indexes: {description: "The indexes for the input BAM files.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
+        callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
+        rna: {description: "Whether or not the data is from RNA sequencing.", category: "common"}
+
+        cores: {description: "The number of cores to use.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -62,7 +79,7 @@ task Somatic {
         Boolean exome = false
 
         Int cores = 1
-        Int memory = 4
+        Int memoryGb = 4
         String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
 
         File? doNotDefineThis #FIXME
@@ -81,7 +98,7 @@ task Somatic {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
-        -g ~{memory}
+        -g ~{memoryGb}
     }
 
     output {
@@ -94,6 +111,32 @@ task Somatic {
     runtime {
         docker: dockerImage
         cpu: cores
-        memory: memory
+        memory: "~{memoryGb}G"
+    }
+
+    parameter_meta {
+        runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
+        tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
+        tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
+        callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
+        indelCandidatesVcf: {description: "An indel candidates VCF file from manta.", category: "advanced"}
+        indelCandidatesVcfIndex: {description: "The index for the indel candidates VCF file.", category: "advanced"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
+
+        cores: {description: "The number of cores to use.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+
+    meta {
+        WDL_AID: {
+            exclude: ["doNotDefineThis"]
+        }
     }
 }

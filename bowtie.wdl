@@ -35,9 +35,10 @@ task Bowtie {
         Boolean strata = false
         Boolean allowContain = false
         String? samRG
+
         Int threads = 1
-        Int memory = 8
-        Int picardMemory = 4
+        String memory = "16G"
+        String picardXmx = "4G"
         # Image contains bowtie=1.2.2 and picard=2.9.2
         String dockerImage = "quay.io/biocontainers/mulled-v2-bfe71839265127576d3cd749c056e7b168308d56:1d8bec77b352cdcf3e9ff3d20af238b33ed96eae-0"
     }
@@ -48,7 +49,7 @@ task Bowtie {
 
     command {
         set -e -o pipefail
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         bowtie -q \
         --sam \
         ~{"--seedmms " +  seedmms} \
@@ -62,7 +63,7 @@ task Bowtie {
         ~{sub(indexFiles[0], "(\.rev)?\.[0-9]\.ebwt$", "")} \
         ~{true="-1" false="" length(readsDownstream) > 0} ~{sep="," readsUpstream} \
         ~{true="-2" false="" length(readsDownstream) > 0} ~{sep="," readsDownstream} \
-        | picard -Xmx~{picardMemory}G SortSam \
+        | picard -Xmx~{picardXmx} SortSam \
         INPUT=/dev/stdin \
         OUTPUT=~{outputPath} \
         SORT_ORDER=coordinate \
@@ -76,8 +77,29 @@ task Bowtie {
 
     runtime {
         cpu: threads
-        memory: memory + picardMemory + picardMemory
+        memory: memory
         docker: dockerImage
+    }
+
+    parameter_meta {
+        readsUpstream: {description: "The first-/single-end fastq files.", category: "required"}
+        readsDownstream: {description: "The second-end fastq files.", category: "common"}
+        outputPath: {description: "The location the output BAM file should be written to.", category: "common"}
+        indexFiles: {description: "The index files for bowtie.", category: "required"}
+        seedmms: {description: "Equivalent to bowtie's `--seedmms` option.", category: "advanced"}
+        seedlen: {description: "Equivalent to bowtie's `--seedlen` option.", category: "advanced"}
+        k: {description: "Equivalent to bowtie's `-k` option.", category: "advanced"}
+        best: {description: "Equivalent to bowtie's `--best` flag.", category: "advanced"}
+        strata: {description: "Equivalent to bowtie's `--strata` flag.", category: "advanced"}
+        allowContain: {description: "Equivalent to bowtie's `--allow-contain` flag.", category: "advanced"}
+        samRG: {description: "Equivalent to bowtie's `--sam-RG` option.", category: "advanced"}
+
+        picardXmx: {description: "The maximum memory available to the picard (used for sorting the output). Should be lower than `memory` to accommodate JVM overhead and bowtie's memory usage.",
+                  category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

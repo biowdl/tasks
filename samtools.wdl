@@ -13,7 +13,7 @@ task BgzipAndIndex {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputGz})
+        mkdir -p "$(dirname ~{outputGz})"
         bgzip -c ~{inputFile} > ~{outputGz}
         tabix ~{outputGz} -p ~{type}
     }
@@ -26,38 +26,55 @@ task BgzipAndIndex {
     runtime {
        docker: dockerImage
     }
+
+    parameter_meta {
+        inputFile: {description: "The file to be compressed and indexed.", category: "required"}
+        outputDir: {description: "The directory in which the output will be placed.", category: "required"}
+        type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 
 task Index {
     input {
         File bamFile
-        String outputBamPath = basename(bamFile)
+        String? outputBamPath
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
     # Select_first is needed, otherwise womtool validate fails.
-    String bamIndexPath = sub(select_first([outputBamPath]), "\.bam$", ".bai")
+    String outputPath = select_first([outputBamPath, basename(bamFile)])
+    String bamIndexPath = sub(outputPath, "\.bam$", ".bai")
 
     command {
         bash -c '
         set -e
         # Make sure outputBamPath does not exist.
-        if [ ! -f ~{outputBamPath} ]
+        if [ ! -f ~{outputPath} ]
         then
-            mkdir -p $(dirname ~{outputBamPath})
-            ln ~{bamFile} ~{outputBamPath}
+            mkdir -p "$(dirname ~{outputPath})"
+            ln ~{bamFile} ~{outputPath}
         fi
-        samtools index ~{outputBamPath} ~{bamIndexPath}
+        samtools index ~{outputPath} ~{bamIndexPath}
         '
     }
 
     output {
-        File indexedBam = outputBamPath
+        File indexedBam = outputPath
         File index =  bamIndexPath
     }
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
+        outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
+                        category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -73,7 +90,7 @@ task Merge {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
         samtools index ~{outputBamPath} ~{indexPath}
     }
@@ -85,6 +102,44 @@ task Merge {
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFiles: {description: "The BAM files to merge.", category: "required"}
+        outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
+        force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task SortByName {
+    input {
+        File bamFile
+        String outputBamPath = "namesorted.bam"
+
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputBamPath})"
+        samtools sort -n ~{bamFile} -o ~{outputBamPath}
+    }
+
+    output {
+        File outputBam = outputBamPath
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFile: {description: "The BAM file to get sorted.", category: "required"}
+        outputBamPath: {description: "The location the sorted BAM file should be written to.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -98,7 +153,7 @@ task Markdup {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputBamPath})
+        mkdir -p "$(dirname ~{outputBamPath})"
         samtools markdup ~{inputBam} ~{outputBamPath}
     }
 
@@ -108,6 +163,13 @@ task Markdup {
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBam: {description: "The BAM file to be processed.", category: "required"}
+        outputBamPath: {description: "The location of the output BAM file.", category: "required"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -121,7 +183,7 @@ task Flagstat {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         samtools flagstat ~{inputBam} > ~{outputPath}
     }
 
@@ -131,6 +193,13 @@ task Flagstat {
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
+        outputPath: {description: "The location the ouput should be written to.", category: "required"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -148,7 +217,7 @@ task Fastq {
         Int? compressionLevel
 
         Int threads = 1
-        Int memory = 1
+        String memory = "1G"
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -180,13 +249,19 @@ task Fastq {
     }
 
     parameter_meta {
-        inputBam: "The bam file to process."
-        outputRead1: "If only outputRead1 is given '-s' flag is assumed. Else '-1'."
-        includeFilter: "Include reads with ALL of these flags. Corresponds to '-f'"
-        excludeFilter: "Exclude reads with ONE OR MORE of these flags. Corresponds to '-F'"
-        excludeSpecificFilter: "Exclude reads with ALL of these flags. Corresponds to '-G'"
-        appendReadNumber: "Append /1 and /2 to the read name, or don't. Corresponds to '-n/N"
-
+        inputBam: {description: "The bam file to process.", category: "required"}
+        outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
+        outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
+        outputRead0: {description: "The location the unpaired reads should be written to (in case of paired-end sequenicng).", category: "advanced"}
+        includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`", category: "advanced"}
+        excludeFilter: {description: "Exclude reads with ONE OR MORE of these flags. Corresponds to `-F`", category: "advanced"}
+        excludeSpecificFilter: {description: "Exclude reads with ALL of these flags. Corresponds to `-G`", category: "advanced"}
+        appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`", category: "advanced"}
+        outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -200,7 +275,7 @@ task Tabix {
     # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
     command {
         set -e
-        mkdir -p $(dirname ~{outputFilePath})
+        mkdir -p "$(dirname ~{outputFilePath})"
         if [ ! -f ~{outputFilePath} ]
         then
             ln ~{inputFile} ~{outputFilePath}
@@ -215,6 +290,15 @@ task Tabix {
 
     runtime {
        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputFile: {description: "The file to be indexed.", category: "required"}
+        outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.",
+                        category: "common"}
+        type: {description: "The type of file (eg. vcf or bed) to be indexed.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -232,7 +316,7 @@ task View {
         Int? MAPQthreshold
 
         Int threads = 1
-        Int memory = 1
+        String memory = "1G"
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String outputIndexPath = basename(outputFileName) + ".bai"
@@ -240,7 +324,7 @@ task View {
     # Always output to bam and output header
     command {
         set -e
-        mkdir -p $(dirname ~{outputFileName})
+        mkdir -p "$(dirname ~{outputFileName})"
         samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
@@ -264,6 +348,22 @@ task View {
         cpu: threads
         memory: memory
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inFile: {description: "A BAM, SAM or CRAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
+        outputFileName: {description: "The location the output BAM file should be written.", category: "common"}
+        uncompressedBamOutput: {description: "Equivalent to samtools view's `-u` flag.", category: "advanced"}
+        includeFilter: {description: "Equivalent to samtools view's `-f` option.", category: "advanced"}
+        excludeFilter: {description: "Equivalent to samtools view's `-F` option.", category: "advanced"}
+        excludeSpecificFilter: {description: "Equivalent to samtools view's `-G` option.", category: "advanced"}
+        MAPQthreshold: {description: "Equivalent to samtools view's `-q` option.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

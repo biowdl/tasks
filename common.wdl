@@ -16,7 +16,7 @@ task AppendToStringArray {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
     }
 }
 
@@ -57,8 +57,8 @@ task ConcatenateTextFiles {
 
     command {
         set -e -o pipefail
-        ~{"mkdir -p $(dirname " + combinedFilePath + ")"}
-        ~{cmdPrefix} ~{sep=' ' fileList} ~{cmdSuffix} > ~{combinedFilePath}
+        mkdir -p "$(dirname ~{combinedFilePath})"
+        ~{cmdPrefix} ~{sep=" " fileList} ~{cmdSuffix} > ~{combinedFilePath}
     }
 
     output {
@@ -66,7 +66,7 @@ task ConcatenateTextFiles {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
     }
 }
 
@@ -77,12 +77,12 @@ task Copy {
         Boolean recursive = false
 
         # Version not that important as long as it is stable.
-        String dockerTag = "5.0.2"
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         cp ~{true="-r" false="" recursive} ~{inputFile} ~{outputPath}
     }
 
@@ -91,7 +91,7 @@ task Copy {
     }
 
     runtime {
-        docker: "bash:" + dockerTag
+        docker: dockerImage
     }
 }
 
@@ -116,10 +116,13 @@ task CreateLink {
 task MapMd5 {
     input {
         Map[String,String] map
+
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
-        cat ~{write_map(map)} | md5sum - | sed -e 's/  -//'
+        set -e -o pipefail
+        md5sum "~{write_map(map)}" | cut -f 1 -d ' '
     }
 
     output {
@@ -127,7 +130,8 @@ task MapMd5 {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
+        docker: dockerImage
     }
 }
 
@@ -135,6 +139,8 @@ task MapMd5 {
 task StringArrayMd5 {
     input {
         Array[String] stringArray
+
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
     command {
@@ -147,7 +153,36 @@ task StringArrayMd5 {
     }
 
     runtime {
-        memory: 1
+        memory: "1G"
+        docker: dockerImage
+    }
+}
+
+task TextToFile {
+
+    input {
+        String text
+        String outputFile = "out.txt"
+        String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
+    }
+
+    command <<<
+        echo ~{text} > ~{outputFile}
+    >>>
+
+    output {
+        File out = outputFile
+    }
+
+    parameter_meta {
+        text: {description: "The text to print", category: "required"}
+        outputFile: {description: "The name of the output file", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+    runtime {
+        memory: "1G"
+        docker: dockerImage
     }
 }
 
@@ -155,11 +190,12 @@ task YamlToJson {
     input {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
-        String dockerTag = "3.13-py37-slim"
+        # biowdl-input-converter has python and pyyaml.
+        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
     command {
         set -e
-        mkdir -p $(dirname ~{outputJson})
+        mkdir -p "$(dirname ~{outputJson})"
         python <<CODE
         import json
         import yaml
@@ -174,7 +210,14 @@ task YamlToJson {
     }
 
     runtime {
-        docker: "biowdl/pyyaml:" + dockerTag
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        yaml: {description: "The YAML file to convert.", category: "required"}
+        outputJson: {description: "The location the output JSON file should be written to.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

@@ -18,7 +18,7 @@ task CollectColumns {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         collect-columns \
         ~{outputPath} \
         ~{sep=" " inputTables} \
@@ -36,8 +36,35 @@ task CollectColumns {
         File outputTable = outputPath
     }
 
+    Int memoryGb = 4 + ceil(0.5 * length(inputTables))
+
     runtime {
-        memory: 4 + ceil(0.5* length(inputTables))
+        memory: "~{memoryGb}G"
         docker: dockerImage
+    }
+
+    parameter_meta {
+        inputTables: {description: "The tables from which columns should be taken.",
+                      category: "required"}
+        outputPath: {description: "The path to which the output should be written.",
+                     category: "required"}
+        featureColumn: {description: "Equivalent to the -f option of collect-columns.",
+                        category: "advanced"}
+        valueColumn: {description: "Equivalent to the -c option of collect-columns.",
+                      category: "advanced"}
+        separator: {description: "Equivalent to the -s option of collect-columns.",
+                    category: "advanced"}
+        sampleNames: {description: "Equivalent to the -n option of collect-columns.",
+                      category: "advanced"}
+        header: {description: "Equivalent to the -H flag of collect-columns.",
+                 category: "advanced"}
+        additionalAttributes: {description: "Equivalent to the -a option of collect-columns.",
+                               category: "advanced"}
+        referenceGtf: {description: "Equivalent to the -g option of collect-columns.",
+                       category: "advanced"}
+        featureAttribute: {description: "Equivalent to the -F option of collect-columns.",
+                           category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }

@@ -25,15 +25,12 @@ task Spades {
         Boolean? disableRepeatResolution
         File? dataset
         Int threads = 1
-        Float memoryGb = 16.0
+        Int memoryGb = 16
         File? tmpDir
         String? k
         Float? covCutoff
         Int? phredOffset
     }
-
-    Int clusterMemory = ceil(memoryGb / threads * 1.2)
-    Int memoryArg = ceil(memoryGb)
 
     command {
         set -e -o pipefail
@@ -61,7 +58,7 @@ task Spades {
         ~{true="--disable-rr" false="" disableRepeatResolution} \
         ~{"--dataset " + dataset} \
         ~{"--threads " + threads} \
-        ~{"--memory " + memoryArg} \
+        ~{"--memory " + memoryGb} \
         ~{"-k " + k} \
         ~{"--cov-cutoff " + covCutoff} \
         ~{"--phred-offset " + phredOffset}
@@ -81,6 +78,6 @@ task Spades {
 
     runtime {
         cpu: threads
-        memory: clusterMemory
+        memory: "~{memoryGb}G"
     }
 }
