@@ -19,7 +19,7 @@ task Merge {
 
     command { 
         set -e
-        mkdir -p $(dirname ~{outputPath}) 
+        mkdir -p "$(dirname ~{outputPath})"
         echo '~{sep="\n" filePaths}' > fileList
         SURVIVOR merge \
         fileList \
@@ -33,7 +33,7 @@ task Merge {
     } 
 
     output {
-        File mergedVcf = "~{outputPath}"
+        File mergedVcf = outputPath
     }
     
     runtime {

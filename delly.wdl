@@ -15,7 +15,7 @@ task CallSV {
     
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         delly call \
         -o ~{outputPath} \
         -g ~{referenceFasta} \
@@ -23,7 +23,7 @@ task CallSV {
     }
 
     output {
-        File dellyBcf = "~{outputPath}" 
+        File dellyBcf = outputPath
     }
     
     runtime {

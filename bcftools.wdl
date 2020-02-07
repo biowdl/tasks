@@ -9,12 +9,12 @@ task Bcf2Vcf {
     
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         bcftools view ~{bcf} -O v -o ~{outputPath}
     }
     
     output {
-        File OutputVcf = "~{outputPath}"
+        File OutputVcf = outputPath
     }
     
     runtime {

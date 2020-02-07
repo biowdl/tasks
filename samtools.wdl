@@ -276,7 +276,7 @@ task FilterShortReadsBam {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPathBam})
+        mkdir -p "$(dirname ~{outputPathBam})"
         samtools view -h ~{bamFile} | \
         awk 'length($10) > 30 || $1 ~/^@/' | \
         samtools view -bS -> ~{outputPathBam} 
@@ -286,7 +286,7 @@ task FilterShortReadsBam {
 
     output {
         File filteredBam = outputPathBam
-        File filteredBamIndex = outputPathBam+".bai"
+        File filteredBamIndex = outputPathBam + ".bai"
     }
 
     runtime {

@@ -1,7 +1,5 @@
 version 1.0 
 
-import "common.wdl"
-import "bwa.wdl"
 task Prediction {
     input {
         File bamFile
@@ -27,7 +25,7 @@ task Prediction {
     } 
 
     output {
-        File predictions = "~{outputPath}/predictions.vcf"
+        File predictions = outputPath + "/predictions.vcf"
     }   
     
     runtime {
@@ -46,7 +44,7 @@ task Mateclever {
         File predictions
         String outputPath
         Int threads = 10 
-        Int mem = 15
+        String memory = 15
         Int cleverMaxDelLength = 100000
         Int maxLengthDiff= 30
         Int maxOffset = 150 
@@ -55,7 +53,7 @@ task Mateclever {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         echo ~{outputPath} ~{fiteredBam} ~{predictions} none > predictions.list
         mateclever \
         -T ~{threads} \
@@ -70,12 +68,12 @@ task Mateclever {
     }
     
     output {
-        File matecleverVcf = "~{outputPath}/deletions.vcf" 
+        File matecleverVcf = outputPath + "/deletions.vcf" 
     }
     
     runtime {
         cpu: threads
-        memory: mem
+        memory: memory
         docker: dockerImage 
     }
 }

@@ -480,7 +480,7 @@ task RenameSample {
 
     command {
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         picard -Xmx~{memory}G \
         RenameSampleInVcf \
         I=~{inputVcf} \
@@ -489,7 +489,7 @@ task RenameSample {
     }
 
     output {
-        File renamedVcf = "~{outputPath}"
+        File renamedVcf = outputPath
     }
 
     runtime {
