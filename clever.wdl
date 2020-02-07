@@ -7,7 +7,7 @@ task Prediction {
         BwaIndex bwaIndex
         String outputPath        
         Int threads = 10 
-        Int mem = 15
+        String memory = "15G"
         String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }   
     
