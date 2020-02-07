@@ -223,7 +223,7 @@ task View {
         File inFile
         File? referenceFasta
         String outputFileName = "view.bam"
-	Boolean? includeHeader
+	    Boolean? includeHeader
         Boolean? outputBam
         Boolean? uncompressedBamOutput
         Int? includeFilter
@@ -256,7 +256,7 @@ task View {
     }
 
     output {
-        File outputBam = outputFileName
+        File outputBAM = outputFileName
         File outputBamIndex = outputIndexPath
     }
 
