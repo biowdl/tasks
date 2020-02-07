@@ -10,6 +10,7 @@ task Prediction {
         String outputPath        
         Int threads = 10 
         Int mem = 15
+        String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }   
     
 
@@ -33,7 +34,7 @@ task Prediction {
     runtime {
         cpu: threads
         memory: mem
-        docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
+        docker: dockerImage
     }   
 
 }
@@ -50,6 +51,7 @@ task Mateclever {
         Int cleverMaxDelLength = 100000
         Int maxLengthDiff= 30
         Int maxOffset = 150 
+        String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }
 
     command <<<
@@ -75,6 +77,6 @@ task Mateclever {
     runtime {
         cpu: threads
         memory: mem
-        docker: "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
+        docker: dockerImage 
     }
 }

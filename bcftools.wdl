@@ -4,6 +4,7 @@ task Bcf2Vcf {
     input {
         File bcf
         String outputPath
+        String dockerImage = "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
     }
     
     command <<<
@@ -17,6 +18,6 @@ task Bcf2Vcf {
     }
     
     runtime {
-        docker: "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
+        docker: dockerImage
     }
 }

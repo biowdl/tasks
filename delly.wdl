@@ -8,9 +8,9 @@ task CallSV {
         File bamIndex
         File referenceFasta
         File referenceFastaFai
-        #Reference reference
         String outputPath        
         Int mem = 15
+        String dockerImage = "quay.io/biocontainers/delly:0.8.1--h4037b6b_1"
     }
     
 
@@ -28,7 +28,7 @@ task CallSV {
     }
     
     runtime {
-        docker: "quay.io/biocontainers/delly:0.8.1--h4037b6b_1"
+        docker: dockerImage
         memory: mem
     }
 

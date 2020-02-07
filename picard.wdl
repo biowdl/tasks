@@ -470,6 +470,7 @@ task SortVcf {
 
 task RenameSample {
     input {
+        String dockerImage = "quay.io/biocontainers/picard:2.19.0--0"
         File inputVcf
         String outputPath
         String newSampleName
@@ -492,7 +493,7 @@ task RenameSample {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/picard:2.19.0--0"
+        docker: dockerImage
         memory: ceil(memory * memoryMultiplier)
     }
 }

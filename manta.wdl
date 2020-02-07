@@ -60,6 +60,7 @@ task Somatic {
 
 task Germline {
     input {
+        String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
         File bamFile
         File bamIndex
         File referenceFasta
@@ -71,7 +72,6 @@ task Germline {
         
         Int cores = 1
         Int memory = 4
-        String dockerTag = "1.4.0--py27_1"
     }
 
     command {
@@ -98,7 +98,7 @@ task Germline {
     runtime {
         cpu: cores
         memory: memory
-        docker: "quay.io/biocontainers/manta:" + dockerTag
+        docker: dockerImage
     }
 }
     

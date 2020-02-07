@@ -4,6 +4,7 @@ import "common.wdl"
 
 task Merge {
     input{
+        String dockerImage = "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
         Array[File] filePaths
         Int breakpointDistance = 1000
         Int suppVecs = 2
@@ -36,7 +37,7 @@ task Merge {
     }
     
     runtime {
-        docker: "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
+        docker: dockerImage
         memory: memory
     }
 }
