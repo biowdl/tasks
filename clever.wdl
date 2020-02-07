@@ -13,8 +13,7 @@ task Prediction {
         String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }   
     
-
-    command <<< 
+    command { 
         set -e
         mkdir -p $(dirname ~{outputPath})
         clever \
@@ -25,7 +24,7 @@ task Prediction {
         ~{bamFile} \
         ~{bwaIndex.fastaFile} \
         ~{outputPath}
-    >>> 
+    } 
 
     output {
         File predictions = "~{outputPath}/predictions.vcf"
@@ -54,7 +53,7 @@ task Mateclever {
         String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }
 
-    command <<<
+    command {
         set -e
         mkdir -p $(dirname ~{outputPath})
         echo ~{outputPath} ~{fiteredBam} ~{predictions} none > predictions.list
@@ -68,7 +67,7 @@ task Mateclever {
         ~{bwaIndex.fastaFile} \
         predictions.list \
         ~{outputPath}
-    >>>
+    }
     
     output {
         File matecleverVcf = "~{outputPath}/deletions.vcf" 

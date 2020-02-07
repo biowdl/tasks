@@ -274,7 +274,7 @@ task FilterShortReadsBam {
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
-    command <<<
+    command {
         set -e
         mkdir -p $(dirname ~{outputPathBam})
         samtools view -h ~{bamFile} | \
@@ -282,7 +282,7 @@ task FilterShortReadsBam {
         samtools view -bS -> ~{outputPathBam} 
         samtools index ~{outputPathBam}
 
-    >>>
+    }
 
     output {
         File filteredBam = outputPathBam

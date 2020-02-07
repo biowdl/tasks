@@ -17,7 +17,7 @@ task Merge {
         Int memory = 128
     }
 
-    command <<< 
+    command { 
         set -e
         mkdir -p $(dirname ~{outputPath}) 
         echo '~{sep="\n" filePaths}' > fileList
@@ -30,7 +30,7 @@ task Merge {
         ~{distanceBySvSize} \
         ~{minSize} \
         ~{outputPath}
-    >>> 
+    } 
 
     output {
         File mergedVcf = "~{outputPath}"

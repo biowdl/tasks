@@ -13,15 +13,14 @@ task CallSV {
         String dockerImage = "quay.io/biocontainers/delly:0.8.1--h4037b6b_1"
     }
     
-
-    command <<<
+    command {
         set -e
         mkdir -p $(dirname ~{outputPath})
         delly call \
         -o ~{outputPath} \
         -g ~{referenceFasta} \
         ~{bamFile}
-    >>>
+    }
 
     output {
         File dellyBcf = "~{outputPath}" 
@@ -31,5 +30,4 @@ task CallSV {
         docker: dockerImage
         memory: mem
     }
-
 }

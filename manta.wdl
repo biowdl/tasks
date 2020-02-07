@@ -90,7 +90,6 @@ task Germline {
     }
 
     output {
-
         File mantaVCF = runDir + "/results/variants/diploidSV.vcf.gz"
         File mantaVCFindex = runDir + "/results/variants/diploidSV.vcf.gz.tbi"
     }
