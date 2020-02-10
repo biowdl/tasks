@@ -618,14 +618,14 @@ task RenameSample {
         File inputVcf
         String outputPath
         String newSampleName
-        Int memory = 8
-        Float memoryMultiplier = 3.0
+        String memory = "24G"
+        String javaXmx = "8G"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        picard -Xmx~{memory}G \
+        picard -Xmx~{javaXmx} \
         RenameSampleInVcf \
         I=~{inputVcf} \
         O=~{outputPath} \
@@ -638,7 +638,7 @@ task RenameSample {
 
     runtime {
         docker: dockerImage
-        memory: ceil(memory * memoryMultiplier)
+        memory = memory
     }
 }
 
