@@ -23,7 +23,7 @@ task Prediction {
         ~{bwaIndex.fastaFile} \
         ~{outputPath}
     } 
-
+    
     output {
         File predictions = outputPath + "/predictions.vcf"
     }   
@@ -33,6 +33,15 @@ task Prediction {
         memory: memory
         docker: dockerImage
     }   
+
+    parameter_meta {
+        bamFile: {description: "The bam file to process.", category: "required"}
+        bamIndex: {description: "The index bam file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+        bwaIndex: {description: "The BWA index files.", category: "required"}
+    }
 
 }
 
@@ -75,5 +84,15 @@ task Mateclever {
         cpu: threads
         memory: memory
         docker: dockerImage 
+    }
+
+    parameter_meta {
+        fiteredBam: {description: "The bam file where sequences less than 30bp were removed.", category: "required"}
+        indexedFiteredBam: {description: "The index of the filtered bam file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+        bwaIndex: {description: "The BWA index files.", category: "required"}
+        predictions: {description: "The predicted deletions (VCF) from clever.", category: "required"}
     }
 }

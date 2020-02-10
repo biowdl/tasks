@@ -640,5 +640,13 @@ task RenameSample {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        inputVcf: {description: "The VCF file to process.", category: "required"}
+        newSampleName: {description: "A string to replace the old sample name.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
 

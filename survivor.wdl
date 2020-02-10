@@ -40,4 +40,12 @@ task Merge {
         docker: dockerImage
         memory: memory
     }
+
+    parameter_meta {
+        filePaths: {description: "An array of VCF files (predictions) to be merged by SURVIVOR", category: "required"}
+        sample: {description: "The name of the sample", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
 }
