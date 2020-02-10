@@ -371,6 +371,7 @@ task FilterShortReadsBam {
     input {
         File bamFile
         String outputPathBam
+        String outputPathBamIndex
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -379,14 +380,13 @@ task FilterShortReadsBam {
         mkdir -p "$(dirname ~{outputPathBam})"
         samtools view -h ~{bamFile} | \
         awk 'length($10) > 30 || $1 ~/^@/' | \
-        samtools view -bS -> ~{outputPathBam} 
-        samtools index ~{outputPathBam}
-
+        samtools view -bS -> ~{outputPathBam}
+        samtools index ~{outputPathBam} ~{outputPathBamIndex}
     }
 
     output {
         File filteredBam = outputPathBam
-        File filteredBamIndex = outputPathBam + ".bai"
+        File filteredBamIndex = outputPathBamIndex
     }
 
     runtime {
