@@ -88,7 +88,7 @@ task Germline {
         Boolean exome = false
         
         Int cores = 1
-        String memory = "4G"
+        Int memoryGb = 4
     }
 
     command {
@@ -103,7 +103,7 @@ task Germline {
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
-        -g ~{memory}
+        -g ~{memoryGb}
     }
 
     output {
@@ -113,7 +113,7 @@ task Germline {
     
     runtime {
         cpu: cores
-        memory: memory
+        memory: "~{memoryGb}G"
         docker: dockerImage
     }
 }

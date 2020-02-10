@@ -1,5 +1,5 @@
 version 1.0 
-
+import "bwa.wdl"
 task Prediction {
     input {
         File bamFile
@@ -30,7 +30,7 @@ task Prediction {
     
     runtime {
         cpu: threads
-        memory: mem
+        memory: memory
         docker: dockerImage
     }   
 

@@ -638,7 +638,7 @@ task RenameSample {
 
     runtime {
         docker: dockerImage
-        memory = memory
+        memory: memory
     }
 }
 
