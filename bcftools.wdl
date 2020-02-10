@@ -14,7 +14,7 @@ task Bcf2Vcf {
     }
     
     output {
-        File OutputVcf = outputPath
+        File outputVcf = outputPath
     }
     
     runtime {
