@@ -44,7 +44,7 @@ task Mateclever {
         File predictions
         String outputPath
         Int threads = 10 
-        String memory = 15
+        String memory = "15G"
         Int cleverMaxDelLength = 100000
         Int maxLengthDiff= 30
         Int maxOffset = 150 

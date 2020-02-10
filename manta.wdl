@@ -88,7 +88,7 @@ task Germline {
         Boolean exome = false
         
         Int cores = 1
-        String memory = 4
+        String memory = "4G"
     }
 
     command {

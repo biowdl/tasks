@@ -14,7 +14,7 @@ task Merge {
         Int minSize = 30
         String sample
         String outputPath
-        String memory = 128
+        String memory = "128G"
     }
 
     command { 
