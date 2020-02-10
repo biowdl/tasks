@@ -121,8 +121,8 @@ task Germline {
         runDir: {description: "The directory to use as run/output directory.", category: "common"}
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index bam file.", category: "required"}
-        referenceFasta: referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
-        referenceFastaFai: { description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
+        referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
