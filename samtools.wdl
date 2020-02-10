@@ -309,7 +309,7 @@ task View {
         String outputFileName = "view.bam"
 	  Boolean? includeHeader
         Boolean? outputBam
-        Boolean? uncompressedBamOutput
+        Boolean uncompressedBamOutput = false
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
@@ -393,4 +393,3 @@ task FilterShortReadsBam {
         docker: dockerImage
     }
 }
-
