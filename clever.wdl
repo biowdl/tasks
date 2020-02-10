@@ -41,6 +41,8 @@ task Prediction {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
         bwaIndex: {description: "The BWA index files.", category: "required"}
+        memory: {description: "The memory required to run the programs", category: "common"}
+        threads: {description: "The the number of threads required to run a program", category: "common"}
     }
 
 }
@@ -94,5 +96,7 @@ task Mateclever {
                       category: "advanced"}
         bwaIndex: {description: "The BWA index files.", category: "required"}
         predictions: {description: "The predicted deletions (VCF) from clever.", category: "required"}
+        memory: {description: "The memory required to run the programs", category: "common"}
+        threads: {description: "The the number of threads required to run a program", category: "common"}
     }
 }

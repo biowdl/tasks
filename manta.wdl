@@ -128,6 +128,8 @@ task Germline {
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
         exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
+        memoryGb: {description: "The memory required to run the manta", category: "common"}
+        cores: {description: "The the number of cores required to run a program", category: "common"}
     }
 }
     
