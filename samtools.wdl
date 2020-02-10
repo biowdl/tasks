@@ -307,7 +307,7 @@ task View {
         File inFile
         File? referenceFasta
         String outputFileName = "view.bam"
-	    Boolean? includeHeader
+	  Boolean? includeHeader
         Boolean? outputBam
         Boolean? uncompressedBamOutput
         Int? includeFilter
@@ -393,5 +393,4 @@ task FilterShortReadsBam {
         docker: dockerImage
     }
 }
-
 
