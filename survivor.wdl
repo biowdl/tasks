@@ -12,7 +12,7 @@ task Merge {
         String sample
         String outputPath
 
-        String memory = "128G"
+        String memory = "24G"
         String dockerImage = "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
     }
 
