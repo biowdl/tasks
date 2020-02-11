@@ -11,6 +11,13 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Update WDL task Picard (Add task RenameSample)
++ Update WDL task Samtools (Add task FilterShortReadsBam)
++ Add WDL task for BCFtools
++ Add WDL task for SURVIVOR
++ Update WDL task Manta (Add germline SV calling)
++ Add WDL task for Delly
++ Add WDL task for Clever (and Mate-Clever)
 + Add pedigree input for HaplotypeCaller and GenotypeGVCFs.
 + Combined biopet.ScatterRegions and biopet.ReorderedGlobbedScatters into one.
   biopet.ScatterRegions now always returns correctly ordered scatters.
