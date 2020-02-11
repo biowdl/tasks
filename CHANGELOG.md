@@ -13,8 +13,8 @@ version 2.2.0-dev
 ---------------------------
 + Update WDL task Picard (Add task RenameSample)
 + Update WDL task Samtools (Add task FilterShortReadsBam)
-+ Add WDL task for BCFtools
-+ Add WDL task for SURVIVOR
++ Add WDL task for BCFtools (bcf to vcf)
++ Add WDL task for SURVIVOR (merge)
 + Update WDL task Manta (Add germline SV calling)
 + Add WDL task for Delly
 + Add WDL task for Clever (and Mate-Clever)
