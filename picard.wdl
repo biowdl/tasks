@@ -1,7 +1,5 @@
 version 1.0
 
-import "common.wdl"
-
 task BedToIntervalList {
     input {
         File bedFile
