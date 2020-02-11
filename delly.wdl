@@ -33,6 +33,7 @@ task CallSV {
     }
 
     parameter_meta {
+        # inputs
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index bam file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
