@@ -57,6 +57,7 @@ task Somatic {
     }
 
     parameter_meta {
+        # inputs
         tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
         normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
@@ -67,17 +68,14 @@ task Somatic {
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
         exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
-
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
 task Germline {
     input {
-        String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
         File bamFile
         File bamIndex
         File referenceFasta
@@ -86,9 +84,10 @@ task Germline {
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false
-        
+
         Int cores = 1
         Int memoryGb = 4
+        String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
     }
 
     command {
@@ -99,7 +98,7 @@ task Germline {
         ~{"--callRegions " + callRegions} \
         --runDir ~{runDir} \
         ~{true="--exome" false="" exome}
-        
+
         ~{runDir}/runWorkflow.py \
         -m local \
         -j ~{cores} \
@@ -110,7 +109,7 @@ task Germline {
         File mantaVCF = runDir + "/results/variants/diploidSV.vcf.gz"
         File mantaVCFindex = runDir + "/results/variants/diploidSV.vcf.gz.tbi"
     }
-    
+
     runtime {
         cpu: cores
         memory: "~{memoryGb}G"
@@ -118,18 +117,17 @@ task Germline {
     }
 
     parameter_meta {
-        runDir: {description: "The directory to use as run/output directory.", category: "common"}
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index bam file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        runDir: {description: "The directory to use as run/output directory.", category: "common"}
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
         exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
-        memoryGb: {description: "The memory required to run the manta", category: "common"}
         cores: {description: "The the number of cores required to run a program", category: "common"}
+        memoryGb: {description: "The memory required to run the manta", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
     
