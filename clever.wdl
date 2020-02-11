@@ -97,5 +97,9 @@ task Mateclever {
         predictions: {description: "The predicted deletions (VCF) from clever.", category: "required"}
         memory: {description: "The memory required to run the programs", category: "common"}
         threads: {description: "The the number of threads required to run a program", category: "common"}
+
+        maxOffset: {description: "Maximum center distance between split-read and read-pair deletion to be considered identical", category: "common"}
+        maxLengthDiff: {description: "Maximum length difference between split-read and read-pair deletion to be considered identical ", category: "common"}
+        cleverMaxDelLength: {description: "Maximum deletion length to look for from clever predictions.", category: "common"}
     }
 }
