@@ -28,6 +28,7 @@ task BgzipAndIndex {
     }
 
     parameter_meta {
+        # inputs
         inputFile: {description: "The file to be compressed and indexed.", category: "required"}
         outputDir: {description: "The directory in which the output will be placed.", category: "required"}
         type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
@@ -70,6 +71,7 @@ task Index {
     }
 
     parameter_meta {
+        # inputs
         bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
         outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
                         category: "common"}
@@ -105,6 +107,7 @@ task Merge {
     }
 
     parameter_meta {
+        # inputs
         bamFiles: {description: "The BAM files to merge.", category: "required"}
         outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
         force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
@@ -136,6 +139,7 @@ task SortByName {
     }
 
     parameter_meta {
+        # inputs
         bamFile: {description: "The BAM file to get sorted.", category: "required"}
         outputBamPath: {description: "The location the sorted BAM file should be written to.", category: "common"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -166,6 +170,7 @@ task Markdup {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The BAM file to be processed.", category: "required"}
         outputBamPath: {description: "The location of the output BAM file.", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -196,6 +201,7 @@ task Flagstat {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
         outputPath: {description: "The location the ouput should be written to.", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -249,6 +255,7 @@ task Fastq {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The bam file to process.", category: "required"}
         outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
         outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
@@ -293,6 +300,7 @@ task Tabix {
     }
 
     parameter_meta {
+        # inputs
         inputFile: {description: "The file to be indexed.", category: "required"}
         outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.",
                         category: "common"}
@@ -351,6 +359,7 @@ task View {
     }
 
     parameter_meta {
+        # inputs
         inFile: {description: "A BAM, SAM or CRAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
         outputFileName: {description: "The location the output BAM file should be written.", category: "common"}
@@ -372,6 +381,7 @@ task FilterShortReadsBam {
         File bamFile
         String outputPathBam
         String outputPathBamIndex
+
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 

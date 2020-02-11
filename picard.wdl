@@ -33,6 +33,7 @@ task BedToIntervalList {
     }
 
     parameter_meta {
+        # inputs
         bedFile: {description: "A bed file.", category: "required"}
         dict: {description: "A sequence dict file.", category: "required"}
         outputPath: {description: "The location the output interval list should be written to.",
@@ -138,6 +139,7 @@ task CollectMultipleMetrics {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The input BAM file for which metrics will be collected.",
                    category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
@@ -209,6 +211,7 @@ task CollectRnaSeqMetrics {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The input BAM file for which metrics will be collected.",
                    category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
@@ -268,6 +271,7 @@ task CollectTargetedPcrMetrics {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The input BAM file for which metrics will be collected.",
                    category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
@@ -326,6 +330,7 @@ task GatherBamFiles {
     }
 
     parameter_meta {
+        # inputs
         inputBams: {description: "The BAM files to be merged together.", category: "required"}
         inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
         outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
@@ -368,6 +373,7 @@ task GatherVcfs {
     }
 
     parameter_meta {
+        # inputs
         inputVcfs: {description: "The VCF files to be merged together.", category: "required"}
         inputVcfIndexes: {description: "The indexes of the input VCF files.", category: "required"}
         outputVcfPath: {description: "The path where the merged VCF file will be written.", caregory: "required"}
@@ -434,6 +440,7 @@ task MarkDuplicates {
     }
 
     parameter_meta {
+        # inputs
         inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
         inputBamIndexes: {description: "Th eindexes for the input BAM files.", category: "required"}
         outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
@@ -483,6 +490,7 @@ task MergeVCFs {
     }
 
     parameter_meta {
+        # inputs
         inputVCFs: {description: "The VCF files to be merged.", category: "required"}
         inputVCFsIndexes: {description: "The indexes of the VCF files.", category: "required"}
         outputVcfPath: {description: "The location the output VCF file should be written to.", category: "required"}
@@ -600,6 +608,7 @@ task SortVcf {
     }
 
     parameter_meta {
+        # inputs
         vcfFiles: {description: "The VCF files to merge and sort.", category: "required"}
         outputVcfPath: {description: "The location the sorted VCF files should be written to.", category: "required"}
         dict: {description: "A sequence dictionary matching the VCF files.", category: "advanced"}
@@ -614,12 +623,13 @@ task SortVcf {
 
 task RenameSample {
     input {
-        String dockerImage = "quay.io/biocontainers/picard:2.19.0--0"
         File inputVcf
         String outputPath
         String newSampleName
+
         String memory = "24G"
         String javaXmx = "8G"
+        String dockerImage = "quay.io/biocontainers/picard:2.19.0--0"
     }
 
     command {
@@ -642,13 +652,12 @@ task RenameSample {
     }
 
     parameter_meta {
+        # inputs
         inputVcf: {description: "The VCF file to process.", category: "required"}
-        newSampleName: {description: "A string to replace the old sample name.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-        javaXmx: {description: "The max. memory allocated for JAVA", category: "common"}
+        newSampleName: {description: "A string to replace the old sample name.", category: "required"}
         memory: {description: "The memory required to run the programs", category: "common"}
+        javaXmx: {description: "The max. memory allocated for JAVA", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
-
