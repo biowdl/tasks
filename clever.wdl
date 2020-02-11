@@ -44,7 +44,6 @@ task Prediction {
         memory: {description: "The memory required to run the programs", category: "common"}
         threads: {description: "The the number of threads required to run a program", category: "common"}
     }
-
 }
 
 task Mateclever {
