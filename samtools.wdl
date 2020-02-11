@@ -381,7 +381,6 @@ task FilterShortReadsBam {
         File bamFile
         String outputPathBam
         String outputPathBamIndex
-
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -401,5 +400,12 @@ task FilterShortReadsBam {
 
     runtime {
         docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFile: {description: "The bam file to process.", category: "required"}
+        outputPathBam: {description: "The filtered bam file.", category: "advanced"}
+        outputPathBamIndex: {description: "The index of filtered bam file.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
