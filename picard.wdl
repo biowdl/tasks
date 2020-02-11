@@ -656,8 +656,8 @@ task RenameSample {
         inputVcf: {description: "The VCF file to process.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         newSampleName: {description: "A string to replace the old sample name.", category: "required"}
-        memory: {description: "The memory required to run the programs", category: "common"}
-        javaXmx: {description: "The max. memory allocated for JAVA", category: "common"}
+        memory: {description: "The memory required to run the programs", category: "advanced"}
+        javaXmx: {description: "The max. memory allocated for JAVA", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
