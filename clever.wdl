@@ -13,7 +13,7 @@ task Prediction {
     
     command { 
         set -e
-        mkdir -p $(dirname ~{outputPath})
+        mkdir -p "$(dirname ~{outputPath})"
         clever \
         -T ~{threads} \
         --use_mapq \
