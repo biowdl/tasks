@@ -218,8 +218,8 @@ task Fastq {
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
-        Boolean? appendReadNumber
-        Boolean? outputQuality
+        Boolean appendReadNumber = false
+        Boolean outputQuality = false
         Int? compressionLevel
 
         Int threads = 1
@@ -315,8 +315,8 @@ task View {
         File inFile
         File? referenceFasta
         String outputFileName = "view.bam"
-	  Boolean? includeHeader
-        Boolean? outputBam
+        Boolean includeHeader = false
+        Boolean outputBam = false
         Boolean uncompressedBamOutput = false
         Int? includeFilter
         Int? excludeFilter
