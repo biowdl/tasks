@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add proper copyright headers to all WDL files. So the free software license
+  is clear to end users who wish to adapt and modify.
 + Add pedigree input for HaplotypeCaller and GenotypeGVCFs.
 + Combined biopet.ScatterRegions and biopet.ReorderedGlobbedScatters into one.
   biopet.ScatterRegions now always returns correctly ordered scatters.
