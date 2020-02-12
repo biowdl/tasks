@@ -467,7 +467,7 @@ task CombineVariants {
 
         String memory = "24G"
         String javaXmx = "12G"
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "broadinstitute/gatk3:3.8-1"
     }
 
     command <<<
