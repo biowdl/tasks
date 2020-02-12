@@ -30,7 +30,7 @@ task Mateclever {
         File indexedFiteredBam
         BwaIndex bwaIndex
         File predictions
-        String outputPath
+        String outputPath = "./clever"
         Int cleverMaxDelLength = 100000
         Int maxLengthDiff= 30
         Int maxOffset = 150
@@ -84,7 +84,7 @@ task Prediction {
         File bamFile
         File bamIndex
         BwaIndex bwaIndex
-        String outputPath
+        String outputPath = "./clever"
 
         Int threads = 10
         String memory = "15G"

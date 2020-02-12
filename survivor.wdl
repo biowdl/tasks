@@ -31,7 +31,7 @@ task Merge {
         Int strandType = 1
         Int distanceBySvSize = 0
         Int minSize = 30
-        String outputPath
+        String outputPath = "./survivor/merged.vcf"
         String memory = "24G"
         String dockerImage = "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
     }

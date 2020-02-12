@@ -642,9 +642,8 @@ task SortVcf {
 task RenameSample {
     input {
         File inputVcf
-        String outputPath
+        String outputPath = "./picard/renamed.vcf"
         String newSampleName
-
         String memory = "24G"
         String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/picard:2.19.0--0"

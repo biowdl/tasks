@@ -26,7 +26,7 @@ task Germline {
         File bamIndex
         File referenceFasta
         File referenceFastaFai
-        String runDir
+        String runDir = "./manta_run"
         File? callRegions
         File? callRegionsIndex
         Boolean exome = false

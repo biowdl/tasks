@@ -25,7 +25,7 @@ version 1.0
 task Bcf2Vcf {
     input {
         File bcf
-        String outputPath
+        String outputPath = "./bcftools/SV.vcf"
         String dockerImage = "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
     }
 
