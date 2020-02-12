@@ -66,14 +66,14 @@ task Germline {
         # inputs
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index bam file.", category: "required"}
-        referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
+        referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
-        runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        runDir: {description: "The directory to use as run/output directory.", category: "required"}
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
         exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
-        cores: {description: "The the number of cores required to run a program", category: "common"}
-        memoryGb: {description: "The memory required to run the manta", category: "common"}
+        cores: {description: "The the number of cores required to run a program", category: "required"}
+        memoryGb: {description: "The memory required to run the manta", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

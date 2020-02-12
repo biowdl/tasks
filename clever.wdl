@@ -119,10 +119,12 @@ task Prediction {
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index bam file.", category: "required"}
         bwaIndex: {description: "The BWA index files.", category: "required"}
-        predictions: {description: "The predicted deletions (VCF) from clever.", category: "advanced"}
-        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "required"}
         threads: {description: "The the number of threads required to run a program", category: "advanced"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        predictions: {description: "The predicted deletions (VCF) from clever.", category: "advanced"}
     }
 }
