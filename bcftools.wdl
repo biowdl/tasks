@@ -45,7 +45,7 @@ task Bcf2Vcf {
 
     parameter_meta {
         bcf: {description: "The generated BCF from an SV caller", category: "required"}
-        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
