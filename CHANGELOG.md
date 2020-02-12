@@ -18,6 +18,8 @@ version 2.2.0-dev
 + Update WDL task Manta (Add germline SV calling)
 + Add WDL task for Delly
 + Add WDL task for Clever (and Mate-Clever)
++ Add proper copyright headers to all WDL files. So the free software license
+  is clear to end users who wish to adapt and modify.
 + Add pedigree input for HaplotypeCaller and GenotypeGVCFs.
 + Combined biopet.ScatterRegions and biopet.ReorderedGlobbedScatters into one.
   biopet.ScatterRegions now always returns correctly ordered scatters.
