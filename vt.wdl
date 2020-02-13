@@ -48,7 +48,7 @@ task Normalize {
 
     parameter_meta {
         # inputs
-        inputVcf: {description: "The VCF file to process.", category: "required"}
+        inputVCF: {description: "The VCF file to process.", category: "required"}
         inputVCFIndex: {description: "The index of the VCF file to be processed.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
