@@ -26,7 +26,7 @@ task Normalize {
         File inputVCFIndex
         File referenceFasta
         File referenceFastaFai
-        String outputPath
+        String outputPath = "./vt/normalized_decomposed.vcf"
         String dockerImage = "quay.io/biocontainers/vt:0.57721--hdf88d34_2"
         String memory = "4G"
     }
@@ -34,7 +34,11 @@ task Normalize {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        vt normalize ~{inputVCF} -r ~{referenceFasta} -o ~{outputPath}
+        vt normalize ~{inputVCF} -r ~{referenceFasta} | vt decompose -s - -o ~{outputPath}
+    }
+
+    output {
+        File outputVcf = outputPath
     }
 
     runtime {
