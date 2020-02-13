@@ -45,5 +45,16 @@ task Normalize {
         memory: memory
         docker: dockerImage
     }
+
+    parameter_meta {
+        # inputs
+        inputVcf: {description: "The VCF file to process.", category: "required"}
+        inputVCFIndex: {description: "The index of the VCF file to be processed.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        memory: {description: "The memory required to run the programs", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
 }
 
