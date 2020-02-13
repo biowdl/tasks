@@ -425,7 +425,7 @@ task FilterShortReadsBam {
 
     parameter_meta {
         bamFile: {description: "The bam file to process.", category: "required"}
-        outputPathBam: {description: "The filtered bam file.", category: "required"}
+        outputPathBam: {description: "The filtered bam file.", category: "common"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

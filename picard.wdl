@@ -671,7 +671,7 @@ task RenameSample {
     parameter_meta {
         # inputs
         inputVcf: {description: "The VCF file to process.", category: "required"}
-        outputPath: {description: "The location the output VCF file should be written.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         newSampleName: {description: "A string to replace the old sample name.", category: "required"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
         javaXmx: {description: "The max. memory allocated for JAVA", category: "advanced"}
