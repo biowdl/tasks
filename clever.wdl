@@ -72,6 +72,9 @@ task Mateclever {
         indexedFiteredBam: {description: "The index of the filtered bam file.", category: "required"}
         bwaIndex: {description: "The BWA index files.", category: "required"}
         predictions: {description: "The predicted deletions (VCF) from clever.", category: "required"}
+        maxOffset: {description: "The maximum center distance between split-read and read-pair deletion to be considered identical.", category: "advanced"}
+        maxLengthDiff: {description: "The maximum length difference between split-read and read-pair deletion to be considered identical.", category: "advanced"}
+        cleverMaxDelLength: {description: "The maximum deletion length to look for in Clever predictions.", category: "advanced"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         threads: {description: "The the number of threads required to run a program", category: "advanced"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
