@@ -12,6 +12,13 @@ that users understand how the changes affect the new version.
 version 2.2.0-dev
 ---------------------------
 + Add vt task for variants normalization and decomposition.
++ Update WDL task Picard (Add task RenameSample)
++ Update WDL task Samtools (Add task FilterShortReadsBam)
++ Add WDL task for BCFtools (bcf to vcf)
++ Add WDL task for SURVIVOR (merge)
++ Update WDL task Manta (Add germline SV calling)
++ Add WDL task for Delly
++ Add WDL task for Clever (and Mate-Clever)
 + Add proper copyright headers to all WDL files. So the free software license
   is clear to end users who wish to adapt and modify.
 + Add pedigree input for HaplotypeCaller and GenotypeGVCFs.
