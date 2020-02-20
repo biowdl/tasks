@@ -96,6 +96,7 @@ task Kit {
 
     command {
         set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
         bwa mem \
           -t ~{threads} \
           ~{"-R '" + readgroup}~{true="'" false="" defined(readgroup)} \

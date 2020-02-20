@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Fixed a bug where the output directory was not created for bwa.Kit.
 + Add vt task for variants normalization and decomposition.
 + Update WDL task Picard (Add task RenameSample)
 + Update WDL task Samtools (Add task FilterShortReadsBam)
