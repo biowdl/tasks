@@ -48,6 +48,7 @@ task BgzipAndIndex {
     }
 
     parameter_meta {
+        # inputs
         inputFile: {description: "The file to be compressed and indexed.", category: "required"}
         outputDir: {description: "The directory in which the output will be placed.", category: "required"}
         type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
@@ -90,6 +91,7 @@ task Index {
     }
 
     parameter_meta {
+        # inputs
         bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
         outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
                         category: "common"}
@@ -125,6 +127,7 @@ task Merge {
     }
 
     parameter_meta {
+        # inputs
         bamFiles: {description: "The BAM files to merge.", category: "required"}
         outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
         force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
@@ -156,6 +159,7 @@ task SortByName {
     }
 
     parameter_meta {
+        # inputs
         bamFile: {description: "The BAM file to get sorted.", category: "required"}
         outputBamPath: {description: "The location the sorted BAM file should be written to.", category: "common"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -186,6 +190,7 @@ task Markdup {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The BAM file to be processed.", category: "required"}
         outputBamPath: {description: "The location of the output BAM file.", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -216,6 +221,7 @@ task Flagstat {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
         outputPath: {description: "The location the ouput should be written to.", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -232,8 +238,8 @@ task Fastq {
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
-        Boolean? appendReadNumber
-        Boolean? outputQuality
+        Boolean appendReadNumber = false
+        Boolean outputQuality = false
         Int? compressionLevel
 
         Int threads = 1
@@ -269,6 +275,7 @@ task Fastq {
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The bam file to process.", category: "required"}
         outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
         outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
@@ -313,6 +320,7 @@ task Tabix {
     }
 
     parameter_meta {
+        # inputs
         inputFile: {description: "The file to be indexed.", category: "required"}
         outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.",
                         category: "common"}
@@ -327,7 +335,9 @@ task View {
         File inFile
         File? referenceFasta
         String outputFileName = "view.bam"
-        Boolean? uncompressedBamOutput
+        Boolean includeHeader = false
+        Boolean outputBam = false
+        Boolean uncompressedBamOutput = false
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
@@ -346,6 +356,7 @@ task View {
         samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
+        ~{true="-b " false="" outputBam} \
         ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
@@ -357,7 +368,7 @@ task View {
     }
 
     output {
-        File outputBam = outputFileName
+        File outputBAM = outputFileName
         File outputBamIndex = outputIndexPath
     }
 
@@ -368,6 +379,7 @@ task View {
     }
 
     parameter_meta {
+        # inputs
         inFile: {description: "A BAM, SAM or CRAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
         outputFileName: {description: "The location the output BAM file should be written.", category: "common"}
@@ -381,5 +393,39 @@ task View {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+    }
+}
+
+task FilterShortReadsBam {
+    input {
+        File bamFile
+        String outputPathBam
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+    
+    String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPathBam})"
+        samtools view -h ~{bamFile} | \
+        awk 'length($10) > 30 || $1 ~/^@/' | \
+        samtools view -bS -> ~{outputPathBam}
+        samtools index ~{outputPathBam} ~{outputPathBamIndex}
+    }
+
+    output {
+        File filteredBam = outputPathBam
+        File filteredBamIndex = outputPathBamIndex
+    }
+
+    runtime {
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFile: {description: "The bam file to process.", category: "required"}
+        outputPathBam: {description: "The filtered bam file.", category: "common"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
