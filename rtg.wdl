@@ -64,6 +64,7 @@ task VcfEval {
         File calls
         File callsIndex
         File? evaluationRegions
+        File? bedRegions
         String outputDir = "output/"
         String? region
         File template
@@ -85,6 +86,7 @@ task VcfEval {
         --baseline ~{baseline} \
         --calls ~{calls} \
         ~{"--evaluation-regions " + evaluationRegions} \
+        ~{"--bed-regions " + bedRegions} \
         --output ~{outputDir} \
         --template ~{template} \
         ~{true="--all-records" false="" allRecords} \
