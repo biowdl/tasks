@@ -26,13 +26,14 @@ task Format {
         String outputPath = "seq_data.sdf"
         Array[File]+ inputFiles
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
-        String memory = "4G"
+        String rtgMem = "8G"
+        String memory = "16G"
     }
 
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
-        rtg format -f ~{format} \
+        rtg RTG_MEM=~{rtgMem} format -f ~{format} \
         -o ~{outputPath} \
         ~{sep=' ' inputFiles}
     }
@@ -74,14 +75,15 @@ task VcfEval {
         Boolean squashPloidy = false
         String outputMode = "split"
         Int threads = 1  # tool default is number of cores in the system 😱
-        String memory = "4G"
+        String rtgMem = "4G"
+        String memory = "8G"
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
     }
 
     command <<<
         set -e
         mkdir -p "$(dirname ~{outputDir})"
-        rtg vcfeval \
+        rtg RTG_MEM=~{rtgMem} vcfeval \
         --baseline ~{baseline} \
         --calls ~{calls} \
         ~{"--evaluation-regions " + evaluationRegions} \
