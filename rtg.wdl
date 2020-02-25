@@ -75,8 +75,8 @@ task VcfEval {
         Boolean squashPloidy = false
         String outputMode = "split"
         Int threads = 1  # tool default is number of cores in the system 😱
-        String rtgMem = "4G"
-        String memory = "8G"
+        String rtgMem = "8G"
+        String memory = "16G"
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
     }
 
