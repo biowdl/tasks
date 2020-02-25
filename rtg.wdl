@@ -66,7 +66,6 @@ task VcfEval {
         File? evaluationRegions
         File? bedRegions
         String outputDir = "output/"
-        String? region
         File template
         Boolean allRecords = false
         Boolean decompose = false
@@ -79,9 +78,9 @@ task VcfEval {
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
     }
 
-    command {
+    command <<<
         set -e
-        mkdir -p ~{outputDir}
+        mkdir -p "$(dirname ~{outputDir})"
         rtg vcfeval \
         --baseline ~{baseline} \
         --calls ~{calls} \
@@ -96,7 +95,7 @@ task VcfEval {
         ~{true="--squash-ploidy" false="" squashPloidy} \
         ~{"--output-mode " + outputMode} \
         --threads ~{threads}
-    }
+    >>>
 
     output {
         File falseNegativesVcf = outputDir + "/fn.vcf.gz"
@@ -125,6 +124,9 @@ task VcfEval {
         calls: {description: "VCF file containing called variants", category: "required"}
         callsIndex: {description: "The call's VCF index", category: "required"}
         outputDir: {description: "Directory for output", category: "advanced"}
+        bedRegions: {description: "if set, only read VCF records that overlap the ranges contained in the specified BED file", category: "advanced"}
+        evaluationRegions: {description: "if set, evaluate within regions contained in the supplied BED file, allowing transborder matches. To be used for truth-set high-confidence regions or other regions of interest where region boundary effects should be minimized",
+                            category: "advanced"}
         template: {description: "SDF of the reference genome the variants are called against", category: "required"}
         allRecords: {description: "use all records regardless of FILTER status (Default is to only process records where FILTER is \".\" or \"PASS\")",
                      category: "common"}

@@ -1370,7 +1370,8 @@ task SelectVariants {
         -R ~{referenceFasta} \
         -V ~{inputVcf} \
         ~{"--select-type-to-include " + selectTypeToInclude} \
-        ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals}
+        ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals} \
+        -O ~{outputPath}
     }
 
     output {
