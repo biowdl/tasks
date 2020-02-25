@@ -110,6 +110,18 @@ task VcfEval {
         File nonSnpRoc = outputDir + "/non_snp_roc.tsv.gz"
         File phasing = outputDir + "/phasing.txt"
         File weightedRoc = outputDir + "/weighted_roc.tsv.gz"
+        Array[File] allStats = [falseNegativesVcf,
+                                falseNegativesVcfIndex,
+                                falsePositivesVcf,
+                                falsePositivesVcfIndex,
+                                truePositivesBaselineVcf,
+                                truePositivesBaselineVcfIndex,
+                                truePositivesVcf,
+                                truePositivesVcfIndex,
+                                summary,
+                                nonSnpRoc,
+                                phasing,
+                                weightedRoc]
     }
 
     runtime {
