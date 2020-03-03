@@ -1347,6 +1347,63 @@ task PreprocessIntervals {
     }
 }
 
+task SelectVariants {
+    input {
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        File inputVcf
+        File inputVcfIndex
+        String outputPath = "output.vcf.gz"
+        String? selectTypeToInclude
+        Array[File] intervals = []
+        String memory = "16G"
+        String javaXmx = "4G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        gatk --java-options -Xmx~{javaXmx} \
+        SelectVariants \
+        -R ~{referenceFasta} \
+        -V ~{inputVcf} \
+        ~{"--select-type-to-include " + selectTypeToInclude} \
+        ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals} \
+        -O ~{outputPath}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        inputVcf: {description: "The VCF input file.", category: "required"}
+        inputVcfIndex: {description: "The input VCF file's index.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        selectTypeToInclude: {description: "Select only a certain type of variants from the input file", category: "common"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "advanced"}
+        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task SplitNCigarReads {
     input {
         File inputBam
@@ -1401,3 +1458,62 @@ task SplitNCigarReads {
                       category: "advanced"}
     }
 }
+
+task VariantFiltration {
+    input {
+        File inputVcf
+        File inputVcfIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        String outputPath = "filtered.vcf.gz"
+        Array[String]+ filterArguments
+        Array[File] intervals = []
+
+        String memory = "16G"
+        String javaXmx = "4G"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        gatk --java-options -Xmx~{javaXmx} \
+        VariantFiltration \
+        -I ~{inputVcf} \
+        -R ~{referenceFasta} \
+        -O ~{outputPath} \
+        ~{sep=" " filterArguments} \
+        ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals}
+    }
+
+    output {
+        File filteredVcf = outputPath
+        File filteredVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        inputVcf: {description: "The VCF to be filtered.", category: "required"}
+        inputVcfIndex: {description: "The input VCF file's index.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
+                         category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "advanced"}
+        filterArguments: {description: "Arguments that should be used for the filter. For example: ['--filter-name', 'my_filter', '--filter-expression', 'AB<0.2']",
+                        category: "required"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
