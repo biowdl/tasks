@@ -55,6 +55,7 @@ task Format {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
               category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        rtgMem: {description: "The amount of memory rtg will allocate to the JVM", category: "advanced"}
     }
 }
 
@@ -156,6 +157,7 @@ task VcfEval {
         threads: {description: "Number of threads. Default is 1", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
               category: "advanced"}
+        rtgMem: {description: "The amount of memory rtg will allocate to the JVM", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
     }
 }
