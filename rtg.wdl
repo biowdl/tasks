@@ -51,7 +51,7 @@ task Format {
         format: {description: "Format of input. Allowed values are [fasta, fastq, fastq-interleaved, sam-se, sam-pe] (Default is fasta)",
                  category: "advanced"}
         outputPath: {description: "Where the output should be placed.", category: "advanced"}
-        inputFiles: {description: "input sequence files. May be specified 1 or more times."}
+        inputFiles: {description: "input sequence files. May be specified 1 or more times.", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
               category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
