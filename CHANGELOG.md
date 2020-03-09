@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Add `--output-mode` flag to haplotypecaller.
 + Added rtg.Format and rtg.VcfEval tasks.
 + Added gatk.SelectVariants and gatk.VariantFiltration tasks. 
 + Fixed a bug where the output directory was not created for bwa.Kit.

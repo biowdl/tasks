@@ -907,6 +907,7 @@ task HaplotypeCaller {
         File? dbsnpVCFIndex
         File? pedigree
         Int? ploidy
+        String? outputMode
         Boolean gvcf = false
 
         String memory = "12G"
@@ -928,6 +929,7 @@ task HaplotypeCaller {
         ~{"-D " + dbsnpVCF} \
         ~{"--pedigree " + pedigree} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
+        ~{"--output-mode " + outputMode} \
         ~{true="-ERC GVCF" false="" gvcf}
     }
 
@@ -955,6 +957,8 @@ task HaplotypeCaller {
                              category: "required"}
         referenceFastaIndex: {description: "The index for the reference fasta file.", category: "required"}
         contamination: {description: "Equivalent to HaplotypeCaller's `-contamination` option.", category: "advanced"}
+        outputMode: {description: "Specifies which type of calls we should output. Same as HaplotypeCaller's `--output-mode` option.",
+                     category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
         pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
