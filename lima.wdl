@@ -106,7 +106,42 @@ task lima {
 
     parameter_meta {
         # inputs
-        libraryDesign: {description: "", category: ""}
+        libraryDesign: {description: "Barcode structure of the library design.", category: "required"}
+        scoreFullPass: {description: "Only use subreads flanked by adapters for barcode identification.", category: "advanced"}
+        maxScoredBarcodePairs: {description: "Only use up to N barcode pair regions to find the barcode, 0 means use all.", category: "advanced"}
+        maxScoredBarcodes: {description: "Analyze at maximum the provided number of barcodes per ZMW, 0 means deactivated.", category: "advanced"}
+        maxScoredAdapters: {description: "Analyze at maximum the provided number of adapters per ZMW, 0 means deactivated.", category: "advanced"}
+        minPasses: {description: "Minimal number of full passes.", category: "common"}
+        minLength: {description: "Minimum sequence length after clipping.", category: "common"}
+        maxInputLength: {description: "Maximum input sequence length, 0 means deactivated.", category: "advanced"}
+        minRefSpan: {description: "Minimum reference span relative to the barcode length.", category: "advanced"}
+        minScoringRegion: {description: "Minimum number of barcode regions with sufficient relative span to the barcode length.", category: "advanced"}
+        minScore: {description: "Reads below the minimum barcode score are removed from downstream analysis.", category: "common"}
+        minEndScore: {description: "Minimum end barcode score threshold is applied to the individual leading and trailing ends.", category: "advanced"}
+        minSignalIncrease: {description: "The minimal score difference, between first and combined, required to call a barcode pair different.", category: "advanced"}
+        minScoreLead: {description: "The minimal score lead required to call a barcode pair significant.", category: "common"}
+        ccsMode: {description: "CCS mode, use optimal alignment options.", category: "common"}
+        splitBamNamed: {description: "Split BAM output by resolved barcode pair name.", category: "common"}
+        scoredAdapterRatio: {description: "Minimum ratio of scored vs sequenced adapters.", category: "advanced"}
+        peek: {description: "Demux the first N ZMWs and return the mean score, 0 means peeking deactivated.", category: "advanced"}
+        guess: {description: "Try to guess the used barcodes, using the provided mean score threshold, 0 means guessing deactivated.", category: "advanced"}
+        guessMinCount: {description: "Minimum number of ZMWs observed to whitelist barcodes.", category: "advanced"}
+        peekGuess: {description: "Try to infer the used barcodes subset, by peeking at the first 50,000 ZMWs.", category: "advanced"}
+        logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
+        inputBamFile: {description: "BAM input file.", category: "required"}
+        barcodeFile: {description: "Barcode fasta file.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        cores: {description: "The number of cores to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
         # outputs
+        outputFLfile: {description: "Demultiplexed reads output file."}
+        outputFLindexFile: {description: "Index of demultiplexed reads output file."}
+        outputSTDERRfile: {description: "Lima STDERR log file."}
+        outputJSONfile: {description: "Lima JSON file."}
+        outputCountsFile: {description: "Lima counts file."}
+        outputReportFile: {description: "Lima report file."}
+        outputSummaryFile: {description: "Lima summary file."}
     }
 }

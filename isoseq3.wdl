@@ -21,4 +21,26 @@ version 1.0
 # SOFTWARE.
 
 task refine {
+    input {
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+    }
+
+    output {
+    }
+
+    runtime {
+        cpu: cores
+        memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+
+        # outputs
+    }
 }
