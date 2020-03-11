@@ -909,6 +909,7 @@ task HaplotypeCaller {
         Int? ploidy
         String? outputMode
         Boolean gvcf = false
+        String emitRefConfidence = if gvcf then "GVCF" else "NONE"
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -930,7 +931,7 @@ task HaplotypeCaller {
         ~{"--pedigree " + pedigree} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
         ~{"--output-mode " + outputMode} \
-        ~{true="-ERC GVCF" false="" gvcf}
+        --emit-ref-confidence ~{emitRefConfidence}
     }
 
     output {
@@ -959,6 +960,8 @@ task HaplotypeCaller {
         contamination: {description: "Equivalent to HaplotypeCaller's `-contamination` option.", category: "advanced"}
         outputMode: {description: "Specifies which type of calls we should output. Same as HaplotypeCaller's `--output-mode` option.",
                      category: "advanced"}
+        emitRefConfidence: {description: "Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'",
+                            category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
         pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
