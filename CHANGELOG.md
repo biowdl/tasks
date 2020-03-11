@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ The statsPrefix input for umitools dedup is now optional.
 + Allow setting the `--emit-ref-confidence` flag for HaplotypeCaller.
 + Add `--output-mode` flag to HaplotypeCaller.
 + Added rtg.Format and rtg.VcfEval tasks.

@@ -71,10 +71,10 @@ task Dedup {
         File inputBam
         File inputBamIndex
         String outputBamPath
-        String statsPrefix = "stats"
+        String? statsPrefix
         Boolean paired = true
 
-        String memory = "20G"
+        String memory = "5G"
 
         # Use a multi-package-container which includes umi_tools (0.5.5) and samtools (1.9)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
@@ -88,7 +88,7 @@ task Dedup {
         umi_tools dedup \
         --stdin ~{inputBam} \
         --stdout ~{outputBamPath} \
-        --output-stats ~{statsPrefix} \
+        ~{"--output-stats " + statsPrefix} \
         ~{true="--paired" false="" paired}
         samtools index ~{outputBamPath} ~{outputBamIndex}
     }
@@ -96,9 +96,9 @@ task Dedup {
     output {
         File deduppedBam = outputBamPath
         File deduppedBamIndex = outputBamIndex
-        File editDistance = statsPrefix + "_edit_distance.tsv"
-        File umiStats = statsPrefix + "_per_umi.tsv"
-        File positionStats = statsPrefix + "_per_umi_per_position.tsv"
+        File? editDistance = statsPrefix + "_edit_distance.tsv"
+        File? umiStats = statsPrefix + "_per_umi.tsv"
+        File? positionStats = statsPrefix + "_per_umi_per_position.tsv"
     }
 
     runtime {
