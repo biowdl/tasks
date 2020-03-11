@@ -31,7 +31,7 @@ task CreateAbundanceFileFromDatabase {
         File? datasetsFile
 
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command {
@@ -84,7 +84,7 @@ task CreateGtfFromDatabase {
         File? datasetFile
 
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command {
@@ -135,7 +135,7 @@ task FilterTalonTranscripts {
         File? pairingsFile
 
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command {
@@ -180,7 +180,7 @@ task GetReadAnnotations {
         File? datasetFile
 
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command {
@@ -228,7 +228,7 @@ task InitializeTalonDatabase {
         String outputPrefix
 
         String memory = "10G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command {
@@ -277,7 +277,7 @@ task ReformatGtf {
         File GTFfile
 
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command {
@@ -315,7 +315,7 @@ task SummarizeDatasets {
         File? datasetGroupsCSV
 
         String memory = "4G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command {
@@ -364,7 +364,7 @@ task Talon {
 
         Int cores = 4
         String memory = "25G"
-        String dockerImage = "biocontainers/talon:v4.4.1_cv1"
+        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
     command <<<
