@@ -11,7 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
-+ Allow setting the `--emit-ref-confidence` flag for HaplotypeCaller
++ Allow setting the `--emit-ref-confidence` flag for HaplotypeCaller.
 + Add `--output-mode` flag to HaplotypeCaller.
 + Added rtg.Format and rtg.VcfEval tasks.
 + Added gatk.SelectVariants and gatk.VariantFiltration tasks. 
