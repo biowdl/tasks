@@ -909,6 +909,7 @@ task HaplotypeCaller {
         Int? ploidy
         String? outputMode
         Boolean gvcf = false
+        String emitRefConfidence = if gvcf then "GVCF" else "NONE"
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -930,7 +931,7 @@ task HaplotypeCaller {
         ~{"--pedigree " + pedigree} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
         ~{"--output-mode " + outputMode} \
-        ~{true="-ERC GVCF" false="" gvcf}
+        --emit-ref-confidence ~{emitRefConfidence}
     }
 
     output {
