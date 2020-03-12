@@ -40,7 +40,7 @@ task refine {
         isoseq3 refine \
         ~{"--min-poly-length" + minPolyAlength} \
         ~{true="--require-polya" false="" requirePolyA} \
-        ~{"--log-level " logLevel} \
+        ~{"--log-level " + logLevel} \
         ~{"--num-threads " + cores} \
         ~{"--log-file " + outputPrefix + ".flnc.stderr.log"} \
         ~{inputBamFile} \

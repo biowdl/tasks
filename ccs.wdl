@@ -45,7 +45,7 @@ task ccs {
         ~{"--max-length " + maxLength} \
         ~{true="--by-strand" false="" byStrand} \
         ~{"--min-rq " + minReadQuality} \
-        ~{"--log-level " logLevel} \
+        ~{"--log-level " + logLevel} \
         ~{"--num-threads " + cores} \
         ~{"--report-file " + outputPrefix + ".ccs.report.txt"} \
         ~{"--log-file " + outputPrefix + ".ccs.stderr.log"} \

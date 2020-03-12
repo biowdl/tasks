@@ -80,7 +80,7 @@ task lima {
         ~{"--guess " + guess} \
         ~{"--guess-min-count " + guessMinCount} \
         ~{true="--peek-guess" false="" peekGuess} \
-        ~{"--log-level " logLevel} \
+        ~{"--log-level " + logLevel} \
         ~{"--num-threads " + cores} \
         ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
         ~{inputBamFile} \
