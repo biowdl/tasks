@@ -13,6 +13,7 @@ version 2.2.0-dev
 ---------------------------
 + Add CCS workflow WDL files (ccs.wdl, lima.wdl, isoseq3.wdl).
 + Update TALON version to 4.4.2.
++ The statsPrefix input for umitools dedup is now optional.
 + Allow setting the `--emit-ref-confidence` flag for HaplotypeCaller.
 + Add `--output-mode` flag to HaplotypeCaller.
 + Added rtg.Format and rtg.VcfEval tasks.
