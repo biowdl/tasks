@@ -68,8 +68,7 @@ task ccs {
 
     parameter_meta {
         # inputs
-        minPasses: {description: "Minimum number of full-length subreads required to generate CCS for a
-ZMW.", category: "advanced"}
+        minPasses: {description: "Minimum number of full-length subreads required to generate CCS for a ZMW.", category: "advanced"}
         minLength: {description: "Minimum draft length before polishing.", category: "advanced"}
         maxLength: {description: "Maximum draft length before polishing.", category: "advanced"}
         byStrand: {description: "Generate a consensus for each strand.", category: "advanced"}
