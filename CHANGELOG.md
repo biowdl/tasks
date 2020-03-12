@@ -11,7 +11,7 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
-+ Update command section syntax Talon, TranscriptClean and Centrifuge.
++ Update command section syntax Minimap2, Talon, TranscriptClean and Centrifuge.
 + Add CCS workflow WDL files (ccs.wdl, lima.wdl, isoseq3.wdl).
 + Update TALON version to 4.4.2.
 + The statsPrefix input for umitools dedup is now optional.
