@@ -44,15 +44,15 @@ task Build {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         centrifuge-build \
-        ~{"--threads " + threads} \
+        --threads ~{threads} \
         ~{true="--nodc" false="" disableDifferenceCover} \
         ~{"--offrate " + offrate} \
         ~{"--ftabchars " + ftabChars} \
         ~{"--kmer-count " + kmerCount} \
         ~{"--size-table " + sizeTable} \
-        ~{"--conversion-table " + conversionTable} \
-        ~{"--taxonomy-tree " + taxonomyTree} \
-        ~{"--name-table " + nameTable} \
+        --conversion-table ~{conversionTable} \
+        --taxonomy-tree ~{taxonomyTree} \
+        --name-table ~{nameTable} \
         ~{referenceFile} \
         ~{outputPrefix + "/" + indexBasename}
     }
@@ -123,9 +123,9 @@ task Classify {
         centrifuge \
         ~{inputFormatOptions[inputFormat]} \
         ~{true="--phred64" false="--phred33" phred64} \
-        ~{"--min-hitlen " + minHitLength} \
+        --min-hitlen ~{minHitLength} \
         ~{"--met-file " + outputPrefix + "_alignment_metrics.tsv"} \
-        ~{"--threads " + threads} \
+        --threads ~{threads} \
         ~{"--trim5 " + trim5} \
         ~{"--trim3 " + trim3} \
         ~{"-k " + reportMaxDistinct} \
