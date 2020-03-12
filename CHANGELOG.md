@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 2.2.0-dev
 ---------------------------
++ Update command section syntax Minimap2, Talon, TranscriptClean and Centrifuge.
++ Add CCS workflow WDL files (ccs.wdl, lima.wdl, isoseq3.wdl).
++ Update TALON version to 4.4.2.
 + The statsPrefix input for umitools dedup is now optional.
 + Allow setting the `--emit-ref-confidence` flag for HaplotypeCaller.
 + Add `--output-mode` flag to HaplotypeCaller.
@@ -18,13 +21,13 @@ version 2.2.0-dev
 + Added gatk.SelectVariants and gatk.VariantFiltration tasks. 
 + Fixed a bug where the output directory was not created for bwa.Kit.
 + Add vt task for variants normalization and decomposition.
-+ Update WDL task Picard (Add task RenameSample)
-+ Update WDL task Samtools (Add task FilterShortReadsBam)
-+ Add WDL task for BCFtools (bcf to vcf)
-+ Add WDL task for SURVIVOR (merge)
-+ Update WDL task Manta (Add germline SV calling)
-+ Add WDL task for Delly
-+ Add WDL task for Clever (and Mate-Clever)
++ Update WDL task Picard (Add task RenameSample).
++ Update WDL task Samtools (Add task FilterShortReadsBam).
++ Add WDL task for BCFtools (bcf to vcf).
++ Add WDL task for SURVIVOR (merge).
++ Update WDL task Manta (Add germline SV calling).
++ Add WDL task for Delly.
++ Add WDL task for Clever (and Mate-Clever).
 + Add proper copyright headers to all WDL files. So the free software license
   is clear to end users who wish to adapt and modify.
 + Add pedigree input for HaplotypeCaller and GenotypeGVCFs.
@@ -43,7 +46,7 @@ version 2.2.0-dev
 + Update parameter_meta for TALON, Centrifuge and Minimap2.
 + Centrifuge: Fix issue where Centrifuge Inspect did not get the correct index files location.
 + Add `minimumContigLength` input to PlotDenoisedCopyRatios and PlotModeledSegments.
-+ Add `commonVariantSitesIndex` input to CollectAllelicCounts
++ Add `commonVariantSitesIndex` input to CollectAllelicCounts.
 + Centrifuge: Fix issue where Centrifuge could not locate index files.
 + Increase default memory of BWA mem to 32G (was 16G).
 + Add `memory` input to fastqc task.
@@ -78,9 +81,9 @@ version 2.2.0-dev
 + Removed the "extraArgs" input from FilterMutectCalls.
 + Removed unused "verbose" and "quiet" inputs from multiqc.
 + Added parameter_meta sections to a variety of tasks.
-+ Picard's BedToIntervalList outputPath input is now optional (with a default of "regions.interval_list")
++ Picard's BedToIntervalList outputPath input is now optional (with a default of "regions.interval_list").
 + TALON: Fix SQLite error concerning database/disk space being full.
-+ Update htseq to default image version 0.11.2
++ Update htseq to default image version 0.11.2.
 + Update biowdl-input-converter in common.wdl to version 0.2.1.
 + Update TALON section to now include the new annotation file output, and add config file creation to the TALON task.
 + Removed unused inputs (trimPrimer and format) for cutadapt.

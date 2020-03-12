@@ -40,10 +40,10 @@ task Indexing {
         mkdir -p "$(dirname ~{outputPrefix})"
         minimap2 \
         ~{true="-H" false="" useHomopolymerCompressedKmer} \
-        ~{"-k " + kmerSize} \
-        ~{"-w " + minimizerWindowSize} \
+        -k ~{kmerSize} \
+        -w ~{minimizerWindowSize} \
         ~{"-d " + outputPrefix + ".mmi"} \
-        ~{"-t " + cores} \
+        -t ~{cores} \
         ~{"-I " + splitIndex} \
         ~{referenceFile}
     }
@@ -103,14 +103,14 @@ task Mapping {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         minimap2 \
-        ~{"-x " + presetOption} \
-        ~{"-k " + kmerSize} \
+        -x ~{presetOption} \
+        -k ~{kmerSize} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
         ~{true="-a" false="" outputSAM} \
-        ~{"-o " + outputPrefix} \
+        -o ~{outputPrefix} \
         ~{true="--MD" false="" addMDtagToSAM} \
         --secondary=~{true="yes" false="no" secondaryAlignment} \
-        ~{"-t " + cores} \
+        -t ~{cores} \
         ~{"-G " + maxIntronLength} \
         ~{"-F " + maxFragmentLength} \
         ~{"-N " + retainMaxSecondaryAlignments} \
