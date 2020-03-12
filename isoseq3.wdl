@@ -20,7 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task refine {
+task Refine {
     input {
         Int minPolyAlength = 20
         Boolean requirePolyA = false
