@@ -38,10 +38,10 @@ task CreateAbundanceFileFromDatabase {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_abundance \
-        ~{"--db=" + databaseFile} \
-        ~{"-a " + annotationVersion} \
-        ~{"-b " + genomeBuild} \
-        ~{"--o=" + outputPrefix} \
+        --db=~{databaseFile} \
+        -a ~{annotationVersion} \
+        -b ~{genomeBuild} \
+        --o=~{outputPrefix} \
         ~{"--whitelist=" + whitelistFile} \
         ~{"-d " + datasetsFile}
     }
@@ -91,12 +91,12 @@ task CreateGtfFromDatabase {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_create_GTF \
-        ~{"--db=" + databaseFile} \
-        ~{"-b " + genomeBuild} \
-        ~{"-a " + annotationVersion} \
-        ~{"--o=" + outputPrefix} \
-        ~{"--whitelist=" + whitelistFile} \
+        --db=~{databaseFile} \
+        -b ~{genomeBuild} \
+        -a ~{annotationVersion} \
+        --o=~{outputPrefix} \
         ~{true="--observed" false="" observedInDataset} \
+        ~{"--whitelist=" + whitelistFile} \
         ~{"-d " + datasetFile}
     }
 
@@ -142,8 +142,8 @@ task FilterTalonTranscripts {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_filter_transcripts \
-        ~{"--db=" + databaseFile} \
-        ~{"-a " + annotationVersion} \
+        --db=~{databaseFile} \
+        -a ~{annotationVersion} \
         ~{"--o=" + outputPrefix + "_whitelist.csv"} \
         ~{"-p " + pairingsFile}
     }
@@ -187,9 +187,9 @@ task GetReadAnnotations {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_fetch_reads \
-        ~{"--db " + databaseFile} \
-        ~{"--build " + genomeBuild} \
-        ~{"--o " + outputPrefix} \
+        --db ~{databaseFile} \
+        --build ~{genomeBuild} \
+        --o ~{outputPrefix} \
         ~{"--datasets " + datasetFile}
     }
 
@@ -235,14 +235,14 @@ task InitializeTalonDatabase {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_initialize_database \
-        ~{"--f=" + GTFfile} \
-        ~{"--g=" + genomeBuild} \
-        ~{"--a=" + annotationVersion} \
-        ~{"--l=" +  minimumLength} \
-        ~{"--idprefix=" + novelIDprefix} \
-        ~{"--5p=" + cutoff5p} \
-        ~{"--3p=" + cutoff3p} \
-        ~{"--o=" + outputPrefix}
+        --f=~{GTFfile} \
+        --g=~{genomeBuild} \
+        --a=~{annotationVersion} \
+        --l=~{minimumLength} \
+        --idprefix=~{novelIDprefix} \
+        --5p=~{cutoff5p} \
+        --3p=~{cutoff3p} \
+        --o=~{outputPrefix}
     }
 
     output {
@@ -283,7 +283,7 @@ task ReformatGtf {
     command {
         set -e
         talon_reformat_gtf \
-        ~{"-gtf " + GTFfile}
+        -gtf ~{GTFfile}
     }
 
     output {
@@ -322,9 +322,9 @@ task SummarizeDatasets {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_summarize \
-        ~{"--db " + databaseFile} \
+        --db ~{databaseFile} \
         ~{true="--verbose" false="" setVerbose} \
-        ~{"--o " + outputPrefix} \
+        --o ~{outputPrefix} \
         ~{"--groups " + datasetGroupsCSV}
     }
 
@@ -381,11 +381,11 @@ task Talon {
         done
         talon \
         ~{"--f " + outputPrefix + "/talonConfigFile.csv"} \
-        ~{"--db " + databaseFile} \
-        ~{"--build " + genomeBuild} \
-        ~{"--threads " + cores} \
-        ~{"--cov " + minimumCoverage} \
-        ~{"--identity " + minimumIdentity} \
+        --db ~{databaseFile} \
+        --build ~{genomeBuild} \
+        --threads ~{cores} \
+        --cov ~{minimumCoverage} \
+        --identity ~{minimumIdentity} \
         ~{"--o " + outputPrefix + "/run"}
     >>>
 

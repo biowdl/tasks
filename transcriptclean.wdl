@@ -35,9 +35,9 @@ task GetSJsFromGtf {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         get_SJs_from_gtf \
-        ~{"--f=" + GTFfile} \
-        ~{"--g=" + genomeFile} \
-        ~{"--minIntronSize=" + minIntronSize} \
+        --f=~{GTFfile} \
+        --g=~{genomeFile} \
+        --minIntronSize=~{minIntronSize} \
         ~{"--o=" + outputPrefix + ".tsv"}
     }
 
@@ -131,19 +131,19 @@ task TranscriptClean {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         TranscriptClean \
-        ~{"-s " + SAMfile} \
-        ~{"-g " + referenceGenome} \
-        ~{"-t " + cores} \
-        ~{"--maxLenIndel=" + maxLenIndel} \
-        ~{"--maxSJOffset=" + maxSJoffset} \
-        ~{"-o " + outputPrefix} \
+        -s ~{SAMfile} \
+        -g ~{referenceGenome} \
+        -t ~{cores} \
+        --maxLenIndel=~{maxLenIndel} \
+        --maxSJOffset=~{maxSJoffset} \
+        -o ~{outputPrefix} \
         ~{true="-m true" false="-m false" correctMismatches} \
         ~{true="-i true" false="-i false" correctIndels} \
         ~{true="--correctSJs=true" false="--correctSJs=false" correctSJs} \
         ~{true="--dryRun" false="" dryRun} \
         ~{true="--primaryOnly" false="" primaryOnly} \
         ~{true="--canonOnly" false="" canonOnly} \
-        ~{"--bufferSize=" + bufferSize} \
+        --bufferSize=~{bufferSize} \
         ~{true="--deleteTmp" false="" deleteTmp} \
         ~{"-j " + spliceJunctionAnnotation} \
         ~{"-v " + variantFile}
