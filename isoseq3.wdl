@@ -38,10 +38,10 @@ task Refine {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         isoseq3 refine \
-        ~{"--min-poly-length" + minPolyAlength} \
+        --min-poly-length ~{minPolyAlength} \
         ~{true="--require-polya" false="" requirePolyA} \
-        ~{"--log-level " + logLevel} \
-        ~{"--num-threads " + cores} \
+        --log-level ~{logLevel} \
+        --num-threads ~{cores} \
         ~{"--log-file " + outputPrefix + ".flnc.stderr.log"} \
         ~{inputBamFile} \
         ~{primerFile} \

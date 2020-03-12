@@ -61,27 +61,27 @@ task Lima {
         lima \
         ~{libraryDesignOptions[libraryDesign]} \
         ~{true="--score-full-pass" false="" scoreFullPass} \
-        ~{"--max-scored-barcode-pairs " + maxScoredBarcodePairs} \
-        ~{"--max-scored-barcodes " + maxScoredBarcodes} \
-        ~{"--max-scored-adapters " + maxScoredAdapters} \
-        ~{"--min-passes " + minPasses} \
-        ~{"--min-length " + minLength} \
-        ~{"--max-input-length " + maxInputLength} \
-        ~{"--min-ref-span " + minRefSpan} \
-        ~{"--min-scoring-regions " + minScoringRegion} \
-        ~{"--min-score " + minScore} \
-        ~{"--min-end-score " + minEndScore} \
-        ~{"--min-signal-increase " + minSignalIncrease} \
-        ~{"--min-score-lead " + minScoreLead} \
+        --max-scored-barcode-pairs ~{maxScoredBarcodePairs} \
+        --max-scored-barcodes ~{maxScoredBarcodes} \
+        --max-scored-adapters ~{maxScoredAdapters} \
+        --min-passes ~{minPasses} \
+        --min-length ~{minLength} \
+        --max-input-length ~{maxInputLength} \
+        --min-ref-span ~{minRefSpan} \
+        --min-scoring-regions ~{minScoringRegion} \
+        --min-score ~{minScore} \
+        --min-end-score ~{minEndScore} \
+        --min-signal-increase ~{minSignalIncrease} \
+        --min-score-lead ~{minScoreLead} \
         ~{true="--ccs" false="" ccsMode} \
         ~{true="--split-bam-named" false="" splitBamNamed} \
-        ~{"--scored-adapter-ratio " + scoredAdapterRatio} \
-        ~{"--peek " + peek} \
-        ~{"--guess " + guess} \
-        ~{"--guess-min-count " + guessMinCount} \
+        --scored-adapter-ratio ~{scoredAdapterRatio} \
+        --peek ~{peek} \
+        --guess ~{guess} \
+        --guess-min-count ~{guessMinCount} \
         ~{true="--peek-guess" false="" peekGuess} \
-        ~{"--log-level " + logLevel} \
-        ~{"--num-threads " + cores} \
+        --log-level ~{logLevel} \
+        --num-threads ~{cores} \
         ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \

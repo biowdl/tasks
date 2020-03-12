@@ -40,13 +40,13 @@ task CCS {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         ccs \
-        ~{"--min-passes " + minPasses} \
-        ~{"--min-length " + minLength} \
-        ~{"--max-length " + maxLength} \
+        --min-passes ~{minPasses} \
+        --min-length ~{minLength} \
+        --max-length ~{maxLength} \
         ~{true="--by-strand" false="" byStrand} \
-        ~{"--min-rq " + minReadQuality} \
-        ~{"--log-level " + logLevel} \
-        ~{"--num-threads " + cores} \
+        --min-rq ~{minReadQuality} \
+        --log-level ~{logLevel} \
+        --num-threads ~{cores} \
         ~{"--report-file " + outputPrefix + ".ccs.report.txt"} \
         ~{"--log-file " + outputPrefix + ".ccs.stderr.log"} \
         ~{subreadsFile}
