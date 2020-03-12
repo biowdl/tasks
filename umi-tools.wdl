@@ -96,9 +96,9 @@ task Dedup {
     output {
         File deduppedBam = outputBamPath
         File deduppedBamIndex = outputBamIndex
-        File? editDistance = statsPrefix + "_edit_distance.tsv"
-        File? umiStats = statsPrefix + "_per_umi.tsv"
-        File? positionStats = statsPrefix + "_per_umi_per_position.tsv"
+        File? editDistance = "~{statsPrefix}_edit_distance.tsv"
+        File? umiStats = "~{statsPrefix}_per_umi.tsv"
+        File? positionStats =  "~{statsPrefix}_per_umi_per_position.tsv"
     }
 
     runtime {
