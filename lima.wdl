@@ -82,15 +82,15 @@ task lima {
         ~{true="--peek-guess" false="" peekGuess} \
         ~{"--log-level " logLevel} \
         ~{"--num-threads " + cores} \
-        ~{"--log-file " + outputPrefix + "_fl_stderr.log"} \
+        ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \
         ~{outputPrefix + ".fl.bam"}
     }
 
     output {
-        File outputFLfile = outputPrefix + ".fl.bam"
-        File outputFLindexFile = outputPrefix + ".fl.bam.pbi"
+        File outputFLfile = outputPrefix + "*.bam"
+        File outputFLindexFile = outputPrefix + "*.bam.pbi"
         File outputSTDERRfile = outputPrefix + ".fl.stderr.log"
         File outputJSONfile = outputPrefix + ".fl.json"
         File outputCountsFile = outputPrefix + ".fl.lima.counts"
@@ -129,7 +129,7 @@ task lima {
         peekGuess: {description: "Try to infer the used barcodes subset, by peeking at the first 50,000 ZMWs.", category: "advanced"}
         logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
         inputBamFile: {description: "BAM input file.", category: "required"}
-        barcodeFile: {description: "Barcode fasta file.", category: "required"}
+        barcodeFile: {description: "Barcode/primer fasta file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
