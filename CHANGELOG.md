@@ -9,7 +9,7 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 2.2.0-dev
+version 3.0.0
 ---------------------------
 + Update command section syntax Minimap2, Talon, TranscriptClean and Centrifuge.
 + Add CCS workflow WDL files (ccs.wdl, lima.wdl, isoseq3.wdl).
