@@ -70,7 +70,7 @@ task Dedup {
     input {
         File inputBam
         File inputBamIndex
-        String umiSeparator = "_"
+        String? umiSeparator
         String outputBamPath
         String? statsPrefix
         Boolean paired = true
@@ -90,7 +90,7 @@ task Dedup {
         --stdin ~{inputBam} \
         --stdout ~{outputBamPath} \
         ~{"--output-stats " + statsPrefix} \
-        --umi-separator=~{umiSeparator} \
+        ~{"--umi-separator=" + umiSeparator}
         ~{true="--paired" false="" paired}
         samtools index ~{outputBamPath} ~{outputBamIndex}
     }
@@ -113,7 +113,7 @@ task Dedup {
         inputBamIndex: {description: "The index for the ipnut BAM file.", cateogry: "required"}
         outputBamPath: {description: "The location to write the output BAM file to.", category: "required"}
         statsPrefix: {description: "The prefix for the stats files.", category: "advanced"}
-        umiSeparator: {description: "Seperator for UMI sequence, default with '_'", category: "advanced"}
+        umiSeparator: {description: "Seperator for UMI sequence", category: "advanced"}
         paired: {description: "Whether or not the data is paired.", category: "common"}
         memory: {description: "The amount of memory required for the task.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
