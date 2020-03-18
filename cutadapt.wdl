@@ -74,13 +74,10 @@ task Cutadapt {
         Boolean? zeroCap
         Boolean? noZeroCap
         String reportPath = "cutadapt_report.txt"
-        #Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
-        # --compression-level has a bug in 2.4 https://github.com/marcelm/cutadapt/pull/388
-        #~{"--compression-level=" + compressionLevel} \
-        Boolean Z = true  # equal to compressionLevel=1  # Fixme: replace once upstream is fixed.
-        Int cores = 1
+        Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
+        Int cores = 4
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/cutadapt:2.4--py37h14c3975_0"
+        String dockerImage = "quay.io/biocontainers/cutadapt:2.8--py37h516909a_0"
     }
 
     String realRead2output = select_first([read2output, "cut_r2.fq.gz"])
@@ -95,7 +92,6 @@ task Cutadapt {
         ~{read2outputArg}
         cutadapt \
         ~{"--cores=" + cores} \
-        ~{true="-Z" false="" Z} \
         ~{true="-a" false="" length(adapter) > 0} ~{sep=" -a " adapter} \
         ~{true="-A" false="" length(adapterRead2) > 0} ~{sep=" -A " adapterRead2} \
         ~{true="-g" false="" length(front) > 0} ~{sep=" -g " front} \
@@ -103,6 +99,7 @@ task Cutadapt {
         ~{true="-b" false="" length(anywhere) > 0} ~{sep=" -b " anywhere} \
         ~{true="-B" false="" length(anywhereRead2) > 0} ~{sep=" -B " anywhereRead2} \
         --output ~{read1output} ~{if defined(read2) then "-p " + realRead2output else ""} \
+        --compression-level ~{compressionLevel} \
         ~{"--to-short-output " + tooShortOutputPath} \
         ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
         ~{"--to-long-output " + tooLongOutputPath} \
