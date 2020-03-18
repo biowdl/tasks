@@ -39,7 +39,7 @@ task Fastqc {
 
         Int threads = 1
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/fastqc:0.11.7--4"
+        String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
         Array[File]? NoneArray
         File? NoneFile
     }
