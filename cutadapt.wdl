@@ -74,6 +74,9 @@ task Cutadapt {
         Boolean? zeroCap
         Boolean? noZeroCap
         String reportPath = "cutadapt_report.txt"
+        # Cutadapt compresses the zipped output files with a ridiculously high compression level (5 or 6).
+        # This is not the fast compression preset. It takes up to 400% more CPU time for a 20% reduction in file size.
+        # Hence we use compression level 1 here.
         Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
         Int cores = 4
         String memory = "4G"
@@ -376,10 +379,8 @@ task Cutadapt {
             description: "The name of the file to write cutadapts's stdout to, this contains some metrics.",
             category: "common"
         }
-        Z: {
-            description: "Equivalent to cutadapt's -Z flag.",
-            category: "advanced"
-        }
+        compressionLevel: {description: "The compression level if gzipped output is used.",
+                           category: "advanced"}
         cores: {
             description: "The number of cores to use.",
             category: "advanced"
