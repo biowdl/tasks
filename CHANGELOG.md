@@ -8,6 +8,14 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
+Version 3.1.0-dev
+---------------------------
++ Cutadapt now explicitly calls the `--compression-level` flag with compression
+  level 1 to prevent cutadapt from using very high gzip compression level 6 
+  that uses 400% more cpu time.
++ Update default docker image for cutadapt and fastqc.
++ Default number of cores for cutadapt and bwamem to 4 cores.
+
 
 version 3.0.0
 ---------------------------
