@@ -28,7 +28,7 @@ task Mem {
         String outputPath
         String? readgroup
 
-        Int threads = 2
+        Int threads = 4
         String memory = "32G"
         String picardXmx = "4G"
         # A mulled container is needed to have both picard and bwa in one container.
