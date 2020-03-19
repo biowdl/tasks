@@ -74,13 +74,13 @@ task Cutadapt {
         Boolean? zeroCap
         Boolean? noZeroCap
         String reportPath = "cutadapt_report.txt"
-        #Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
-        # --compression-level has a bug in 2.4 https://github.com/marcelm/cutadapt/pull/388
-        #~{"--compression-level=" + compressionLevel} \
-        Boolean Z = true  # equal to compressionLevel=1  # Fixme: replace once upstream is fixed.
-        Int cores = 1
+        # Cutadapt compresses the zipped output files with a ridiculously high compression level (5 or 6).
+        # This is not the fast compression preset. It takes up to 400% more CPU time for a 20% reduction in file size.
+        # Hence we use compression level 1 here.
+        Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
+        Int cores = 4
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/cutadapt:2.4--py37h14c3975_0"
+        String dockerImage = "quay.io/biocontainers/cutadapt:2.8--py37h516909a_0"
     }
 
     String realRead2output = select_first([read2output, "cut_r2.fq.gz"])
@@ -95,7 +95,6 @@ task Cutadapt {
         ~{read2outputArg}
         cutadapt \
         ~{"--cores=" + cores} \
-        ~{true="-Z" false="" Z} \
         ~{true="-a" false="" length(adapter) > 0} ~{sep=" -a " adapter} \
         ~{true="-A" false="" length(adapterRead2) > 0} ~{sep=" -A " adapterRead2} \
         ~{true="-g" false="" length(front) > 0} ~{sep=" -g " front} \
@@ -103,6 +102,7 @@ task Cutadapt {
         ~{true="-b" false="" length(anywhere) > 0} ~{sep=" -b " anywhere} \
         ~{true="-B" false="" length(anywhereRead2) > 0} ~{sep=" -B " anywhereRead2} \
         --output ~{read1output} ~{if defined(read2) then "-p " + realRead2output else ""} \
+        --compression-level ~{compressionLevel} \
         ~{"--to-short-output " + tooShortOutputPath} \
         ~{"--to-short-paired-output " + tooShortPairedOutputPath} \
         ~{"--to-long-output " + tooLongOutputPath} \
@@ -379,10 +379,8 @@ task Cutadapt {
             description: "The name of the file to write cutadapts's stdout to, this contains some metrics.",
             category: "common"
         }
-        Z: {
-            description: "Equivalent to cutadapt's -Z flag.",
-            category: "advanced"
-        }
+        compressionLevel: {description: "The compression level if gzipped output is used.",
+                           category: "advanced"}
         cores: {
             description: "The number of cores to use.",
             category: "advanced"
