@@ -335,7 +335,6 @@ task View {
         File inFile
         File? referenceFasta
         String outputFileName = "view.bam"
-        Boolean includeHeader = false
         Boolean uncompressedBamOutput = false
         Int? includeFilter
         Int? excludeFilter
