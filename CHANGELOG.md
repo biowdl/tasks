@@ -19,6 +19,7 @@ Version 3.1.0-dev
 
 version 3.0.0
 ---------------------------
++ Add optional input umiSeparator in umi-tools dedup task.
 + Update command section syntax Minimap2, Talon, TranscriptClean and Centrifuge.
 + Add CCS workflow WDL files (ccs.wdl, lima.wdl, isoseq3.wdl).
 + Update TALON version to 4.4.2.
