@@ -49,7 +49,7 @@ task CCS {
         --num-threads ~{cores} \
         ~{"--report-file " + outputPrefix + ".ccs.report.txt"} \
         ~{"--log-file " + outputPrefix + ".ccs.stderr.log"} \
-        ~{subreadsFile}
+        ~{subreadsFile} \
         ~{outputPrefix + ".ccs.bam"}
     }
 
