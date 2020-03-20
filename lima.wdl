@@ -85,17 +85,18 @@ task Lima {
         ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \
-        ~{outputPrefix + ".fl.bam"}
+        ~{basename(outputPrefix) + ".fl.bam"}
     }
 
     output {
-        File outputFLfile = outputPrefix + "*.bam"
-        File outputFLindexFile = outputPrefix + "*.bam.pbi"
+        Array[File] outputFLfile = glob("~{basename(outputPrefix)}*.bam")
+        Array[File] outputFLindexFile = glob("~{basename(outputPrefix)}*.bam.pbi")
+        Array[File] outputFLxmlFile = glob("~{basename(outputPrefix)}*.subreadset.xml")
         File outputSTDERRfile = outputPrefix + ".fl.stderr.log"
-        File outputJSONfile = outputPrefix + ".fl.json"
-        File outputCountsFile = outputPrefix + ".fl.lima.counts"
-        File outputReportFile = outputPrefix + ".fl.lima.report"
-        File outputSummaryFile = outputPrefix + ".fl.lima.summary"
+        File outputJSONfile = "~{basename(outputPrefix)}.fl.json"
+        File outputCountsFile = "~{basename(outputPrefix)}.fl.lima.counts"
+        File outputReportFile = "~{basename(outputPrefix)}.fl.lima.report"
+        File outputSummaryFile = "~{basename(outputPrefix)}.fl.lima.summary"
     }
 
     runtime {
