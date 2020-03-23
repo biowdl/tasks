@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 -->
 Version 3.1.0-dev
 ---------------------------
++ Lima: Add workaround for glob command not locating files in output directory.
 + CCS: Add missing backslash.
 + Cutadapt now explicitly calls the `--compression-level` flag with compression
   level 1 to prevent cutadapt from using very high gzip compression level 6 

@@ -85,12 +85,21 @@ task Lima {
         ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \
-        ~{outputPrefix + ".fl.bam"}
+        ~{basename(outputPrefix) + ".fl.bam"}
+
+        # Move commands below are needed because glob command does not find
+        # multiple bam/bam.pbi/subreadset.xml files when not located in working
+        # directory.
+        mv "~{basename(outputPrefix)}.fl.json" "~{outputPrefix}.fl.json"
+        mv "~{basename(outputPrefix)}.fl.lima.counts" "~{outputPrefix}.fl.lima.counts"
+        mv "~{basename(outputPrefix)}.fl.lima.report" "~{outputPrefix}.fl.lima.report"
+        mv "~{basename(outputPrefix)}.fl.lima.summary" "~{outputPrefix}.fl.lima.summary"
     }
 
     output {
-        File outputFLfile = outputPrefix + "*.bam"
-        File outputFLindexFile = outputPrefix + "*.bam.pbi"
+        Array[File] outputFLfile = glob("~{basename(outputPrefix)}*.bam")
+        Array[File] outputFLindexFile = glob("~{basename(outputPrefix)}*.bam.pbi")
+        Array[File] outputFLxmlFile = glob("~{basename(outputPrefix)}*.subreadset.xml")
         File outputSTDERRfile = outputPrefix + ".fl.stderr.log"
         File outputJSONfile = outputPrefix + ".fl.json"
         File outputCountsFile = outputPrefix + ".fl.lima.counts"
