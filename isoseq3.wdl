@@ -65,8 +65,8 @@ task Refine {
     >>>
 
     output {
-        Array[File] outputFLfile = glob("~{basename(outputPrefix)}*.bam")
-        Array[File] outputFLindexFile = glob("~{basename(outputPrefix)}*.bam.pbi")
+        Array[File] outputFLNCfile = glob("~{basename(outputPrefix)}*.bam")
+        Array[File] outputFLNCindexFile = glob("~{basename(outputPrefix)}*.bam.pbi")
         Array[File] outputConsensusReadsetFile = glob("~{basename(outputPrefix)}*.consensusreadset.xml")
         Array[File] outputFilterSummaryFile = glob("~{basename(outputPrefix)}*.filter_summary.json")
         Array[File] outputReportFile = glob("~{basename(outputPrefix)}*.report.csv")
