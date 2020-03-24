@@ -92,8 +92,8 @@ task Refine {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputFLfile: {description: "Filtered reads output file."}
-        outputFLindexFile: {description: "Index of filtered reads output file."}
+        outputFLNCfile: {description: "Filtered reads output file."}
+        outputFLNCindexFile: {description: "Index of filtered reads output file."}
         outputSTDERRfile: {description: "Refine STDERR log file."}
         outputConsensusReadsetFile: {description: "Refine consensus readset XML file."}
         outputFilterSummaryFile: {description: "Refine summary file."}
