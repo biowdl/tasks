@@ -34,27 +34,43 @@ task Refine {
         String dockerImage = "quay.io/biocontainers/isoseq3:3.3.0--0"
     }
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
+
+        # Create a unique output name base on the input bam file.
+        bamBasename="$(basename ~{inputBamFile})"
+        bamNewName="${bamBasename/fl/flnc}"
+        folderDirname="$(dirname ~{outputPrefix})"
+        combinedOutput="${folderDirname}/${bamNewName}"
+
         isoseq3 refine \
-        --min-poly-length ~{minPolyAlength} \
+        --min-polya-length ~{minPolyAlength} \
         ~{true="--require-polya" false="" requirePolyA} \
         --log-level ~{logLevel} \
         --num-threads ~{cores} \
         ~{"--log-file " + outputPrefix + ".flnc.stderr.log"} \
         ~{inputBamFile} \
         ~{primerFile} \
-        ~{outputPrefix + ".flnc.bam"}
-    }
+        ${bamNewName}
+
+        # Copy commands below are needed because glob command does not find
+        # multiple bam/bam.pbi/consensusreadset.xml/filter_summary.json/report.csv
+        # files when not located in working directory.
+        cp "${bamNewName}" "${combinedOutput}"
+        cp "${bamNewName}.pbi" "${combinedOutput}.pbi"
+        cp "${bamNewName/bam/consensusreadset}.xml" "${combinedOutput/bam/consensusreadset}.xml"
+        cp "${bamNewName/bam/filter_summary}.json" "${combinedOutput/bam/filter_summary}.json"
+        cp "${bamNewName/bam/report}.csv" "${combinedOutput/bam/report}.csv"
+    >>>
 
     output {
-        File outputFLfile = outputPrefix + ".flnc.bam"
-        File outputFLindexFile = outputPrefix + ".flnc.bam.pbi"
+        Array[File] outputFLNCfile = glob("~{basename(outputPrefix)}*.bam")
+        Array[File] outputFLNCindexFile = glob("~{basename(outputPrefix)}*.bam.pbi")
+        Array[File] outputConsensusReadsetFile = glob("~{basename(outputPrefix)}*.consensusreadset.xml")
+        Array[File] outputFilterSummaryFile = glob("~{basename(outputPrefix)}*.filter_summary.json")
+        Array[File] outputReportFile = glob("~{basename(outputPrefix)}*.report.csv")
         File outputSTDERRfile = outputPrefix + ".flnc.stderr.log"
-        File outputConsensusReadsetFile = outputPrefix + ".consensusreadset.xml"
-        File outputFilterSummaryFile = outputPrefix + ".filter_summary.json"
-        File outputReportFile = outputPrefix + ".report.csv"
     }
 
     runtime {
@@ -76,8 +92,8 @@ task Refine {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputFLfile: {description: "Filtered reads output file."}
-        outputFLindexFile: {description: "Index of filtered reads output file."}
+        outputFLNCfile: {description: "Filtered reads output file."}
+        outputFLNCindexFile: {description: "Index of filtered reads output file."}
         outputSTDERRfile: {description: "Refine STDERR log file."}
         outputConsensusReadsetFile: {description: "Refine consensus readset XML file."}
         outputFilterSummaryFile: {description: "Refine summary file."}
