@@ -10,7 +10,8 @@ that users understand how the changes affect the new version.
 -->
 Version 3.1.0-dev
 ---------------------------
-+ Isoseq3: Fix --min-polya-length argument syntax & add workaround for glob command not locating files in output directory.
++ Isoseq3: Add workaround for glob command not locating files in output directory.
++ Isoseq3: Fix --min-polya-length argument syntax.
 + Lima: Add workaround for glob command not locating files in output directory.
 + CCS: Add missing backslash.
 + Cutadapt now explicitly calls the `--compression-level` flag with compression
