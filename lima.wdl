@@ -97,9 +97,9 @@ task Lima {
     }
 
     output {
-        Array[File] outputFLfile = glob("~{basename(outputPrefix)}*.bam")
-        Array[File] outputFLindexFile = glob("~{basename(outputPrefix)}*.bam.pbi")
-        Array[File] outputFLxmlFile = glob("~{basename(outputPrefix)}*.subreadset.xml")
+        Array[File] outputFLfile = glob("*.bam")
+        Array[File] outputFLindexFile = glob("*.bam.pbi")
+        Array[File] outputFLxmlFile = glob("*.subreadset.xml")
         File outputSTDERRfile = outputPrefix + ".fl.stderr.log"
         File outputJSONfile = outputPrefix + ".fl.json"
         File outputCountsFile = outputPrefix + ".fl.lima.counts"

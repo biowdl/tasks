@@ -49,28 +49,28 @@ task Refine {
         ~{true="--require-polya" false="" requirePolyA} \
         --log-level ~{logLevel} \
         --num-threads ~{cores} \
-        ~{"--log-file " + outputPrefix + ".flnc.stderr.log"} \
+        --log-file "${bamNewName}.stderr.log" \
         ~{inputBamFile} \
         ~{primerFile} \
         ${bamNewName}
 
-        # Copy commands below are needed because glob command does not find
-        # multiple bam/bam.pbi/consensusreadset.xml/filter_summary.json/report.csv
-        # files when not located in working directory.
+        # Copy commands below are needed because naming schema for Refine output
+        # can not be correctly handled in the WDL output section.
         cp "${bamNewName}" "${combinedOutput}"
         cp "${bamNewName}.pbi" "${combinedOutput}.pbi"
         cp "${bamNewName/bam/consensusreadset}.xml" "${combinedOutput/bam/consensusreadset}.xml"
         cp "${bamNewName/bam/filter_summary}.json" "${combinedOutput/bam/filter_summary}.json"
         cp "${bamNewName/bam/report}.csv" "${combinedOutput/bam/report}.csv"
+        cp "${bamNewName}.stderr.log" "${combinedOutput}.stderr.log"
     >>>
 
     output {
-        Array[File] outputFLNCfile = glob("~{basename(outputPrefix)}*.bam")
-        Array[File] outputFLNCindexFile = glob("~{basename(outputPrefix)}*.bam.pbi")
-        Array[File] outputConsensusReadsetFile = glob("~{basename(outputPrefix)}*.consensusreadset.xml")
-        Array[File] outputFilterSummaryFile = glob("~{basename(outputPrefix)}*.filter_summary.json")
-        Array[File] outputReportFile = glob("~{basename(outputPrefix)}*.report.csv")
-        File outputSTDERRfile = outputPrefix + ".flnc.stderr.log"
+        Array[File] outputFLNCfile = glob("*.bam")
+        Array[File] outputFLNCindexFile = glob("*.bam.pbi")
+        Array[File] outputConsensusReadsetFile = glob("*.consensusreadset.xml")
+        Array[File] outputFilterSummaryFile = glob("*.filter_summary.json")
+        Array[File] outputReportFile = glob("*.report.csv")
+        Array[File] outputSTDERRfile = glob("*.stderr.log")
     }
 
     runtime {

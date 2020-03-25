@@ -10,7 +10,9 @@ that users understand how the changes affect the new version.
 -->
 Version 3.1.0-dev
 ---------------------------
-+ Isoseq3: Add workaround for glob command not locating files in output directory.
++ Lima: Remove outputPrefix variable from output section.
++ Isoseq3: Make sure stderr log file from Refine is unique and not overwritten.
++ Isoseq3: Add workaround in Refine for glob command not locating files in output directory.
 + Isoseq3: Fix --min-polya-length argument syntax.
 + Lima: Add workaround for glob command not locating files in output directory.
 + CCS: Add missing backslash.
