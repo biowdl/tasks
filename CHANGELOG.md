@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 -->
 Version 3.1.0-dev
 ---------------------------
++ Lima: Add missing output to parameter_meta.
 + Lima: Remove outputPrefix variable from output section.
 + Isoseq3: Make sure stderr log file from Refine is unique and not overwritten.
 + Isoseq3: Add workaround in Refine for glob command not locating files in output directory.

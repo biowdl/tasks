@@ -147,6 +147,7 @@ task Lima {
         # outputs
         outputFLfile: {description: "Demultiplexed reads output file."}
         outputFLindexFile: {description: "Index of demultiplexed reads output file."}
+        outputFLxmlFile: {description: "XML file of the subreadset(s)."}
         outputSTDERRfile: {description: "Lima STDERR log file."}
         outputJSONfile: {description: "Lima JSON file."}
         outputCountsFile: {description: "Lima counts file."}
