@@ -145,8 +145,8 @@ task Lima {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputFLfile: {description: "Demultiplexed reads output file."}
-        outputFLindexFile: {description: "Index of demultiplexed reads output file."}
+        outputFLfile: {description: "Demultiplexed reads output file(s)."}
+        outputFLindexFile: {description: "Index of demultiplexed reads output file(s)."}
         outputFLxmlFile: {description: "XML file of the subreadset(s)."}
         outputSTDERRfile: {description: "Lima STDERR log file."}
         outputJSONfile: {description: "Lima JSON file."}
