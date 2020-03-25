@@ -88,9 +88,15 @@ task Kit {
         String? readgroup
         Boolean sixtyFour = false
 
-        Int threads = 2
-        Int sortThreads = 2
-        String memory = "10G"
+        Int threads = 4
+        # Samtools uses *additional* threads. So by default this option should
+        # not be used.
+        Int? sortThreads
+        # Compression uses zlib. Higher than level 2 causes enormous slowdowns.
+        # GATK/Picard default is level 2.
+        String sortMemoryPerThread = "4G"
+        Int compressionLevel = 1
+        String memory = "32G"
         String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
     }
 
@@ -108,8 +114,9 @@ task Kit {
           -p ~{outputPrefix}.hla \
           ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
         samtools sort \
-          -@ ~{sortThreads} \
-          -m1G \
+          ~{"-@ " + sortThreads} \
+          -m ~{sortMemoryPerThread} \
+          -l ~{compressionLevel} \
           - \
           -o ~{outputPrefix}.aln.bam
         samtools index ~{outputPrefix}.aln.bam ~{outputPrefix}.aln.bai
@@ -121,7 +128,7 @@ task Kit {
     }
 
     runtime {
-        cpu: threads + sortThreads
+        cpu: threads + 1  # One thread for bwa-postalt + samtools.
         memory: memory
         docker: dockerImage
     }
