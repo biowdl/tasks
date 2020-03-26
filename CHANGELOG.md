@@ -12,6 +12,7 @@ Version 3.1.0-dev
 ---------------------------
 + Default threads for BWA in bwa.Kit task: 4. Samtools sort in the
   same task: 1. Output BAM compression level to 1.
++ Lima: Add missing output to parameter_meta.
 + Lima: Remove outputPrefix variable from output section.
 + Isoseq3: Make sure stderr log file from Refine is unique and not overwritten.
 + Isoseq3: Add workaround in Refine for glob command not locating files in output directory.
