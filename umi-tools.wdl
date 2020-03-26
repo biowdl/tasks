@@ -90,7 +90,7 @@ task Dedup {
         --stdin ~{inputBam} \
         --stdout ~{outputBamPath} \
         ~{"--output-stats " + statsPrefix} \
-        ~{"--umi-separator=" + umiSeparator}
+        ~{"--umi-separator=" + umiSeparator} \
         ~{true="--paired" false="" paired}
         samtools index ~{outputBamPath} ~{outputBamIndex}
     }
