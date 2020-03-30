@@ -8,7 +8,7 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
-Version 3.1.0-dev
+version 3.1.0
 ---------------------------
 + Default threads for BWA in bwa.Kit task: 4. Samtools sort in the
   same task: 1. Output BAM compression level to 1.
