@@ -8,6 +8,10 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
+version 3.2.0
+---------------------------
++ Added STAR GenomeGenerate task.
+
 version 3.1.0
 ---------------------------
 + Default threads for BWA in bwa.Kit task: 4. Samtools sort in the
