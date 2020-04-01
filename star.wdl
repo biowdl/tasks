@@ -28,7 +28,8 @@ task GenomeGenerate {
         Int? sjdbOverhang
 
         Int threads = 4
-        String memory = "60G"
+        String memory = "32G"
+        Int minutesPerGB = 240
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
@@ -68,6 +69,7 @@ task GenomeGenerate {
     runtime {
         cpu: threads
         memory: memory
+        runtime_minutes: ceil(size(referenceFasta, "G") * minutesPerGB / threads)
         docker: dockerImage
     }
 
