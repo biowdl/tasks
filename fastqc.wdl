@@ -38,11 +38,14 @@ task Fastqc {
         String? dir
 
         Int threads = 1
-        String memory = "1G"
+        String? memory
+        Int? runtimeMinutes
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
         Array[File]? NoneArray
         File? NoneFile
     }
+    String estimatedMemoryMB = "~{250 + 250 * threads}M"
+    Int estimatedRuntimeMin = 1 + ceil(size(seqFile, "G")) * 4
 
     # Chops of the .gz extension if present.
     # The Basename needs to be taken here. Otherwise paths might differ between similar jobs.
@@ -80,12 +83,11 @@ task Fastqc {
         Array[File]? images = if extract then glob(reportDir + "/Images/*.png") else NoneArray
     }
 
-    Int estimatedRuntime = 1 + ceil(size(seqFile, "G")) * 4
     runtime {
         cpu: threads
-        memory: memory
+        memory: select_first([memory, estimatedMemoryMB])
         docker: dockerImage
-        runtime_minutes: estimatedRuntime
+        runtime_minutes: select_first([runtimeMinutes, estimatedRuntimeMin])
     }
 
     parameter_meta {
