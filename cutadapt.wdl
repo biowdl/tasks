@@ -80,10 +80,10 @@ task Cutadapt {
         Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
         Int cores = 4
         String? memory
-        Int? runtimeMinutes
+        Int? timeMinutes
         String dockerImage = "quay.io/biocontainers/cutadapt:2.8--py37h516909a_0"
     }
-    Int estimatedRuntimeMin = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
+    Int estimatedTimeMinutes = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
     String estimatedMemory = "~{300 + 100 * cores}M"
 
     String realRead2output = select_first([read2output, "cut_r2.fq.gz"])
@@ -170,7 +170,7 @@ task Cutadapt {
     runtime {
         cpu: cores
         memory: select_first([memory, estimatedMemory])
-        runtime_minutes: select_first([runtimeMinutes, estimatedRuntimeMin])
+        time_minutes: select_first([timeMinutes, estimatedTimeMinutes])
         docker: dockerImage
     }
 
