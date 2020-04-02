@@ -44,7 +44,7 @@ task Fastqc {
         Array[File]? NoneArray
         File? NoneFile
     }
-    String estimatedMemoryMB = "~{250 + 250 * threads}M"
+    String estimatedMemory = "~{250 + 250 * threads}M"
     Int estimatedRuntimeMin = 1 + ceil(size(seqFile, "G")) * 4
 
     # Chops of the .gz extension if present.
@@ -85,7 +85,7 @@ task Fastqc {
 
     runtime {
         cpu: threads
-        memory: select_first([memory, estimatedMemoryMB])
+        memory: select_first([memory, estimatedMemory])
         docker: dockerImage
         runtime_minutes: select_first([runtimeMinutes, estimatedRuntimeMin])
     }
