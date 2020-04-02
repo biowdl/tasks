@@ -29,7 +29,7 @@ task GenomeGenerate {
 
         Int threads = 4
         String memory = "32G"
-        Int minutesPerGB = 240
+        Int timeMinutes = ceil(size(referenceFasta, "G") * 240 / threads)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
@@ -69,7 +69,7 @@ task GenomeGenerate {
     runtime {
         cpu: threads
         memory: memory
-        runtime_minutes: ceil(size(referenceFasta, "G") * minutesPerGB / threads)
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
