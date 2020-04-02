@@ -38,7 +38,7 @@ task Fastqc {
         String? dir
 
         Int threads = 1
-        String memory = "4G"
+        String memory = "1G"
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
         Array[File]? NoneArray
         File? NoneFile
@@ -80,10 +80,12 @@ task Fastqc {
         Array[File]? images = if extract then glob(reportDir + "/Images/*.png") else NoneArray
     }
 
+    Int estimatedRuntime = 1 + ceil(size(seqFile, "G")) * 4
     runtime {
         cpu: threads
         memory: memory
         docker: dockerImage
+        runtime_minutes: estimatedRuntime
     }
 
     parameter_meta {
