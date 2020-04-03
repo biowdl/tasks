@@ -33,6 +33,8 @@ task CollectColumns {
         File? referenceGtf
         String? featureAttribute
 
+        Int memoryGb = 4 + ceil(0.5 * length(inputTables))
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/collect-columns:0.2.0--py_1"
     }
 
@@ -56,7 +58,7 @@ task CollectColumns {
         File outputTable = outputPath
     }
 
-    Int memoryGb = 4 + ceil(0.5 * length(inputTables))
+
 
     runtime {
         memory: "~{memoryGb}G"

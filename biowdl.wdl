@@ -31,6 +31,8 @@ task InputConverter {
         Boolean skipFileCheck=true
         Boolean checkFileMd5sums=false
         Boolean old=false
+
+        Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
 
@@ -50,6 +52,8 @@ task InputConverter {
     }
 
     runtime {
+        memory: "2G"
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 

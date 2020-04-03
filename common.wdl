@@ -210,6 +210,9 @@ task YamlToJson {
     input {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
+
+        Int timeMinutes = 2
+        String  memory = "1G"
         # biowdl-input-converter has python and pyyaml.
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
@@ -230,6 +233,8 @@ task YamlToJson {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 

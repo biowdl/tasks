@@ -37,7 +37,8 @@ task Bowtie {
         String? samRG
 
         Int threads = 1
-        String memory = "16G"
+        Int timeMinutes = ceil(size(flatten([readsUpstream, readsDownstream]), "G") * 300 / threads)
+        String memory = "10G"
         String picardXmx = "4G"
         # Image contains bowtie=1.2.2 and picard=2.9.2
         String dockerImage = "quay.io/biocontainers/mulled-v2-bfe71839265127576d3cd749c056e7b168308d56:1d8bec77b352cdcf3e9ff3d20af238b33ed96eae-0"
@@ -78,6 +79,7 @@ task Bowtie {
     runtime {
         cpu: threads
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
