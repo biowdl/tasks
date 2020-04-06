@@ -83,8 +83,6 @@ task Cutadapt {
         Int? timeMinutes
         String dockerImage = "quay.io/biocontainers/cutadapt:2.8--py37h516909a_0"
     }
-    Int estimatedTimeMinutes = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
-    String estimatedMemory = "~{300 + 100 * cores}M"
 
     String realRead2output = select_first([read2output, "cut_r2.fq.gz"])
     String read2outputArg = if (defined(read2))
@@ -169,8 +167,8 @@ task Cutadapt {
 
     runtime {
         cpu: cores
-        memory: select_first([memory, estimatedMemory])
-        time_minutes: select_first([timeMinutes, estimatedTimeMinutes])
+        memory: select_first([memory, "~{300 + 100 * cores}M"])
+        time_minutes: select_first([timeMinutes, 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)])
         docker: dockerImage
     }
 

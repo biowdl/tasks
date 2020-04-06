@@ -44,8 +44,6 @@ task Fastqc {
         Array[File]? NoneArray
         File? NoneFile
     }
-    String estimatedMemory = "~{250 + 250 * threads}M"
-    Int estimatedTimeMinutes = 1 + ceil(size(seqFile, "G")) * 4
 
     # Chops of the .gz extension if present.
     # The Basename needs to be taken here. Otherwise paths might differ between similar jobs.
@@ -85,9 +83,9 @@ task Fastqc {
 
     runtime {
         cpu: threads
-        memory: select_first([memory, estimatedMemory])
+        memory: select_first([memory, "~{250 + 250 * threads}M"])
         docker: dockerImage
-        time_minutes: select_first([timeMinutes, estimatedTimeMinutes])
+        time_minutes: select_first([timeMinutes, 1 + ceil(size(seqFile, "G")) * 4])
     }
 
     parameter_meta {
