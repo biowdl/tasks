@@ -28,7 +28,7 @@ task ChunkedScatter {
         Int? overlap
         Int? minimumBasesPerFile
 
-        Int timeMinutes
+        Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/chunked-scatter:0.1.0--py_0"
     }
 
@@ -49,7 +49,7 @@ task ChunkedScatter {
 
     runtime {
         memory: "4G"
-        timeMinutes: 5
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 

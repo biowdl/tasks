@@ -62,6 +62,7 @@ task CollectColumns {
 
     runtime {
         memory: "~{memoryGb}G"
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -86,6 +87,8 @@ task CollectColumns {
                        category: "advanced"}
         featureAttribute: {description: "Equivalent to the -F option of collect-columns.",
                            category: "advanced"}
+        memoryGb: {description: "The maximum amount of memory the job will need in GB", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

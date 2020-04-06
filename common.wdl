@@ -211,7 +211,7 @@ task YamlToJson {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
 
-        Int timeMinutes = 2
+        Int timeMinutes = 1
         String  memory = "1G"
         # biowdl-input-converter has python and pyyaml.
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
@@ -241,6 +241,8 @@ task YamlToJson {
     parameter_meta {
         yaml: {description: "The YAML file to convert.", category: "required"}
         outputJson: {description: "The location the output JSON file should be written to.", category: "advanced"}
+        memory: {description: "The maximum aount of memroy the job will need.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

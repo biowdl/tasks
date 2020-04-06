@@ -83,8 +83,9 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        String memory = "32G"
+        String memory = "10G"
         String javaXmx = "8G"
+        Int timeMinutes = ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -92,7 +93,7 @@ task CollectMultipleMetrics {
     command {
         set -e
         mkdir -p "$(dirname ~{basename})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         CollectMultipleMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -153,6 +154,7 @@ task CollectMultipleMetrics {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -188,6 +190,7 @@ task CollectMultipleMetrics {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -320,15 +323,16 @@ task GatherBamFiles {
         Array[File]+ inputBamsIndex
         String outputBamPath
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = ceil(size(inputBams, "G") * 0.5)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -344,6 +348,7 @@ task GatherBamFiles {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -356,6 +361,7 @@ task GatherBamFiles {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -412,8 +418,9 @@ task MarkDuplicates {
         String outputBamPath
         String metricsPath
 
-        String memory = "24G"
+        String memory = "10G"
         String javaXmx = "8G"
+        Int timeMinutes = ceil(size(inputBams, "G")* 8)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
@@ -431,7 +438,7 @@ task MarkDuplicates {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         MarkDuplicates \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -454,6 +461,7 @@ task MarkDuplicates {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -468,6 +476,7 @@ task MarkDuplicates {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

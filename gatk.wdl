@@ -90,8 +90,9 @@ task ApplyBQSR {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -139,6 +140,7 @@ task ApplyBQSR {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -159,15 +161,16 @@ task BaseRecalibrator {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{recalibrationReportPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         BaseRecalibrator \
         -R ~{referenceFasta} \
         -I ~{inputBam} \
@@ -184,6 +187,7 @@ task BaseRecalibrator {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -205,6 +209,7 @@ task BaseRecalibrator {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -688,15 +693,16 @@ task GatherBqsrReports {
         Array[File] inputBQSRreports
         String outputReportPath
 
-        String memory = "12G"
-        String javaXmx = "4G"
+        String memory = "1G"
+        String javaXmx = "500M"
+        Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputReportPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
@@ -708,6 +714,7 @@ task GatherBqsrReports {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -718,6 +725,7 @@ task GatherBqsrReports {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

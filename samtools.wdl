@@ -203,6 +203,8 @@ task Flagstat {
         File inputBam
         String outputPath
 
+        String memory = "1G"
+        Int timeMinutes = size(inputBam, "G")
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -217,6 +219,8 @@ task Flagstat {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -224,6 +228,7 @@ task Flagstat {
         # inputs
         inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
         outputPath: {description: "The location the ouput should be written to.", category: "required"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -399,7 +404,7 @@ task FilterShortReadsBam {
         String outputPathBam
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
-    
+
     String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
 
     command {

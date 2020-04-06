@@ -264,8 +264,9 @@ task ScatterRegions {
         File? bamFile
         File? bamIndex
 
-        String memory = "24G"
-        String javaXmx = "8G"
+        String memory = "1G"
+        String javaXmx = "500M"
+        Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/biopet-scatterregions:0.2--0"
     }
 
@@ -277,7 +278,7 @@ task ScatterRegions {
     command <<<
         set -e -o pipefail
         mkdir -p ~{outputDirPath}
-        biopet-scatterregions -Xmx~{javaXmx} \
+        biopet-scatterregions -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
           -R ~{referenceFasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
@@ -306,6 +307,7 @@ task ScatterRegions {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 

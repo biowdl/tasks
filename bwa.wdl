@@ -29,8 +29,9 @@ task Mem {
         String? readgroup
 
         Int threads = 4
-        String memory = "32G"
+        String memory = "20G"
         String picardXmx = "4G"
+        Int timeMinutes = ceil(size([read1, read2], "G") * 200 / threads)
         # A mulled container is needed to have both picard and bwa in one container.
         # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
         String dockerImage = "quay.io/biocontainers/mulled-v2-002f51ea92721407ef440b921fb5940f424be842:43ec6124f9f4f875515f9548733b8b4e5fed9aa6-0"
@@ -45,7 +46,7 @@ task Mem {
         ~{bwaIndex.fastaFile} \
         ~{read1} \
         ~{read2} \
-        | picard -Xmx~{picardXmx} SortSam \
+        | picard -Xmx~{picardXmx} -XX:ParallelGCThreads=1 SortSam \
         INPUT=/dev/stdin \
         OUTPUT=~{outputPath} \
         SORT_ORDER=coordinate \
@@ -60,6 +61,7 @@ task Mem {
     runtime {
         cpu: threads
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -74,6 +76,7 @@ task Mem {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         picardXmx: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -96,7 +99,8 @@ task Kit {
         # GATK/Picard default is level 2.
         String sortMemoryPerThread = "4G"
         Int compressionLevel = 1
-        String memory = "32G"
+        String memory = "20G"
+        Int timeMinutes = ceil(size([read1, read2], "G") * 220 / threads)
         String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
     }
 
@@ -130,6 +134,7 @@ task Kit {
     runtime {
         cpu: threads + 1  # One thread for bwa-postalt + samtools.
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -146,6 +151,7 @@ task Kit {
         sortMemoryPerThread: {description: "The amount of memory for each sorting thread.", category: "advanced"}
         compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
 
