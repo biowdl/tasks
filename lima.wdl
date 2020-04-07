@@ -87,13 +87,13 @@ task Lima {
         ~{barcodeFile} \
         ~{basename(outputPrefix) + ".fl.bam"}
 
-        # Move commands below are needed because glob command does not find
+        # copy commands below are needed because glob command does not find
         # multiple bam/bam.pbi/subreadset.xml files when not located in working
         # directory.
-        mv "~{basename(outputPrefix)}.fl.json" "~{outputPrefix}.fl.json"
-        mv "~{basename(outputPrefix)}.fl.lima.counts" "~{outputPrefix}.fl.lima.counts"
-        mv "~{basename(outputPrefix)}.fl.lima.report" "~{outputPrefix}.fl.lima.report"
-        mv "~{basename(outputPrefix)}.fl.lima.summary" "~{outputPrefix}.fl.lima.summary"
+        cp "~{basename(outputPrefix)}.fl.json" "~{outputPrefix}.fl.json"
+        cp "~{basename(outputPrefix)}.fl.lima.counts" "~{outputPrefix}.fl.lima.counts"
+        cp "~{basename(outputPrefix)}.fl.lima.report" "~{outputPrefix}.fl.lima.report"
+        cp "~{basename(outputPrefix)}.fl.lima.summary" "~{outputPrefix}.fl.lima.summary"
     }
 
     output {
