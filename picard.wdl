@@ -489,8 +489,9 @@ task MergeVCFs {
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
 
-        String memory = "24G"
-        String javaXmx = "8G"
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = size(inputVCFs, "G")
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -513,6 +514,7 @@ task MergeVCFs {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -525,6 +527,7 @@ task MergeVCFs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

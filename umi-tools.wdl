@@ -118,6 +118,7 @@ task Dedup {
         umiSeparator: {description: "Seperator used for UMIs in the read names.", category: "advanced"}
         paired: {description: "Whether or not the data is paired.", category: "common"}
         memory: {description: "The amount of memory required for the task.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
