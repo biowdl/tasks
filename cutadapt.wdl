@@ -79,8 +79,8 @@ task Cutadapt {
         # Hence we use compression level 1 here.
         Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
         Int cores = 4
-        String? memory
-        Int? timeMinutes
+        String memory = "~{300 + 100 * cores}M"
+        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
         String dockerImage = "quay.io/biocontainers/cutadapt:2.8--py37h516909a_0"
     }
 
@@ -167,8 +167,8 @@ task Cutadapt {
 
     runtime {
         cpu: cores
-        memory: select_first([memory, "~{300 + 100 * cores}M"])
-        time_minutes: select_first([timeMinutes, 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)])
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
