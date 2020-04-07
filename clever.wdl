@@ -90,7 +90,8 @@ task Prediction {
         String outputPath = "./clever"
 
         Int threads = 10
-        String memory = "15G"
+        String memory = "55G"
+        Int timeMinutes = 480
         String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }
 
@@ -114,6 +115,7 @@ task Prediction {
     runtime {
         cpu: threads
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -125,6 +127,7 @@ task Prediction {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         threads: {description: "The the number of threads required to run a program", category: "advanced"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs

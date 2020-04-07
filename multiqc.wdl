@@ -57,7 +57,7 @@ task MultiQC {
         Array[Boolean] finished = []  # An array of booleans that can be used to let multiqc wait on stuff.
 
         String memory = "4G"
-
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
     }
 
@@ -108,6 +108,7 @@ task MultiQC {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -146,6 +147,7 @@ task MultiQC {
         finished: {description: "An array of booleans that can be used to let multiqc wait on stuff.", category: "internal_use_only"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

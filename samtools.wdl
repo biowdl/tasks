@@ -198,13 +198,53 @@ task Markdup {
     }
 }
 
+task FilterShortReadsBam {
+    input {
+        File bamFile
+        String outputPathBam
+        String memory = "1G"
+        Int timeMinutes = ceil(size(bamFile, "G") * 8)
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+
+    String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPathBam})"
+        samtools view -h ~{bamFile} | \
+        awk 'length($10) > 30 || $1 ~/^@/' | \
+        samtools view -bS -> ~{outputPathBam}
+        samtools index ~{outputPathBam} ~{outputPathBamIndex}
+    }
+
+    output {
+        File filteredBam = outputPathBam
+        File filteredBamIndex = outputPathBamIndex
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFile: {description: "The bam file to process.", category: "required"}
+        outputPathBam: {description: "The filtered bam file.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
+}
+
 task Flagstat {
     input {
         File inputBam
         String outputPath
 
         String memory = "1G"
-        Int timeMinutes = size(inputBam, "G")
+        Int timeMinutes = ceil(size(inputBam, "G"))
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -395,39 +435,5 @@ task View {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
-    }
-}
-
-task FilterShortReadsBam {
-    input {
-        File bamFile
-        String outputPathBam
-        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
-    }
-
-    String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputPathBam})"
-        samtools view -h ~{bamFile} | \
-        awk 'length($10) > 30 || $1 ~/^@/' | \
-        samtools view -bS -> ~{outputPathBam}
-        samtools index ~{outputPathBam} ~{outputPathBamIndex}
-    }
-
-    output {
-        File filteredBam = outputPathBam
-        File filteredBamIndex = outputPathBamIndex
-    }
-
-    runtime {
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        bamFile: {description: "The bam file to process.", category: "required"}
-        outputPathBam: {description: "The filtered bam file.", category: "common"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

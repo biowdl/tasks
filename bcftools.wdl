@@ -26,6 +26,8 @@ task Bcf2Vcf {
     input {
         File bcf
         String outputPath = "./bcftools/SV.vcf"
+        String memory = "2G"
+        Int timeMinutes = ceil(size(bcf, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
     }
 
@@ -40,12 +42,16 @@ task Bcf2Vcf {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
         bcf: {description: "The generated BCF from an SV caller", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

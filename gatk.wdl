@@ -1439,15 +1439,16 @@ task SplitNCigarReads {
         String outputBam
         Array[File] intervals = []
 
-        String memory = "16G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputBam})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         SplitNCigarReads \
         -I ~{inputBam} \
         -R ~{referenceFasta} \
@@ -1462,6 +1463,7 @@ task SplitNCigarReads {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1479,6 +1481,7 @@ task SplitNCigarReads {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

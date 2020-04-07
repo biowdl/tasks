@@ -26,15 +26,16 @@ task BedToIntervalList {
         File dict
         String outputPath = "regions.interval_list"
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         BedToIntervalList \
         I=~{bedFile} \
         O=~{outputPath} \
@@ -47,6 +48,7 @@ task BedToIntervalList {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -204,8 +206,9 @@ task CollectRnaSeqMetrics {
         String basename
         String strandSpecificity = "NONE"
 
-        String memory = "32G"
+        String memory = "10G"
         String javaXmx =  "8G"
+        Int timeMinutes = ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -213,7 +216,7 @@ task CollectRnaSeqMetrics {
         set -e
         mkdir -p "$(dirname ~{basename})"
         picard -Xmx~{javaXmx} \
-        CollectRnaSeqMetrics \
+        CollectRnaSeqMetrics -XX:ParallelGCThreads=1 \
         I=~{inputBam} \
         O=~{basename}.RNA_Metrics \
         CHART_OUTPUT=~{basename}.RNA_Metrics.pdf \
@@ -228,6 +231,7 @@ task CollectRnaSeqMetrics {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -245,6 +249,7 @@ task CollectRnaSeqMetrics {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -261,15 +266,16 @@ task CollectTargetedPcrMetrics {
         Array[File]+ targetIntervals
         String basename
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{basename})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         CollectTargetedPcrMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -288,6 +294,7 @@ task CollectTargetedPcrMetrics {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -311,6 +318,7 @@ task CollectTargetedPcrMetrics {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -381,7 +389,7 @@ task GatherVcfs {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcfPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         GatherVcfs \
         INPUT=~{sep=' INPUT=' inputVcfs} \
         OUTPUT=~{outputVcfPath}
@@ -491,7 +499,7 @@ task MergeVCFs {
 
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = size(inputVCFs, "G")
+        Int timeMinutes = ceil(size(inputVCFs, "G"))
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -501,7 +509,7 @@ task MergeVCFs {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcfPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
         OUTPUT=~{outputVcfPath}
@@ -551,7 +559,7 @@ task SamToFastq {
 
     command {
         set -e
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         SamToFastq \
         I=~{inputBam} \
         ~{"FASTQ=" + outputRead1} \
@@ -584,7 +592,7 @@ task ScatterIntervalList {
     command {
         set -e
         mkdir scatter_list
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         IntervalListTools \
         SCATTER_COUNT=~{scatter_count} \
         SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -620,7 +628,7 @@ task SortVcf {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcfPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
         ~{"SEQUENCE_DICTIONARY=" + dict} \
@@ -664,7 +672,7 @@ task RenameSample {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         RenameSampleInVcf \
         I=~{inputVcf} \
         O=~{outputPath} \

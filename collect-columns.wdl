@@ -58,8 +58,6 @@ task CollectColumns {
         File outputTable = outputPath
     }
 
-
-
     runtime {
         memory: "~{memoryGb}G"
         time_minutes: timeMinutes
