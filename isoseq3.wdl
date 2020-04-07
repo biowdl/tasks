@@ -32,6 +32,7 @@ task Refine {
         Int cores = 4
         String memory = "10G"
         String dockerImage = "quay.io/biocontainers/isoseq3:3.3.0--0"
+        Int timeMinutes = ceil(size(inputBamFile, "G") * 240 / cores)
     }
 
     command <<<
@@ -77,6 +78,7 @@ task Refine {
         cpu: cores
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {

@@ -51,6 +51,7 @@ task Lima {
         Int cores = 4
         String memory = "10G"
         String dockerImage = "quay.io/biocontainers/lima:1.11.0--0"
+        Int timeMinutes = ceil(size(inputBamFile, "G") * 240 / cores)
     }
 
     Map[String, String] libraryDesignOptions = {"same": "--same", "different": "--different", "neighbors": "--neighbors"}
@@ -111,6 +112,7 @@ task Lima {
         cpu: cores
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
