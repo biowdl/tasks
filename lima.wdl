@@ -145,6 +145,7 @@ task Lima {
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        timeMinutes: {description: "The time (in minutes) it will take for this task to complete.", category: "advanced"}
 
         # outputs
         outputFLfile: {description: "Demultiplexed reads output file(s)."}
