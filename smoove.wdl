@@ -33,6 +33,7 @@ task CallSV {
 
         String memory = "15G"
         String dockerImage = "quay.io/biocontainers/smoove:0.2.5--0"
+        Int timeMinutes = 1440
     }
 
     command {
@@ -52,6 +53,8 @@ task CallSV {
     runtime {
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
+
     }
 
     parameter_meta {
