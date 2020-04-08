@@ -34,7 +34,7 @@ task CCS {
         Int cores = 4
         String memory = "10G"
         String dockerImage = "quay.io/biocontainers/pbccs:4.2.0--0"
-        Int timeMinutes = ceil(size(subreadsFile, "G") * 240 / cores)
+        Int timeMinutes = 1 + ceil(size(subreadsFile, "G") * 240 / cores)
     }
 
     command {

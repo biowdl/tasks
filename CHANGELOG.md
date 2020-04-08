@@ -10,7 +10,7 @@ that users understand how the changes affect the new version.
 -->
 version 3.1.0
 ---------------------------
-+ Add time_minutes runtime to CCS, Lima & IsoSeq3.
++ Add time_minutes in runtime of CCS, Lima & IsoSeq3.
 + Lima: Replace mv command with cp.
 + Default threads for BWA in bwa.Kit task: 4. Samtools sort in the
   same task: 1. Output BAM compression level to 1.
