@@ -12,6 +12,7 @@ version 3.1.0
 ---------------------------
 + Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
 + Lima: Replace mv command with cp.
++ Add WDL task for smoove (lumpy) sv-caller.
 + Default threads for BWA in bwa.Kit task: 4. Samtools sort in the
   same task: 1. Output BAM compression level to 1.
 + Lima: Add missing output to parameter_meta.
