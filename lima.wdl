@@ -48,10 +48,9 @@ task Lima {
         File barcodeFile
         String outputPrefix
         
-        Int cores = 4
-        String memory = "10G"
+        Int cores = 2
+        String memory = "2G"
         String dockerImage = "quay.io/biocontainers/lima:1.11.0--0"
-        Int timeMinutes = 1 + ceil(size(inputBamFile, "G") * 240 / cores)
     }
 
     Map[String, String] libraryDesignOptions = {"same": "--same", "different": "--different", "neighbors": "--neighbors"}
@@ -112,7 +111,6 @@ task Lima {
         cpu: cores
         memory: memory
         docker: dockerImage
-        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -145,7 +143,6 @@ task Lima {
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-        timeMinutes: {description: "The time (in minutes) it will take for this task to complete.", category: "advanced"}
 
         # outputs
         outputFLfile: {description: "Demultiplexed reads output file(s)."}
