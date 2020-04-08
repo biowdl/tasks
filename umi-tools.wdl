@@ -76,7 +76,7 @@ task Dedup {
         Boolean paired = true
 
         String memory = "5G"
-        Int timeMinutes = ceil(size(inputBam, "G") * 18)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 18)
 
         # Use a multi-package-container which includes umi_tools (0.5.5) and samtools (1.9)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"

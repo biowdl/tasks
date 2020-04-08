@@ -31,7 +31,7 @@ task Mem {
         Int threads = 4
         String memory = "20G"
         String picardXmx = "4G"
-        Int timeMinutes = ceil(size([read1, read2], "G") * 200 / threads)
+        Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 200 / threads)
         # A mulled container is needed to have both picard and bwa in one container.
         # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
         String dockerImage = "quay.io/biocontainers/mulled-v2-002f51ea92721407ef440b921fb5940f424be842:43ec6124f9f4f875515f9548733b8b4e5fed9aa6-0"
@@ -100,7 +100,7 @@ task Kit {
         String sortMemoryPerThread = "4G"
         Int compressionLevel = 1
         String memory = "20G"
-        Int timeMinutes = ceil(size([read1, read2], "G") * 220 / threads)
+        Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
     }
 

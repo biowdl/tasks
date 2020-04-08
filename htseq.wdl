@@ -33,6 +33,7 @@ task HTSeqCount {
         Array[String] additionalAttributes = []
 
         String memory = "40G"
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 60)
         String dockerImage = "quay.io/biocontainers/htseq:0.11.2--py37h637b7d7_1"
     }
 
@@ -56,54 +57,24 @@ task HTSeqCount {
     }
 
     runtime {
+        time_minutes: timeMinutes
         memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
-        inputBams: {
-            description: "The input BAM files.",
-            category: "required"
-        }
-        gtfFile: {
-            description: "A GTF/GFF file containing the features of interest.",
-            category: "required"
-        }
-        outputTable: {
-            description: "The path to which the output table should be written.",
-            category: "common"
-        }
-        format: {
-            description: "Equivalent to the -f option of htseq-count.",
-            category: "advanced"
-        }
-        order: {
-            description: "Equivalent to the -r option of htseq-count.",
-            category: "advanced"
-        }
-        stranded: {
-            description: "Equivalent to the -s option of htseq-count.",
-            category: "common"
-        }
-        featureType: {
-            description: "Equivalent to the --type option of htseq-count.",
-            category: "advanced"
-        }
-        idattr: {
-            description: "Equivalent to the --idattr option of htseq-count.",
-            category: "advanced"
-        }
-        additionalAttributes: {
-            description: "Equivalent to the --additional-attr option of htseq-count.",
-            category: "advanced"
-        }
-        memory: {
-            description: "The amount of memory the job requires in GB.",
-            category: "advanced"
-        }
-        dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-            category: "advanced"
-        }
+        inputBams: {description: "The input BAM files.", category: "required"}
+        gtfFile: {description: "A GTF/GFF file containing the features of interest.", category: "required"}
+        outputTable: {description: "The path to which the output table should be written.", category: "common"}
+        format: {description: "Equivalent to the -f option of htseq-count.", category: "advanced"}
+        order: {description: "Equivalent to the -r option of htseq-count.", category: "advanced"}
+        stranded: {description: "Equivalent to the -s option of htseq-count.", category: "common"}
+        featureType: {description: "Equivalent to the --type option of htseq-count.", category: "advanced"}
+        idattr: {description: "Equivalent to the --idattr option of htseq-count.", category: "advanced"}
+        additionalAttributes: {description: "Equivalent to the --additional-attr option of htseq-count.", category: "advanced"}
+        memory: {description: "The amount of memory the job requires in GB.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }

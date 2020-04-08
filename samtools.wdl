@@ -61,6 +61,8 @@ task Index {
     input {
         File bamFile
         String? outputBamPath
+        String memory = "2G"
+        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 4)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -87,6 +89,8 @@ task Index {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -95,6 +99,8 @@ task Index {
         bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
         outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
                         category: "common"}
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -203,7 +209,7 @@ task FilterShortReadsBam {
         File bamFile
         String outputPathBam
         String memory = "1G"
-        Int timeMinutes = ceil(size(bamFile, "G") * 8)
+        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 8)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -244,7 +250,7 @@ task Flagstat {
         String outputPath
 
         String memory = "1G"
-        Int timeMinutes = ceil(size(inputBam, "G"))
+        Int timeMinutes = 1 + ceil(size(inputBam, "G"))
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -268,6 +274,7 @@ task Flagstat {
         # inputs
         inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
         outputPath: {description: "The location the ouput should be written to.", category: "required"}
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}

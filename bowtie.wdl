@@ -37,7 +37,7 @@ task Bowtie {
         String? samRG
 
         Int threads = 1
-        Int timeMinutes = ceil(size(flatten([readsUpstream, readsDownstream]), "G") * 300 / threads)
+        Int timeMinutes = 1 + ceil(size(flatten([readsUpstream, readsDownstream]), "G") * 300 / threads)
         String memory = "10G"
         String picardXmx = "4G"
         # Image contains bowtie=1.2.2 and picard=2.9.2

@@ -40,7 +40,7 @@ task Fastqc {
         Int threads = 1
         # Fastqc uses 250MB per thread in its wrapper.
         String memory = "~{250 + 250 * threads}M"
-        Int? timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
+        Int timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
         Array[File]? NoneArray
         File? NoneFile
@@ -106,6 +106,7 @@ task Fastqc {
         dir: {description: "Equivalent to fastqc's --dir option.", category: "advanced"}
         threads: {description: "The number of cores to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

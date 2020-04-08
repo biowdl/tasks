@@ -87,7 +87,7 @@ task CollectMultipleMetrics {
 
         String memory = "10G"
         String javaXmx = "8G"
-        Int timeMinutes = ceil(size(inputBam, "G") * 6)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -208,7 +208,7 @@ task CollectRnaSeqMetrics {
 
         String memory = "10G"
         String javaXmx =  "8G"
-        Int timeMinutes = ceil(size(inputBam, "G") * 6)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -268,7 +268,7 @@ task CollectTargetedPcrMetrics {
 
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = ceil(size(inputBam, "G") * 6)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -333,7 +333,7 @@ task GatherBamFiles {
 
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = ceil(size(inputBams, "G") * 0.5)
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 0.5)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -428,7 +428,7 @@ task MarkDuplicates {
 
         String memory = "10G"
         String javaXmx = "8G"
-        Int timeMinutes = ceil(size(inputBams, "G")* 8)
+        Int timeMinutes = 1 + ceil(size(inputBams, "G")* 8)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
@@ -499,7 +499,7 @@ task MergeVCFs {
 
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = ceil(size(inputVCFs, "G"))
+        Int timeMinutes = 1 + ceil(size(inputVCFs, "G"))
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 

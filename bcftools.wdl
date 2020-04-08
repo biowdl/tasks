@@ -27,7 +27,7 @@ task Bcf2Vcf {
         File bcf
         String outputPath = "./bcftools/SV.vcf"
         String memory = "2G"
-        Int timeMinutes = ceil(size(bcf, "G"))
+        Int timeMinutes = 1 + ceil(size(bcf, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
     }
 

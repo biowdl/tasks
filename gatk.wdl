@@ -416,7 +416,7 @@ task CombineGVCFs {
 
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = ceil(size(gvcfFiles, "G") * 8)
+        Int timeMinutes = 1 + ceil(size(gvcfFiles, "G") * 8)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 

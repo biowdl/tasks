@@ -24,8 +24,10 @@ task Complement {
     input {
         File faidx
         File inputBed
-        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
         String outputBed = basename(inputBed, "\.bed") + ".complement.bed"
+        String memory = "2G"
+        Int timeMinutes = 1 + ceil(size([inputBed, faidx], "G"))
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 
     # Use a fasta index file to get the genome sizes. And convert that to the
@@ -44,20 +46,19 @@ task Complement {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
-        faidx: {description: "The fasta index (.fai) file from which to extract the genome sizes",
-                category: "required"}
-        inputBed: {description: "The inputBed to complement",
-                category: "required"}
-        outputBed: {description: "The path to write the output to",
-                     category: "advanced"}
-        dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-            category: "advanced"
-        }
+        faidx: {description: "The fasta index (.fai) file from which to extract the genome sizes.", category: "required"}
+        inputBed: {description: "The inputBed to complement.", category: "required"}
+        outputBed: {description: "The path to write the output to.", category: "advanced"}
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -97,6 +98,8 @@ task MergeBedFiles {
     input {
         Array[File]+ bedFiles
         String outputBed = "merged.bed"
+        String memory = "2G"
+        Int timeMinutes = 1 + ceil(size(bedFiles, "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 
@@ -111,17 +114,17 @@ task MergeBedFiles {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
     parameter_meta {
-        bedFiles: {description: "The bed files to merge",
-                category: "required"}
-        outputBed: {description: "The path to write the output to",
-                     category: "advanced"}
-        dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-            category: "advanced"
-        }
+        bedFiles: {description: "The bed files to merge.", category: "required"}
+        outputBed: {description: "The path to write the output to.", category: "advanced"}
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
@@ -172,6 +175,8 @@ task Intersect {
         # Giving a faidx file will set the sorted option.
         File? faidx
         String outputBed = "intersect.bed"
+        String memory = "2G"
+        Int timeMinutes = 1 + ceil([regionsA, regionsB], "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
     Boolean sorted = defined(faidx)
@@ -192,21 +197,20 @@ task Intersect {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
         faidx: {description: "The fasta index (.fai) file that is used to create the genome file required for sorted output. Implies sorted option.",
                 category: "common"}
-        regionsA: {description: "Region file a to intersect",
-                   category: "required"}
-        regionsB: {description: "Region file b to intersect",
-                   category: "required"}
-        outputBed: {description: "The path to write the output to",
-                    category: "advanced"}
-        dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-            category: "advanced"
-        }
+        regionsA: {description: "Region file a to intersect", category: "required"}
+        regionsB: {description: "Region file b to intersect", category: "required"}
+        outputBed: {description: "The path to write the output to", category: "advanced"}
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
