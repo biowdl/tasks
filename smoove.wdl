@@ -61,7 +61,7 @@ task CallSV {
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
         outputDir: {description: "The location the output VCF file should be written.", category: "common"}
-        sample: {description: "The name of the sample", category: "required"}
+        sample: {description: "The name of the sample.", category: "required"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
