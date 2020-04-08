@@ -59,7 +59,7 @@ task CallSV {
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index bam file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
-        referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
         outputDir: {description: "The location the output VCF file should be written.", category: "common"}
         sample: {description: "The name of the sample", category: "required"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
