@@ -57,7 +57,7 @@ task CallSV {
     parameter_meta {
         # inputs
         bamFile: {description: "The bam file to process.", category: "required"}
-        bamIndex: {description: "The index bam file.", category: "required"}
+        bamIndex: {description: "The index of the bam file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
         outputDir: {description: "The location the output VCF file should be written.", category: "common"}
