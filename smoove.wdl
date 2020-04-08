@@ -38,7 +38,7 @@ task Call {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputDir})"
+        mkdir -p ~{outputDir}
         smoove call \
         --outdir ~{outputDir} \
         --name ~{sample} \
