@@ -66,6 +66,7 @@ task Call {
         outputDir: {description: "The location the output VCF file should be written.", category: "common"}
         sample: {description: "The name of the sample.", category: "required"}
         memory: {description: "The memory required to run the programs.", category: "advanced"}
+        time_minutes: {description: "The maximum duration (in minutes) the tool is allowed to run.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
