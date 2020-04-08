@@ -38,7 +38,9 @@ task Fastqc {
         String? dir
 
         Int threads = 1
-        String memory = "4G"
+        # Fastqc uses 250MB per thread in its wrapper.
+        String memory = "~{250 + 250 * threads}M"
+        Int? timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
         Array[File]? NoneArray
         File? NoneFile
@@ -84,6 +86,7 @@ task Fastqc {
         cpu: threads
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
