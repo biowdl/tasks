@@ -176,7 +176,7 @@ task Intersect {
         File? faidx
         String outputBed = "intersect.bed"
         String memory = "2G"
-        Int timeMinutes = 1 + ceil([regionsA, regionsB], "G"))
+        Int timeMinutes = 1 + ceil(size([regionsA, regionsB], "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
     Boolean sorted = defined(faidx)
