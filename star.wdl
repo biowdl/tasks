@@ -23,7 +23,7 @@ version 1.0
 task Star {
     input {
         Array[File]+ inputR1
-        Array[File]? inputR2
+        Array[File] inputR2 = []
         Array[File]+ indexFiles
         String outFileNamePrefix
         String outSAMtype = "BAM SortedByCoordinate"
@@ -36,7 +36,7 @@ task Star {
 
         Int runThreadN = 4
         String memory = "48G"
-        Int timeMinutes = 1 + ceil(size([inputR1, inputR2], "G") * 180 / runThreadN)
+        Int timeMinutes = 1 + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
