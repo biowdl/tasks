@@ -266,7 +266,7 @@ task ScatterRegions {
 
         String memory = "1G"
         String javaXmx = "500M"
-        Int timeMinutes = 1
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/biopet-scatterregions:0.2--0"
     }
 
