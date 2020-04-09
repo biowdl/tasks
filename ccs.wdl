@@ -31,8 +31,8 @@ task CCS {
         File subreadsFile
         String outputPrefix
         
-        Int cores = 4
-        String memory = "10G"
+        Int cores = 2
+        String memory = "2G"
         String dockerImage = "quay.io/biocontainers/pbccs:4.2.0--0"
     }
 

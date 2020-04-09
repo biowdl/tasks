@@ -27,50 +27,35 @@ task Refine {
         String logLevel = "WARN"
         File inputBamFile
         File primerFile
-        String outputPrefix
+        String outputDir
+        String outputNamePrefix
 
-        Int cores = 4
-        String memory = "10G"
+        Int cores = 2
+        String memory = "1G"
         String dockerImage = "quay.io/biocontainers/isoseq3:3.3.0--0"
     }
 
     command <<<
         set -e
-        mkdir -p "$(dirname ~{outputPrefix})"
-
-        # Create a unique output name base on the input bam file.
-        bamBasename="$(basename ~{inputBamFile})"
-        bamNewName="${bamBasename/fl/flnc}"
-        folderDirname="$(dirname ~{outputPrefix})"
-        combinedOutput="${folderDirname}/${bamNewName}"
-
+        mkdir -p "$(dirname ~{outputDir})"
         isoseq3 refine \
         --min-polya-length ~{minPolyAlength} \
         ~{true="--require-polya" false="" requirePolyA} \
         --log-level ~{logLevel} \
         --num-threads ~{cores} \
-        --log-file "${bamNewName}.stderr.log" \
+        --log-file "~{outputDir}/~{outputNamePrefix}.stderr.log" \
         ~{inputBamFile} \
         ~{primerFile} \
-        ${bamNewName}
-
-        # Copy commands below are needed because naming schema for Refine output
-        # can not be correctly handled in the WDL output section.
-        cp "${bamNewName}" "${combinedOutput}"
-        cp "${bamNewName}.pbi" "${combinedOutput}.pbi"
-        cp "${bamNewName/bam/consensusreadset}.xml" "${combinedOutput/bam/consensusreadset}.xml"
-        cp "${bamNewName/bam/filter_summary}.json" "${combinedOutput/bam/filter_summary}.json"
-        cp "${bamNewName/bam/report}.csv" "${combinedOutput/bam/report}.csv"
-        cp "${bamNewName}.stderr.log" "${combinedOutput}.stderr.log"
+        "~{outputDir}/~{outputNamePrefix}.bam"
     >>>
 
     output {
-        Array[File] outputFLNCfile = glob("*.bam")
-        Array[File] outputFLNCindexFile = glob("*.bam.pbi")
-        Array[File] outputConsensusReadsetFile = glob("*.consensusreadset.xml")
-        Array[File] outputFilterSummaryFile = glob("*.filter_summary.json")
-        Array[File] outputReportFile = glob("*.report.csv")
-        Array[File] outputSTDERRfile = glob("*.stderr.log")
+        File outputFLNCfile = outputDir + "/" + outputNamePrefix + ".bam"
+        File outputFLNCindexFile = outputDir + "/" + outputNamePrefix + ".bam.pbi"
+        File outputConsensusReadsetFile = outputDir + "/" + outputNamePrefix + ".consensusreadset.xml"
+        File outputFilterSummaryFile = outputDir + "/" + outputNamePrefix + ".filter_summary.json"
+        File outputReportFile = outputDir + "/" + outputNamePrefix + ".report.csv"
+        File outputSTDERRfile = outputDir + "/" + outputNamePrefix + ".stderr.log"
     }
 
     runtime {
@@ -86,7 +71,8 @@ task Refine {
         logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
         inputBamFile: {description: "BAM input file.", category: "required"}
         primerFile: {description: "Barcode/primer fasta file.", category: "required"}
-        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        outputDir: {description: "Output directory path.", category: "required"}
+        outputNamePrefix: {description: "Basename of the output files.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
