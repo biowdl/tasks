@@ -171,7 +171,7 @@ task BaseRecalibrator {
     command {
         set -e
         mkdir -p "$(dirname ~{recalibrationReportPath})"
-        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         BaseRecalibrator \
         -R ~{referenceFasta} \
         -I ~{inputBam} \
@@ -423,7 +423,7 @@ task CombineGVCFs {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CombineGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -706,7 +706,7 @@ task GatherBqsrReports {
     command {
         set -e
         mkdir -p "$(dirname ~{outputReportPath})"
-        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
@@ -808,7 +808,7 @@ task GenotypeGVCFs {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GenotypeGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -935,7 +935,7 @@ task HaplotypeCaller {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         HaplotypeCaller \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -1448,7 +1448,7 @@ task SplitNCigarReads {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBam})"
-        gatk --java-options -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         SplitNCigarReads \
         -I ~{inputBam} \
         -R ~{referenceFasta} \
