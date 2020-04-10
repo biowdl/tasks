@@ -31,7 +31,7 @@ task CPAT {
         # CPAT should not index the reference genome.
         Array[String]? startCodons
         Array[String]? stopCodons
-        Int timeMinutes = 1 + ceil(size(gene, "G") * 30)
+        Int timeMinutes = 10 + ceil(size(gene, "G") * 30)
         String dockerImage = "biocontainers/cpat:v1.2.4_cv1"
     }
 
