@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 -->
 version 3.1.0
 ---------------------------
++ Isoseq3: Requires more memory by default, is now 2G.
 + Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
 + Lima: Replace mv command with cp.
 + Add WDL task for smoove (lumpy) sv-caller.
