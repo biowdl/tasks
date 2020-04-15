@@ -35,7 +35,7 @@ task Refine {
         String dockerImage = "quay.io/biocontainers/isoseq3:3.3.0--0"
     }
 
-    command <<<
+    command {
         set -e
         mkdir -p "~{outputDir}"
         isoseq3 refine \
@@ -47,7 +47,7 @@ task Refine {
         ~{inputBamFile} \
         ~{primerFile} \
         "~{outputDir}/~{outputNamePrefix}.bam"
-    >>>
+    }
 
     output {
         File outputFLNCfile = outputDir + "/" + outputNamePrefix + ".bam"
