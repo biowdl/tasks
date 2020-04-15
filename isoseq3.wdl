@@ -37,7 +37,7 @@ task Refine {
 
     command <<<
         set -e
-        mkdir -p "$(dirname ~{outputDir})"
+        mkdir -p "~{outputDir}"
         isoseq3 refine \
         --min-polya-length ~{minPolyAlength} \
         ~{true="--require-polya" false="" requirePolyA} \
