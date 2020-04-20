@@ -211,7 +211,7 @@ task Sort {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "The input SAM file.", category: "required"}
+        inputBam: {description: "The input SAM file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
@@ -219,7 +219,7 @@ task Sort {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputSortedBAM: {description: "Sorted BAM file."}
+        outputSortedBam: {description: "Sorted BAM file."}
     }
 }
 
