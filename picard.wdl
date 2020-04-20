@@ -313,6 +313,49 @@ task CollectTargetedPcrMetrics {
     }
 }
 
+task CreateSequenceDictionary {
+    input {
+        File inputFile
+        String outputDir
+        String basenameInputFile = basename(inputFile)
+
+        String memory = "2G"
+        String javaXmx = "2G"
+        String dockerImage = "quay.io/biocontainers/picard:2.22.3--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputDir})"
+        picard -Xmx~{javaXmx} \
+        CreateSequenceDictionary \
+        REFERENCE=~{inputFile} \
+        OUTPUT="~{outputDir}/~{basenameInputFile}.dict"
+    }
+
+    output {
+        File outputDict = outputDir + "/" + basenameInputFile + ".dict"
+    }
+
+    runtime {
+        memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "The input fasta file.", category: "required"}
+        outputDir: {description: "Output directory path.", category: "required"}
+        basenameInputFile: {description: "The basename of the input file.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputDict: {description: "Dictionary of the input fasta file."}
+    }
+}
+
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
 task GatherBamFiles {
     input {

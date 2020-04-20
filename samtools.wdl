@@ -57,6 +57,46 @@ task BgzipAndIndex {
     }
 }
 
+task Faidx {
+    input {
+        File inputFile
+        String outputDir
+        String basenameInputFile = basename(inputFile)
+
+        String memory = "2G"
+        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+    }
+
+    command <<<
+        set -e
+        mkdir -p "$(dirname ~{outputDir})"
+        ln -s ~{inputFile} "~{outputDir}/~{basenameInputFile}"
+        samtools faidx \
+        "~{outputDir}/~{basenameInputFile}"
+    >>>
+
+    output {
+        File outputIndex = outputDir + "/" + basenameInputFile + ".fai"
+    }
+
+    runtime {
+        memory: memory
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "The input fasta file.", category: "required"}
+        outputDir: {description: "Output directory path.", category: "required"}
+        basenameInputFile: {description: "The basename of the input file.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputIndex: {description: "Index of the input fasta file."}
+    }
+}
+
 task Index {
     input {
         File bamFile
@@ -136,34 +176,50 @@ task Merge {
     }
 }
 
-task SortByName {
+task Sort {
     input {
-        File bamFile
-        String outputBamPath = "namesorted.bam"
+        File inputBam
+        String outputPrefix
+        Boolean sortByName = false
+        String outputFormat = "BAM"
 
-        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+        Int cores = 1
+        String memory = "2G"
+        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
     }
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputBamPath})"
-        samtools sort -n ~{bamFile} -o ~{outputBamPath}
+        mkdir -p "$(dirname ~{outputPrefix})"
+        samtools sort \
+        ~{true="-n" false="" sortByName} \
+        "--output-fmt " ~{outputFormat} \
+        --threads ~{cores} \
+        -o "~{outputPrefix}.sorted.bam" \
+        ~{inputBam}
     }
 
     output {
-        File outputBam = outputBamPath
+        File outputSortedBam = outputPrefix + ".sorted.bam"
     }
 
     runtime {
+        cpu: cores
+        memory: memory
         docker: dockerImage
     }
 
     parameter_meta {
         # inputs
-        bamFile: {description: "The BAM file to get sorted.", category: "required"}
-        outputBamPath: {description: "The location the sorted BAM file should be written to.", category: "common"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        inputFile: {description: "The input SAM file.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
+        cores: {description: "The number of cores to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputSortedBAM: {description: "Sorted BAM file."}
     }
 }
 
