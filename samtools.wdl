@@ -217,7 +217,7 @@ task Sort {
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-        threads: {description: "The number of threads that need to be added to the task.", category: "advanced"}
+        threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
 
         # outputs
         outputSortedBam: {description: "Sorted BAM file."}
