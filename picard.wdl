@@ -328,6 +328,7 @@ task CreateSequenceDictionary {
         set -e
         mkdir -p "$(dirname ~{outputDir})"
         picard -Xmx~{javaXmx} \
+        -XX:ParallelGCThreads=1 \
         CreateSequenceDictionary \
         REFERENCE=~{inputFile} \
         OUTPUT="~{outputDir}/~{basenameInputFile}.dict"
