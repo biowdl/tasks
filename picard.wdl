@@ -334,7 +334,7 @@ task CreateSequenceDictionary {
     }
 
     output {
-        File outputDict = outputDir + "/" + basename(InputFile) + ".dict"
+        File outputDict = outputDir + "/" + basename(inputFile) + ".dict"
     }
 
     runtime {

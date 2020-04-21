@@ -70,7 +70,7 @@ task Faidx {
     command {
         set -e
         mkdir -p "~{outputDir}"
-        ln ~{inputFile} "~{outputDir}/~{basenameInputFile}"
+        ln -s ~{inputFile} "~{outputDir}/~{basenameInputFile}"
         samtools faidx \
         "~{outputDir}/~{basenameInputFile}"
     }
