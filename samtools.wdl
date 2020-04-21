@@ -67,13 +67,13 @@ task Faidx {
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
     }
 
-    command <<<
+    command {
         set -e
-        mkdir -p "$(dirname ~{outputDir})"
+        mkdir -p "~{outputDir}"
         ln ~{inputFile} "~{outputDir}/~{basenameInputFile}"
         samtools faidx \
         "~{outputDir}/~{basenameInputFile}"
-    >>>
+    }
 
     output {
         File outputIndex = outputDir + "/" + basenameInputFile + ".fai"
@@ -179,8 +179,9 @@ task Merge {
 task Sort {
     input {
         File inputBam
-        String outputPrefix
+        String outputPath
         Boolean sortByName = false
+        Int compressionLevel = 1
 
         String memory = "2G"
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
@@ -190,18 +191,17 @@ task Sort {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputPrefix})"
+        mkdir -p "~{outputPath}"
         samtools sort \
-        "-l 1"
+        "-l " ~{compressionLevel} \
         ~{true="-n" false="" sortByName} \
-        "--output-fmt BAM" \
         ~{"--threads " + threads} \
-        -o "~{outputPrefix}.sorted.bam" \
+        "-o " ~{outputPath} \
         ~{inputBam}
     }
 
     output {
-        File outputSortedBam = outputPrefix + ".sorted.bam"
+        File outputSortedBam = outputPath
     }
 
     runtime {

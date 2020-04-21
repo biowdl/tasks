@@ -317,25 +317,24 @@ task CreateSequenceDictionary {
     input {
         File inputFile
         String outputDir
-        String basenameInputFile = basename(inputFile)
 
-        String memory = "2G"
+        String memory = "3G"
         String javaXmx = "2G"
         String dockerImage = "quay.io/biocontainers/picard:2.22.3--0"
     }
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputDir})"
+        mkdir -p "~{outputDir}"
         picard -Xmx~{javaXmx} \
         -XX:ParallelGCThreads=1 \
         CreateSequenceDictionary \
         REFERENCE=~{inputFile} \
-        OUTPUT="~{outputDir}/~{basenameInputFile}.dict"
+        OUTPUT="~{outputDir}/$(basename ~{inputFile}).dict"
     }
 
     output {
-        File outputDict = outputDir + "/" + basenameInputFile + ".dict"
+        File outputDict = outputDir + "/" + basename(InputFile) + ".dict"
     }
 
     runtime {
@@ -347,7 +346,6 @@ task CreateSequenceDictionary {
         # inputs
         inputFile: {description: "The input fasta file.", category: "required"}
         outputDir: {description: "Output directory path.", category: "required"}
-        basenameInputFile: {description: "The basename of the input file.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
