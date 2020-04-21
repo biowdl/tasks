@@ -10,6 +10,10 @@ that users understand how the changes affect the new version.
 -->
 version 3.1.0
 ---------------------------
++ Samtools SortByName is now called Sort.
++ Generalize sort task to now also sort by position, instead of just read name.
++ Add CreateSequenceDictionary task to picard.
++ Add faidx task to samtools.
 + Isoseq3: Remove dirname command from output folder creation step.
 + Isoseq3: Requires more memory by default, is now 2G.
 + Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
