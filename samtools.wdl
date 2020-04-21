@@ -70,7 +70,7 @@ task Faidx {
     command <<<
         set -e
         mkdir -p "$(dirname ~{outputDir})"
-        ln -s ~{inputFile} "~{outputDir}/~{basenameInputFile}"
+        ln ~{inputFile} "~{outputDir}/~{basenameInputFile}"
         samtools faidx \
         "~{outputDir}/~{basenameInputFile}"
     >>>
@@ -181,20 +181,21 @@ task Sort {
         File inputBam
         String outputPrefix
         Boolean sortByName = false
-        String outputFormat = "BAM"
 
-        Int cores = 1
         String memory = "2G"
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+
+        Int? threads
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         samtools sort \
+        "-l 1"
         ~{true="-n" false="" sortByName} \
-        "--output-fmt " ~{outputFormat} \
-        --threads ~{cores} \
+        "--output-fmt BAM" \
+        ~{"--threads " + threads} \
         -o "~{outputPrefix}.sorted.bam" \
         ~{inputBam}
     }
@@ -204,7 +205,7 @@ task Sort {
     }
 
     runtime {
-        cpu: cores
+        cpu: 1 + select_first([threads, 0])
         memory: memory
         docker: dockerImage
     }
@@ -214,9 +215,9 @@ task Sort {
         inputBam: {description: "The input SAM file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
-        cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        threads: {description: "The number of threads that need to be added to the task.", category: "advanced"}
 
         # outputs
         outputSortedBam: {description: "Sorted BAM file."}
