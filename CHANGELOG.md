@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 -->
 version 3.1.0
 ---------------------------
++ Samtools SortByName is now called Sort.
 + Generalize sort task to now also sort by position, instead of just read name.
 + Add CreateSequenceDictionary task to picard.
 + Add faidx task to samtools.
