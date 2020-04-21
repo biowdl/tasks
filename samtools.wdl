@@ -61,7 +61,6 @@ task Faidx {
     input {
         File inputFile
         String outputDir
-        String basenameInputFile = basename(inputFile)
 
         String memory = "2G"
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
@@ -70,13 +69,13 @@ task Faidx {
     command {
         set -e
         mkdir -p "~{outputDir}"
-        ln -s ~{inputFile} "~{outputDir}/~{basenameInputFile}"
+        ln -s ~{inputFile} "~{outputDir}/$(basename ~{inputFile})"
         samtools faidx \
-        "~{outputDir}/~{basenameInputFile}"
+        "~{outputDir}/$(basename ~{inputFile})"
     }
 
     output {
-        File outputIndex = outputDir + "/" + basenameInputFile + ".fai"
+        File outputIndex = outputDir + "/" + basename(inputFile) + ".fai"
     }
 
     runtime {
@@ -88,7 +87,6 @@ task Faidx {
         # inputs
         inputFile: {description: "The input fasta file.", category: "required"}
         outputDir: {description: "Output directory path.", category: "required"}
-        basenameInputFile: {description: "The basename of the input file.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
@@ -191,7 +189,7 @@ task Sort {
 
     command {
         set -e
-        mkdir -p "~{outputPath}"
+        mkdir -p "$(dirname ~{outputPath})"
         samtools sort \
         "-l " ~{compressionLevel} \
         ~{true="-n" false="" sortByName} \
@@ -213,8 +211,9 @@ task Sort {
     parameter_meta {
         # inputs
         inputBam: {description: "The input SAM file.", category: "required"}
-        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        outputPath: {description: "Output directory path + output file.", category: "required"}
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
+        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
