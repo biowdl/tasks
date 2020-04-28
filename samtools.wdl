@@ -191,10 +191,10 @@ task Sort {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
         samtools sort \
-        "-l " ~{compressionLevel} \
+        -l ~{compressionLevel} \
         ~{true="-n" false="" sortByName} \
         ~{"--threads " + threads} \
-        "-o " ~{outputPath} \
+        -o ~{outputPath} \
         ~{inputBam}
     }
 
