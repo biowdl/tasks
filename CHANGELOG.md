@@ -9,7 +9,7 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 3.2.0
+version 3.2.0-develop
 ---------------------------
 + Samtools: Fix quotations in sort command.
 + Samtools SortByName is now called Sort.
