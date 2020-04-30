@@ -8,8 +8,10 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
-version 3.1.0
+
+version 3.2.0-develop
 ---------------------------
++ Samtools: Fix quotations in sort command.
 + Samtools SortByName is now called Sort.
 + Generalize sort task to now also sort by position, instead of just read name.
 + Add CreateSequenceDictionary task to picard.
@@ -19,6 +21,9 @@ version 3.1.0
 + Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
 + Lima: Replace mv command with cp.
 + Add WDL task for smoove (lumpy) sv-caller.
+
+version 3.1.0
+---------------------------
 + Default threads for BWA in bwa.Kit task: 4. Samtools sort in the
   same task: 1. Output BAM compression level to 1.
 + Lima: Add missing output to parameter_meta.
