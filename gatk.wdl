@@ -34,6 +34,7 @@ task AnnotateIntervals {
 
         String memory = "10G"
         String javaXmx = "2G"
+        Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -57,6 +58,7 @@ task AnnotateIntervals {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -73,6 +75,7 @@ task AnnotateIntervals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -223,6 +226,7 @@ task CalculateContamination {
 
         String memory = "24G"
         String javaXmx = "12G"
+        Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -243,6 +247,7 @@ task CalculateContamination {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -252,6 +257,7 @@ task CalculateContamination {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -262,8 +268,9 @@ task CallCopyRatioSegments {
         String outputPrefix
         File copyRatioSegments
 
-        String memory = "21G"
-        String javaXmx = "6G"
+        String memory = "3G"
+        String javaXmx = "2G"
+        Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -283,6 +290,7 @@ task CallCopyRatioSegments {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -292,6 +300,7 @@ task CallCopyRatioSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -307,8 +316,10 @@ task CollectAllelicCounts {
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
-        String memory = "90G"
-        String javaXmx = "30G"
+
+        String memory = "12G"
+        String javaXmx = "10G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -329,6 +340,7 @@ task CollectAllelicCounts {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -344,6 +356,7 @@ task CollectAllelicCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -360,8 +373,9 @@ task CollectReadCounts {
         File referenceFastaFai
         String intervalMergingRule = "OVERLAPPING_ONLY"
 
-        String memory = "35G"
-        String javaXmx = "7G"
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 5)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -384,6 +398,7 @@ task CollectReadCounts {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -399,6 +414,7 @@ task CollectReadCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -474,8 +490,9 @@ task CombineVariants {
         Array[File]+ variantIndexes
         String outputPath
 
-        String memory = "24G"
+        String memory = "16G"
         String javaXmx = "12G"
+        Int timeMinutes = 180
         String dockerImage = "broadinstitute/gatk3:3.8-1"
     }
 
@@ -510,6 +527,7 @@ task CombineVariants {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -527,6 +545,7 @@ task CombineVariants {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -538,8 +557,9 @@ task CreateReadCountPanelOfNormals {
         Array[File]+ readCountsFiles
         File? annotatedIntervals
 
-        String memory = "21G"
-        String javaXmx = "7G"
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = 5
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer causes a spark related error for some reason...
     }
 
@@ -559,6 +579,7 @@ task CreateReadCountPanelOfNormals {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -570,6 +591,7 @@ task CreateReadCountPanelOfNormals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -582,8 +604,9 @@ task DenoiseReadCounts {
         File readCounts
         String outputPrefix
 
-        String memory = "39G"
-        String javaXmx = "13G"
+        String memory = "6G"
+        String javaXmx = "4G"
+        Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -606,6 +629,7 @@ task DenoiseReadCounts {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -618,6 +642,7 @@ task DenoiseReadCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -637,8 +662,9 @@ task FilterMutectCalls {
         Int uniqueAltReadCount = 4
         File mutect2Stats
 
-        String memory = "24G"
+        String memory = "16G"
         String javaXmx = "12G"
+        Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -667,6 +693,7 @@ task FilterMutectCalls {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -686,6 +713,7 @@ task FilterMutectCalls {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -743,8 +771,9 @@ task GenomicsDBImport {
         String genomicsDBWorkspacePath = "genomics_db"
         String genomicsDBTarFile = "genomics_db.tar.gz"
         String? tmpDir
-        String memory = "12G"
+        String memory = "6G"
         String javaXmx = "4G"
+        Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -766,6 +795,7 @@ task GenomicsDBImport {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -780,6 +810,7 @@ task GenomicsDBImport {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -865,8 +896,9 @@ task GetPileupSummaries {
         File sitesForContaminationIndex
         String outputPrefix
 
-        String memory = "24G"
+        String memory = "16G"
         String javaXmx = "12G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -886,6 +918,7 @@ task GetPileupSummaries {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -901,6 +934,7 @@ task GetPileupSummaries {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -996,8 +1030,9 @@ task LearnReadOrientationModel {
     input {
         Array[File]+ f1r2TarGz
 
-        String memory = "24G"
+        String memory = "16G"
         String javaXmx = "12G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -1015,6 +1050,7 @@ task LearnReadOrientationModel {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1023,6 +1059,7 @@ task LearnReadOrientationModel {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1032,8 +1069,9 @@ task MergeStats {
     input {
         Array[File]+ stats
 
-        String memory = "28G"
+        String memory = "16G"
         String javaXmx = "14G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -1051,6 +1089,7 @@ task MergeStats {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1059,6 +1098,7 @@ task MergeStats {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1076,8 +1116,9 @@ task ModelSegments {
             else 30
         Int maximumNumberOfSmoothingIterations = 10
 
-        String memory = "64G"
+        String memory = "12G"
         String javaXmx = "10G"
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -1111,6 +1152,7 @@ task ModelSegments {
 
     runtime {
         docker: dockerImage
+        time_minute: timeMinutes
         memory: memory
     }
 
@@ -1126,6 +1168,7 @@ task ModelSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1149,8 +1192,9 @@ task MuTect2 {
         Array[File]+ intervals
         String outputStats = outputVcf + ".stats"
 
-        String memory = "16G"
+        String memory = "6G"
         String javaXmx = "4G"
+        Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -1179,6 +1223,7 @@ task MuTect2 {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1201,6 +1246,7 @@ task MuTect2 {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1215,8 +1261,9 @@ task PlotDenoisedCopyRatios {
         File denoisedCopyRatios
         Int? minimumContigLength
 
-        String memory = "32G"
-        String javaXmx = "7G"
+        String memory = "6G"
+        String javaXmx = "4G"
+        Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
 
@@ -1244,6 +1291,7 @@ task PlotDenoisedCopyRatios {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1257,6 +1305,7 @@ task PlotDenoisedCopyRatios {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1272,8 +1321,9 @@ task PlotModeledSegments {
         File allelicCounts
         Int? minimumContigLength
 
-        String memory = "21G"
-        String javaXmx = "7G"
+        String memory = "6G"
+        String javaXmx = "4G"
+        Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
 
@@ -1297,6 +1347,7 @@ task PlotModeledSegments {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1311,6 +1362,7 @@ task PlotModeledSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1327,8 +1379,9 @@ task PreprocessIntervals {
         Int padding = if defined(intervals) then 250 else 0
         String intervalMergingRule = "OVERLAPPING_ONLY"
 
-        String memory = "10G"
-        String javaXmx = "2G"
+        String memory = "6G"
+        String javaXmx = "5G"
+        Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 6)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -1352,6 +1405,7 @@ task PreprocessIntervals {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1367,6 +1421,7 @@ task PreprocessIntervals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1382,8 +1437,9 @@ task SelectVariants {
         String outputPath = "output.vcf.gz"
         String? selectTypeToInclude
         Array[File] intervals = []
-        String memory = "16G"
+        String memory = "6G"
         String javaXmx = "4G"
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -1406,6 +1462,7 @@ task SelectVariants {
 
     runtime {
         docker: dockerImage
+        time_minute: timeMinutes
         memory: memory
     }
 
@@ -1424,6 +1481,7 @@ task SelectVariants {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1498,8 +1556,9 @@ task VariantFiltration {
         Array[String]+ filterArguments
         Array[File] intervals = []
 
-        String memory = "16G"
+        String memory = "6G"
         String javaXmx = "4G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -1522,6 +1581,7 @@ task VariantFiltration {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1540,6 +1600,7 @@ task VariantFiltration {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
