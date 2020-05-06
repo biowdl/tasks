@@ -664,7 +664,7 @@ task FilterMutectCalls {
 
         String memory = "16G"
         String javaXmx = "12G"
-        Int timeMinutes = 180
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
@@ -1071,7 +1071,7 @@ task MergeStats {
 
         String memory = "16G"
         String javaXmx = "14G"
-        Int timeMinutes = 120
+        Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 

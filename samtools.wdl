@@ -26,6 +26,7 @@ task BgzipAndIndex {
         String outputDir
         String type = "vcf"
 
+        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
 
@@ -44,7 +45,8 @@ task BgzipAndIndex {
     }
 
     runtime {
-       docker: dockerImage
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -52,6 +54,7 @@ task BgzipAndIndex {
         inputFile: {description: "The file to be compressed and indexed.", category: "required"}
         outputDir: {description: "The directory in which the output will be placed.", category: "required"}
         type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -395,6 +398,7 @@ task View {
 
         Int threads = 1
         String memory = "1G"
+        Int timeMinutes = 1 + ceil(size(inFile, "G") * 5)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String outputIndexPath = basename(outputFileName) + ".bai"
@@ -424,6 +428,7 @@ task View {
     runtime {
         cpu: threads
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -440,6 +445,7 @@ task View {
 
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
