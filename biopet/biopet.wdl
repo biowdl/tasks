@@ -31,7 +31,7 @@ task BaseCounter {
         String outputDir
         String prefix
 
-        String memory = "14G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 
@@ -104,9 +104,10 @@ task ExtractAdaptersFastqc {
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        String memory = "40G" # This is ridiculous, but needed due to vmem monitoring on SGE.
+        String memory = "10G"
         String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/biopet-extractadaptersfastqc:0.2--1"
+        Int timeMinutes = 5
     }
 
     command {
@@ -133,6 +134,7 @@ task ExtractAdaptersFastqc {
     runtime {
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 }
 
@@ -143,7 +145,7 @@ task FastqSplitter {
         Array[String]+ outputPaths
         File? toolJar
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/biopet-fastqsplitter:0.1--2"
     }
@@ -175,7 +177,7 @@ task FastqSync {
         String out2path
         File? toolJar
 
-        String memory = "10G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 
@@ -216,6 +218,7 @@ task ReorderGlobbedScatters {
         # The 3.7-slim container is 143 mb on the filesystem. 3.7 is 927 mb.
         # The slim container is sufficient for this small task.
         String dockerImage = "python:3.7-slim"
+        Int timeMinutes = 5
     }
 
     command <<<
@@ -243,12 +246,14 @@ task ReorderGlobbedScatters {
 
     runtime {
         docker: dockerImage
+        time_minutes = timeMinutes
         # 4 gigs of memory to be able to build the docker image in singularity
         memory: "4G"
     }
 
     parameter_meta {
         scatters: {description: "The files which should be ordered.", category: "required"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -337,7 +342,7 @@ task ValidateAnnotation {
         File? gtfFile
         Reference reference
 
-        String memory = "9G"
+        String memory = "4G"
         String javaXmx = "3G"
         String dockerImage = "quay.io/biocontainers/biopet-validateannotation:0.1--0"
     }
@@ -363,7 +368,7 @@ task ValidateFastq {
     input {
         File read1
         File? read2
-        String memory = "9G"
+        String memory = "4G"
         String javaXmx = "3G"
         String dockerImage = "quay.io/biocontainers/biopet-validatefastq:0.1.1--1"
     }
@@ -388,7 +393,7 @@ task ValidateVcf {
     input {
         IndexedVcfFile vcf
         Reference reference
-        String memory = "9G"
+        String memory = "4G"
         String javaXmx = "3G"
         String dockerImage = "quay.io/biocontainers/biopet-validatevcf:0.1--0"
     }
@@ -432,7 +437,7 @@ task VcfStats {
         Array[String]+? sparkConfigValues
 
         String dockerImage = "quay.io/biocontainers/biopet-vcfstats:1.2--0"
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 

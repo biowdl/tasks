@@ -32,7 +32,7 @@ task AnnotateIntervals {
         File? segmentalDuplicationTrack
         Int featureQueryLookahead = 1000000
 
-        String memory = "10G"
+        String memory = "3G"
         String javaXmx = "2G"
         Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
@@ -224,7 +224,7 @@ task CalculateContamination {
         File tumorPileups
         File? normalPileups
 
-        String memory = "24G"
+        String memory = "13G"
         String javaXmx = "12G"
         Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
@@ -490,7 +490,7 @@ task CombineVariants {
         Array[File]+ variantIndexes
         String outputPath
 
-        String memory = "16G"
+        String memory = "13G"
         String javaXmx = "12G"
         Int timeMinutes = 180
         String dockerImage = "broadinstitute/gatk3:3.8-1"
@@ -662,7 +662,7 @@ task FilterMutectCalls {
         Int uniqueAltReadCount = 4
         File mutect2Stats
 
-        String memory = "16G"
+        String memory = "14G"
         String javaXmx = "12G"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
@@ -806,7 +806,7 @@ task GenomicsDBImport {
         genomicsDBWorkspacePath: {description: "Where the genomicsDB files should be stored", category: "advanced"}
         genomicsDBTarFile: {description: "Where the .tar file containing the genomicsDB should be stored", category: "advanced"}
         tmpDir: {description: "Alternate temporary directory in case there is not enough space. Must be mounted when using containers",
-        category: "advanced"}
+                 category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -896,7 +896,7 @@ task GetPileupSummaries {
         File sitesForContaminationIndex
         String outputPrefix
 
-        String memory = "16G"
+        String memory = "14G"
         String javaXmx = "12G"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
@@ -1030,7 +1030,7 @@ task LearnReadOrientationModel {
     input {
         Array[File]+ f1r2TarGz
 
-        String memory = "16G"
+        String memory = "14G"
         String javaXmx = "12G"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
@@ -1192,7 +1192,7 @@ task MuTect2 {
         Array[File]+ intervals
         String outputStats = outputVcf + ".stats"
 
-        String memory = "6G"
+        String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
@@ -1261,8 +1261,8 @@ task PlotDenoisedCopyRatios {
         File denoisedCopyRatios
         Int? minimumContigLength
 
-        String memory = "6G"
-        String javaXmx = "4G"
+        String memory = "4G"
+        String javaXmx = "3G"
         Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
@@ -1321,8 +1321,8 @@ task PlotModeledSegments {
         File allelicCounts
         Int? minimumContigLength
 
-        String memory = "6G"
-        String javaXmx = "4G"
+        String memory = "4G"
+        String javaXmx = "3G"
         Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
@@ -1379,8 +1379,8 @@ task PreprocessIntervals {
         Int padding = if defined(intervals) then 250 else 0
         String intervalMergingRule = "OVERLAPPING_ONLY"
 
-        String memory = "6G"
-        String javaXmx = "5G"
+        String memory = "4G"
+        String javaXmx = "3G"
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 6)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -1437,7 +1437,7 @@ task SelectVariants {
         String outputPath = "output.vcf.gz"
         String? selectTypeToInclude
         Array[File] intervals = []
-        String memory = "6G"
+        String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
@@ -1556,7 +1556,7 @@ task VariantFiltration {
         Array[String]+ filterArguments
         Array[File] intervals = []
 
-        String memory = "6G"
+        String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"

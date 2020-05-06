@@ -66,6 +66,7 @@ task Merge {
     input {
         File inputBed
         String outputBed = "merged.bed"
+        Int timeMinutes = 1 + ceil(size(inputBed, "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 
@@ -78,18 +79,16 @@ task Merge {
     }
 
     runtime {
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
-        inputBed: {description: "The bed to merge",
-                   category: "required"}
-        outputBed: {description: "The path to write the output to",
-                    category: "advanced"}
-        dockerImage: {
-            description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-            category: "advanced"
-        }
+        inputBed: {description: "The bed to merge.", category: "required"}
+        outputBed: {description: "The path to write the output to.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

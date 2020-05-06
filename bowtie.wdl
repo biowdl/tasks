@@ -105,8 +105,3 @@ task Bowtie {
                       category: "advanced"}
     }
 }
-
-struct BowtieIndex {
-    File fasta
-    Array[File] indexFiles
-}
