@@ -115,6 +115,7 @@ task Merge {
         String outputBamPath = "merged.bam"
         Boolean force = true
 
+        Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
@@ -133,6 +134,7 @@ task Merge {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -140,6 +142,7 @@ task Merge {
         bamFiles: {description: "The BAM files to merge.", category: "required"}
         outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
         force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -150,6 +153,7 @@ task SortByName {
         File bamFile
         String outputBamPath = "namesorted.bam"
 
+        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -165,12 +169,14 @@ task SortByName {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
         # inputs
         bamFile: {description: "The BAM file to get sorted.", category: "required"}
         outputBamPath: {description: "The location the sorted BAM file should be written to.", category: "common"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -181,6 +187,7 @@ task Markdup {
         File inputBam
         String outputBamPath
 
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -196,12 +203,14 @@ task Markdup {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
         # inputs
         inputBam: {description: "The BAM file to be processed.", category: "required"}
         outputBamPath: {description: "The location of the output BAM file.", category: "required"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -299,6 +308,7 @@ task Fastq {
 
         Int threads = 1
         String memory = "1G"
+        Int timeMinutes = 1 + ceil(size(inputBam) * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
 
@@ -327,6 +337,7 @@ task Fastq {
         cpu: threads
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -342,6 +353,7 @@ task Fastq {
         outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -352,6 +364,7 @@ task Tabix {
         File inputFile
         String outputFilePath = "indexed.vcf.gz"
         String type = "vcf"
+        Int timeMinutes = 1 + ceil(size(inputFile, "G") * 2)
         String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
     # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
@@ -371,6 +384,7 @@ task Tabix {
     }
 
     runtime {
+        time_minutes: timeMinutes
        docker: dockerImage
     }
 
@@ -380,6 +394,7 @@ task Tabix {
         outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.",
                         category: "common"}
         type: {description: "The type of file (eg. vcf or bed) to be indexed.", category: "common"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

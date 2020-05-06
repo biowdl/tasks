@@ -41,7 +41,7 @@ task AnnotateIntervals {
     command {
         set -e
         mkdir -p "$(dirname ~{annotatedIntervalsPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         AnnotateIntervals \
         -R ~{referenceFasta} \
         -L ~{intervals} \
@@ -102,7 +102,7 @@ task ApplyBQSR {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         ApplyBQSR \
         --create-output-bam-md5 \
         --add-output-sam-program-record \
@@ -232,7 +232,7 @@ task CalculateContamination {
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CalculateContamination \
         -I ~{tumorPileups} \
         ~{"-matched " + normalPileups} \
@@ -277,7 +277,7 @@ task CallCopyRatioSegments {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CallCopyRatioSegments \
         -I ~{copyRatioSegments} \
         -O ~{outputPrefix}.called.seg
@@ -326,7 +326,7 @@ task CollectAllelicCounts {
     command {
         set -e
         mkdir -p "$(dirname ~{allelicCountsPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CollectAllelicCounts \
         -L ~{commonVariantSites} \
         -I ~{inputBam} \
@@ -382,7 +382,7 @@ task CollectReadCounts {
     command {
         set -e
         mkdir -p "$(dirname ~{countsPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CollectReadCounts \
         -L ~{intervals} \
         -I ~{inputBam} \
@@ -511,7 +511,7 @@ task CombineVariants {
             printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
           done
         ')
-        java -Xmx~{javaXmx} -jar /usr/GenomeAnalysisTK.jar \
+        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 -jar /usr/GenomeAnalysisTK.jar \
         -T CombineVariants \
         -R ~{referenceFasta} \
         --genotypemergeoption ~{genotypeMergeOption} \
@@ -566,7 +566,7 @@ task CreateReadCountPanelOfNormals {
     command {
         set -e
         mkdir -p "$(dirname ~{PONpath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CreateReadCountPanelOfNormals \
         -I ~{sep=" -I " readCountsFiles} \
         ~{"--annotated-intervals " + annotatedIntervals} \
@@ -613,7 +613,7 @@ task DenoiseReadCounts {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         DenoiseReadCounts \
         -I ~{readCounts} \
         ~{"--count-panel-of-normals " + PON} \
@@ -671,7 +671,7 @@ task FilterMutectCalls {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcf})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         FilterMutectCalls \
         -R ~{referenceFasta} \
         -V ~{unfilteredVcf} \
@@ -780,7 +780,7 @@ task GenomicsDBImport {
     command {
         set -e
         mkdir -p "$(dirname ~{genomicsDBWorkspacePath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GenomicsDBImport \
         -V ~{sep=" -V " gvcfFiles} \
         --genomicsdb-workspace-path ~{genomicsDBWorkspacePath} \
@@ -904,7 +904,7 @@ task GetPileupSummaries {
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GetPileupSummaries \
         -I ~{sampleBam} \
         -V ~{variantsForContamination} \
@@ -1038,7 +1038,7 @@ task LearnReadOrientationModel {
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         LearnReadOrientationModel \
         -I ~{sep=" -I " f1r2TarGz} \
         -O "artifact-priors.tar.gz"
@@ -1077,7 +1077,7 @@ task MergeStats {
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         MergeMutectStats \
         -stats ~{sep=" -stats " stats} \
         -O "merged.stats"
@@ -1125,7 +1125,7 @@ task ModelSegments {
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         ModelSegments \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
         --allelic-counts ~{allelicCounts} \
@@ -1201,7 +1201,7 @@ task MuTect2 {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcf})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         Mutect2 \
         -R ~{referenceFasta} \
         -I ~{sep=" -I " inputBams} \
@@ -1270,7 +1270,7 @@ task PlotDenoisedCopyRatios {
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         PlotDenoisedCopyRatios \
         --standardized-copy-ratios ~{standardizedCopyRatios} \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
@@ -1330,7 +1330,7 @@ task PlotModeledSegments {
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         PlotModeledSegments \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
         --allelic-counts ~{allelicCounts} \
@@ -1388,7 +1388,7 @@ task PreprocessIntervals {
     command {
         set -e
         mkdir -p "$(dirname ~{outputIntervalList})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         PreprocessIntervals \
         -R ~{referenceFasta} \
         --sequence-dictionary ~{referenceFastaDict} \
@@ -1446,7 +1446,7 @@ task SelectVariants {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         SelectVariants \
         -R ~{referenceFasta} \
         -V ~{inputVcf} \
@@ -1565,7 +1565,7 @@ task VariantFiltration {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         VariantFiltration \
         -I ~{inputVcf} \
         -R ~{referenceFasta} \

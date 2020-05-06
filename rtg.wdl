@@ -27,7 +27,8 @@ task Format {
         Array[File]+ inputFiles
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
         String rtgMem = "8G"
-        String memory = "16G"
+        String memory = "10G"
+        Int timeMinutes = 1 + ceil(size(inputFiles) * 2)
     }
 
     command {
@@ -45,15 +46,17 @@ task Format {
     runtime {
         docker: dockerImage
         memory: memory
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
-        format: {description: "Format of input. Allowed values are [fasta, fastq, fastq-interleaved, sam-se, sam-pe] (Default is fasta)",
+        format: {description: "Format of input. Allowed values are [fasta, fastq, fastq-interleaved, sam-se, sam-pe].",
                  category: "advanced"}
         outputPath: {description: "Where the output should be placed.", category: "advanced"}
         inputFiles: {description: "input sequence files. May be specified 1 or more times.", category: "required"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-              category: "advanced"}
+                      category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         rtgMem: {description: "The amount of memory rtg will allocate to the JVM", category: "advanced"}
     }
@@ -77,7 +80,8 @@ task VcfEval {
         String outputMode = "split"
         Int threads = 1  # tool default is number of cores in the system 😱
         String rtgMem = "8G"
-        String memory = "16G"
+        String memory = "10G"
+        Int timeMinutes = 1 + ceil(size([baseline, calls], "G") * 5)
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
     }
 
@@ -131,6 +135,7 @@ task VcfEval {
         docker: dockerImage
         cpu: threads
         memory: memory
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -157,6 +162,7 @@ task VcfEval {
         threads: {description: "Number of threads. Default is 1", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
               category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         rtgMem: {description: "The amount of memory rtg will allocate to the JVM", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
     }

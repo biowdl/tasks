@@ -29,7 +29,7 @@ task Extract {
         Boolean threePrime = false
         String read1Output = "umi_extracted_R1.fastq.gz"
         String? read2Output = "umi_extracted_R2.fastq.gz"
-
+        Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 2)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
     }
 
@@ -51,6 +51,7 @@ task Extract {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -61,6 +62,7 @@ task Extract {
         threePrime: {description: "Whether or not the UMI's are at the reads' 3' end. If false the UMIs are extracted from the 5' end.", category: "advanced"}
         read1Output: {description: "The location to write the first/single-end output fastq file to.", category: "advanced"}
         read2Output: {description: "The location to write the second-end output fastq file to.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -75,8 +77,8 @@ task Dedup {
         String? statsPrefix
         Boolean paired = true
 
-        String memory = "20G"
-        Int timeMinutes = 600 + ceil(size(inputBam, "G") * 60)
+        String memory = "25G"
+        Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
 
         # Use a multi-package-container which includes umi_tools (0.5.5) and samtools (1.9)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
