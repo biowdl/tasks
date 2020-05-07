@@ -195,7 +195,7 @@ task Sort {
 
         String memory = "2G"
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
-        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 2)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
         Int? threads
     }
 
