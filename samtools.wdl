@@ -98,6 +98,149 @@ task Faidx {
     }
 }
 
+task Fastq {
+    input {
+        File inputBam
+        String outputRead1
+        String? outputRead2
+        String? outputRead0
+        Int? includeFilter
+        Int? excludeFilter
+        Int? excludeSpecificFilter
+        Boolean appendReadNumber = false
+        Boolean outputQuality = false
+        Int? compressionLevel
+
+        Int threads = 1
+        String memory = "1G"
+        Int timeMinutes = 1 + ceil(size(inputBam) * 2)
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+
+    command {
+        samtools fastq \
+        ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
+        ~{"-2 " + outputRead2} \
+        ~{"-0 " + outputRead0} \
+        ~{"-f " + includeFilter} \
+        ~{"-F " + excludeFilter} \
+        ~{"-G " + excludeSpecificFilter} \
+        ~{true="-N" false="-n" appendReadNumber} \
+        ~{true="-O" false="" outputQuality} \
+        ~{"-c " + compressionLevel} \
+        ~{"--threads " + threads} \
+        ~{inputBam}
+    }
+
+    output {
+        File read1 = outputRead1
+        File? read2 = outputRead2
+        File? read0 = outputRead0
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        docker: dockerImage
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The bam file to process.", category: "required"}
+        outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
+        outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
+        outputRead0: {description: "The location the unpaired reads should be written to (in case of paired-end sequenicng).", category: "advanced"}
+        includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`", category: "advanced"}
+        excludeFilter: {description: "Exclude reads with ONE OR MORE of these flags. Corresponds to `-F`", category: "advanced"}
+        excludeSpecificFilter: {description: "Exclude reads with ALL of these flags. Corresponds to `-G`", category: "advanced"}
+        appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`", category: "advanced"}
+        outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task FilterShortReadsBam {
+    input {
+        File bamFile
+        String outputPathBam
+        String memory = "1G"
+        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 8)
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+
+    String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPathBam})"
+        samtools view -h ~{bamFile} | \
+        awk 'length($10) > 30 || $1 ~/^@/' | \
+        samtools view -bS -> ~{outputPathBam}
+        samtools index ~{outputPathBam} ~{outputPathBamIndex}
+    }
+
+    output {
+        File filteredBam = outputPathBam
+        File filteredBamIndex = outputPathBamIndex
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        bamFile: {description: "The bam file to process.", category: "required"}
+        outputPathBam: {description: "The filtered bam file.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
+}
+
+task Flagstat {
+    input {
+        File inputBam
+        String outputPath
+
+        String memory = "1G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G"))
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        samtools flagstat ~{inputBam} > ~{outputPath}
+    }
+
+    output {
+        File flagstat = outputPath
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
+        outputPath: {description: "The location the ouput should be written to.", category: "required"}
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Index {
     input {
         File bamFile
@@ -141,6 +284,40 @@ task Index {
         outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
                         category: "common"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task Markdup {
+    input {
+        File inputBam
+        String outputBamPath
+
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
+        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputBamPath})"
+        samtools markdup ~{inputBam} ~{outputBamPath}
+    }
+
+    output {
+        File outputBam = outputBamPath
+    }
+
+    runtime {
+        docker: dockerImage
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The BAM file to be processed.", category: "required"}
+        outputBamPath: {description: "The location of the output BAM file.", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -233,183 +410,6 @@ task Sort {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         # outputs
         outputSortedBam: {description: "Sorted BAM file."}
-    }
-}
-
-task Markdup {
-    input {
-        File inputBam
-        String outputBamPath
-
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
-    }
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputBamPath})"
-        samtools markdup ~{inputBam} ~{outputBamPath}
-    }
-
-    output {
-        File outputBam = outputBamPath
-    }
-
-    runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
-    }
-
-    parameter_meta {
-        # inputs
-        inputBam: {description: "The BAM file to be processed.", category: "required"}
-        outputBamPath: {description: "The location of the output BAM file.", category: "required"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task FilterShortReadsBam {
-    input {
-        File bamFile
-        String outputPathBam
-        String memory = "1G"
-        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 8)
-        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
-    }
-
-    String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputPathBam})"
-        samtools view -h ~{bamFile} | \
-        awk 'length($10) > 30 || $1 ~/^@/' | \
-        samtools view -bS -> ~{outputPathBam}
-        samtools index ~{outputPathBam} ~{outputPathBamIndex}
-    }
-
-    output {
-        File filteredBam = outputPathBam
-        File filteredBamIndex = outputPathBamIndex
-    }
-
-    runtime {
-        memory: memory
-        time_minutes: timeMinutes
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        bamFile: {description: "The bam file to process.", category: "required"}
-        outputPathBam: {description: "The filtered bam file.", category: "common"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-    }
-}
-
-task Flagstat {
-    input {
-        File inputBam
-        String outputPath
-
-        String memory = "1G"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G"))
-        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
-    }
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputPath})"
-        samtools flagstat ~{inputBam} > ~{outputPath}
-    }
-
-    output {
-        File flagstat = outputPath
-    }
-
-    runtime {
-        memory: memory
-        time_minutes: timeMinutes
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        # inputs
-        inputBam: {description: "The BAM file for which statistics should be retrieved.", category: "required"}
-        outputPath: {description: "The location the ouput should be written to.", category: "required"}
-        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task Fastq {
-    input {
-        File inputBam
-        String outputRead1
-        String? outputRead2
-        String? outputRead0
-        Int? includeFilter
-        Int? excludeFilter
-        Int? excludeSpecificFilter
-        Boolean appendReadNumber = false
-        Boolean outputQuality = false
-        Int? compressionLevel
-
-        Int threads = 1
-        String memory = "1G"
-        Int timeMinutes = 1 + ceil(size(inputBam) * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
-    }
-
-    command {
-        samtools fastq \
-        ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
-        ~{"-2 " + outputRead2} \
-        ~{"-0 " + outputRead0} \
-        ~{"-f " + includeFilter} \
-        ~{"-F " + excludeFilter} \
-        ~{"-G " + excludeSpecificFilter} \
-        ~{true="-N" false="-n" appendReadNumber} \
-        ~{true="-O" false="" outputQuality} \
-        ~{"-c " + compressionLevel} \
-        ~{"--threads " + threads} \
-        ~{inputBam}
-    }
-
-    output {
-        File read1 = outputRead1
-        File? read2 = outputRead2
-        File? read0 = outputRead0
-    }
-
-    runtime {
-        cpu: threads
-        memory: memory
-        docker: dockerImage
-        time_minutes: timeMinutes
-    }
-
-    parameter_meta {
-        # inputs
-        inputBam: {description: "The bam file to process.", category: "required"}
-        outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
-        outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
-        outputRead0: {description: "The location the unpaired reads should be written to (in case of paired-end sequenicng).", category: "advanced"}
-        includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`", category: "advanced"}
-        excludeFilter: {description: "Exclude reads with ONE OR MORE of these flags. Corresponds to `-F`", category: "advanced"}
-        excludeSpecificFilter: {description: "Exclude reads with ALL of these flags. Corresponds to `-G`", category: "advanced"}
-        appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`", category: "advanced"}
-        outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
-        threads: {description: "The number of threads to use.", category: "advanced"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
     }
 }
 
@@ -517,39 +517,5 @@ task View {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
-    }
-}
-
-task FilterShortReadsBam {
-    input {
-        File bamFile
-        String outputPathBam
-        String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
-    }
-    
-    String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputPathBam})"
-        samtools view -h ~{bamFile} | \
-        awk 'length($10) > 30 || $1 ~/^@/' | \
-        samtools view -bS -> ~{outputPathBam}
-        samtools index ~{outputPathBam} ~{outputPathBamIndex}
-    }
-
-    output {
-        File filteredBam = outputPathBam
-        File filteredBamIndex = outputPathBamIndex
-    }
-
-    runtime {
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        bamFile: {description: "The bam file to process.", category: "required"}
-        outputPathBam: {description: "The filtered bam file.", category: "common"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
