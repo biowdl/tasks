@@ -910,6 +910,8 @@ task HaplotypeCaller {
         String? outputMode
         Boolean gvcf = false
         String emitRefConfidence = if gvcf then "GVCF" else "NONE"
+        Boolean dontUseSoftClippedBases = false
+        Float standardMinConfidenceThresholdForCalling
 
         String memory = "12G"
         String javaXmx = "4G"
@@ -931,7 +933,9 @@ task HaplotypeCaller {
         ~{"--pedigree " + pedigree} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
         ~{"--output-mode " + outputMode} \
-        --emit-ref-confidence ~{emitRefConfidence}
+        --emit-ref-confidence ~{emitRefConfidence} \
+        ~{true="--dont-use-soft-clipped-bases" false="" dontUseSoftClippedBases} \
+        ~{"--standard-min-confidence-threshold-for-calling " + standardMinConfidenceThresholdForCalling}
     }
 
     output {
