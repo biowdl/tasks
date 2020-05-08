@@ -911,7 +911,7 @@ task HaplotypeCaller {
         Boolean gvcf = false
         String emitRefConfidence = if gvcf then "GVCF" else "NONE"
         Boolean dontUseSoftClippedBases = false
-        Float standardMinConfidenceThresholdForCalling
+        Float? standardMinConfidenceThresholdForCalling
 
         String memory = "12G"
         String javaXmx = "4G"
