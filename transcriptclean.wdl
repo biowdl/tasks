@@ -28,6 +28,7 @@ task GetSJsFromGtf {
         Int minIntronSize = 21
 
         String memory = "8G"
+        Int timeMinutes = 1
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
 
@@ -47,6 +48,7 @@ task GetSJsFromGtf {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -57,6 +59,7 @@ task GetSJsFromGtf {
         minIntronSize: {description: "Minimum size of intron to consider a junction.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
         # outputs
@@ -70,6 +73,7 @@ task GetTranscriptCleanStats {
         String outputPrefix
 
         String memory = "4G"
+        Int timeMinutes = 1
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
 
@@ -87,6 +91,7 @@ task GetTranscriptCleanStats {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -95,6 +100,7 @@ task GetTranscriptCleanStats {
         transcriptCleanSAMfile: {description: "Output SAM file from TranscriptClean", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
 
@@ -124,6 +130,7 @@ task TranscriptClean {
 
         Int cores = 1
         String memory = "25G"
+        Int timeMinutes = 2880
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
 
@@ -159,6 +166,7 @@ task TranscriptClean {
     runtime {
         cpu: cores
         memory: memory
+        time_minute: timeMinutes
         docker: dockerImage
     }
 
@@ -181,6 +189,7 @@ task TranscriptClean {
         variantFile: {description: "VCF formatted file of variants.", category: "common"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
         
