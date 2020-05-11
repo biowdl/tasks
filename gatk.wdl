@@ -966,6 +966,8 @@ task HaplotypeCaller {
                      category: "advanced"}
         emitRefConfidence: {description: "Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'",
                             category: "advanced"}
+        dontUseSoftClippedBases: {description: "Do not use soft-clipped bases. Should be 'true' for RNA variant calling.", category: "common"}
+        standardMinConfidenceThresholdForCalling: {description: "Confidence threshold used for calling variants.", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
         pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
