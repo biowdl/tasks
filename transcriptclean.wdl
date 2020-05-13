@@ -28,7 +28,7 @@ task GetSJsFromGtf {
         Int minIntronSize = 21
 
         String memory = "8G"
-        Int timeMinutes = 1
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
 
@@ -73,7 +73,7 @@ task GetTranscriptCleanStats {
         String outputPrefix
 
         String memory = "4G"
-        Int timeMinutes = 1
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
 

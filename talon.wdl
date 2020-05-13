@@ -31,7 +31,7 @@ task CreateAbundanceFileFromDatabase {
         File? datasetsFile
 
         String memory = "4G"
-        Int timeMinutes = 1
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -87,7 +87,7 @@ task CreateGtfFromDatabase {
         File? datasetFile
 
         String memory = "4G"
-        Int timeMinutes = 1
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -141,7 +141,7 @@ task FilterTalonTranscripts {
         File? pairingsFile
 
         String memory = "4G"
-        Int timeMinutes = 1
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -189,7 +189,7 @@ task GetReadAnnotations {
         File? datasetFile
 
         String memory = "4G"
-        Int timeMinutes = 1
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -240,7 +240,7 @@ task InitializeTalonDatabase {
         String outputPrefix
 
         String memory = "10G"
-        Int timeMinutes = 1
+        Int timeMinutes = 60
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -292,7 +292,7 @@ task ReformatGtf {
         File GTFfile
 
         String memory = "4G"
-        Int timeMinutes = 1
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -333,7 +333,7 @@ task SummarizeDatasets {
         File? datasetGroupsCSV
 
         String memory = "4G"
-        Int timeMinutes = 1
+        Int timeMinutes = 50
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
