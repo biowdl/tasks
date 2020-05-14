@@ -19,6 +19,7 @@ version 3.2.0-develop
   number of minutes that the job will run. The associated runtime 
   attribute is `time_minutes` which can be used to inform
   a scheduler (eg. slurm) of the run time of the job.
++ Added STAR GenomeGenerate task.
 + GATK.HaplotypeCaller: Add `--dont-use-soft-clipped-bases` and 
   `--standard-min-confidence-threshold-for-calling` options. These are 
   required for RNA seq variant calling according to GATK best practices.
@@ -32,6 +33,7 @@ version 3.2.0-develop
 + Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
 + Lima: Replace mv command with cp.
 + Add WDL task for smoove (lumpy) sv-caller.
+
 
 version 3.1.0
 ---------------------------

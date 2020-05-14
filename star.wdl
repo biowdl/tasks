@@ -20,6 +20,72 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+task GenomeGenerate {
+    input {
+        String genomeDir = "STAR_index"
+        File referenceFasta
+        File? referenceGtf
+        Int? sjdbOverhang
+
+        Int threads = 4
+        String memory = "32G"
+        Int timeMinutes = ceil(size(referenceFasta, "G") * 240 / threads)
+        String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{genomeDir})"
+        STAR \
+        --runMode genomeGenerate \
+        --runThreadN ~{threads} \
+        --genomeDir ~{genomeDir} \
+        --genomeFastaFiles ~{referenceFasta} \
+        ~{"--sjdbGTFfile " + referenceGtf} \
+        ~{"--sjdbOverhang " + sjdbOverhang}
+    }
+
+    output {
+        File chrLength = "~{genomeDir}/chrLength.txt"
+        File chrNameLength = "~{genomeDir}/chrNameLength.txt"
+        File chrName = "~{genomeDir}/chrName.txt"
+        File chrStart = "~{genomeDir}/chrStart.txt"
+        File genome = "~{genomeDir}/genome.txt"
+        File genomeParameters = "~{genomeDir}/genomeParameters.txt"
+        File sa = "~{genomeDir}/SA"
+        File saIndex = "~{genomeDir}/SAindex"
+        File? exonGeTrInfo = "~{genomeDir}/exonGeTrInfo.tab"
+        File? exonInfo = "~{genomeDir}/exonInfo.tab"
+        File? geneInfo = "~{genomeDir}/geneInfo.tab"
+        File? sjdbInfo = "~{genomeDir}/sjdbInfo.txt"
+        File? sjdbListFromGtfOut = "~{genomeDir}/sjdbList.fromGTF.out.tab"
+        File? sjdbListOut = "~{genomeDir}/sjdbList.out.tab"
+        File? transcriptInfo = "~{genomeDir}/transcriptInfo.tab"
+        Array[File] starIndex = select_all([chrLength, chrNameLength, chrName, chrStart, genome, genomeParameters,
+                                            sa, saIndex, exonGeTrInfo, exonInfo, geneInfo, sjdbInfo, sjdbListFromGtfOut,
+                                            sjdbListOut, transcriptInfo])
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        genomeDir: {description:"The directory the STAR index should be written to.", categroy: "common"}
+        referenceFasta: {description: "The reference Fasta file.", category: "required"}
+        referenceGtf: {description: "The reference GTF file.", category: "common"}
+        sjdbOverhang: {description: "Equivalent to STAR's `--sjdbOverhang` option.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Star {
     input {
         Array[File]+ inputR1
