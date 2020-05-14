@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 3.2.0-develop
 ---------------------------
++ Added STAR GenomeGenerate task.
 + GATK.HaplotypeCaller: Add `--dont-use-soft-clipped-bases` and 
   `--standard-min-confidence-threshold-for-calling` options. These are 
   required for RNA seq variant calling according to GATK best practices.
@@ -24,6 +25,7 @@ version 3.2.0-develop
 + Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
 + Lima: Replace mv command with cp.
 + Add WDL task for smoove (lumpy) sv-caller.
+
 
 version 3.1.0
 ---------------------------
