@@ -50,7 +50,7 @@ task Lima {
         
         Int cores = 2
         String memory = "2G"
-        Int timeMinutes = 1440
+        Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/lima:1.11.0--0"
     }
 
