@@ -317,7 +317,7 @@ task CollectAllelicCounts {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "12G"
+        String memory = "11G"
         String javaXmx = "10G"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
@@ -373,8 +373,8 @@ task CollectReadCounts {
         File referenceFastaFai
         String intervalMergingRule = "OVERLAPPING_ONLY"
 
-        String memory = "5G"
-        String javaXmx = "4G"
+        String memory = "8G"
+        String javaXmx = "7G"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 5)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -557,8 +557,8 @@ task CreateReadCountPanelOfNormals {
         Array[File]+ readCountsFiles
         File? annotatedIntervals
 
-        String memory = "5G"
-        String javaXmx = "4G"
+        String memory = "8G"
+        String javaXmx = "7G"
         Int timeMinutes = 5
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer causes a spark related error for some reason...
     }
@@ -604,7 +604,7 @@ task DenoiseReadCounts {
         File readCounts
         String outputPrefix
 
-        String memory = "6G"
+        String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
@@ -662,7 +662,7 @@ task FilterMutectCalls {
         Int uniqueAltReadCount = 4
         File mutect2Stats
 
-        String memory = "14G"
+        String memory = "13G"
         String javaXmx = "12G"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
@@ -771,7 +771,7 @@ task GenomicsDBImport {
         String genomicsDBWorkspacePath = "genomics_db"
         String genomicsDBTarFile = "genomics_db.tar.gz"
         String? tmpDir
-        String memory = "6G"
+        String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
@@ -896,7 +896,7 @@ task GetPileupSummaries {
         File sitesForContaminationIndex
         String outputPrefix
 
-        String memory = "14G"
+        String memory = "13G"
         String javaXmx = "12G"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
@@ -1036,7 +1036,7 @@ task LearnReadOrientationModel {
     input {
         Array[File]+ f1r2TarGz
 
-        String memory = "14G"
+        String memory = "13G"
         String javaXmx = "12G"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
@@ -1075,7 +1075,7 @@ task MergeStats {
     input {
         Array[File]+ stats
 
-        String memory = "16G"
+        String memory = "15G"
         String javaXmx = "14G"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
@@ -1122,7 +1122,7 @@ task ModelSegments {
             else 30
         Int maximumNumberOfSmoothingIterations = 10
 
-        String memory = "12G"
+        String memory = "11G"
         String javaXmx = "10G"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"

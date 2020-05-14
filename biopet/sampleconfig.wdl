@@ -34,7 +34,7 @@ task SampleConfig {
         String? jsonOutputPath
         String? tsvOutputPath
 
-        String memory = "18G"
+        String memory = "17G"
         String javaXmx = "16G"
     }
 

@@ -29,7 +29,7 @@ task Mem {
         String? readgroup
 
         Int threads = 4
-        String memory = "20G"
+        String memory = "~{5 + ceil(size(indexFiles, "G"))}G"
         String picardXmx = "4G"
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 200 / threads)
         # A mulled container is needed to have both picard and bwa in one container.

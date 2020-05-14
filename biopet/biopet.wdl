@@ -104,7 +104,7 @@ task ExtractAdaptersFastqc {
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        String memory = "10G"
+        String memory = "9G"
         String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/biopet-extractadaptersfastqc:0.2--1"
         Int timeMinutes = 5
@@ -207,55 +207,6 @@ task FastqSync {
     
     runtime {
         memory: memory
-    }
-}
-
-task ReorderGlobbedScatters {
-    input {
-        Array[File]+ scatters
-
-        # Should not be changed from the main pipeline. As it should not influence results.
-        # The 3.7-slim container is 143 mb on the filesystem. 3.7 is 927 mb.
-        # The slim container is sufficient for this small task.
-        String dockerImage = "python:3.7-slim"
-        Int timeMinutes = 5
-    }
-
-    command <<<
-       set -e
-       # Copy all the scatter files to the CWD so the output matches paths in
-       # the cwd.
-       for file in ~{sep=" " scatters}
-          do cp $file .
-       done
-       python << CODE
-       from os.path import basename
-       scatters = ['~{sep="','" scatters}']
-       splitext = [basename(x).split(".") for x in scatters]
-       splitnum = [x.split("-") + [y] for x,y in splitext]
-       ordered = sorted(splitnum, key=lambda x: int(x[1]))
-       merged = ["{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
-       for x in merged:
-           print(x)
-       CODE
-    >>>
-
-    output {
-        Array[File] reorderedScatters = read_lines(stdout())
-    }
-
-    runtime {
-        docker: dockerImage
-        time_minutes = timeMinutes
-        # 4 gigs of memory to be able to build the docker image in singularity
-        memory: "4G"
-    }
-
-    parameter_meta {
-        scatters: {description: "The files which should be ordered.", category: "required"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
     }
 }
 

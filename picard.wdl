@@ -84,7 +84,7 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        String memory = "10G"
+        String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
@@ -200,7 +200,7 @@ task CollectRnaSeqMetrics {
         String basename
         String strandSpecificity = "NONE"
 
-        String memory = "10G"
+        String memory = "9G"
         String javaXmx =  "8G"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
@@ -460,7 +460,7 @@ task MarkDuplicates {
         String outputBamPath
         String metricsPath
 
-        String memory = "10G"
+        String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
@@ -581,7 +581,7 @@ task SamToFastq {
         File inputBamIndex
         Boolean paired = true
 
-        String memory = "18G"
+        String memory = "17G"
         String javaXmx = "16G" # High memory default to avoid crashes.
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
         File? NONE
@@ -653,7 +653,7 @@ task SortVcf {
         String outputVcfPath
         File? dict
 
-        String memory = "10G"
+        String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 1 + ceil(size(vcfFiles, "G") * 5)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
@@ -701,7 +701,7 @@ task RenameSample {
         File inputVcf
         String outputPath = "./picard/renamed.vcf"
         String newSampleName
-        String memory = "10G"
+        String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 2)
         String dockerImage = "quay.io/biocontainers/picard:2.19.0--0"

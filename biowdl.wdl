@@ -52,7 +52,7 @@ task InputConverter {
     }
 
     runtime {
-        memory: "2G"
+        memory: "128M"
         time_minutes: timeMinutes
         docker: dockerImage
     }

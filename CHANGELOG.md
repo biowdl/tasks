@@ -11,8 +11,10 @@ that users understand how the changes affect the new version.
 
 version 3.2.0-develop
 ---------------------------
++ The struct `BowtieIndex` was removed, as it has become obsolete.
++ The task `ReorderGlobbedScatters` was removed, as it has become obsolete.
 + Adjusted the memory settings of many tools, especially java tools.
-  The should now more accurately represent actual memory usage (as
+  They should now more accurately represent actual memory usage (as
   opposed to virtual memory).
 + Added `-XX:ParallelGCThreads=1` to the java options of java tasks.
 + Added `timeMinutes` input to many tasks, this indicates a maximum

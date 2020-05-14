@@ -27,7 +27,7 @@ task Format {
         Array[File]+ inputFiles
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
         String rtgMem = "8G"
-        String memory = "10G"
+        String memory = "9G"
         Int timeMinutes = 1 + ceil(size(inputFiles) * 2)
     }
 
@@ -80,7 +80,7 @@ task VcfEval {
         String outputMode = "split"
         Int threads = 1  # tool default is number of cores in the system 😱
         String rtgMem = "8G"
-        String memory = "10G"
+        String memory = "9G"
         Int timeMinutes = 1 + ceil(size([baseline, calls], "G") * 5)
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
     }

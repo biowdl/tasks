@@ -33,7 +33,7 @@ task Hisat2 {
         Boolean downstreamTranscriptomeAssembly = true
 
         Int threads = 4
-        String memory = "48G"
+        String memory = "~{threads + 5 + ceil(size(indexFiles, "G"))}G"
         Int timeMinutes = 1 + ceil(size([inputR1, inputR2], "G") * 180 / threads)
         # quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1
         # is a combination of hisat2 and samtools
