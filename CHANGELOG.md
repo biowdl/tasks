@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 3.2.0-develop
 ---------------------------
++ GATK.HaplotypeCaller: Add `--dont-use-soft-clipped-bases` and 
+  `--standard-min-confidence-threshold-for-calling` options. These are 
+  required for RNA seq variant calling according to GATK best practices.
 + Samtools: Fix quotations in sort command.
 + Samtools SortByName is now called Sort.
 + Generalize sort task to now also sort by position, instead of just read name.

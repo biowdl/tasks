@@ -959,6 +959,8 @@ task HaplotypeCaller {
         String? outputMode
         Boolean gvcf = false
         String emitRefConfidence = if gvcf then "GVCF" else "NONE"
+        Boolean dontUseSoftClippedBases = false
+        Float? standardMinConfidenceThresholdForCalling
 
         String memory = "5G"
         String javaXmx = "4G"
@@ -981,7 +983,9 @@ task HaplotypeCaller {
         ~{"--pedigree " + pedigree} \
         ~{"--contamination-fraction-per-sample-file " + contamination} \
         ~{"--output-mode " + outputMode} \
-        --emit-ref-confidence ~{emitRefConfidence}
+        --emit-ref-confidence ~{emitRefConfidence} \
+        ~{true="--dont-use-soft-clipped-bases" false="" dontUseSoftClippedBases} \
+        ~{"--standard-min-confidence-threshold-for-calling " + standardMinConfidenceThresholdForCalling}
     }
 
     output {
@@ -1013,6 +1017,8 @@ task HaplotypeCaller {
                      category: "advanced"}
         emitRefConfidence: {description: "Whether to include reference calls. Three modes: 'NONE', 'BP_RESOLUTION' and 'GVCF'",
                             category: "advanced"}
+        dontUseSoftClippedBases: {description: "Do not use soft-clipped bases. Should be 'true' for RNA variant calling.", category: "common"}
+        standardMinConfidenceThresholdForCalling: {description: "Confidence threshold used for calling variants.", category: "advanced"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
         pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
