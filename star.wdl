@@ -127,6 +127,7 @@ task Star {
 
     output {
         File bamFile = outFileNamePrefix + "Aligned." +  samOutputNames[outSAMtype]
+        File logFinalOut = outFileNamePrefix + "Log.final.out"
     }
 
     runtime {
