@@ -33,6 +33,7 @@ task Germline {
 
         Int cores = 1
         Int memoryGb = 4
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
     }
 
@@ -60,6 +61,7 @@ task Germline {
         cpu: cores
         memory: "~{memoryGb}G"
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -74,6 +76,7 @@ task Germline {
         exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         cores: {description: "The the number of cores required to run a program", category: "required"}
         memoryGb: {description: "The memory required to run the manta", category: "required"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
@@ -93,6 +96,7 @@ task Somatic {
 
         Int cores = 1
         Int memoryGb = 4
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/manta:1.4.0--py27_1"
     }
 
@@ -130,6 +134,7 @@ task Somatic {
         cpu: cores
         memory: "~{memoryGb}G"
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -145,6 +150,7 @@ task Somatic {
         exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

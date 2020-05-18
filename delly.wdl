@@ -31,6 +31,7 @@ task CallSV {
         String outputPath = "./delly/delly.vcf"
 
         String memory = "15G"
+        Int timeMinutes = 300
         String dockerImage = "quay.io/biocontainers/delly:0.8.1--h4037b6b_1"
     }
 
@@ -49,6 +50,7 @@ task CallSV {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -60,6 +62,7 @@ task CallSV {
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

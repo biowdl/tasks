@@ -32,15 +32,16 @@ task AnnotateIntervals {
         File? segmentalDuplicationTrack
         Int featureQueryLookahead = 1000000
 
-        String memory = "10G"
+        String memory = "3G"
         String javaXmx = "2G"
+        Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{annotatedIntervalsPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         AnnotateIntervals \
         -R ~{referenceFasta} \
         -L ~{intervals} \
@@ -57,6 +58,7 @@ task AnnotateIntervals {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -73,6 +75,7 @@ task AnnotateIntervals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -90,15 +93,16 @@ task ApplyBQSR {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         ApplyBQSR \
         --create-output-bam-md5 \
         --add-output-sam-program-record \
@@ -121,6 +125,7 @@ task ApplyBQSR {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -139,6 +144,7 @@ task ApplyBQSR {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -159,15 +165,16 @@ task BaseRecalibrator {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{recalibrationReportPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         BaseRecalibrator \
         -R ~{referenceFasta} \
         -I ~{inputBam} \
@@ -184,6 +191,7 @@ task BaseRecalibrator {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -205,6 +213,7 @@ task BaseRecalibrator {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -215,14 +224,15 @@ task CalculateContamination {
         File tumorPileups
         File? normalPileups
 
-        String memory = "24G"
+        String memory = "13G"
         String javaXmx = "12G"
+        Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CalculateContamination \
         -I ~{tumorPileups} \
         ~{"-matched " + normalPileups} \
@@ -237,6 +247,7 @@ task CalculateContamination {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -246,6 +257,7 @@ task CalculateContamination {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -256,15 +268,16 @@ task CallCopyRatioSegments {
         String outputPrefix
         File copyRatioSegments
 
-        String memory = "21G"
-        String javaXmx = "6G"
+        String memory = "3G"
+        String javaXmx = "2G"
+        Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CallCopyRatioSegments \
         -I ~{copyRatioSegments} \
         -O ~{outputPrefix}.called.seg
@@ -277,6 +290,7 @@ task CallCopyRatioSegments {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -286,6 +300,7 @@ task CallCopyRatioSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -301,15 +316,17 @@ task CollectAllelicCounts {
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
-        String memory = "90G"
-        String javaXmx = "30G"
+
+        String memory = "11G"
+        String javaXmx = "10G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{allelicCountsPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CollectAllelicCounts \
         -L ~{commonVariantSites} \
         -I ~{inputBam} \
@@ -323,6 +340,7 @@ task CollectAllelicCounts {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -338,6 +356,7 @@ task CollectAllelicCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -354,15 +373,16 @@ task CollectReadCounts {
         File referenceFastaFai
         String intervalMergingRule = "OVERLAPPING_ONLY"
 
-        String memory = "35G"
+        String memory = "8G"
         String javaXmx = "7G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 5)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{countsPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CollectReadCounts \
         -L ~{intervals} \
         -I ~{inputBam} \
@@ -378,6 +398,7 @@ task CollectReadCounts {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -393,6 +414,7 @@ task CollectReadCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -408,15 +430,16 @@ task CombineGVCFs {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "24G"
-        String javaXmx = "12G"
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = 1 + ceil(size(gvcfFiles, "G") * 8)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CombineGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -431,6 +454,7 @@ task CombineGVCFs {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -448,6 +472,7 @@ task CombineGVCFs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -465,8 +490,9 @@ task CombineVariants {
         Array[File]+ variantIndexes
         String outputPath
 
-        String memory = "24G"
+        String memory = "13G"
         String javaXmx = "12G"
+        Int timeMinutes = 180
         String dockerImage = "broadinstitute/gatk3:3.8-1"
     }
 
@@ -485,7 +511,7 @@ task CombineVariants {
             printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
           done
         ')
-        java -Xmx~{javaXmx} -jar /usr/GenomeAnalysisTK.jar \
+        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 -jar /usr/GenomeAnalysisTK.jar \
         -T CombineVariants \
         -R ~{referenceFasta} \
         --genotypemergeoption ~{genotypeMergeOption} \
@@ -501,6 +527,7 @@ task CombineVariants {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -518,6 +545,7 @@ task CombineVariants {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -529,15 +557,16 @@ task CreateReadCountPanelOfNormals {
         Array[File]+ readCountsFiles
         File? annotatedIntervals
 
-        String memory = "21G"
+        String memory = "8G"
         String javaXmx = "7G"
+        Int timeMinutes = 5
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer causes a spark related error for some reason...
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{PONpath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CreateReadCountPanelOfNormals \
         -I ~{sep=" -I " readCountsFiles} \
         ~{"--annotated-intervals " + annotatedIntervals} \
@@ -550,6 +579,7 @@ task CreateReadCountPanelOfNormals {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -561,6 +591,7 @@ task CreateReadCountPanelOfNormals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -573,15 +604,16 @@ task DenoiseReadCounts {
         File readCounts
         String outputPrefix
 
-        String memory = "39G"
-        String javaXmx = "13G"
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         DenoiseReadCounts \
         -I ~{readCounts} \
         ~{"--count-panel-of-normals " + PON} \
@@ -597,6 +629,7 @@ task DenoiseReadCounts {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -609,6 +642,7 @@ task DenoiseReadCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -628,15 +662,16 @@ task FilterMutectCalls {
         Int uniqueAltReadCount = 4
         File mutect2Stats
 
-        String memory = "24G"
+        String memory = "13G"
         String javaXmx = "12G"
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcf})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         FilterMutectCalls \
         -R ~{referenceFasta} \
         -V ~{unfilteredVcf} \
@@ -658,6 +693,7 @@ task FilterMutectCalls {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -677,6 +713,7 @@ task FilterMutectCalls {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -688,15 +725,16 @@ task GatherBqsrReports {
         Array[File] inputBQSRreports
         String outputReportPath
 
-        String memory = "12G"
-        String javaXmx = "4G"
+        String memory = "1G"
+        String javaXmx = "500M"
+        Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputReportPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
@@ -708,6 +746,7 @@ task GatherBqsrReports {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -718,6 +757,7 @@ task GatherBqsrReports {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -731,15 +771,16 @@ task GenomicsDBImport {
         String genomicsDBWorkspacePath = "genomics_db"
         String genomicsDBTarFile = "genomics_db.tar.gz"
         String? tmpDir
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{genomicsDBWorkspacePath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GenomicsDBImport \
         -V ~{sep=" -V " gvcfFiles} \
         --genomicsdb-workspace-path ~{genomicsDBWorkspacePath} \
@@ -754,6 +795,7 @@ task GenomicsDBImport {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -764,10 +806,11 @@ task GenomicsDBImport {
         genomicsDBWorkspacePath: {description: "Where the genomicsDB files should be stored", category: "advanced"}
         genomicsDBTarFile: {description: "Where the .tar file containing the genomicsDB should be stored", category: "advanced"}
         tmpDir: {description: "Alternate temporary directory in case there is not enough space. Must be mounted when using containers",
-        category: "advanced"}
+                 category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -787,15 +830,16 @@ task GenotypeGVCFs {
         File? dbsnpVCFIndex
         File? pedigree
 
-        String memory = "18G"
+        String memory = "7G"
         String javaXmx = "6G"
+        Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GenotypeGVCFs \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -815,6 +859,7 @@ task GenotypeGVCFs {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -835,6 +880,7 @@ task GenotypeGVCFs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -850,14 +896,15 @@ task GetPileupSummaries {
         File sitesForContaminationIndex
         String outputPrefix
 
-        String memory = "24G"
+        String memory = "13G"
         String javaXmx = "12G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GetPileupSummaries \
         -I ~{sampleBam} \
         -V ~{variantsForContamination} \
@@ -871,6 +918,7 @@ task GetPileupSummaries {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -886,6 +934,7 @@ task GetPileupSummaries {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -913,15 +962,16 @@ task HaplotypeCaller {
         Boolean dontUseSoftClippedBases = false
         Float? standardMinConfidenceThresholdForCalling
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 400 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         HaplotypeCaller \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -945,6 +995,7 @@ task HaplotypeCaller {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -974,6 +1025,7 @@ task HaplotypeCaller {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -984,14 +1036,15 @@ task LearnReadOrientationModel {
     input {
         Array[File]+ f1r2TarGz
 
-        String memory = "24G"
+        String memory = "13G"
         String javaXmx = "12G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.2.0--1"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         LearnReadOrientationModel \
         -I ~{sep=" -I " f1r2TarGz} \
         -O "artifact-priors.tar.gz"
@@ -1003,6 +1056,7 @@ task LearnReadOrientationModel {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1011,6 +1065,7 @@ task LearnReadOrientationModel {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1020,14 +1075,15 @@ task MergeStats {
     input {
         Array[File]+ stats
 
-        String memory = "28G"
+        String memory = "15G"
         String javaXmx = "14G"
+        Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         MergeMutectStats \
         -stats ~{sep=" -stats " stats} \
         -O "merged.stats"
@@ -1039,6 +1095,7 @@ task MergeStats {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1047,6 +1104,7 @@ task MergeStats {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1064,15 +1122,16 @@ task ModelSegments {
             else 30
         Int maximumNumberOfSmoothingIterations = 10
 
-        String memory = "64G"
+        String memory = "11G"
         String javaXmx = "10G"
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         ModelSegments \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
         --allelic-counts ~{allelicCounts} \
@@ -1099,6 +1158,7 @@ task ModelSegments {
 
     runtime {
         docker: dockerImage
+        time_minute: timeMinutes
         memory: memory
     }
 
@@ -1114,6 +1174,7 @@ task ModelSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1137,15 +1198,16 @@ task MuTect2 {
         Array[File]+ intervals
         String outputStats = outputVcf + ".stats"
 
-        String memory = "16G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcf})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         Mutect2 \
         -R ~{referenceFasta} \
         -I ~{sep=" -I " inputBams} \
@@ -1167,6 +1229,7 @@ task MuTect2 {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1189,6 +1252,7 @@ task MuTect2 {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1203,15 +1267,16 @@ task PlotDenoisedCopyRatios {
         File denoisedCopyRatios
         Int? minimumContigLength
 
-        String memory = "32G"
-        String javaXmx = "7G"
+        String memory = "4G"
+        String javaXmx = "3G"
+        Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         PlotDenoisedCopyRatios \
         --standardized-copy-ratios ~{standardizedCopyRatios} \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
@@ -1232,6 +1297,7 @@ task PlotDenoisedCopyRatios {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1245,6 +1311,7 @@ task PlotDenoisedCopyRatios {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1260,15 +1327,16 @@ task PlotModeledSegments {
         File allelicCounts
         Int? minimumContigLength
 
-        String memory = "21G"
-        String javaXmx = "7G"
+        String memory = "4G"
+        String javaXmx = "3G"
+        Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         PlotModeledSegments \
         --denoised-copy-ratios ~{denoisedCopyRatios} \
         --allelic-counts ~{allelicCounts} \
@@ -1285,6 +1353,7 @@ task PlotModeledSegments {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1299,6 +1368,7 @@ task PlotModeledSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1315,15 +1385,16 @@ task PreprocessIntervals {
         Int padding = if defined(intervals) then 250 else 0
         String intervalMergingRule = "OVERLAPPING_ONLY"
 
-        String memory = "10G"
-        String javaXmx = "2G"
+        String memory = "4G"
+        String javaXmx = "3G"
+        Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 6)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputIntervalList})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         PreprocessIntervals \
         -R ~{referenceFasta} \
         --sequence-dictionary ~{referenceFastaDict} \
@@ -1340,6 +1411,7 @@ task PreprocessIntervals {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1355,6 +1427,7 @@ task PreprocessIntervals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1370,15 +1443,16 @@ task SelectVariants {
         String outputPath = "output.vcf.gz"
         String? selectTypeToInclude
         Array[File] intervals = []
-        String memory = "16G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         SelectVariants \
         -R ~{referenceFasta} \
         -V ~{inputVcf} \
@@ -1394,6 +1468,7 @@ task SelectVariants {
 
     runtime {
         docker: dockerImage
+        time_minute: timeMinutes
         memory: memory
     }
 
@@ -1412,6 +1487,7 @@ task SelectVariants {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1427,15 +1503,16 @@ task SplitNCigarReads {
         String outputBam
         Array[File] intervals = []
 
-        String memory = "16G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputBam})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         SplitNCigarReads \
         -I ~{inputBam} \
         -R ~{referenceFasta} \
@@ -1450,6 +1527,7 @@ task SplitNCigarReads {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1467,6 +1545,7 @@ task SplitNCigarReads {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -1483,15 +1562,16 @@ task VariantFiltration {
         Array[String]+ filterArguments
         Array[File] intervals = []
 
-        String memory = "16G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options -Xmx~{javaXmx} \
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         VariantFiltration \
         -I ~{inputVcf} \
         -R ~{referenceFasta} \
@@ -1507,6 +1587,7 @@ task VariantFiltration {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -1525,6 +1606,7 @@ task VariantFiltration {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

@@ -31,7 +31,7 @@ task BaseCounter {
         String outputDir
         String prefix
 
-        String memory = "14G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 
@@ -104,9 +104,10 @@ task ExtractAdaptersFastqc {
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        String memory = "40G" # This is ridiculous, but needed due to vmem monitoring on SGE.
+        String memory = "9G"
         String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/biopet-extractadaptersfastqc:0.2--1"
+        Int timeMinutes = 5
     }
 
     command {
@@ -133,6 +134,7 @@ task ExtractAdaptersFastqc {
     runtime {
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
     }
 }
 
@@ -143,7 +145,7 @@ task FastqSplitter {
         Array[String]+ outputPaths
         File? toolJar
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
         String dockerImage = "quay.io/biocontainers/biopet-fastqsplitter:0.1--2"
     }
@@ -175,7 +177,7 @@ task FastqSync {
         String out2path
         File? toolJar
 
-        String memory = "10G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 
@@ -208,52 +210,6 @@ task FastqSync {
     }
 }
 
-task ReorderGlobbedScatters {
-    input {
-        Array[File]+ scatters
-
-        # Should not be changed from the main pipeline. As it should not influence results.
-        # The 3.7-slim container is 143 mb on the filesystem. 3.7 is 927 mb.
-        # The slim container is sufficient for this small task.
-        String dockerImage = "python:3.7-slim"
-    }
-
-    command <<<
-       set -e
-       # Copy all the scatter files to the CWD so the output matches paths in
-       # the cwd.
-       for file in ~{sep=" " scatters}
-          do cp $file .
-       done
-       python << CODE
-       from os.path import basename
-       scatters = ['~{sep="','" scatters}']
-       splitext = [basename(x).split(".") for x in scatters]
-       splitnum = [x.split("-") + [y] for x,y in splitext]
-       ordered = sorted(splitnum, key=lambda x: int(x[1]))
-       merged = ["{}-{}.{}".format(x[0],x[1],x[2]) for x in ordered]
-       for x in merged:
-           print(x)
-       CODE
-    >>>
-
-    output {
-        Array[File] reorderedScatters = read_lines(stdout())
-    }
-
-    runtime {
-        docker: dockerImage
-        # 4 gigs of memory to be able to build the docker image in singularity
-        memory: "4G"
-    }
-
-    parameter_meta {
-        scatters: {description: "The files which should be ordered.", category: "required"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
 task ScatterRegions {
     input {
         File referenceFasta
@@ -264,8 +220,9 @@ task ScatterRegions {
         File? bamFile
         File? bamIndex
 
-        String memory = "24G"
-        String javaXmx = "8G"
+        String memory = "1G"
+        String javaXmx = "500M"
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/biopet-scatterregions:0.2--0"
     }
 
@@ -277,7 +234,7 @@ task ScatterRegions {
     command <<<
         set -e -o pipefail
         mkdir -p ~{outputDirPath}
-        biopet-scatterregions -Xmx~{javaXmx} \
+        biopet-scatterregions -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
           -R ~{referenceFasta} \
           -o ~{outputDirPath} \
           ~{"-s " + scatterSize} \
@@ -306,6 +263,7 @@ task ScatterRegions {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -335,7 +293,7 @@ task ValidateAnnotation {
         File? gtfFile
         Reference reference
 
-        String memory = "9G"
+        String memory = "4G"
         String javaXmx = "3G"
         String dockerImage = "quay.io/biocontainers/biopet-validateannotation:0.1--0"
     }
@@ -361,7 +319,7 @@ task ValidateFastq {
     input {
         File read1
         File? read2
-        String memory = "9G"
+        String memory = "4G"
         String javaXmx = "3G"
         String dockerImage = "quay.io/biocontainers/biopet-validatefastq:0.1.1--1"
     }
@@ -386,7 +344,7 @@ task ValidateVcf {
     input {
         IndexedVcfFile vcf
         Reference reference
-        String memory = "9G"
+        String memory = "4G"
         String javaXmx = "3G"
         String dockerImage = "quay.io/biocontainers/biopet-validatevcf:0.1--0"
     }
@@ -430,7 +388,7 @@ task VcfStats {
         Array[String]+? sparkConfigValues
 
         String dockerImage = "quay.io/biocontainers/biopet-vcfstats:1.2--0"
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 

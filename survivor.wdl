@@ -33,6 +33,7 @@ task Merge {
         Int minSize = 30
         String outputPath = "./survivor/merged.vcf"
         String memory = "24G"
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
     }
 
@@ -57,6 +58,7 @@ task Merge {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -71,6 +73,7 @@ task Merge {
         minSize: {description: "The mimimum size of SV to be merged", category: "advanced"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

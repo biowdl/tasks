@@ -31,6 +31,7 @@ task CreateAbundanceFileFromDatabase {
         File? datasetsFile
 
         String memory = "4G"
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -52,6 +53,7 @@ task CreateAbundanceFileFromDatabase {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -64,6 +66,7 @@ task CreateAbundanceFileFromDatabase {
         whitelistFile: {description: "Whitelist file of transcripts to include in the output.", category: "advanced"}
         datasetsFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -84,6 +87,7 @@ task CreateGtfFromDatabase {
         File? datasetFile
 
         String memory = "4G"
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -106,6 +110,7 @@ task CreateGtfFromDatabase {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -119,6 +124,7 @@ task CreateGtfFromDatabase {
         whitelistFile: {description: "Whitelist file of transcripts to include in the output.", category: "advanced"}
         datasetFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -135,6 +141,7 @@ task FilterTalonTranscripts {
         File? pairingsFile
 
         String memory = "4G"
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -154,6 +161,7 @@ task FilterTalonTranscripts {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -164,6 +172,7 @@ task FilterTalonTranscripts {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         pairingsFile: {description: "A file indicating which datasets should be considered together.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -180,6 +189,7 @@ task GetReadAnnotations {
         File? datasetFile
 
         String memory = "4G"
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -199,6 +209,7 @@ task GetReadAnnotations {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -209,6 +220,7 @@ task GetReadAnnotations {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         datasetFile: {description: "A file indicating which datasets should be included.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -228,6 +240,7 @@ task InitializeTalonDatabase {
         String outputPrefix
 
         String memory = "10G"
+        Int timeMinutes = 60
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -251,6 +264,7 @@ task InitializeTalonDatabase {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -265,6 +279,7 @@ task InitializeTalonDatabase {
         cutoff3p: {description: "Maximum allowable distance (bp) at the 3' end during annotation.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -277,6 +292,7 @@ task ReformatGtf {
         File GTFfile
 
         String memory = "4G"
+        Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -292,6 +308,7 @@ task ReformatGtf {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -299,6 +316,7 @@ task ReformatGtf {
         # inputs
         GTFfile: {description: "GTF annotation containing genes, transcripts, and edges.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -315,6 +333,7 @@ task SummarizeDatasets {
         File? datasetGroupsCSV
 
         String memory = "4G"
+        Int timeMinutes = 50
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -334,6 +353,7 @@ task SummarizeDatasets {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -344,6 +364,7 @@ task SummarizeDatasets {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         datasetGroupsCSV: {description: "File of comma-delimited dataset groups to process together.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -364,6 +385,7 @@ task Talon {
 
         Int cores = 4
         String memory = "25G"
+        Int timeMinutes = 2880
         String dockerImage = "biocontainers/talon:v4.4.2_cv1"
     }
 
@@ -399,6 +421,7 @@ task Talon {
     runtime {
         cpu: cores
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -414,6 +437,7 @@ task Talon {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs

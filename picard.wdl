@@ -26,15 +26,16 @@ task BedToIntervalList {
         File dict
         String outputPath = "regions.interval_list"
 
-        String memory = "12G"
-        String javaXmx = "4G"
+        String memory = "4G"
+        String javaXmx = "3G"
+        Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         BedToIntervalList \
         I=~{bedFile} \
         O=~{outputPath} \
@@ -47,6 +48,7 @@ task BedToIntervalList {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -54,8 +56,7 @@ task BedToIntervalList {
         # inputs
         bedFile: {description: "A bed file.", category: "required"}
         dict: {description: "A sequence dict file.", category: "required"}
-        outputPath: {description: "The location the output interval list should be written to.",
-                     category: "advanced"}
+        outputPath: {description: "The location the output interval list should be written to.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -83,8 +84,9 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        String memory = "32G"
+        String memory = "9G"
         String javaXmx = "8G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -92,7 +94,7 @@ task CollectMultipleMetrics {
     command {
         set -e
         mkdir -p "$(dirname ~{basename})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         CollectMultipleMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -153,33 +155,29 @@ task CollectMultipleMetrics {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
     parameter_meta {
         # inputs
-        inputBam: {description: "The input BAM file for which metrics will be collected.",
-                   category: "required"}
+        inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
-        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
-                         category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        basename: {description: "The basename/prefix of the output files (may include directories).",
-                   category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
         collectAlignmentSummaryMetrics: {description: "Equivalent to the `PROGRAM=CollectAlignmentSummaryMetrics` argument.",
                                          category: "advanced"}
         collectInsertSizeMetrics: {description: "Equivalent to the `PROGRAM=CollectInsertSizeMetrics` argument.",
                                    category: "advanced"}
         qualityScoreDistribution: {description: "Equivalent to the `PROGRAM=QualityScoreDistribution` argument.",
                                    category: "advanced"}
-        meanQualityByCycle: {description: "Equivalent to the `PROGRAM=MeanQualityByCycle` argument.",
-                             category: "advanced"}
+        meanQualityByCycle: {description: "Equivalent to the `PROGRAM=MeanQualityByCycle` argument.", category: "advanced"}
         collectBaseDistributionByCycle: {description: "Equivalent to the `PROGRAM=CollectBaseDistributionByCycle` argument.",
                                          category: "advanced"}
-        collectGcBiasMetrics: {description: "Equivalent to the `PROGRAM=CollectGcBiasMetrics` argument.",
-                               category: "advanced"}
+        collectGcBiasMetrics: {description: "Equivalent to the `PROGRAM=CollectGcBiasMetrics` argument.", category: "advanced"}
         collectSequencingArtifactMetrics: {description: "Equivalent to the `PROGRAM=CollectSequencingArtifactMetrics` argument.",
                                            category: "advanced"}
         collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.",
@@ -188,6 +186,7 @@ task CollectMultipleMetrics {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -201,8 +200,9 @@ task CollectRnaSeqMetrics {
         String basename
         String strandSpecificity = "NONE"
 
-        String memory = "32G"
+        String memory = "9G"
         String javaXmx =  "8G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -210,7 +210,7 @@ task CollectRnaSeqMetrics {
         set -e
         mkdir -p "$(dirname ~{basename})"
         picard -Xmx~{javaXmx} \
-        CollectRnaSeqMetrics \
+        CollectRnaSeqMetrics -XX:ParallelGCThreads=1 \
         I=~{inputBam} \
         O=~{basename}.RNA_Metrics \
         CHART_OUTPUT=~{basename}.RNA_Metrics.pdf \
@@ -225,23 +225,23 @@ task CollectRnaSeqMetrics {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
     parameter_meta {
         # inputs
-        inputBam: {description: "The input BAM file for which metrics will be collected.",
-                   category: "required"}
+        inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
         refRefflat: {description: "A refflat file containing gene annotations.", catehory: "required"}
-        basename: {description: "The basename/prefix of the output files (may include directories).",
-                   category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
         strandSpecificity: {description: "Equivalent to the `STRAND_SPECIFICITY` option of picard's CollectRnaSeqMetrics.",
                             category: "common"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -258,15 +258,16 @@ task CollectTargetedPcrMetrics {
         Array[File]+ targetIntervals
         String basename
 
-        String memory = "12G"
-        String javaXmx = "4G"
+        String memory = "4G"
+        String javaXmx = "3G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{basename})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         CollectTargetedPcrMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -285,16 +286,15 @@ task CollectTargetedPcrMetrics {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
     parameter_meta {
         # inputs
-        inputBam: {description: "The input BAM file for which metrics will be collected.",
-                   category: "required"}
+        inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
-        referenceFasta: {description: "The reference fasta file which was also used for mapping.",
-                         category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
@@ -302,12 +302,12 @@ task CollectTargetedPcrMetrics {
                            category: "required"}
         targetIntervals: {description: "An interval list describing the coordinates of the targets sequenced.",
                           category: "required"}
-        basename: {description: "The basename/prefix of the output files (may include directories).",
-                   category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -362,15 +362,16 @@ task GatherBamFiles {
         Array[File]+ inputBamsIndex
         String outputBamPath
 
-        String memory = "12G"
-        String javaXmx = "4G"
+        String memory = "4G"
+        String javaXmx = "3G"
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 0.5)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -386,6 +387,7 @@ task GatherBamFiles {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -398,6 +400,7 @@ task GatherBamFiles {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -409,15 +412,16 @@ task GatherVcfs {
         Array[File]+ inputVcfIndexes
         String outputVcfPath = "out.vcf.gz"
 
-        String memory = "12G"
+        String memory = "5G"
         String javaXmx = "4G"
+        Int timeMinutes = 1 + ceil(size(inputVcfs, "G") * 2)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcfPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         GatherVcfs \
         INPUT=~{sep=' INPUT=' inputVcfs} \
         OUTPUT=~{outputVcfPath}
@@ -430,6 +434,7 @@ task GatherVcfs {
     runtime {
         docker: dockerImage
         memory: memory
+        time_minutes: timeMinutes
     }
 
     parameter_meta {
@@ -441,6 +446,7 @@ task GatherVcfs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -454,8 +460,9 @@ task MarkDuplicates {
         String outputBamPath
         String metricsPath
 
-        String memory = "24G"
+        String memory = "9G"
         String javaXmx = "8G"
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
@@ -473,7 +480,7 @@ task MarkDuplicates {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         MarkDuplicates \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -496,6 +503,7 @@ task MarkDuplicates {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -510,6 +518,7 @@ task MarkDuplicates {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -522,8 +531,9 @@ task MergeVCFs {
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
 
-        String memory = "24G"
-        String javaXmx = "8G"
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = 1 + ceil(size(inputVCFs, "G"))
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -533,7 +543,7 @@ task MergeVCFs {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcfPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
         OUTPUT=~{outputVcfPath}
@@ -546,6 +556,7 @@ task MergeVCFs {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -558,6 +569,7 @@ task MergeVCFs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -569,7 +581,7 @@ task SamToFastq {
         File inputBamIndex
         Boolean paired = true
 
-        String memory = "48G"
+        String memory = "17G"
         String javaXmx = "16G" # High memory default to avoid crashes.
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
         File? NONE
@@ -581,7 +593,7 @@ task SamToFastq {
 
     command {
         set -e
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         SamToFastq \
         I=~{inputBam} \
         ~{"FASTQ=" + outputRead1} \
@@ -606,15 +618,15 @@ task ScatterIntervalList {
         File interval_list
         Int scatter_count
 
-        String memory = "12G"
-        String javaXmx = "4G"
+        String memory = "4G"
+        String javaXmx = "3G"
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir scatter_list
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         IntervalListTools \
         SCATTER_COUNT=~{scatter_count} \
         SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -641,8 +653,9 @@ task SortVcf {
         String outputVcfPath
         File? dict
 
-        String memory = "24G"
+        String memory = "9G"
         String javaXmx = "8G"
+        Int timeMinutes = 1 + ceil(size(vcfFiles, "G") * 5)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -650,7 +663,7 @@ task SortVcf {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcfPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         SortVcf \
         I=~{sep=" I=" vcfFiles} \
         ~{"SEQUENCE_DICTIONARY=" + dict} \
@@ -664,6 +677,7 @@ task SortVcf {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -676,6 +690,7 @@ task SortVcf {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -686,15 +701,16 @@ task RenameSample {
         File inputVcf
         String outputPath = "./picard/renamed.vcf"
         String newSampleName
-        String memory = "24G"
+        String memory = "9G"
         String javaXmx = "8G"
+        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 2)
         String dockerImage = "quay.io/biocontainers/picard:2.19.0--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        picard -Xmx~{javaXmx} \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         RenameSampleInVcf \
         I=~{inputVcf} \
         O=~{outputPath} \
@@ -707,6 +723,7 @@ task RenameSample {
 
     runtime {
         docker: dockerImage
+        time_minutes: timeMinutes
         memory: memory
     }
 
@@ -717,6 +734,7 @@ task RenameSample {
         newSampleName: {description: "A string to replace the old sample name.", category: "required"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
         javaXmx: {description: "The max. memory allocated for JAVA", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

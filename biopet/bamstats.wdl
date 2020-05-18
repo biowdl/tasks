@@ -34,7 +34,7 @@ task Generate {
         String outputDir
         Reference? reference
 
-        String memory = "16G"
+        String memory = "9G"
         String javaXmx = "8G"
     }
 

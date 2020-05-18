@@ -89,7 +89,7 @@ task GenomeGenerate {
 task Star {
     input {
         Array[File]+ inputR1
-        Array[File]? inputR2
+        Array[File] inputR2 = []
         Array[File]+ indexFiles
         String outFileNamePrefix
         String outSAMtype = "BAM SortedByCoordinate"
@@ -101,7 +101,8 @@ task Star {
         Int? limitBAMsortRAM
 
         Int runThreadN = 4
-        String memory = "48G"
+        String memory = "~{5 + ceil(size(indexFiles, "G"))}G"
+        Int timeMinutes = 1 + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
@@ -132,6 +133,7 @@ task Star {
     runtime {
         cpu: runThreadN
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -149,6 +151,7 @@ task Star {
         limitBAMsortRAM: {description: "Equivalent to star's `--limitBAMsortRAM` option.", category: "advanced"}
         runThreadN: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

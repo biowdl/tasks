@@ -32,6 +32,7 @@ task Refine {
 
         Int cores = 2
         String memory = "2G"
+        Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/isoseq3:3.3.0--0"
     }
 
@@ -61,6 +62,7 @@ task Refine {
     runtime {
         cpu: cores
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -75,6 +77,7 @@ task Refine {
         outputNamePrefix: {description: "Basename of the output files.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs

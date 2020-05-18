@@ -34,7 +34,7 @@ task SampleConfig {
         String? jsonOutputPath
         String? tsvOutputPath
 
-        String memory = "8G"
+        String memory = "17G"
         String javaXmx = "16G"
     }
 
@@ -74,7 +74,7 @@ task SampleConfigCromwellArrays {
         Array[File]+ inputFiles
         String outputPath
 
-        String memory = "8G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 
@@ -110,7 +110,7 @@ task CaseControl {
         String outputPath
         String controlTag = "control"
 
-        String memory = "8G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 
