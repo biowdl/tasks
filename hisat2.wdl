@@ -31,6 +31,7 @@ task Hisat2 {
         String readgroup
         String platform = "illumina"
         Boolean downstreamTranscriptomeAssembly = true
+        String summaryFilePath = basename(outputBam, ".bam") + ".summary.txt"
 
         Int threads = 1
         String memory = "48G"
@@ -55,6 +56,7 @@ task Hisat2 {
         --rg 'LB:~{library}' \
         --rg 'PL:~{platform}' \
         ~{true="--dta" false="" downstreamTranscriptomeAssembly} \
+        --summary-file ~{summaryFilePath} \
         | samtools sort > ~{outputBam}
         samtools index ~{outputBam} ~{bamIndexPath}
     }
@@ -62,6 +64,7 @@ task Hisat2 {
     output {
         File bamFile = outputBam
         File bamIndex = bamIndexPath
+        File summaryFile = summaryFilePath
     }
 
     runtime {
