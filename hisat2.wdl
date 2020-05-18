@@ -56,7 +56,7 @@ task Hisat2 {
         --rg 'LB:~{library}' \
         --rg 'PL:~{platform}' \
         ~{true="--dta" false="" downstreamTranscriptomeAssembly} \
-        --summary-file ~{summaryFilePath} \
+        --new-summary ~{summaryFilePath} \
         | samtools sort > ~{outputBam}
         samtools index ~{outputBam} ~{bamIndexPath}
     }
