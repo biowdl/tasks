@@ -23,8 +23,8 @@ version 1.0
 task MultiQC {
     input {
         # Use a string here so cromwell does not relocate an entire analysis directory
-        String analysisDirectory
-        Array[File] dependencies = []  # This must be used in order to run multiqc after these tasks.
+        Array[File] reports
+        String reportDir = "reports"
         Boolean force = false
         Boolean dirs = false
         Int? dirsDepth
@@ -62,6 +62,23 @@ task MultiQC {
     }
 
     command {
+        # Below code requires python 3.6 or higher.
+        # This makes sure all report files are in a report directory that MultiQC can investigate.
+        python3 <<CODE
+        import os
+        from pathlib import Path 
+        from typing import List
+
+        reports: List[str] = ["~{sep='","' reports}"]
+        report_dir: Path = Path("~{reportDir}")
+        
+        for report in reports:
+            report_path = Path(report)
+            new_path = report_dir / str(hash(report_path.parent)) / report_path.name
+            new_path.parent.mkdir(parents=True, exist_ok=True)
+            os.symlink(report, str(new_path))
+        CODE
+
         set -e
         mkdir -p ~{outDir}
         multiqc \
@@ -94,7 +111,7 @@ task MultiQC {
         ~{false="--no-megaqc-upload" true="" megaQCUpload} \
         ~{"--config " + config} \
         ~{"--cl-config " + clConfig } \
-        ~{analysisDirectory}
+        ~{reportDir}
     }
 
     String reportFilename = if (defined(fileName))
