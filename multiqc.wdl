@@ -129,8 +129,7 @@ task MultiQC {
     }
 
     parameter_meta {
-        analysisDirectory: {description: "The directory to run MultiQC on.", category: "required"}
-        dependencies: {description: "This must be used in order to run multiqc after these tasks.", category: "internal_use_only"}
+        reports: {description: "Reports which multiqc should run on.", category: "required"}
         force: {description: "Equivalent to MultiQC's `--force` flag.", category: "advanced"}
         dirs: {description: "Equivalent to MultiQC's `--dirs` flag.", category: "advanced"}
         dirsDepth: {description: "Equivalent to MultiQC's `--dirs-depth` option.", category: "advanced"}
