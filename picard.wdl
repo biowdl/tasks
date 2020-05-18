@@ -114,7 +114,7 @@ task CollectMultipleMetrics {
         File baitBiasDetail = basename + ".bait_bias_detail_metrics"
         File baitBiasSummary = basename + ".bait_bias_summary_metrics"
         File baseDistributionByCycle = basename + ".base_distribution_by_cycle_metrics"
-        File baseDistributionByCyclePdf = basename + ".base_distribution_by_cycle.pdf"
+        File? baseDistributionByCyclePdf = basename + ".base_distribution_by_cycle.pdf"
         File errorSummary = basename + ".error_summary_metrics"
         File gcBiasDetail = basename + ".gc_bias.detail_metrics"
         File gcBiasPdf = basename + ".gc_bias.pdf"
@@ -124,9 +124,9 @@ task CollectMultipleMetrics {
         File preAdapterDetail = basename + ".pre_adapter_detail_metrics"
         File preAdapterSummary = basename + ".pre_adapter_summary_metrics"
         File qualityByCycle = basename + ".quality_by_cycle_metrics"
-        File qualityByCyclePdf = basename + ".quality_by_cycle.pdf"
+        File? qualityByCyclePdf = basename + ".quality_by_cycle.pdf"
         File qualityDistribution = basename + ".quality_distribution_metrics"
-        File qualityDistributionPdf = basename + ".quality_distribution.pdf"
+        File? qualityDistributionPdf = basename + ".quality_distribution.pdf"
         File qualityYield = basename + ".quality_yield_metrics"
         # Using a glob is easier. But will lead to very ugly output directories.
         Array[File] allStats = select_all([
