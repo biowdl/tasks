@@ -107,6 +107,7 @@ task GffCompare {
         File? missedIntrons = if debugMode
             then totalPrefix + ".missed_introns.gtf"
             else noneFile
+        Array[File] allFiles = select_all([annotated, loci, stats, tracking, redundant, missedIntrons])
     }
 
     runtime {
