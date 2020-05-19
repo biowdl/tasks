@@ -11,7 +11,7 @@ that users understand how the changes affect the new version.
 
 version 3.2.0-develop
 ---------------------------
-+ Picard: Make all outputs in `CollectMultipleMetrics`. This will make sure the
++ Picard: Make all outputs in `CollectMultipleMetrics` optional. This will make sure the
   task will not fail if one of the metrics is set to false.
 + The struct `BowtieIndex` was removed, as it has become obsolete.
 + The task `ReorderGlobbedScatters` was removed, as it has become obsolete.
