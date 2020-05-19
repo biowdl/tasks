@@ -24,7 +24,6 @@ task MultiQC {
     input {
         # Use a string here so cromwell does not relocate an entire analysis directory
         Array[File] reports
-        String reportDir = "reports"
         Boolean force = false
         Boolean dirs = false
         Int? dirsDepth
@@ -37,13 +36,11 @@ task MultiQC {
         String? tag
         String? ignore
         String? ignoreSamples
-        Boolean ignoreSymlinks = false
         File? sampleNames
         File? fileList
         Array[String]+? exclude
         Array[String]+? module
         Boolean dataDir = false
-        Boolean noDataDir = false
         String? dataFormat
         Boolean zipDataDir = false
         Boolean export = false
@@ -54,16 +51,27 @@ task MultiQC {
         Boolean megaQCUpload = false # This must be actively enabled in my opinion. The tools default is to upload.
         File? config  # A directory
         String? clConfig
-        Array[Boolean] finished = []  # An array of booleans that can be used to let multiqc wait on stuff.
-
+    
         String memory = "4G"
 
         String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
     }
 
+    # This is where the reports end up. It does not need to be changed by the
+    # user. It is full of symbolic links, so it is not of any use to the user
+    # anyway.
+    String reportDir = "reports"
+
+    # Below code requires python 3.6 or higher.
+    # This makes sure all report files are in a report directory that 
+    # MultiQC can investigate.
+    # This creates files in report_dir / hashed_parent / file basename.
+    # By hashing the parent path we make sure there are no file colissions as 
+    # files from the same directory end up in the same directory, while files 
+    # from other directories get their own directory. Cromwell also uses this 
+    # strategy. Using python's builtin hash is unique enough for these purposes.
+    
     command {
-        # Below code requires python 3.6 or higher.
-        # This makes sure all report files are in a report directory that MultiQC can investigate.
         python3 <<CODE
         import os
         from pathlib import Path 
@@ -74,8 +82,10 @@ task MultiQC {
         
         for report in reports:
             report_path = Path(report)
-            new_path = report_dir / str(hash(report_path.parent)) / report_path.name
-            new_path.parent.mkdir(parents=True, exist_ok=True)
+            hashed_parent = str(hash(str(report_path.parent)))
+            new_path = report_dir / hashed_parent / report_path.name
+            if not new_path.parent.exists():
+                new_path.parent.mkdir(parents=True)
             os.symlink(report, str(new_path))
         CODE
 
@@ -94,15 +104,13 @@ task MultiQC {
         ~{"--tag " + tag} \
         ~{"--ignore " + ignore} \
         ~{"--ignore-samples" + ignoreSamples} \
-        ~{true="--ignore-symlinks" false="" ignoreSymlinks} \
         ~{"--sample-names " + sampleNames} \
         ~{"--file-list " + fileList} \
         ~{true="--exclude " false="" defined(exclude)}~{sep=" --exclude " exclude} \
         ~{true="--module " false="" defined(module)}~{sep=" --module " module} \
-        ~{true="--data-dir" false="" dataDir} \
-        ~{true="--no-data-dir" false="" noDataDir} \
+        ~{true="--data-dir" false="--no-data-dir" dataDir} \
         ~{"--data-format " + dataFormat} \
-        ~{true="--zip-data-dir" false="" zipDataDir} \
+        ~{true="--zip-data-dir" false="" zipDataDir && dataDir} \
         ~{true="--export" false="" export} \
         ~{true="--flat" false="" flat} \
         ~{true="--interactive" false="" interactive} \
