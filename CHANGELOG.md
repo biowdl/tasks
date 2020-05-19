@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 3.2.0-develop
 ---------------------------
++ Picard: Make a number of outputs in `CollectMultipleMetrics` optional. BamMetrics
+  will fail if `CollectAlignmentSummaryMetrics` & `MeanQualityByCycle` in this
+  task are not optional.
 + The struct `BowtieIndex` was removed, as it has become obsolete.
 + The task `ReorderGlobbedScatters` was removed, as it has become obsolete.
 + Adjusted the memory settings of many tools, especially java tools.
