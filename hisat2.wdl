@@ -86,6 +86,7 @@ task Hisat2 {
         readgroup: {description: "The readgroup id.", category: "required"}
         platform: {description: "The platform used for sequencing.", category: "advanced"}
         downstreamTranscriptomeAssembly: {description: "Equivalent to hisat2's `--dta` flag.", category: "advanced"}
+        summaryFilePath: {description: "Where the summary file should be written.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
