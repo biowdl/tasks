@@ -32,6 +32,7 @@ task Indexing {
 
         Int cores = 1
         String memory = "4G"
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/minimap2:2.17--h84994c4_0"
     }
 
@@ -55,6 +56,7 @@ task Indexing {
     runtime {
         cpu: cores
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -68,6 +70,7 @@ task Indexing {
         splitIndex: {description: "Split index for every ~NUM input bases.", category: "advanced"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output
@@ -96,6 +99,7 @@ task Mapping {
 
         Int cores = 4
         String memory = "30G"
+        Int timeMinutes = 1 + ceil(size(queryFile, "G") * 200 / cores)
         String dockerImage = "quay.io/biocontainers/minimap2:2.17--h84994c4_0"
     }
 
@@ -128,6 +132,7 @@ task Mapping {
     runtime {
         cpu: cores
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -149,6 +154,7 @@ task Mapping {
         queryFile: {description: "Input fasta file.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output

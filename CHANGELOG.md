@@ -9,8 +9,25 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 3.2.0-develop
+version 4.0.0-develop
 ---------------------------
++ Added a log output for STAR.
++ Added report output to Hisat2.
++ Change MultiQC inputs. It now accepts an array of reports files. It does not
+  need access to a folder with the reports anymore. MultiQC can now be used
+  as a normal WDL task without hacks.
++ Picard: Make all outputs in `CollectMultipleMetrics` optional. This will make sure the
+  task will not fail if one of the metrics is set to false.
++ The struct `BowtieIndex` was removed, as it has become obsolete.
++ The task `ReorderGlobbedScatters` was removed, as it has become obsolete.
++ Adjusted the memory settings of many tools, especially java tools.
+  They should now more accurately represent actual memory usage (as
+  opposed to virtual memory).
++ Added `-XX:ParallelGCThreads=1` to the java options of java tasks.
++ Added `timeMinutes` input to many tasks, this indicates a maximum
+  number of minutes that the job will run. The associated runtime 
+  attribute is `time_minutes` which can be used to inform
+  a scheduler (eg. slurm) of the run time of the job.
 + Added STAR GenomeGenerate task.
 + GATK.HaplotypeCaller: Add `--dont-use-soft-clipped-bases` and 
   `--standard-min-confidence-threshold-for-calling` options. These are 

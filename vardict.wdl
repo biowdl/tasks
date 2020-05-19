@@ -48,14 +48,15 @@ task VarDict {
         Float minimumAlleleFrequency = 0.02
 
         Int threads = 1
-        String memory = "40G"
+        String memory = "18G"
         String javaXmx = "16G"
+        Int timeMinutes = 300
         String dockerImage = "quay.io/biocontainers/vardict-java:1.5.8--1"
     }
 
     command {
         set -e -o pipefail
-        export JAVA_OPTS="-Xmx~{javaXmx}"
+        export JAVA_OPTS="-Xmx~{javaXmx} -XX:ParallelGCThreads=1"
         vardict-java \
         ~{"-th " + threads} \
         -G ~{referenceFasta} \
@@ -87,6 +88,7 @@ task VarDict {
     runtime {
         cpu: threads + 2
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -116,6 +118,7 @@ task VarDict {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

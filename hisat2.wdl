@@ -33,8 +33,9 @@ task Hisat2 {
         Boolean downstreamTranscriptomeAssembly = true
         String summaryFilePath = basename(outputBam, ".bam") + ".summary.txt"
 
-        Int threads = 1
-        String memory = "48G"
+        Int threads = 4
+        String memory = "~{threads + 5 + ceil(size(indexFiles, "G"))}G"
+        Int timeMinutes = 1 + ceil(size([inputR1, inputR2], "G") * 180 / threads)
         # quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1
         # is a combination of hisat2 and samtools
         # hisat2=2.1.0, samtools=1.8
@@ -56,7 +57,8 @@ task Hisat2 {
         --rg 'LB:~{library}' \
         --rg 'PL:~{platform}' \
         ~{true="--dta" false="" downstreamTranscriptomeAssembly} \
-        --new-summary ~{summaryFilePath} \
+        --new-summary \
+        --summary-file ~{summaryFilePath} \
         | samtools sort > ~{outputBam}
         samtools index ~{outputBam} ~{bamIndexPath}
     }
@@ -70,6 +72,7 @@ task Hisat2 {
     runtime {
         memory: memory
         cpu: threads + 1
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -85,6 +88,7 @@ task Hisat2 {
         downstreamTranscriptomeAssembly: {description: "Equivalent to hisat2's `--dta` flag.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

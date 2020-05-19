@@ -32,7 +32,7 @@ task Generate {
         String library
         String readgroup
 
-        String memory = "10G"
+        String memory = "5G"
         String javaXmx = "4G"
     }
 
