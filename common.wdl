@@ -179,10 +179,10 @@ task StringArrayMd5 {
 }
 
 task TextToFile {
-
     input {
         String text
         String outputFile = "out.txt"
+        Int timeMinutes = 1
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -197,11 +197,13 @@ task TextToFile {
     parameter_meta {
         text: {description: "The text to print", category: "required"}
         outputFile: {description: "The name of the output file", category: "common"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
     runtime {
         memory: "1G"
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 }
@@ -210,6 +212,9 @@ task YamlToJson {
     input {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
+
+        Int timeMinutes = 1
+        String  memory = "128M"
         # biowdl-input-converter has python and pyyaml.
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
@@ -230,12 +235,16 @@ task YamlToJson {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
         yaml: {description: "The YAML file to convert.", category: "required"}
         outputJson: {description: "The location the output JSON file should be written to.", category: "advanced"}
+        memory: {description: "The maximum aount of memroy the job will need.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

@@ -31,6 +31,8 @@ task InputConverter {
         Boolean skipFileCheck=true
         Boolean checkFileMd5sums=false
         Boolean old=false
+
+        Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
 
@@ -50,6 +52,8 @@ task InputConverter {
     }
 
     runtime {
+        memory: "128M"
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -62,6 +66,7 @@ task InputConverter {
         checkFileMd5sums: {description: "Whether or not the MD5 sums of the files mentioned in the samplesheet should be checked.",
                            category: "advanced"}
         old: {description: "Whether or not the old samplesheet format should be used.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

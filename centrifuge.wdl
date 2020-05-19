@@ -37,6 +37,7 @@ task Build {
 
         Int threads = 5
         String memory = "20G"
+        Int timeMinutes = 2880
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
@@ -64,6 +65,7 @@ task Build {
     runtime {
         cpu: threads
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -82,6 +84,7 @@ task Build {
         sizeTable: {description: "List of taxonomic IDs and lengths of the sequences belonging to the same taxonomic IDs.", category: "common"}
         threads: {description: "The number of threads to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -184,6 +187,7 @@ task Inspect {
         Int? across
 
         String memory = "4G"
+        Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
@@ -210,6 +214,7 @@ task Inspect {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -220,6 +225,7 @@ task Inspect {
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         across: {description: "When printing FASTA output, output a newline character every <int> bases.", category: "common"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -307,6 +313,7 @@ task Kreport {
         Int? minimumLength
 
         String memory = "4G"
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
@@ -335,6 +342,7 @@ task Kreport {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -349,6 +357,7 @@ task Kreport {
         minimumScore: {description: "Require a minimum score for reads to be counted.", category: "advanced"}
         minimumLength: {description: "Require a minimum alignment length to the read.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -362,6 +371,7 @@ task KTimportTaxonomy {
         String outputPrefix
 
         String memory = "4G"
+        Int timeMinutes = 1
         String dockerImage = "biocontainers/krona:v2.7.1_cv1"
     }
 
@@ -379,6 +389,7 @@ task KTimportTaxonomy {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -387,6 +398,7 @@ task KTimportTaxonomy {
         inputFile: {description: "File with Centrifuge classification results.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs

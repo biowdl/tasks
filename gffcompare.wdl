@@ -44,6 +44,7 @@ task GffCompare {
         Boolean verbose = false
         Boolean debugMode = false
 
+        Int timeMinutes = 1 + ceil(size(inputGtfFiles, "G") * 30)
         String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
 
         # This workaround only works in the input section.
@@ -111,6 +112,7 @@ task GffCompare {
     }
 
     runtime {
+       time_minutes: timeMinutes
        docker: dockerImage
     }
 
@@ -135,6 +137,7 @@ task GffCompare {
         noTmap: {description: "Equivalent to gffcompare's `-T` flag.", category: "advanced"}
         verbose: {description: "Equivalent to gffcompare's `-V` flag.", category: "advanced"}
         debugMode: {description: "Equivalent to gffcompare's `-D` flag.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

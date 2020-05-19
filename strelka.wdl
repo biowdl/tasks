@@ -36,6 +36,7 @@ task Germline {
 
         Int cores = 1
         Int memoryGb = 4
+        Int timeMinutes = 90
         String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
     }
 
@@ -62,6 +63,7 @@ task Germline {
     runtime {
         docker: dockerImage
         cpu: cores
+        time_minutes: timeMinutes
         memory: "~{memoryGb}G"
     }
 
@@ -78,6 +80,7 @@ task Germline {
 
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -100,6 +103,7 @@ task Somatic {
 
         Int cores = 1
         Int memoryGb = 4
+        Int timeMinutes = 90
         String dockerImage = "quay.io/biocontainers/strelka:2.9.7--0"
 
         File? doNotDefineThis #FIXME
@@ -131,6 +135,7 @@ task Somatic {
     runtime {
         docker: dockerImage
         cpu: cores
+        time_minutes: timeMinutes
         memory: "~{memoryGb}G"
     }
 
@@ -150,6 +155,7 @@ task Somatic {
 
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }

@@ -29,6 +29,7 @@ task Normalize {
         String outputPath = "./vt/normalized_decomposed.vcf"
         String dockerImage = "quay.io/biocontainers/vt:0.57721--hdf88d34_2"
         String memory = "4G"
+        Int timeMinutes = 30
     }
 
     command {
@@ -43,6 +44,7 @@ task Normalize {
 
     runtime {
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -54,6 +56,7 @@ task Normalize {
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
