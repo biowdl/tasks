@@ -42,7 +42,7 @@ task MultiQC {
         Array[String]+? module
         Boolean dataDir = false
         String? dataFormat
-        Boolean zipDataDir = false
+        Boolean zipDataDir = true
         Boolean export = false
         Boolean flat = false
         Boolean interactive = true
@@ -128,7 +128,7 @@ task MultiQC {
 
     output {
         File multiqcReport = outDir + "/" + reportFilename + "_report.html"
-        File multiqcDataDir = outDir + "/" +reportFilename + "_data"
+        File? multiqcDataDirZip = outDir + "/" +reportFilename + "_data.zip"
     }
 
     runtime {
@@ -151,13 +151,11 @@ task MultiQC {
         tag: {description: "Equivalent to MultiQC's `--tag` option.", category: "advanced"}
         ignore: {description: "Equivalent to MultiQC's `--ignore` option.", category: "advanced"}
         ignoreSamples: {description: "Equivalent to MultiQC's `--ignore-samples` option.", category: "advanced"}
-        ignoreSymlinks: {description: "Equivalent to MultiQC's `--ignore-symlinks` flag.", category: "advanced"}
         sampleNames: {description: "Equivalent to MultiQC's `--sample-names` option.", category: "advanced"}
         fileList: {description: "Equivalent to MultiQC's `--file-list` option.", category: "advanced"}
         exclude: {description: "Equivalent to MultiQC's `--exclude` option.", category: "advanced"}
         module: {description: "Equivalent to MultiQC's `--module` option.", category: "advanced"}
-        dataDir: {description: "Equivalent to MultiQC's `--data-dir` flag.", category: "advanced"}
-        noDataDir: {description: "Equivalent to MultiQC's `--no-data-dir` flag.", category: "advanced"}
+        dataDir: {description: "Whether to output a data dir. Sets `--data-dir` or `--no-data-dir` flag.", category: "advanced"}
         dataFormat: {description: "Equivalent to MultiQC's `--data-format` option.", category: "advanced"}
         zipDataDir: {description: "Equivalent to MultiQC's `--zip-data-dir` flag.", category: "advanced"}
         export: {description: "Equivalent to MultiQC's `--export` flag.", category: "advanced"}
@@ -168,8 +166,6 @@ task MultiQC {
         megaQCUpload: {description: "Opposite to MultiQC's `--no-megaqc-upload` flag.", category: "advanced"}
         config: {description: "Equivalent to MultiQC's `--config` option.", category: "advanced"}
         clConfig: {description: "Equivalent to MultiQC's `--cl-config` option.", category: "advanced"}
-        finished: {description: "An array of booleans that can be used to let multiqc wait on stuff.", category: "internal_use_only"}
-
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
