@@ -9,8 +9,14 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 3.2.0-develop
+version 4.0.0-develop
 ---------------------------
++ Added a log output for STAR.
++ Added report output to Hisat2.
++ Added output with all reports to gffcompare.
++ Change MultiQC inputs. It now accepts an array of reports files. It does not
+  need access to a folder with the reports anymore. MultiQC can now be used
+  as a normal WDL task without hacks.
 + Picard: Make all outputs in `CollectMultipleMetrics` optional. This will make sure the
   task will not fail if one of the metrics is set to false.
 + The struct `BowtieIndex` was removed, as it has become obsolete.

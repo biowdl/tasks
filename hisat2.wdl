@@ -31,6 +31,7 @@ task Hisat2 {
         String readgroup
         String platform = "illumina"
         Boolean downstreamTranscriptomeAssembly = true
+        String summaryFilePath = basename(outputBam, ".bam") + ".summary.txt"
 
         Int threads = 4
         String memory = "~{threads + 5 + ceil(size(indexFiles, "G"))}G"
@@ -56,6 +57,8 @@ task Hisat2 {
         --rg 'LB:~{library}' \
         --rg 'PL:~{platform}' \
         ~{true="--dta" false="" downstreamTranscriptomeAssembly} \
+        --new-summary \
+        --summary-file ~{summaryFilePath} \
         | samtools sort > ~{outputBam}
         samtools index ~{outputBam} ~{bamIndexPath}
     }
@@ -63,6 +66,7 @@ task Hisat2 {
     output {
         File bamFile = outputBam
         File bamIndex = bamIndexPath
+        File summaryFile = summaryFilePath
     }
 
     runtime {
@@ -82,6 +86,7 @@ task Hisat2 {
         readgroup: {description: "The readgroup id.", category: "required"}
         platform: {description: "The platform used for sequencing.", category: "advanced"}
         downstreamTranscriptomeAssembly: {description: "Equivalent to hisat2's `--dta` flag.", category: "advanced"}
+        summaryFilePath: {description: "Where the summary file should be written.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
