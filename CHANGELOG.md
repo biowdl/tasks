@@ -13,6 +13,7 @@ version 4.0.0-develop
 ---------------------------
 + Added a log output for STAR.
 + Added report output to Hisat2.
++ Added output with all reports to gffcompare.
 + Change MultiQC inputs. It now accepts an array of reports files. It does not
   need access to a folder with the reports anymore. MultiQC can now be used
   as a normal WDL task without hacks.
