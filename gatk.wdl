@@ -1551,6 +1551,78 @@ task SplitNCigarReads {
     }
 }
 
+task VariantEval {
+    input {
+        Array[File] inputVcfs
+        Array[File] inputVcfsIndex
+        Array[File] comparisonVcfs = []
+        Array[File] comparisonVcfsIndex = []
+        File? referenceFasta
+        File? referenceFastaDict
+        File? referenceFastaFai
+        File? dbsnpVCF
+        File? dbsnpVCFIndex
+        Array[File] intervals = []
+        String outputPath = "eval.table"
+        Boolean doNotUseAllStandardModules = false 
+        Boolean doNotUseAllStandardStratifications = false 
+        Array[String] evalModules = []
+        Array[String] stratificationModules = []
+        Array[String] samples = []
+        Boolean mergeEvals = false
+
+        String memory = "5G"
+        String javaXmx = "4G"
+        # TODO: Refine estimate. For now 4 minutes per GB of input.
+        Int timeMinutes = ceil(size(flatten([inputVcfs, comparisonVcfs]), "G") * 4)
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
+        VariantFiltration \
+        -O ~{outputPath} \
+        ~{true="--eval" false="" length(inputVcfs) > 0} ~{sep=" --eval " inputVcfs} \
+        ~{true="--comparison" false="" length(comparisonVcfs) > 0} ~{sep=" --comparison " comparisonVcfs} \
+        ~{"-R " + referenceFasta} \
+        ~{"--dbsnp " + dbsnpVCF } \
+        ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals} \
+        ~{true="--sample" false="" length(samples) > 0} ~{sep=' --sample ' samples} \
+        ~{true="--do-not-use-all-standard-modules" false="" doNotUseAllStandardModules} \
+        ~{true="--do-not-use-all-standard-stratifications" false="" doNotUseAllStandardStratifications} \
+        ~{true="-EV" false="" length(evalModules) > 0} ~{sep=" -EV " evalModules} \
+        ~{true="-ST" false="" length(stratificationModules) > 0} ~{sep=" -ST " stratificationModules} \
+        ~{true="--merge-evals" false="" mergeEvals}
+
+    }
+
+    output {
+        File table = outputPath
+    }
+
+    runtime {
+        cpu: 1
+        docker: dockerImage
+        memory: memory
+        time_minutes: timeMinutes
+    }
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "common"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "common"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "common"}
+        dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
+        dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
+        outputPath: {description: "The location the output table should be written.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
 task VariantFiltration {
     input {
         File inputVcf
