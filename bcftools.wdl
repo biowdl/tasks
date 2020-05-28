@@ -84,6 +84,7 @@ task Stats {
         Int threads = 0
         Int timeMinutes = 1 + 2* ceil(size(select_all([inputVcf, compareVcf]), "G"))  # TODO: Estimate, 2 minutes per GB, refine later.
         String memory = "2G"  # TODO: Safe estimate, refine later.  
+        String dockerImage = "quay.io/biocontainers/bcftools:1.9--ha228f0b_3"
     }
     
     command {
@@ -115,6 +116,7 @@ task Stats {
         cpu: threads + 1
         time_minutes: timeMinutes
         memory: memory
+        docker: dockerImage
     }
 
     parameter_meta {
