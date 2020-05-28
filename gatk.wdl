@@ -1553,8 +1553,8 @@ task SplitNCigarReads {
 
 task VariantEval {
     input {
-        Array[File] inputVcfs
-        Array[File] inputVcfsIndex
+        Array[File] evalVcfs
+        Array[File] evalVcfsIndex
         Array[File] comparisonVcfs = []
         Array[File] comparisonVcfsIndex = []
         File? referenceFasta
@@ -1574,7 +1574,7 @@ task VariantEval {
         String memory = "5G"
         String javaXmx = "4G"
         # TODO: Refine estimate. For now 4 minutes per GB of input.
-        Int timeMinutes = ceil(size(flatten([inputVcfs, comparisonVcfs]), "G") * 4)
+        Int timeMinutes = ceil(size(flatten([evalVcfs, comparisonVcfs]), "G") * 4)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
 
@@ -1584,7 +1584,7 @@ task VariantEval {
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         VariantFiltration \
         -O ~{outputPath} \
-        ~{true="--eval" false="" length(inputVcfs) > 0} ~{sep=" --eval " inputVcfs} \
+        ~{true="--eval" false="" length(evalVcfs) > 0} ~{sep=" --eval " evalVcfs} \
         ~{true="--comparison" false="" length(comparisonVcfs) > 0} ~{sep=" --comparison " comparisonVcfs} \
         ~{"-R " + referenceFasta} \
         ~{"--dbsnp " + dbsnpVCF } \
@@ -1609,12 +1609,22 @@ task VariantEval {
         time_minutes: timeMinutes
     }
     parameter_meta {
+        evalVcfs: {description: "Variant sets to evaluate." category: "required"}
+        evalVcfsIndex: {description: "Indexes for the variant sets.", category: "required"}
+        comparisonVcfs: {description: "Compare set vcfs.", category: "advanced"}
+        comparisonVcfsIndex: {description: "Indexes for the compare sets.", category: "advanced"}
+        evalModules: {description: "One or more specific eval modules to apply to the eval track(s) (in addition to the standard modules, unless doNotUseAllStandardModules=true)", category: "common"}
+        stratificationModules: {description: "One or more specific stratification modules to apply to the eval track(s) (in addition to the standard stratifications, unless doNotUseAllStandardStratifications=true)", category: "common"}
+        samples: {description: "Derive eval and comp contexts using only these sample genotypes, when genotypes are available in the original context." , category: "advanced"}  # Advanced because this description is impossible to understand...
+        mergeEvals: {description: "If provided, all evalVcf tracks will be merged into a single eval track", category: "common"}
+        doNotUseAllStandardModules: {description: "Do not use the standard modules by default (instead, only those that are specified with the evalModules option).", category: "common"}
+        doNotUseAllStandardStratifications: {description: "Do not use the standard stratification modules by default (instead, only those that are specified with the stratificationModules option).", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "common"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "common"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "common"}
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
-        outputPath: {description: "The location the output table should be written.", category: "common"}
+        outputPath: {description: "The location the output table should be written.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
