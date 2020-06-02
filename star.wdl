@@ -103,7 +103,8 @@ task Star {
 
         Int runThreadN = 4
         String memory = "~{5 + ceil(size(indexFiles, "G"))}G"
-        Int timeMinutes = 1 + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
+        # 1 minute initialization + time reading in index + time aligning data.
+        Int timeMinutes = 1 + ceil(size(indexFiles, "G") / 2) + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
