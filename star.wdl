@@ -103,7 +103,8 @@ task Star {
 
         Int runThreadN = 4
         # Use a margin of 30% index size. Real memory usage is ~30 GiB for a 27 GiB index. 
-        String memory = "~{1 + ceil(size(indexFiles, "G") * 1.3)}G"
+        Int memoryGb = 1 + ceil(size(indexFiles, "G") * 1.3)
+        String memory = "~{memoryGb}G"
         # 1 minute initialization + time reading in index (1 minute per G) + time aligning data.
         Int timeMinutes = 1 + ceil(size(indexFiles, "G")) + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
