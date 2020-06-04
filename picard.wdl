@@ -87,7 +87,8 @@ task CollectMultipleMetrics {
 
         String memory = "9G"
         String javaXmx = "8G"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
+        # Additional * 2 because picard multiple metrics reads the reference fasta twice.
+        Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
@@ -203,7 +204,7 @@ task CollectRnaSeqMetrics {
 
         String memory = "9G"
         String javaXmx =  "8G"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 12)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 

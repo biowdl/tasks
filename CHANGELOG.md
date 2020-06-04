@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Take into account reference fasta size for Picard metrics.
 + Take into account index size for STAR alignment time requirement.
 + Added a log output for STAR.
 + Added report output to Hisat2.
