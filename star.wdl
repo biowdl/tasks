@@ -102,9 +102,10 @@ task Star {
         Int? limitBAMsortRAM
 
         Int runThreadN = 4
-        String memory = "~{5 + ceil(size(indexFiles, "G"))}G"
-        # 1 minute initialization + time reading in index + time aligning data.
-        Int timeMinutes = 1 + ceil(size(indexFiles, "G") / 2) + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
+        # Use a margin of 30% index size. Real memory usage is ~30 GiB for a 27 GiB index. 
+        String memory = "~{1 + ceil(size(indexFiles, "G") * 1.3)}G"
+        # 1 minute initialization + time reading in index (1 minute per G) + time aligning data.
+        Int timeMinutes = 1 + ceil(size(indexFiles, "G")) + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
