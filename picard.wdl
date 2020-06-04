@@ -204,6 +204,7 @@ task CollectRnaSeqMetrics {
 
         String memory = "9G"
         String javaXmx =  "8G"
+        # With 6 minutes per G there were several timeouts. 
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 12)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
