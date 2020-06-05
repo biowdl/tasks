@@ -38,8 +38,13 @@ task Fastqc {
         String? dir
 
         Int threads = 1
-        # Fastqc uses 250MB per thread in its wrapper.
-        String memory = "~{250 + 250 * threads}M"
+        # Set javaXmx a little high. Equal to fastqc default with 7 threads.
+        # This is because some fastq files need more memory. 2G per core
+        # is a nice cluster default, so we use all the rest of the memory for
+        # fastqc so we should have as little OOM crashes as possible even with
+        # weird edge case fastq's.
+        String javaXmx="1750M"  
+        String memory = "2G"
         Int timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
         Array[File]? NoneArray
@@ -53,26 +58,32 @@ task Fastqc {
     # Just as fastqc does it.
     String reportDir = outdirPath + "/" + sub(name, "\.[^\.]*$", "_fastqc")
 
-    command {
+    # We reimplement the perl wrapper here. This is the advantage that it gives
+    # us more control over the amount of memory used.
+    command <<<
         set -e
         mkdir -p ~{outdirPath}
-        fastqc \
-        ~{"--outdir " + outdirPath} \
-        ~{true="--casava" false="" casava} \
-        ~{true="--nano" false="" nano} \
-        ~{true="--nofilter" false="" noFilter} \
-        ~{true="--extract" false="" extract} \
-        ~{true="--nogroup" false="" nogroup} \
-        ~{"--min_length " + minLength } \
-        ~{"--format " + format} \
-        ~{"--threads " + threads} \
-        ~{"--contaminants " + contaminants} \
-        ~{"--adapters " + adapters} \
-        ~{"--limits " + limits} \
-        ~{"--kmers " + kmers} \
-        ~{"--dir " + dir} \
+        FASTQC_DIR="/usr/local/opt/fastqc-0.11.9"
+        export CLASSPATH="$FASTQC_DIR:$FASTQC_DIR/sam-1.103.jar:$FASTQC_DIR/jbzip2-0.9.jar:$FASTQC_DIR/cisd-jhdf5.jar"
+        java -Djava.awt.headless=true -XX:ParallelGCThreads=1 \
+        -Xms200M -Xmx~{javaXmx} \
+        ~{"-Dfastqc.output_dir=" + outdirPath} \
+        ~{true="-Dfastqc.casava=true" false="" casava} \
+        ~{true="-Dfastqc.nano=true" false="" nano} \
+        ~{true="-Dfastqc.nofilter=true" false="" noFilter} \
+        ~{true="-Dfastqc.unzip=true" false="" extract} \
+        ~{true="-Dfastqc.nogroup=true" false="" nogroup} \
+        ~{"-Dfastqc.min_length=" + minLength} \
+        ~{"-Dfastqc.sequence_format=" + format} \
+        ~{"-Dfastqc.threads=" + threads} \
+        ~{"-Dfastqc.contaminant_file=" + contaminants} \
+        ~{"-Dfastqc.adapter_file=" + adapters} \
+        ~{"-Dfastqc.limits_file=" + limits} \
+        ~{"-Dfastqc.kmer_size=" + kmers} \
+        ~{"-Djava.io.tmpdir=" + dir} \
+        uk.ac.babraham.FastQC.FastQCApplication
         ~{seqFile}
-    }
+    >>>
 
     output {
         File? rawReport = if extract then reportDir + "/fastqc_data.txt" else NoneFile
