@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ The FastQC task now talks to the Java directly instead of using the included
+  Perl wrapper for FastQC. This has the advantage that memory and threads can
+  be set independently. A rather high maximum heap size of 1750MB (Xmx1750M) 
+  was set, as OOM errors occurred frequently on some fastqs.
 + Take into account reference fasta size for Picard metrics.
 + Take into account index size for STAR alignment time requirement.
 + Added a log output for STAR.
