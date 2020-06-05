@@ -58,7 +58,7 @@ task Fastqc {
     # Just as fastqc does it.
     String reportDir = outdirPath + "/" + sub(name, "\.[^\.]*$", "_fastqc")
 
-    # We reimplement the perl wrapper here. This is the advantage that it gives
+    # We reimplement the perl wrapper here. This has the advantage that it gives
     # us more control over the amount of memory used.
     command <<<
         set -e
@@ -81,7 +81,7 @@ task Fastqc {
         ~{"-Dfastqc.limits_file=" + limits} \
         ~{"-Dfastqc.kmer_size=" + kmers} \
         ~{"-Djava.io.tmpdir=" + dir} \
-        uk.ac.babraham.FastQC.FastQCApplication
+        uk.ac.babraham.FastQC.FastQCApplication \
         ~{seqFile}
     >>>
 
