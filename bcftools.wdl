@@ -59,7 +59,10 @@ task Bcf2Vcf {
 task Stats {
     input {
         File inputVcf
+        File inputVcfIndex
         File? compareVcf
+        File? compareVcfIndex
+        String outputPath = basename(inputVcf) + ".stats"
         String? afBins
         String? afTag
         Boolean firstAlleleOnly = false 
@@ -88,7 +91,9 @@ task Stats {
     }
     
     command {
-        bcftools \
+        set -e 
+        mkdir -p $(dirname ~{outputPath})
+        bcftools stats \
         ~{"--af-bins " + afBins} \
         ~{"--af-tag " + afTag} \
         ~{true="--1st-allele-only" false="" firstAlleleOnly} \
@@ -109,7 +114,11 @@ task Stats {
         ~{"--user-tstv " + userTsTv} \
         --threads ~{threads} \
         ~{true="--verbose" false="" verbose} \
-        ~{inputVcf} ~{compareVcf}
+        ~{inputVcf} ~{compareVcf} > ~{outputPath}
+    }
+
+    output {
+        File stats = outputPath
     }
 
     runtime {
@@ -124,10 +133,10 @@ task Stats {
         compareVcf: {description: "When inputVcf and compareVCF are given, the program generates separate stats for intersection and the complements. By default only sites are compared, samples must be given to include also sample columns.", category: "common"}
         afBins: {description: "Allele frequency bins, a list (0.1,0.5,1) or a file (0.1\n0.5\n1).", category: "advanced"}
         afTag: {description: "Allele frequency tag to use, by default estimated from AN,AC or GT.", category: "advanded"}
-        firstAlleleOnly: {description: "Include only 1st allele at multiallelic sites." category: "advanced"}
+        firstAlleleOnly: {description: "Include only 1st allele at multiallelic sites.", category: "advanced"}
         collapse: {description: "Treat as identical records with <snps|indels|both|all|some|none>, see man page for details.", category: "advanced"}
         depth: {description: "Depth distribution: min,max,bin size [0,500,1].", category: "advanced"}
-        exclude: {description: "Exclude sites for which the expression is true (see man page for details)." category: "advanced"}
+        exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
         exons: {description: "Tab-delimited file with exons for indel frameshifts (chr,from,to; 1-based, inclusive, bgzip compressed).", category: "advanced"}
         applyFilters: {description: "Require at least one of the listed FILTER strings (e.g. \"PASS,.\").", category: "advanced"}
         fastaRef: {description: "Faidx indexed reference sequence file to determine INDEL context.", category: "advanced"}
