@@ -1575,15 +1575,15 @@ task VariantEval {
         String javaXmx = "4G"
         # TODO: Refine estimate. For now 4 minutes per GB of input.
         Int timeMinutes = ceil(size(flatten([evalVcfs, comparisonVcfs]), "G") * 4)
-        String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
+        String dockerImage = "quay.io/biocontainers/gatk4:4.1.7.0--py38_0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
-        VariantFiltration \
-        -O ~{outputPath} \
+        VariantEval \
+        --output ~{outputPath} \
         ~{true="--eval" false="" length(evalVcfs) > 0} ~{sep=" --eval " evalVcfs} \
         ~{true="--comparison" false="" length(comparisonVcfs) > 0} ~{sep=" --comparison " comparisonVcfs} \
         ~{"-R " + referenceFasta} \
