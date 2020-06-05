@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Added bcftools stats task.
++ Added GATK VariantEval task.
 + Added a log output for STAR.
 + Added report output to Hisat2.
 + Added output with all reports to gffcompare.
