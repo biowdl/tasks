@@ -1609,7 +1609,7 @@ task VariantEval {
         time_minutes: timeMinutes
     }
     parameter_meta {
-        evalVcfs: {description: "Variant sets to evaluate." category: "required"}
+        evalVcfs: {description: "Variant sets to evaluate.", category: "required"}
         evalVcfsIndex: {description: "Indexes for the variant sets.", category: "required"}
         comparisonVcfs: {description: "Compare set vcfs.", category: "advanced"}
         comparisonVcfsIndex: {description: "Indexes for the compare sets.", category: "advanced"}
