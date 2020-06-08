@@ -129,8 +129,10 @@ task Stats {
     }
 
     parameter_meta {
-        inputVcf: {description: "The vcf to be analysed.", category: "required"}
+        inputVcf: {description: "The VCF to be analysed.", category: "required"}
+        inputVcfIndex: {description: "The index for the input VCF.", category: "required"}
         compareVcf: {description: "When inputVcf and compareVCF are given, the program generates separate stats for intersection and the complements. By default only sites are compared, samples must be given to include also sample columns.", category: "common"}
+        compareVcfIndex: {description: "Index for the compareVcf.", category: "common"}
         afBins: {description: "Allele frequency bins, a list (0.1,0.5,1) or a file (0.1\n0.5\n1).", category: "advanced"}
         afTag: {description: "Allele frequency tag to use, by default estimated from AN,AC or GT.", category: "advanded"}
         firstAlleleOnly: {description: "Include only 1st allele at multiallelic sites.", category: "advanced"}
@@ -152,5 +154,9 @@ task Stats {
         userTsTv: {description: "<TAG[:min:max:n]>. Collect Ts/Tv stats for any tag using the given binning [0:1:100].", category: "advanced"}
         threads: {description: "Number of extra decompression threads [0].", category: "advanced"}
         verbose: {description: "Produce verbose per-site and per-sample output.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
     }
 }
