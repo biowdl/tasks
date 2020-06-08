@@ -1595,7 +1595,6 @@ task VariantEval {
         ~{true="-EV" false="" length(evalModules) > 0} ~{sep=" -EV " evalModules} \
         ~{true="-ST" false="" length(stratificationModules) > 0} ~{sep=" -ST " stratificationModules} \
         ~{true="--merge-evals" false="" mergeEvals}
-
     }
 
     output {
