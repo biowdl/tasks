@@ -17,6 +17,8 @@ version 4.0.0-develop
   was set, as OOM errors occurred frequently on some fastqs.
 + Take into account reference fasta size for Picard metrics.
 + Take into account index size for STAR alignment time requirement.
++ Added bcftools stats task.
++ Added GATK VariantEval task.
 + Added a log output for STAR.
 + Added report output to Hisat2.
 + Added output with all reports to gffcompare.
