@@ -35,7 +35,7 @@ task GenomeGenerate {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{genomeDir})"
+        mkdir -p ~{genomeDir}
         STAR \
         --runMode genomeGenerate \
         --runThreadN ~{threads} \
@@ -50,7 +50,7 @@ task GenomeGenerate {
         File chrNameLength = "~{genomeDir}/chrNameLength.txt"
         File chrName = "~{genomeDir}/chrName.txt"
         File chrStart = "~{genomeDir}/chrStart.txt"
-        File genome = "~{genomeDir}/genome.txt"
+        File genome = "~{genomeDir}/Genome"
         File genomeParameters = "~{genomeDir}/genomeParameters.txt"
         File sa = "~{genomeDir}/SA"
         File saIndex = "~{genomeDir}/SAindex"
