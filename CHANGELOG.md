@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ TALON: Update `minimumIdentity` to correct type (float, was integer)
+  & set new default according to developers (0.8, was 0).
 + Added bcftools stats task.
 + Added GATK VariantEval task.
 + Added a log output for STAR.
