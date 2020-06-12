@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ STAR: Add options regarding alignment score and read length for tweaking when
+  processing rRNA depleted samples.
 + TALON: Update `minimumIdentity` to correct type (float, was integer)
   & set new default according to developers (0.8, was 0).
 + Added bcftools stats task.
