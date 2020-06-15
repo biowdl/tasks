@@ -69,7 +69,7 @@ task ChunkedScatter {
 task ScatterRegions {
     input {
         File inputFile
-        String? prefix 
+        String prefix = "scatters/scatter-" 
         Boolean splitContigs = false
         Int scatterSizeMillions = 1000
         Int? scatterSize
