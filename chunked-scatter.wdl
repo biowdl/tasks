@@ -101,7 +101,7 @@ task ScatterRegions {
     }
 
     parameter_meta {
-        inputFile: {description: "The input file, either a bed file or a sequence dict. Which format is used is detected by the extension: '.bed', '.fai' or '.dict'." category: "required"}
+        inputFile: {description: "The input file, either a bed file or a sequence dict. Which format is used is detected by the extension: '.bed', '.fai' or '.dict'.", category: "required"}
         prefix: {description: "The prefix of the ouput files. Output will be named like: <PREFIX><N>.bed, in which N is an incrementing number. Default 'scatter-'.", category: "advanced"}
         splitContigs: {description: "If set, contigs are allowed to be split up over multiple files.", category: "advanced"}
         scatterSizeMillions: {description: "Over how many million base pairs should be scattered.", category: "common"}
