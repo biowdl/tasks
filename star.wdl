@@ -95,10 +95,10 @@ task Star {
         String outFileNamePrefix
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
-        Int outFilterScoreMin = 0
-        Float outFilterScoreMinOverLread = 0.66
-        Int outFilterMatchNmin = 0
-        Float outFilterMatchNminOverLread = 0.66
+        Int? outFilterScoreMin
+        Float? outFilterScoreMinOverLread
+        Int? outFilterMatchNmin
+        Float? outFilterMatchNminOverLread
         String? outStd
         String? twopassMode = "Basic"
         Array[String]? outSAMattrRGline
