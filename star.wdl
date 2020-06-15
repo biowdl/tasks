@@ -123,10 +123,10 @@ task Star {
         --genomeDir ~{sub(indexFiles[0], basename(indexFiles[0]), "")} \
         --outSAMtype ~{outSAMtype} \
         --readFilesCommand ~{readFilesCommand} \
-        --outFilterScoreMin ~{outFilterScoreMin} \
-        --outFilterScoreMinOverLread ~{outFilterScoreMinOverLread} \
-        --outFilterMatchNmin ~{outFilterMatchNmin} \
-        --outFilterMatchNminOverLread ~{outFilterMatchNminOverLread} \
+        ~{"--outFilterScoreMin " + outFilterScoreMin} \
+        ~{"--outFilterScoreMinOverLread " + outFilterScoreMinOverLread} \
+        ~{"--outFilterMatchNmin " + outFilterMatchNmin} \
+        ~{"--outFilterMatchNminOverLread " + outFilterMatchNminOverLread} \
         ~{"--outSAMunmapped " + outSAMunmapped} \
         ~{"--runThreadN " + runThreadN} \
         ~{"--outStd " + outStd} \
