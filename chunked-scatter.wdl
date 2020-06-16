@@ -64,3 +64,52 @@ task ChunkedScatter {
                       category: "advanced"}
     }
 }
+
+
+task ScatterRegions {
+    input {
+        File inputFile
+        String prefix = "scatters/scatter-" 
+        Boolean splitContigs = false
+        Int scatterSizeMillions = 1000
+        Int? scatterSize
+        Int timeMinutes = 2
+        String memory = "256M"
+        String dockerImage = "biowdl/chunked-scatter:latest"
+    }
+
+    String finalSize = if defined(scatterSize) then "~{scatterSize}" else "~{scatterSizeMillions}000000"
+    
+    command {
+        scatter-regions \
+        --print-paths \
+        --scatter-size ~{finalSize} \
+        ~{true="--split-contigs" false="" splitContigs} \
+        ~{"--prefix " + prefix} \
+        ~{inputFile} 
+    }
+
+    output {
+        Array[File] scatters = read_lines(stdout())
+    }
+    
+    runtime {
+        cpu: 1
+        memory: memory
+        docker: dockerImage
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        inputFile: {description: "The input file, either a bed file or a sequence dict. Which format is used is detected by the extension: '.bed', '.fai' or '.dict'.", category: "required"}
+        prefix: {description: "The prefix of the ouput files. Output will be named like: <PREFIX><N>.bed, in which N is an incrementing number. Default 'scatter-'.", category: "advanced"}
+        splitContigs: {description: "If set, contigs are allowed to be split up over multiple files.", category: "advanced"}
+        scatterSizeMillions: {description: "Over how many million base pairs should be scattered.", category: "common"}
+        scatterSize: {description: "Overrides scatterSizeMillions with a smaller value if set.", category: "advanced"}
+
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                category: "advanced"}
+    }
+}

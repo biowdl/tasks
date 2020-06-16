@@ -214,6 +214,7 @@ task ScatterRegions {
     input {
         File referenceFasta
         File referenceFastaDict
+        Int scatterSizeMillions = 1000
         Int? scatterSize
         File? regions
         Boolean notSplitContigs = false
@@ -230,6 +231,7 @@ task ScatterRegions {
     # linking. This path must be in the containers filesystem, otherwise the
     # linking does not work.
     String outputDirPath = "scatters"
+    String finalSize = if defined(scatterSize) then "~{scatterSize}" else "~{scatterSizeMillions}000000"
 
     command <<<
         set -e -o pipefail
@@ -237,7 +239,7 @@ task ScatterRegions {
         biopet-scatterregions -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
           -R ~{referenceFasta} \
           -o ~{outputDirPath} \
-          ~{"-s " + scatterSize} \
+          ~{"-s " + finalSize} \
           ~{"-L " + regions} \
           ~{"--bamFile " + bamFile} \
           ~{true="--notSplitContigs" false="" notSplitContigs}
@@ -271,7 +273,8 @@ task ScatterRegions {
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
-        scatterSize: {description: "Equivalent to biopet scatterregions' `-s` option.", category: "common"}
+        scatterSizeMillions: {description: "Over how many million base pairs should be scattered.", category: "common"}
+        scatterSize: {description: "Overrides scatterSizeMillions with a smaller value if set.", category: "advanced"}
         regions: {description: "The regions to be scattered.", category: "advanced"}
         notSplitContigs: {description: "Equivalent to biopet scatterregions' `--notSplitContigs` flag.",
                           category: "advanced"}

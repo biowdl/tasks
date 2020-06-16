@@ -1574,7 +1574,7 @@ task VariantEval {
         String memory = "5G"
         String javaXmx = "4G"
         # TODO: Refine estimate. For now 4 minutes per GB of input.
-        Int timeMinutes = ceil(size(flatten([evalVcfs, comparisonVcfs]), "G") * 4)
+        Int timeMinutes = ceil(size(flatten([evalVcfs, comparisonVcfs, select_all([referenceFasta, dbsnpVCF])]), "G") * 20)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.7.0--py38_0"
     }
 

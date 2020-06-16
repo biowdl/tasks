@@ -51,11 +51,11 @@ task MultiQC {
         Boolean megaQCUpload = false # This must be actively enabled in my opinion. The tools default is to upload.
         File? config  # A directory
         String? clConfig
-    
-        String memory = "4G"
-        Int timeMinutes = 120
+        String? memory
+        Int timeMinutes = 2 + ceil(size(reports, "G") * 8)
         String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
     }
+    Int memoryGb = 2 + ceil(size(reports, "G"))
 
     # This is where the reports end up. It does not need to be changed by the
     # user. It is full of symbolic links, so it is not of any use to the user
@@ -132,7 +132,7 @@ task MultiQC {
     }
 
     runtime {
-        memory: memory
+        memory: select_first([memory, "~{memoryGb}G"])
         time_minutes: timeMinutes
         docker: dockerImage
     }

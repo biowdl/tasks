@@ -11,11 +11,18 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Tuned resource requirements for GATK VariantEval, MultiQC, Picard metrics and 
+  STAR.
++ Added a new task for [scatter-regions](https://github.com/biowdl/chunked-scatter) 
+  that replaces biopet-scatterregions. 
++ The FastQC task now talks to the Java directly instead of using the included
+  Perl wrapper for FastQC. This has the advantage that memory and threads can
+  be set independently. A rather high maximum heap size of 1750MB (Xmx1750M) 
+  was set, as OOM errors occurred frequently on some fastqs.
 + STAR: Add options regarding alignment score (regarding read length as well)
   for tweaking when processing rRNA depleted samples.
 + TALON: Update `minimumIdentity` to correct type (float, was integer)
   & set new default according to developers (0.8, was 0).
-+ Added bcftools stats task.
 + Added GATK VariantEval task.
 + Added a log output for STAR.
 + Added report output to Hisat2.
