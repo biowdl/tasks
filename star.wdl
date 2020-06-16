@@ -95,6 +95,10 @@ task Star {
         String outFileNamePrefix
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
+        Int? outFilterScoreMin
+        Float? outFilterScoreMinOverLread
+        Int? outFilterMatchNmin
+        Float? outFilterMatchNminOverLread
         String? outStd
         String? twopassMode = "Basic"
         Array[String]? outSAMattrRGline
@@ -124,6 +128,10 @@ task Star {
         --genomeDir ~{sub(indexFiles[0], basename(indexFiles[0]), "")} \
         --outSAMtype ~{outSAMtype} \
         --readFilesCommand ~{readFilesCommand} \
+        ~{"--outFilterScoreMin " + outFilterScoreMin} \
+        ~{"--outFilterScoreMinOverLread " + outFilterScoreMinOverLread} \
+        ~{"--outFilterMatchNmin " + outFilterMatchNmin} \
+        ~{"--outFilterMatchNminOverLread " + outFilterMatchNminOverLread} \
         ~{"--outSAMunmapped " + outSAMunmapped} \
         ~{"--runThreadN " + runThreadN} \
         ~{"--outStd " + outStd} \
@@ -151,6 +159,10 @@ task Star {
         outFileNamePrefix: {description: "The prefix for the output files. May include directories.", category: "required"}
         outSAMtype: {description: "The type of alignment file to be produced. Currently only `BAM SortedByCoordinate` is supported.", category: "advanced"}
         readFilesCommand: {description: "Equivalent to star's `--readFilesCommand` option.", category: "advanced"}
+        outFilterScoreMin: {description: "Equivalent to star's `--outFilterScoreMin` option.", category: "advanced"}
+        outFilterScoreMinOverLread: {description: "Equivalent to star's `--outFilterScoreMinOverLread` option.", category: "advanced"}
+        outFilterMatchNmin: {description: "Equivalent to star's `--outFilterMatchNmin` option.", category: "advanced"}
+        outFilterMatchNminOverLread: {description: "Equivalent to star's `--outFilterMatchNminOverLread` option.", category: "advanced"}
         outStd: {description: "Equivalent to star's `--outStd` option.", category: "advanced"}
         twopassMode: {description: "Equivalent to star's `--twopassMode` option.", category: "advanced"}
         outSAMattrRGline: {description: "The readgroup lines for the fastq pairs given (in the same order as the fastq files).", category: "common"}
@@ -159,8 +171,7 @@ task Star {
         runThreadN: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 

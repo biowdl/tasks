@@ -19,7 +19,10 @@ version 4.0.0-develop
   Perl wrapper for FastQC. This has the advantage that memory and threads can
   be set independently. A rather high maximum heap size of 1750MB (Xmx1750M) 
   was set, as OOM errors occurred frequently on some fastqs.
-+ Added bcftools stats task.
++ STAR: Add options regarding alignment score (regarding read length as well)
+  for tweaking when processing rRNA depleted samples.
++ TALON: Update `minimumIdentity` to correct type (float, was integer)
+  & set new default according to developers (0.8, was 0).
 + Added GATK VariantEval task.
 + Added a log output for STAR.
 + Added report output to Hisat2.
