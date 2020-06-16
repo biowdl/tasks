@@ -17,6 +17,10 @@ version 4.0.0-develop
   was set, as OOM errors occurred frequently on some fastqs.
 + Take into account reference fasta size for Picard metrics.
 + Take into account index size for STAR alignment time requirement.
++ STAR: Add options regarding alignment score (regarding read length as well)
+  for tweaking when processing rRNA depleted samples.
++ TALON: Update `minimumIdentity` to correct type (float, was integer)
+  & set new default according to developers (0.8, was 0).
 + Added bcftools stats task.
 + Added GATK VariantEval task.
 + Added a log output for STAR.

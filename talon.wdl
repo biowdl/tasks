@@ -380,7 +380,7 @@ task Talon {
         File databaseFile
         String genomeBuild
         Float minimumCoverage = 0.9
-        Int minimumIdentity = 0
+        Float minimumIdentity = 0.8
         String outputPrefix
 
         Int cores = 4
