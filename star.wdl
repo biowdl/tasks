@@ -106,15 +106,17 @@ task Star {
         Int? limitBAMsortRAM
 
         Int runThreadN = 4
-        # Use a margin of 30% index size. Real memory usage is ~30 GiB for a 27 GiB index. 
-        Int memoryGb = 1 + ceil(size(indexFiles, "G") * 1.3)
-        # For some reason doing above calculation inside a string does not work.
-        # So we solve it with an optional memory string and using select_first.
         String? memory
         # 1 minute initialization + time reading in index (1 minute per G) + time aligning data.
         Int timeMinutes = 1 + ceil(size(indexFiles, "G")) + ceil(size(flatten([inputR1, inputR2]), "G") * 300 / runThreadN)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
+
+    # Use a margin of 30% index size. Real memory usage is ~30 GiB for a 27 GiB index. 
+    Int memoryGb = 1 + ceil(size(indexFiles, "G") * 1.3)
+    # For some reason doing above calculation inside a string does not work.
+    # So we solve it with an optional memory string and using select_first
+    # in the runtime section.
 
     #TODO Could be extended for all possible output extensions
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
