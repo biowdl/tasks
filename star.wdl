@@ -108,7 +108,7 @@ task Star {
         # So we solve it with an optional memory string and using select_first.
         String? memory
         # 1 minute initialization + time reading in index (1 minute per G) + time aligning data.
-        Int timeMinutes = 1 + ceil(size(indexFiles, "G")) + ceil(size(flatten([inputR1, inputR2]), "G") * 180 / runThreadN)
+        Int timeMinutes = 1 + ceil(size(indexFiles, "G")) + ceil(size(flatten([inputR1, inputR2]), "G") * 300 / runThreadN)
         String dockerImage = "quay.io/biocontainers/star:2.7.3a--0"
     }
 
