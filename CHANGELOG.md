@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Update the image for chunked-scatter and make use of new features from 0.2.0.
 + Tuned resource requirements for GATK VariantEval, MultiQC, Picard metrics and 
   STAR.
 + Added a new task for [scatter-regions](https://github.com/biowdl/chunked-scatter) 
