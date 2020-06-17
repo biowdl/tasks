@@ -28,27 +28,28 @@ task ChunkedScatter {
         Int? overlap
         Int? minimumBasesPerFile
 
+        String memory = "256M"
         Int timeMinutes = 2
-        String dockerImage = "quay.io/biocontainers/chunked-scatter:0.1.0--py_0"
+        String dockerImage = "quay.io/biocontainers/chunked-scatter:0.2.0--py_0"
     }
 
     command {
-        set -e
-        mkdir -p ~{prefix}
         chunked-scatter \
+        --print-paths \
         -p ~{prefix} \
-        -i ~{inputFile} \
         ~{"-c " + chunkSize} \
         ~{"-o " + overlap} \
-        ~{"-m " + minimumBasesPerFile}
+        ~{"-m " + minimumBasesPerFile} \
+        ~{inputFile}
     }
 
     output {
-        Array[File] scatters = glob(prefix + "*.bed")
+        Array[File] scatters = read_lines(stdout())
     }
 
     runtime {
-        memory: "4G"
+        cpu: 1
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -60,6 +61,7 @@ task ChunkedScatter {
         overlap: {description: "Equivalent to chunked-scatter's `-o` option.", category: "advanced"}
         minimumBasesPerFile: {description: "Equivalent to chunked-scatter's `-m` option.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
     }
@@ -75,7 +77,7 @@ task ScatterRegions {
         Int? scatterSize
         Int timeMinutes = 2
         String memory = "256M"
-        String dockerImage = "biowdl/chunked-scatter:latest"
+        String dockerImage = "quay.io/biocontainers/chunked-scatter:0.2.0--py_0"
     }
 
     String finalSize = if defined(scatterSize) then "~{scatterSize}" else "~{scatterSizeMillions}000000"
