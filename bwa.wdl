@@ -132,7 +132,9 @@ task Kit {
     }
 
     runtime {
-        cpu: threads + 1  # One thread for bwa-postalt + samtools.
+        # One extra thread for bwa-postalt + samtools is not needed.
+        # These only use 5-10% of compute power and not always simultaneously.
+        cpu: threads  
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
