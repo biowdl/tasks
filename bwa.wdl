@@ -92,7 +92,7 @@ task Kit {
         Boolean sixtyFour = false
 
         Int threads = 4
-        String memory = 1 + ceil(size(bwaIndex.indexFiles, "G"))
+        String memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G"))
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
     }
@@ -121,7 +121,7 @@ task Kit {
         # One extra thread for bwa-postalt + samtools is not needed.
         # These only use 5-10% of compute power and not always simultaneously.
         cpu: threads  
-        memory: memory
+        memory: "~{memoryGb}G"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -136,7 +136,7 @@ task Kit {
         sixtyFour: {description: "Whether or not the index uses the '.64' suffixes.", category: "common"}
         threads: {description: "The number of threads to use for alignment.", category: "advanced"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
