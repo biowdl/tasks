@@ -117,13 +117,7 @@ task Kit {
         k8 /opt/conda/bin/bwa-postalt.js \
           -p ~{outputPrefix}.hla \
           ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
-        samtools sort \
-          ~{"-@ " + sortThreads} \
-          -m ~{sortMemoryPerThread} \
-          -l ~{compressionLevel} \
-          - \
-          -o ~{outputPrefix}.aln.bam
-        samtools index ~{outputPrefix}.aln.bam ~{outputPrefix}.aln.bai
+        samtools view -b -1 - > ~{outputPrefix}.aln.bam
     }
 
     output {
