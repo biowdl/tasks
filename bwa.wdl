@@ -94,7 +94,7 @@ task Kit {
         Int threads = 4
         String memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G"))
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
-        String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
+        String dockerImage = "biowdl/bwakit:0.7.17-dev-experimental"
     }
 
     command {
