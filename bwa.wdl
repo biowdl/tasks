@@ -101,7 +101,7 @@ task Kit {
         Int sortMemoryPerThreadGb = 4
         Int compressionLevel = 1
         # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
-        Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
+        Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * (sortThreads + 1)
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         String dockerImage = "biowdl/bwakit:0.7.17-dev-experimental"
     }
