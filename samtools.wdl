@@ -370,8 +370,8 @@ task Sort {
         Boolean sortByName = false
         Int compressionLevel = 1
         Int threads = 0
-        Int memoryPerThread = 4
-        Int memoryGb = 1 + (threads + 1) * memoryPerThread
+        Int memoryPerThreadGb = 4
+        Int memoryGb = 1 + (threads + 1) * memoryPerThreadGb
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
     }
@@ -386,6 +386,7 @@ task Sort {
         -l ~{compressionLevel} \
         ~{true="-n" false="" sortByName} \
         ~{"--threads " + threads} \
+        -m ~{memoryPerThreadGb}G \
         -o ~{outputPath} \
         ~{inputBam}
         samtools index ~{outputPath} ~{bamIndexPath}
@@ -410,6 +411,7 @@ task Sort {
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
         compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
         memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
+        memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
