@@ -389,7 +389,9 @@ task Sort {
         -m ~{memoryPerThreadGb}G \
         -o ~{outputPath} \
         ~{inputBam}
-        samtools index ~{outputPath} ~{bamIndexPath}
+        samtools index \
+        -@ ~{threads} \
+        ~{outputPath} ~{bamIndexPath}
     }
 
     output {
