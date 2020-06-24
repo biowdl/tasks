@@ -650,6 +650,52 @@ task ScatterIntervalList {
     }
 }
 
+task SortSam {
+    input {
+        File inputBam
+        String outputPath
+
+        Int XmxGb = 4
+        Int memoryGb = 1 + XmxGb
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
+        # A mulled container is needed to have both picard and bwa in one container.
+        # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
+        String dockerImage = "quay.io/biocontainers/picard:2.23.1--h37ae868_0"
+    }
+
+    command {
+        mkdir -p "$(dirname ~{outputPath})"
+        picard -Xmx~{XmxGb}G -XX:ParallelGCThreads=1 SortSam \
+        INPUT=/dev/stdin \
+        OUTPUT=~{outputPath} \
+        SORT_ORDER=coordinate \
+        CREATE_INDEX=true
+    }
+
+    output {
+        File outputBam = outputPath
+        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
+    }
+
+    runtime {
+        cpu: 1
+        memory: "~{memoryGb}G"
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBam: {description: "The unsorted input BAM file", category: "required"}
+        outputPath: {description: "The location the output BAM file should be written to.", category: "required"}
+        memoryGb: {description: "The amount of memory this job will use.", category: "advanced"}
+        XmxGb: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task SortVcf {
     input {
         Array[File]+ vcfFiles
