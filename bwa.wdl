@@ -92,7 +92,16 @@ task Kit {
         Boolean sixtyFour = false
 
         Int threads = 4
-        String memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G"))
+
+        # Samtools uses *additional* threads. So by default this option should
+        # not be used.
+        Int sortThreads = 0
+        # Compression uses zlib. Higher than level 2 causes enormous slowdowns.
+        # GATK/Picard default is level 2.
+        Int sortMemoryPerThreadGb = 4
+        Int compressionLevel = 1
+        # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
+        Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         String dockerImage = "biowdl/bwakit:0.7.17-dev-experimental"
     }
@@ -112,7 +121,7 @@ task Kit {
           ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
         samtools sort \
           ~{"-@ " + sortThreads} \
-          -m ~{sortMemoryPerThread} \
+          -m ~{sortMemoryPerThreadGb}G \
           -l ~{compressionLevel} \
           - \
           -o ~{outputPrefix}.aln.bam
@@ -121,6 +130,7 @@ task Kit {
 
     output {
         File outputBam = outputPrefix + ".aln.bam"
+        File outputBamIndex = outputPrefix + ".aln.bai"
     }
 
     runtime {
@@ -141,14 +151,18 @@ task Kit {
         readgroup: {description: "A readgroup identifier.", category: "common"}
         sixtyFour: {description: "Whether or not the index uses the '.64' suffixes.", category: "common"}
         threads: {description: "The number of threads to use for alignment.", category: "advanced"}
-
         memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
+        sortThreads: {description: "The number of additional threads to use for sorting.", category: "advanced"}
+        sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
+        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
 
         # outputs
         outputBam: "The produced BAM file."
+        outputBamIndex: "The index of the produced BAM file."
     }
 }
 
