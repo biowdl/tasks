@@ -28,7 +28,7 @@ task Sort {
         Int compressionLevel = 1
         Int threads = 1
         Int memoryPerThreadGb = 4
-        Int memoryGb = 1 + (threads + 1) * memoryPerThreadGb
+        Int memoryGb = 1 + threads * memoryPerThreadGb
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
     }
