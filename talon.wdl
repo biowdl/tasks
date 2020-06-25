@@ -32,7 +32,7 @@ task CreateAbundanceFileFromDatabase {
 
         String memory = "4G"
         Int timeMinutes = 30
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command {
@@ -88,7 +88,7 @@ task CreateGtfFromDatabase {
 
         String memory = "4G"
         Int timeMinutes = 30
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command {
@@ -137,12 +137,16 @@ task FilterTalonTranscripts {
         File databaseFile
         String annotationVersion
         String outputPrefix
+        Float maxFracA = 0.5
+        Int minCount = 5
+        Boolean allowGenomic = false
 
-        File? pairingsFile
+        File? datasetsFile
+        Int? minDatasets
 
         String memory = "4G"
         Int timeMinutes = 30
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command {
@@ -152,7 +156,11 @@ task FilterTalonTranscripts {
         --db=~{databaseFile} \
         -a ~{annotationVersion} \
         ~{"--o=" + outputPrefix + "_whitelist.csv"} \
-        ~{"-p " + pairingsFile}
+        --maxFracA=~{maxFracA} \
+        --minCount=~{minCount} \
+        ~{true="--allowGenomic" false="" allowGenomic} \
+        --datasets=~{datasetsFile} \
+        --minDatasets=~{minDatasets}
     }
 
     output {
@@ -170,7 +178,11 @@ task FilterTalonTranscripts {
         databaseFile: {description: "TALON database.", category: "required"}
         annotationVersion: {description: "Which annotation version to use.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        pairingsFile: {description: "A file indicating which datasets should be considered together.", category: "advanced"}
+        maxFracA: {description: "Maximum fraction of As to allow in the window located immediately after any read assigned to a novel transcript.", category: "advanced"}
+        minCount: {description: "Number of minimum occurrences required for a novel transcript PER dataset.", category: "advanced"}
+        allowGenomic: {description: "If this option is set, transcripts from the Genomic novelty category will be permitted in the output.", category: "advanced"}
+        datasetsFile: {description: "Datasets to include.", category: "advanced"}
+        minDatasets: {description: "Minimum number of datasets novel transcripts must be found in.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -190,7 +202,7 @@ task GetReadAnnotations {
 
         String memory = "4G"
         Int timeMinutes = 30
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command {
@@ -228,6 +240,54 @@ task GetReadAnnotations {
     }
 }
 
+task GetSpliceJunctions {
+    input {
+        File GTFfile
+        File databaseFile
+        File referenceGTF
+        String runMode = "intron"
+        String outputPrefix
+
+        String memory = "4G"
+        Int timeMinutes = 30
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+        talon_get_sjs \
+        --gtf ~{GTFfile} \
+        --db ~{databaseFile} \
+        --ref ~{referenceGTF} \
+        --mode ~{runMode} \
+        --outprefix ~{outputPrefix}
+    }
+
+    output {
+        
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        GTFfile: {description: "TALON GTF file from which to extract exons/introns.", category: "required"}
+        databaseFile: { description: "TALON database.", category: "required"}
+        referenceGTF: {description: "GTF reference file (ie GENCODE).", category: "required"}
+        runMode: {description: "Determines whether to include introns or exons in the output.", category: "required"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+}
+
 task InitializeTalonDatabase {
     input {
         File GTFfile
@@ -241,7 +301,7 @@ task InitializeTalonDatabase {
 
         String memory = "10G"
         Int timeMinutes = 60
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command {
@@ -293,7 +353,7 @@ task ReformatGtf {
 
         String memory = "4G"
         Int timeMinutes = 30
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command {
@@ -334,7 +394,7 @@ task SummarizeDatasets {
 
         String memory = "4G"
         Int timeMinutes = 50
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command {
@@ -386,7 +446,7 @@ task Talon {
         Int cores = 4
         String memory = "25G"
         Int timeMinutes = 2880
-        String dockerImage = "biocontainers/talon:v4.4.2_cv1"
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
     command <<<
