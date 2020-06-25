@@ -666,7 +666,7 @@ task SortSam {
     command {
         mkdir -p "$(dirname ~{outputPath})"
         picard -Xmx~{XmxGb}G -XX:ParallelGCThreads=1 SortSam \
-        INPUT=/dev/stdin \
+        INPUT=~{inputBam} \
         OUTPUT=~{outputPath} \
         SORT_ORDER=coordinate \
         CREATE_INDEX=true
