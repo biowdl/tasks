@@ -367,6 +367,8 @@ task GatherBamFiles {
 
         String memory = "4G"
         String javaXmx = "3G"
+        Int compressionLevel = 1
+        Boolean createMd5File = false
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 0.5)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
@@ -378,8 +380,9 @@ task GatherBamFiles {
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
+        COMPRESSION_LEVEL=~{compressionLevel} \
         CREATE_INDEX=true \
-        CREATE_MD5_FILE=true
+        CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
     }
 
     output {
@@ -658,7 +661,6 @@ task SortSam {
         File inputBam
         String outputPath
         Boolean sortByName = false
-        Boolean createIndex = true
         Boolean createMd5File = false
         Int maxRecordsInRam = 500000
         Int compressionLevel = 1
@@ -681,7 +683,7 @@ task SortSam {
         OUTPUT=~{outputPath} \
         MAX_RECORDS_IN_RAM=~{maxRecordsInRam} \
         SORT_ORDER=~{true="queryname" false="coordinate" sortByName} \
-        CREATE_INDEX=~{true="true" false="false" createIndex} \
+        CREATE_INDEX=true \
         COMPRESSION_LEVEL=~{compressionLevel} \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
 
