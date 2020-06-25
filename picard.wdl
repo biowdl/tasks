@@ -462,6 +462,8 @@ task MarkDuplicates {
         Array[File] inputBamIndexes
         String outputBamPath
         String metricsPath
+        Int compressionLevel = 1
+        Boolean createMd5File = false
 
         String memory = "9G"
         String javaXmx = "8G"
@@ -488,13 +490,14 @@ task MarkDuplicates {
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
         METRICS_FILE=~{metricsPath} \
+        COMPRESSION_LEVEL=~{compressionLevel} \
         VALIDATION_STRINGENCY=SILENT \
         ~{"READ_NAME_REGEX=" + read_name_regex} \
         OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
         CLEAR_DT="false" \
         CREATE_INDEX=true \
         ADD_PG_TAG_TO_READS=false \
-        CREATE_MD5_FILE=true
+        CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
     }
 
     output {
