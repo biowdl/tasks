@@ -669,7 +669,7 @@ task SortSam {
         # 4.000000001 which gets rounded to 5.
         # GATK Best practices uses 75000 here: https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L778
         Int XmxGb = ceil(maxRecordsInRam / 125001.0)
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
         # A mulled container is needed to have both picard and bwa in one container.
         # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
         String dockerImage = "quay.io/biocontainers/picard:2.23.1--h37ae868_0"

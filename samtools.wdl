@@ -373,7 +373,7 @@ task Sort {
         Int memoryPerThreadGb = 4
         Int memoryGb = 1 + (threads + 1) * memoryPerThreadGb
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
     }
 
     # Select first needed as outputPath is optional input. (bug in cromwell)
