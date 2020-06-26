@@ -20,6 +20,49 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
+task Markdup {
+    input {
+        Array[File] inputBams
+        String outputPath
+        Int threads = 1
+        Int compressionLevel = 1
+        Int? hashTableSize
+        Int? overFlowListSize
+        Int? sortBufferSize
+        Int? ioBufferSize
+        Boolean removeDuplicates = false 
+
+        # According to the manual sambamba markdup uses about 2G per 100 million reads.
+        Int memoryGb = 1 + ceil(size(inputBams, 'G') / 8)
+        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
+    }
+    String bamIndexPath = sub(outputPath, "\.bam$", ".bai")
+
+    command {
+        set -e 
+        mkdir -p "$(dirname ~{outputPath})"
+        sambamba markdup \
+        --nthreads ~{threads} \
+        -l ~{compressionLevel} \
+        ~{true="-r" false="" removeDuplicates} \
+        ~{"--hash-table-size " + hashTableSize} \
+        ~{"--overflow-list-size " + overFlowListSize} \
+        ~{"--sort-buffer-size " + sortBufferSize} \
+        ~{"--io-buffer-size " + ioBufferSize} \
+        ~{sep=' ' inputBams} ~{outputPath}
+        sambamba index ~{outputPath} ~{bamIndexPath} 
+    }
+
+    runtime {
+        memory: "~{memoryGb}G"
+        cpu: threads 
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+}
+
 task Sort {
     input {
         File inputBam
