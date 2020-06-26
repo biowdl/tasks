@@ -462,7 +462,6 @@ task GatherVcfs {
 task MarkDuplicates {
     input {
         Array[File]+ inputBams
-        Array[File] inputBamIndexes
         String outputBamPath
         String metricsPath
         Int compressionLevel = 1
@@ -519,7 +518,6 @@ task MarkDuplicates {
     parameter_meta {
         # inputs
         inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
-        inputBamIndexes: {description: "Th eindexes for the input BAM files.", category: "required"}
         outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
         metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
         read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
