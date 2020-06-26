@@ -94,9 +94,8 @@ task Sort {
         -m ~{memoryPerThreadGb}G \
         -o ~{outputPath} \
         ~{inputBam}
-        sambamba index \
-        ~{"--nthreads " + threads} \
-         ~{outputPath} ~{bamIndexPath}
+        # sambamba creates an index for us 
+        mv ~{outputPath}.bai ~{bamIndexPath}
     }
 
     output {
