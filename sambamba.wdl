@@ -25,7 +25,8 @@ task Markdup {
     input {
         Array[File] inputBams
         String outputPath
-        Int threads = 1
+        # Sambamba additional threads like samtools
+        Int threads = 0
         Int compressionLevel = 1
         Int? hashTableSize
         Int? overFlowListSize
@@ -52,7 +53,8 @@ task Markdup {
         ~{"--sort-buffer-size " + sortBufferSize} \
         ~{"--io-buffer-size " + ioBufferSize} \
         ~{sep=' ' inputBams} ~{outputPath}
-        sambamba index ~{outputPath} ~{bamIndexPath} 
+        # sambamba creates an index for us 
+        mv ~{outputPath}.bai ~{bamIndexPath}
     }
 
     output {
@@ -62,7 +64,7 @@ task Markdup {
 
     runtime {
         memory: "~{memoryGb}G"
-        cpu: threads 
+        cpu: threads + 1
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -74,9 +76,10 @@ task Sort {
         String outputPath = basename(inputBam, "\.bam") + ".sorted.bam"
         Boolean sortByName = false
         Int compressionLevel = 1
-        Int threads = 1
+        # Sambamba additional threads like samtools
+        Int threads = 0
         Int memoryPerThreadGb = 4
-        Int memoryGb = 1 + threads * memoryPerThreadGb
+        Int memoryGb = 1 + (threads + 1) * memoryPerThreadGb
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
     }
@@ -104,7 +107,7 @@ task Sort {
     }
 
     runtime {
-        cpu: threads
+        cpu: threads + 1
         memory: "~{memoryGb}G"
         docker: dockerImage
         time_minutes: timeMinutes
