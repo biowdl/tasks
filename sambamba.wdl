@@ -55,6 +55,11 @@ task Markdup {
         sambamba index ~{outputPath} ~{bamIndexPath} 
     }
 
+    output {
+        File outputBam = outputPath
+        File outputBamIndex = bamIndexPath
+    }
+
     runtime {
         memory: "~{memoryGb}G"
         cpu: threads 
