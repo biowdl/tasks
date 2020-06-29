@@ -25,7 +25,6 @@ task Markdup {
     input {
         Array[File] inputBams
         String outputPath
-        # Sambamba additional threads like samtools
         Int threads = 1
         Int compressionLevel = 1
         Int? hashTableSize
@@ -76,7 +75,6 @@ task Sort {
         String outputPath = basename(inputBam, "\.bam") + ".sorted.bam"
         Boolean sortByName = false
         Int compressionLevel = 1
-        # Sambamba additional threads like samtools
         Int threads = 1
         Int memoryPerThreadGb = 4
         Int memoryGb = 1 + threads * memoryPerThreadGb
@@ -122,7 +120,7 @@ task Sort {
         memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
         memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-        threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
+        threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         # outputs
         outputBam: {description: "Sorted BAM file."}
