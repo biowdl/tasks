@@ -26,7 +26,7 @@ task Markdup {
         Array[File] inputBams
         String outputPath
         # Sambamba additional threads like samtools
-        Int threads = 0
+        Int threads = 1
         Int compressionLevel = 1
         Int? hashTableSize
         Int? overFlowListSize
@@ -64,7 +64,7 @@ task Markdup {
 
     runtime {
         memory: "~{memoryGb}G"
-        cpu: threads + 1
+        cpu: threads
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -77,9 +77,9 @@ task Sort {
         Boolean sortByName = false
         Int compressionLevel = 1
         # Sambamba additional threads like samtools
-        Int threads = 0
+        Int threads = 1
         Int memoryPerThreadGb = 4
-        Int memoryGb = 1 + (threads + 1) * memoryPerThreadGb
+        Int memoryGb = 1 + threads * memoryPerThreadGb
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
     }
@@ -107,7 +107,7 @@ task Sort {
     }
 
     runtime {
-        cpu: threads + 1
+        cpu: threads
         memory: "~{memoryGb}G"
         docker: dockerImage
         time_minutes: timeMinutes
