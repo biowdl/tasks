@@ -35,7 +35,6 @@ task Mapping {
     }
 
     command {
-        set -e
         pbmm2 align \
         --preset ~{presetOption} \
         ~{true="--sort" false="" sort} \
@@ -43,11 +42,11 @@ task Mapping {
         ~{referenceMMI} \
         ~{queryFile} \
         ~{sample}.align.bam
-
     }
 
     output {
         File outputAlignmentFile = sample + ".align.bam"
+        File outputIndexFile = sample + ".align.bam.bai"
     }
 
     runtime {
@@ -69,6 +68,7 @@ task Mapping {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output
-        outputAlignmentFile: {description: "Mapped bam files."}
+        outputAlignmentFile: {description: "Mapped bam file."}
+        outputIndexFile: {description: "Bam index file."}
     }
 }
