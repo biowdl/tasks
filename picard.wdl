@@ -683,6 +683,7 @@ task SortSam {
         SORT_ORDER=~{true="queryname" false="coordinate" sortByName} \
         CREATE_INDEX=true \
         COMPRESSION_LEVEL=~{compressionLevel} \
+        VALIDATION_STRINGENCY=SILENT \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
 
     }
