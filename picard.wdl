@@ -85,8 +85,8 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        String memory = "9G"
-        String javaXmx = "8G"
+        Int memoryMb = javaXmxMb + 512
+        Int javaXmxMb = 3072
         # Additional * 2 because picard multiple metrics reads the reference fasta twice.
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
@@ -96,7 +96,7 @@ task CollectMultipleMetrics {
     command {
         set -e
         mkdir -p "$(dirname ~{basename})"
-        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        picard -Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1 \
         CollectMultipleMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -158,7 +158,7 @@ task CollectMultipleMetrics {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -184,9 +184,8 @@ task CollectMultipleMetrics {
                                            category: "advanced"}
         collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.",
                                      category: "advanced"}
-
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -365,8 +364,8 @@ task GatherBamFiles {
         Array[File]+ inputBamsIndex
         String outputBamPath
 
-        String memory = "4G"
-        String javaXmx = "3G"
+        Int memoryMb = javaXmxMb + 512
+        Int javaXmxMb = 1024
         Int compressionLevel = 1
         Boolean createMd5File = false
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 0.5)
@@ -376,7 +375,7 @@ task GatherBamFiles {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        picard -Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1 \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -394,7 +393,7 @@ task GatherBamFiles {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -403,8 +402,8 @@ task GatherBamFiles {
         inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
         outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
