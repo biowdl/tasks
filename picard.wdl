@@ -366,7 +366,7 @@ task GatherBamFiles {
 
         Int memoryMb = javaXmxMb + 512
         Int javaXmxMb = 1024
-        Int compressionLevel = 1
+        Int? compressionLevel
         Boolean createMd5File = false
         # One minute per input gigabyte.
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 1)
@@ -380,7 +380,7 @@ task GatherBamFiles {
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
-        COMPRESSION_LEVEL=~{compressionLevel} \
+        ~{"COMPRESSION_LEVEL=" + compressionLevel} \
         CREATE_INDEX=true \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
     }
