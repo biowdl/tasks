@@ -100,7 +100,7 @@ task Kit {
         # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
         Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
-        # Contains bwa 0.7.17 bwakit 0.7.17.dev1 and samtools
+        # Contains bwa 0.7.17 bwakit 0.7.17.dev1 and samtools 1.10
         String dockerImage = "quay.io/biocontainers/mulled-v2-ad317f19f5881324e963f6a6d464d696a2825ab6:c59b7a73c87a9fe81737d5d628e10a3b5807f453-0"
     }
 
@@ -114,7 +114,7 @@ task Kit {
           ~{read1} \
           ~{read2} \
           2> ~{outputPrefix}.log.bwamem | \
-        k8 /opt/conda/bin/bwa-postalt.js \
+        bwa-postalt.js \
           -p ~{outputPrefix}.hla \
           ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
         samtools sort \
