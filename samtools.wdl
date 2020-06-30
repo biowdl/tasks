@@ -336,11 +336,12 @@ task Merge {
     }
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
 
+    # Samtools uses additional threads for merge.
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
         samtools merge \
-        --threads ~{threads} \
+        --threads ~{threads - 1} \
         ~{true="-f" false="" force} \
         ~{outputBamPath} ~{sep=' ' bamFiles}
         samtools index ~{outputBamPath} ~{indexPath}
