@@ -368,7 +368,8 @@ task GatherBamFiles {
         Int javaXmxMb = 1024
         Int compressionLevel = 1
         Boolean createMd5File = false
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 0.5)
+        # One minute per input gigabyte.
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 1)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
