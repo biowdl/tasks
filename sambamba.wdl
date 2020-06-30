@@ -25,18 +25,23 @@ task Markdup {
     input {
         Array[File] inputBams
         String outputPath
-        Int threads = 1
+        # Sambamba scales like this: 1 thread is fully utilized (1). 2 threads 1.8 utilized. 3 -> 2.4, 4-> 2.7.
+        # 2 threads reduces wall clock time by more than 40%.
+        Int threads = 2
         Int compressionLevel = 1
         Int? hashTableSize
         Int? overFlowListSize
-        Int? sortBufferSize
-        Int? ioBufferSize
+        # sortBufferSize and ioBufferSize taken from markdup defaults as of sambamba 0.7.1
+        Int sortBufferSize = 2048
+        Int ioBufferSize = 128
         Boolean removeDuplicates = false 
 
-        # According to the manual sambamba markdup uses about 2G per 100 million reads.
-        Int memoryGb = 1 + ceil(size(inputBams, 'G') / 8)
+        # According to the manual sambamba markdup uses the sortbufferSize + 2 times the ioBuffer size.
+        # Added 1024 mb as a margin of safety
+        Int memoryMb = 1024 + sortBufferSize + 2 * ioBufferSize
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
+        # Time minute calculation does not work well for higher number of threads.
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8) / threads
     }
     String bamIndexPath = sub(outputPath, "\.bam$", ".bai")
 
@@ -62,10 +67,28 @@ task Markdup {
     }
 
     runtime {
-        memory: "~{memoryGb}G"
+        memory: "~{memoryMb}M"
         cpu: threads
         time_minutes: timeMinutes
         docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputBams: {description: "The input BAM files.", category: "required"}
+        outputPath: {description: "Output directory path + output file.", category: "required"}
+        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
+        memoryMb: {description: "The amount of memory available to the job in megabytes.", category: "advanced"}
+        removeDuplicates: {description: "Whether to remove the duplicates (instead of only marking them).", category: "advanced"}
+        hashTableSize: {description: "Sets sambamba's hash table size", category: "advanced"}
+        overFlowListSize: {description: "Sets sambamba's overflow list size", category: "advanced"}
+        sortBufferSize: {description: "The amount of mb allocated to the sort buffer", category: "advanced"}
+        ioBufferSize: {description: "The amount of mb allocated to each IO buffer. Sambamba uses two IO buffers.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        # outputs
+        outputBam: {description: "Sorted BAM file."}
     }
 }
 
