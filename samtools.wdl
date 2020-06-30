@@ -329,6 +329,7 @@ task Merge {
         Array[File]+ bamFiles
         String outputBamPath = "merged.bam"
         Boolean force = true
+        Int threads = 1
 
         Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
@@ -338,7 +339,10 @@ task Merge {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
+        samtools merge \
+        --threads ~{threads} \
+        ~{true="-f" false="" force} \
+        ~{outputBamPath} ~{sep=' ' bamFiles}
         samtools index ~{outputBamPath} ~{indexPath}
     }
 
@@ -348,6 +352,7 @@ task Merge {
     }
 
     runtime {
+        cpu: threads
         docker: dockerImage
         time_minutes: timeMinutes
     }
