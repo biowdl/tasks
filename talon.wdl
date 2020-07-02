@@ -242,8 +242,8 @@ task GetReadAnnotations {
 
 task GetSpliceJunctions {
     input {
-        File GTFfile
-        File databaseFile
+        File SJinformationFile
+        String inputFileType = "db"
         File referenceGTF
         String runMode = "intron"
         String outputPrefix
@@ -253,19 +253,20 @@ task GetSpliceJunctions {
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
 
+    Map[String, String] SJfileType = {"db": "--db", "gtf": "--gtf"}
+
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_get_sjs \
-        --gtf ~{GTFfile} \
-        --db ~{databaseFile} \
+        ~{SJfileType[inputFileType] + SJinformationFile} \
         --ref ~{referenceGTF} \
         --mode ~{runMode} \
         --outprefix ~{outputPrefix}
     }
 
     output {
-        
+        File outputSJfile = outputPrefix + "_" + runMode + "s.tsv"
     }
 
     runtime {
@@ -276,8 +277,8 @@ task GetSpliceJunctions {
 
     parameter_meta {
         # inputs
-        GTFfile: {description: "TALON GTF file from which to extract exons/introns.", category: "required"}
-        databaseFile: { description: "TALON database.", category: "required"}
+        SJinformationFile: {description: "TALON GTF file or database from which to extract exons/introns.", category: "required"}
+        inputFileType: {description: "The file type of SJinformationFile.", category: "required"}
         referenceGTF: {description: "GTF reference file (ie GENCODE).", category: "required"}
         runMode: {description: "Determines whether to include introns or exons in the output.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
@@ -286,6 +287,8 @@ task GetSpliceJunctions {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
+        outputSJfile: {description: "File containing locations, novelty and transcript assignments of exons/introns."}
+    }
 }
 
 task InitializeTalonDatabase {
@@ -344,6 +347,65 @@ task InitializeTalonDatabase {
 
         # outputs
         outputDatabase: {description: "TALON database."}
+    }
+}
+
+task LabelReads {
+    input {
+        File SAMfile
+        File referenceGenome
+        Int fracaRangeSize = 20
+        String tmpDir = "./tmp_label_reads"
+        Boolean deleteTmp = true
+        String outputPrefix
+
+        Int threads = 2
+        String memory = "4G"
+        Int timeMinutes = 2880
+        String dockerImage = "biocontainers/talon:v5.0_cv1"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+        talon_label_reads \
+        --f=~{SAMfile} \
+        --g=~{referenceGenome} \
+        --t=~{threads} \
+        --ar=~{fracaRangeSize} \
+        --tmpDir=~{tmpDir} \
+        ~{true="--deleteTmp" false="" deleteTmp} \
+        --o=~{outputPrefix}
+    }
+
+    output {
+        File outputLabeledSAM = outputPrefix + "_labeled.sam"
+        File outputReadLabels = outputPrefix + "_read_labels.tsv"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        SAMfile: {description: "SAM file of transcripts.", category: "required"}
+        referenceGenome: {description: "Reference genome fasta file.", category: "required"}
+        fracaRangeSize: {description: "Size of post-transcript interval to compute fraction.", category: "common"}
+        tmpDir: {description: "Path to directory for tmp files.", category: "advanced"}
+        deleteTmp: {description: "If set, tmp dir will be removed.", category: "advanced"}
+        outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        threads: {description: "The number of threads to be used.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputLabeledSAM: {description: "SAM file with labeled transcripts."}
+        outputReadLabels: {description: "Tabular file with fraction description per read."}
     }
 }
 
@@ -443,7 +505,7 @@ task Talon {
         Float minimumIdentity = 0.8
         String outputPrefix
 
-        Int cores = 4
+        Int threads = 4
         String memory = "25G"
         Int timeMinutes = 2880
         String dockerImage = "biocontainers/talon:v5.0_cv1"
@@ -465,7 +527,7 @@ task Talon {
         ~{"--f " + outputPrefix + "/talonConfigFile.csv"} \
         --db ~{databaseFile} \
         --build ~{genomeBuild} \
-        --threads ~{cores} \
+        --threads ~{threads} \
         --cov ~{minimumCoverage} \
         --identity ~{minimumIdentity} \
         ~{"--o " + outputPrefix + "/run"}
@@ -479,7 +541,7 @@ task Talon {
     }
 
     runtime {
-        cpu: cores
+        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -495,7 +557,7 @@ task Talon {
         minimumCoverage: {description: "Minimum alignment coverage in order to use a SAM entry.", category: "common"}
         minimumIdentity: {description: "Minimum alignment identity in order to use a SAM entry.", category: "common" }
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        cores: {description: "The number of cores to be used.", category: "advanced"}
+        threads: {description: "The number of threads to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
