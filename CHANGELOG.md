@@ -14,6 +14,7 @@ version 4.0.0-develop
 + TALON: Update `FilterTalonTranscripts` to new version.
 + TALON: Add `GetSpliceJunctions` & `LabelReads` tasks.
 + TALON: Update to version 5.0.
++ Add tasks for pbmm2, the PacBio wrapper for minimap2.
 + Update the image for chunked-scatter and make use of new features from 0.2.0.
 + Tuned resource requirements for GATK VariantEval, MultiQC, Picard metrics and 
   STAR.
