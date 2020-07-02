@@ -359,8 +359,8 @@ task LabelReads {
         Boolean deleteTmp = true
         String outputPrefix
 
-        Int threads = 2
-        String memory = "4G"
+        Int threads = 4
+        String memory = "25G"
         Int timeMinutes = 2880
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
