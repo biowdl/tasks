@@ -11,7 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
-+ TALON: Update `FilterTalonTranscripts` to new version.
++ TALON: Update `FilterTalonTranscripts` to new version, which removes the
+  pairingsFile and replaces this with datasetsFile.
 + TALON: Add `GetSpliceJunctions` & `LabelReads` tasks.
 + TALON: Update to version 5.0.
 + Add tasks for pbmm2, the PacBio wrapper for minimap2.

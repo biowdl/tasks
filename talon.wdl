@@ -280,7 +280,7 @@ task GetSpliceJunctions {
         SJinformationFile: {description: "TALON GTF file or database from which to extract exons/introns.", category: "required"}
         inputFileType: {description: "The file type of SJinformationFile.", category: "required"}
         referenceGTF: {description: "GTF reference file (ie GENCODE).", category: "required"}
-        runMode: {description: "Determines whether to include introns or exons in the output.", category: "required"}
+        runMode: {description: "Determines whether to include introns or exons in the output.", category: "common"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
