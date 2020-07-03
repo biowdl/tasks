@@ -278,7 +278,7 @@ task GetSpliceJunctions {
     parameter_meta {
         # inputs
         SJinformationFile: {description: "TALON GTF file or database from which to extract exons/introns.", category: "required"}
-        inputFileType: {description: "The file type of SJinformationFile.", category: "required"}
+        inputFileType: {description: "The file type of SJinformationFile.", category: "common"}
         referenceGTF: {description: "GTF reference file (ie GENCODE).", category: "required"}
         runMode: {description: "Determines whether to include introns or exons in the output.", category: "common"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
