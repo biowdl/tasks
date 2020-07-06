@@ -85,8 +85,8 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        String memory = "9G"
-        String javaXmx = "8G"
+        Int memoryMb = javaXmxMb + 512
+        Int javaXmxMb = 3072
         # Additional * 2 because picard multiple metrics reads the reference fasta twice.
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
@@ -96,7 +96,7 @@ task CollectMultipleMetrics {
     command {
         set -e
         mkdir -p "$(dirname ~{basename})"
-        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        picard -Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1 \
         CollectMultipleMetrics \
         I=~{inputBam} \
         R=~{referenceFasta} \
@@ -158,7 +158,7 @@ task CollectMultipleMetrics {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -184,9 +184,8 @@ task CollectMultipleMetrics {
                                            category: "advanced"}
         collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.",
                                      category: "advanced"}
-
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -365,33 +364,37 @@ task GatherBamFiles {
         Array[File]+ inputBamsIndex
         String outputBamPath
 
-        String memory = "4G"
-        String javaXmx = "3G"
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 0.5)
+        Int memoryMb = javaXmxMb + 512
+        Int javaXmxMb = 1024
+        Int? compressionLevel
+        Boolean createMd5File = false
+        # One minute per input gigabyte.
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 1)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        picard -Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1 \
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
+        ~{"COMPRESSION_LEVEL=" + compressionLevel} \
         CREATE_INDEX=true \
-        CREATE_MD5_FILE=true
+        CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
     }
 
     output {
         File outputBam = outputBamPath
         File outputBamIndex = sub(outputBamPath, "\.bam$", ".bai")
-        File outputBamMd5 = outputBamPath + ".md5"
+        File? outputBamMd5 = outputBamPath + ".md5"
     }
 
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -399,9 +402,10 @@ task GatherBamFiles {
         inputBams: {description: "The BAM files to be merged together.", category: "required"}
         inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
         outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
-
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
+        createMd5File: {decription: "Whether to create an md5 file of the output BAM.", category: "advanced"}
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -459,9 +463,10 @@ task GatherVcfs {
 task MarkDuplicates {
     input {
         Array[File]+ inputBams
-        Array[File] inputBamIndexes
         String outputBamPath
         String metricsPath
+        Int compressionLevel = 1
+        Boolean createMd5File = false
 
         String memory = "9G"
         String javaXmx = "8G"
@@ -488,19 +493,20 @@ task MarkDuplicates {
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
         METRICS_FILE=~{metricsPath} \
+        COMPRESSION_LEVEL=~{compressionLevel} \
         VALIDATION_STRINGENCY=SILENT \
         ~{"READ_NAME_REGEX=" + read_name_regex} \
         OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
         CLEAR_DT="false" \
         CREATE_INDEX=true \
         ADD_PG_TAG_TO_READS=false \
-        CREATE_MD5_FILE=true
+        CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
     }
 
     output {
         File outputBam = outputBamPath
         File outputBamIndex = sub(outputBamPath, "\.bam$", ".bai")
-        File outputBamMd5 = outputBamPath + ".md5"
+        File? outputBamMd5 = outputBamPath + ".md5"
         File metricsFile = metricsPath
     }
 
@@ -513,7 +519,6 @@ task MarkDuplicates {
     parameter_meta {
         # inputs
         inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
-        inputBamIndexes: {description: "Th eindexes for the input BAM files.", category: "required"}
         outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
         metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
         read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
@@ -647,6 +652,63 @@ task ScatterIntervalList {
     runtime {
         docker: dockerImage
         memory: memory
+    }
+}
+
+task SortSam {
+    input {
+        File inputBam
+        String outputPath
+        Boolean sortByName = false
+        Boolean createMd5File = false
+        Int maxRecordsInRam = 500000
+        Int compressionLevel = 1
+
+        # Default ram of 4 GB. Using 125001.0  to prevent an answer of 
+        # 4.000000001 which gets rounded to 5.
+        # GATK Best practices uses 75000 here: https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L778
+        Int XmxGb = ceil(maxRecordsInRam / 125001.0)
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
+        # A mulled container is needed to have both picard and bwa in one container.
+        # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
+        String dockerImage = "quay.io/biocontainers/picard:2.23.1--h37ae868_0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        picard -Xmx~{XmxGb}G -XX:ParallelGCThreads=1 SortSam \
+        INPUT=~{inputBam} \
+        OUTPUT=~{outputPath} \
+        MAX_RECORDS_IN_RAM=~{maxRecordsInRam} \
+        SORT_ORDER=~{true="queryname" false="coordinate" sortByName} \
+        CREATE_INDEX=true \
+        COMPRESSION_LEVEL=~{compressionLevel} \
+        VALIDATION_STRINGENCY=SILENT \
+        CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
+
+    }
+
+    output {
+        File outputBam = outputPath
+        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
+    }
+
+    runtime {
+        cpu: 1
+        memory: "~{1 + XmxGb}G"
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBam: {description: "The unsorted input BAM file", category: "required"}
+        outputPath: {description: "The location the output BAM file should be written to.", category: "required"}
+        XmxGb: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 

@@ -11,6 +11,23 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Picard SortSam added as a task.
++ Md5 files are no longer created by default on Picard tasks that generate
+  BAM files.
++ Changed PicardMarkduplicates to use COMPRESSION_LEVEL=1 by default 
+  speeding up execution by 2x at the cost of a 20% larger BAM file. 
++ Added sambamba markdup and sambamba sort. NOTE: samtools sort is more
+  efficient and is recommended.
++ Correctly represent samtools inconsistent use of the threads flag. 
+  Sometimes it means 'threads' sometimes it means 'additional threads'.
+  BioWDL tasks now use only threads. The `threads - 1` conversion is 
+  applied where necessary for samtools tools that use additional threads.
++ Updated BWA MEM  and BWA KIT tasks to use samtools sort version 1.10 for
+  sorting the BAM file.
++ Updated memory requirements on bcftools Stats, bwa mem, bwakit, GATK 
+  ApplyBQSR, GATK BaseRecalibrator, GATK GatherBqsrReports, Gatk 
+  HaplotypeCaller, Picard CollectMultipleMetrics, Picard GatherBamFiles,
+  samtools Flagstat, samtools sort and bcftools stats.
 + TALON: Update `FilterTalonTranscripts` to new version, which removes the
   pairingsFile and replaces this with datasetsFile.
 + TALON: Add `GetSpliceJunctions` & `LabelReads` tasks.

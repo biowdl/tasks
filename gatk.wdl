@@ -93,8 +93,8 @@ task ApplyBQSR {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "5G"
-        String javaXmx = "4G"
+        Int memoryMb = javaXmxMb + 512
+        Int javaXmxMb = 2048
         Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -102,7 +102,7 @@ task ApplyBQSR {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
+        gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         ApplyBQSR \
         --create-output-bam-md5 \
         --add-output-sam-program-record \
@@ -126,7 +126,7 @@ task ApplyBQSR {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -141,8 +141,8 @@ task ApplyBQSR {
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -165,8 +165,8 @@ task BaseRecalibrator {
         File referenceFastaDict
         File referenceFastaFai
 
-        String memory = "5G"
-        String javaXmx = "4G"
+        Int memoryMb = javaXmxMb + 512
+        Int javaXmxMb = 1024
         Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -174,7 +174,7 @@ task BaseRecalibrator {
     command {
         set -e
         mkdir -p "$(dirname ~{recalibrationReportPath})"
-        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
+        gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         BaseRecalibrator \
         -R ~{referenceFasta} \
         -I ~{inputBam} \
@@ -192,7 +192,7 @@ task BaseRecalibrator {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -210,8 +210,8 @@ task BaseRecalibrator {
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -725,8 +725,8 @@ task GatherBqsrReports {
         Array[File] inputBQSRreports
         String outputReportPath
 
-        String memory = "1G"
-        String javaXmx = "500M"
+        Int memoryMb = 256 + javaXmxMb
+        Int javaXmxMb = 256
         Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -734,7 +734,7 @@ task GatherBqsrReports {
     command {
         set -e
         mkdir -p "$(dirname ~{outputReportPath})"
-        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
+        gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
@@ -747,15 +747,15 @@ task GatherBqsrReports {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
         inputBQSRreports: {description: "The BQSR reports to be merged.", category: "required"}
         outputReportPath: {description: "The location of the combined BQSR report.", category: "required"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
@@ -940,7 +940,7 @@ task GetPileupSummaries {
     }
 }
 
-# Call variants on a single sample with HaplotypeCaller to produce a GVCF
+
 task HaplotypeCaller {
     input {
         Array[File]+ inputBams
@@ -962,8 +962,9 @@ task HaplotypeCaller {
         Boolean dontUseSoftClippedBases = false
         Float? standardMinConfidenceThresholdForCalling
 
-        String memory = "5G"
-        String javaXmx = "4G"
+        Int memoryMb = javaXmxMb + 512
+        # Memory increases with time used. 4G should cover most use cases.
+        Int javaXmxMb = 4096
         Int timeMinutes = 400 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -971,7 +972,7 @@ task HaplotypeCaller {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
+        gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         HaplotypeCaller \
         -R ~{referenceFasta} \
         -O ~{outputPath} \
@@ -996,7 +997,7 @@ task HaplotypeCaller {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -1022,8 +1023,8 @@ task HaplotypeCaller {
         dbsnpVCF: {description: "A dbSNP VCF.", category: "common"}
         dbsnpVCFIndex: {description: "The index for the dbSNP VCF.", category: "common"}
         pedigree: {description: "Pedigree file for determining the population \"founders\"", category: "common"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",

@@ -209,7 +209,7 @@ task Flagstat {
         File inputBam
         String outputPath
 
-        String memory = "1G"
+        String memory = "256M"  # Only 40.5 MiB used for 150G bam file.
         Int timeMinutes = 1 + ceil(size(inputBam, "G"))
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
@@ -329,16 +329,21 @@ task Merge {
         Array[File]+ bamFiles
         String outputBamPath = "merged.bam"
         Boolean force = true
+        Int threads = 1
 
         Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
 
+    # Samtools uses additional threads for merge.
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        samtools merge ~{true="-f" false="" force} ~{outputBamPath} ~{sep=' ' bamFiles}
+        samtools merge \
+        --threads ~{threads - 1} \
+        ~{true="-f" false="" force} \
+        ~{outputBamPath} ~{sep=' ' bamFiles}
         samtools index ~{outputBamPath} ~{indexPath}
     }
 
@@ -348,6 +353,7 @@ task Merge {
     }
 
     runtime {
+        cpu: threads
         docker: dockerImage
         time_minutes: timeMinutes
     }
@@ -366,15 +372,18 @@ task Merge {
 task Sort {
     input {
         File inputBam
-        String outputPath
+        String outputPath = basename(inputBam, "\.bam") + ".sorted.bam"
         Boolean sortByName = false
         Int compressionLevel = 1
-
-        String memory = "2G"
+        Int threads = 1
+        Int memoryPerThreadGb = 4
+        Int memoryGb = 1 + threads * memoryPerThreadGb
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
-        Int? threads
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
     }
+
+    # Select first needed as outputPath is optional input. (bug in cromwell)
+    String bamIndexPath = sub(select_first([outputPath]), "\.bam$", ".bai")
 
     command {
         set -e
@@ -383,17 +392,22 @@ task Sort {
         -l ~{compressionLevel} \
         ~{true="-n" false="" sortByName} \
         ~{"--threads " + threads} \
+        -m ~{memoryPerThreadGb}G \
         -o ~{outputPath} \
         ~{inputBam}
+        samtools index \
+        -@ ~{threads} \
+        ~{outputPath} ~{bamIndexPath}
     }
 
     output {
-        File outputSortedBam = outputPath
+        File outputBam = outputPath
+        File outputBamIndex = bamIndexPath
     }
 
     runtime {
-        cpu: 1 + select_first([threads, 0])
-        memory: memory
+        cpu: 1
+        memory: "~{memoryGb}G"
         docker: dockerImage
         time_minutes: timeMinutes
     }
@@ -404,12 +418,13 @@ task Sort {
         outputPath: {description: "Output directory path + output file.", category: "required"}
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
         compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
-        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
+        memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         # outputs
-        outputSortedBam: {description: "Sorted BAM file."}
+        outputBam: {description: "Sorted BAM file."}
     }
 }
 

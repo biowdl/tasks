@@ -29,12 +29,14 @@ task Mem {
         String? readgroup
 
         Int threads = 4
-        String memory = "~{5 + ceil(size(bwaIndex.indexFiles, "G"))}G"
-        String picardXmx = "4G"
+        Int sortThreads = 1
+        Int sortMemoryPerThreadGb = 2
+        Int compressionLevel = 1
+        # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
+        Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 200 / threads)
-        # A mulled container is needed to have both picard and bwa in one container.
-        # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
-        String dockerImage = "quay.io/biocontainers/mulled-v2-002f51ea92721407ef440b921fb5940f424be842:43ec6124f9f4f875515f9548733b8b4e5fed9aa6-0"
+        # This container contains: samtools (1.10), bwa (0.7.17-r1188)
+        String dockerImage = "quay.io/biocontainers/mulled-v2-fe8faa35dbf6dc65a0f7f5d4ea12e31a79f73e40:eabfac3657eda5818bae4090db989e3d41b01542-0"
     }
 
     command {
@@ -46,21 +48,21 @@ task Mem {
         ~{bwaIndex.fastaFile} \
         ~{read1} \
         ~{read2} \
-        | picard -Xmx~{picardXmx} -XX:ParallelGCThreads=1 SortSam \
-        INPUT=/dev/stdin \
-        OUTPUT=~{outputPath} \
-        SORT_ORDER=coordinate \
-        CREATE_INDEX=true
+        | samtools sort \
+        ~{"-@ " + sortThreads} \
+        -m ~{sortMemoryPerThreadGb}G \
+        -l ~{compressionLevel} \
+        - \
+        -o ~{outputPath}
     }
 
     output {
         File outputBam = outputPath
-        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
     }
 
     runtime {
         cpu: threads
-        memory: memory
+        memory: "~{memoryGb}G"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -73,9 +75,10 @@ task Mem {
         readgroup: {description: "The readgroup to be assigned to the reads. See BWA mem's `-R` option.", category: "common"}
 
         threads: {description: "The number of threads to use.", category: "advanced"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        picardXmx: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.",
-                  category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
+        sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
+        sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
+        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -92,16 +95,14 @@ task Kit {
         Boolean sixtyFour = false
 
         Int threads = 4
-        # Samtools uses *additional* threads. So by default this option should
-        # not be used.
-        Int? sortThreads
-        # Compression uses zlib. Higher than level 2 causes enormous slowdowns.
-        # GATK/Picard default is level 2.
-        String sortMemoryPerThread = "4G"
+        Int sortThreads = 1
+        Int sortMemoryPerThreadGb = 2
         Int compressionLevel = 1
-        String memory = "20G"
+        # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
+        Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
-        String dockerImage = "biocontainers/bwakit:v0.7.15_cv1"
+        # Contains bwa 0.7.17 bwakit 0.7.17.dev1 and samtools 1.10
+        String dockerImage = "quay.io/biocontainers/mulled-v2-ad317f19f5881324e963f6a6d464d696a2825ab6:c59b7a73c87a9fe81737d5d628e10a3b5807f453-0"
     }
 
     command {
@@ -114,26 +115,26 @@ task Kit {
           ~{read1} \
           ~{read2} \
           2> ~{outputPrefix}.log.bwamem | \
-        k8 /opt/conda/bin/bwa-postalt.js \
+        bwa-postalt.js \
           -p ~{outputPrefix}.hla \
           ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
         samtools sort \
           ~{"-@ " + sortThreads} \
-          -m ~{sortMemoryPerThread} \
+          -m ~{sortMemoryPerThreadGb}G \
           -l ~{compressionLevel} \
           - \
           -o ~{outputPrefix}.aln.bam
-        samtools index ~{outputPrefix}.aln.bam ~{outputPrefix}.aln.bai
     }
 
     output {
         File outputBam = outputPrefix + ".aln.bam"
-        File outputBamIndex = outputPrefix + ".aln.bai"
     }
 
     runtime {
-        cpu: threads + 1  # One thread for bwa-postalt + samtools.
-        memory: memory
+        # One extra thread for bwa-postalt + samtools is not needed.
+        # These only use 5-10% of compute power and not always simultaneously.
+        cpu: threads  
+        memory: "~{memoryGb}G"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -147,17 +148,16 @@ task Kit {
         readgroup: {description: "A readgroup identifier.", category: "common"}
         sixtyFour: {description: "Whether or not the index uses the '.64' suffixes.", category: "common"}
         threads: {description: "The number of threads to use for alignment.", category: "advanced"}
-        sortThreads: {description: "The number of additional threads to use for sorting.", category: "advanced"}
-        sortMemoryPerThread: {description: "The amount of memory for each sorting thread.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
+        sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
+        sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
         compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
 
         # outputs
         outputBam: "The produced BAM file."
-        outputBamIndex: "The index of the produced BAM file."
     }
 }
 
