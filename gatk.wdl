@@ -963,7 +963,8 @@ task HaplotypeCaller {
         Float? standardMinConfidenceThresholdForCalling
 
         Int memoryMb = javaXmxMb + 512
-        Int javaXmxMb = 3072
+        # Memory increases with time used. 4G should cover most use cases.
+        Int javaXmxMb = 4096
         Int timeMinutes = 400 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
