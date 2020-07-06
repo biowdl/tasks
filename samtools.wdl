@@ -209,7 +209,7 @@ task Flagstat {
         File inputBam
         String outputPath
 
-        String memory = "1G"
+        String memory = "256M"  # Only 40.5 MiB used for 150G bam file.
         Int timeMinutes = 1 + ceil(size(inputBam, "G"))
         String dockerImage = "quay.io/biocontainers/samtools:1.8--h46bd0b3_5"
     }
