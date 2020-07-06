@@ -30,7 +30,7 @@ task Mem {
 
         Int threads = 4
         Int sortThreads = 1
-        Int sortMemoryPerThreadGb = 4
+        Int sortMemoryPerThreadGb = 2
         Int compressionLevel = 1
         # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
         Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
@@ -95,7 +95,7 @@ task Kit {
 
         Int threads = 4
         Int sortThreads = 1
-        Int sortMemoryPerThreadGb = 4
+        Int sortMemoryPerThreadGb = 2
         Int compressionLevel = 1
         # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
         Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
