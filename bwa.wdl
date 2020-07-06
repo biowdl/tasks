@@ -78,6 +78,7 @@ task Mem {
         memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
         sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
         sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
+        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}

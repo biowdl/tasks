@@ -402,7 +402,8 @@ task GatherBamFiles {
         inputBams: {description: "The BAM files to be merged together.", category: "required"}
         inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
         outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
-
+        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
+        createMd5File: {decription: "Whether to create an md5 file of the output BAM.", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
