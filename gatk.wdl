@@ -734,7 +734,7 @@ task GatherBqsrReports {
     command {
         set -e
         mkdir -p "$(dirname ~{outputReportPath})"
-        gatk --java-options '-Xmx~{javaXmxMb} -XX:ParallelGCThreads=1' \
+        gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
