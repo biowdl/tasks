@@ -725,8 +725,8 @@ task GatherBqsrReports {
         Array[File] inputBQSRreports
         String outputReportPath
 
-        String memory = "1G"
-        String javaXmx = "500M"
+        Int memoryMb = 256 + javaXmxMb
+        Int javaXmxMb = 256
         Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.0.0--0"
     }
@@ -734,7 +734,7 @@ task GatherBqsrReports {
     command {
         set -e
         mkdir -p "$(dirname ~{outputReportPath})"
-        gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
+        gatk --java-options '-Xmx~{javaXmxMb} -XX:ParallelGCThreads=1' \
         GatherBQSRReports \
         -I ~{sep=' -I ' inputBQSRreports} \
         -O ~{outputReportPath}
@@ -747,15 +747,15 @@ task GatherBqsrReports {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
         inputBQSRreports: {description: "The BQSR reports to be merged.", category: "required"}
         outputReportPath: {description: "The location of the combined BQSR report.", category: "required"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
