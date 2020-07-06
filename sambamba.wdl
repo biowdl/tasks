@@ -37,7 +37,7 @@ task Markdup {
         Boolean removeDuplicates = false 
 
         # According to the manual sambamba markdup uses the sortbufferSize + 2 times the ioBuffer size.
-        # Added 1024 mb as a margin of safety
+        # Added 1024 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
         Int memoryMb = 1024 + sortBufferSize + 2 * ioBufferSize
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
         # Time minute calculation does not work well for higher number of threads.
