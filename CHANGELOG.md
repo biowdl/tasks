@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Alignment tasks (STAR, Hisat2, BWA) now produce BAM files at level 1 
+  compression.
 + Hisat2 task has added controls for samtools.
 + Alignment tasks no longer produce BAM indexes as these are not needed
   by the markduplicates step.
