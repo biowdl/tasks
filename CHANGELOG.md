@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Hisat2 task has added controls for samtools.
++ Alignment tasks no longer produce BAM indexes as these are not needed
+  by the markduplicates step.
 + Picard SortSam added as a task.
 + Md5 files are no longer created by default on Picard tasks that generate
   BAM files.
