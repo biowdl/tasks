@@ -467,9 +467,15 @@ task MarkDuplicates {
         String metricsPath
         Int compressionLevel = 1
         Boolean createMd5File = false
+        Boolean useJdkInflater = true  # Slightly faster than the intel one. 
+        # Better results for compression level 1 (much smaller). Higher compression levels similar to intel deflater.
+        Boolean useJdkDeflater = true
 
-        String memory = "9G"
-        String javaXmx = "8G"
+        # In GATK Best practices pipeline MarkDuplicates is given a 7G VM. 
+        # https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L1040
+        Int javaXmxMb =  6656  # 6.5G
+        String memoryMb = javaXmxMb + 512
+
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
         String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
 
@@ -488,7 +494,7 @@ task MarkDuplicates {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        picard -Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1 \
         MarkDuplicates \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
@@ -500,7 +506,9 @@ task MarkDuplicates {
         CLEAR_DT="false" \
         CREATE_INDEX=true \
         ADD_PG_TAG_TO_READS=false \
-        CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
+        CREATE_MD5_FILE=~{true="true" false="false" createMd5File} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}   
     }
 
     output {
@@ -513,7 +521,7 @@ task MarkDuplicates {
     runtime {
         docker: dockerImage
         time_minutes: timeMinutes
-        memory: memory
+        memory: "~{memoryMb}M"
     }
 
     parameter_meta {
@@ -523,8 +531,8 @@ task MarkDuplicates {
         metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
         read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
