@@ -11,11 +11,15 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Picard Markduplicates now uses 7G of RAM just like in GATK's best practice
+  example pipeline.
 + Picard SortSam added as a task.
 + Md5 files are no longer created by default on Picard tasks that generate
   BAM files.
-+ Changed PicardMarkduplicates to use COMPRESSION_LEVEL=1 by default 
-  speeding up execution by 2x at the cost of a 20% larger BAM file. 
++ Changed PicardMarkduplicates to use COMPRESSION_LEVEL=1 by default with
+  the htsjdk deflater.
+  This makes the task finish in 30% less time at the cost of a 6% larger BAM 
+  file. 
 + Added sambamba markdup and sambamba sort. NOTE: samtools sort is more
   efficient and is recommended.
 + Correctly represent samtools inconsistent use of the threads flag. 
