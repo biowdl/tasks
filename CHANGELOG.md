@@ -18,11 +18,15 @@ version 4.0.0-develop
 + Hisat2 task has added controls for samtools.
 + Alignment tasks no longer produce BAM indexes as these are not needed
   by the markduplicates step.
++ Picard Markduplicates now uses 7G of RAM just like in GATK's best practice
+  example pipeline.
 + Picard SortSam added as a task.
 + Md5 files are no longer created by default on Picard tasks that generate
   BAM files.
-+ Changed PicardMarkduplicates to use COMPRESSION_LEVEL=1 by default 
-  speeding up execution by 2x at the cost of a 20% larger BAM file. 
++ Changed PicardMarkduplicates to use COMPRESSION_LEVEL=1 by default with
+  the htsjdk deflater.
+  This makes the task finish in 32% less time at the cost of a 8% larger BAM 
+  file. 
 + Added sambamba markdup and sambamba sort. NOTE: samtools sort is more
   efficient and is recommended.
 + Correctly represent samtools inconsistent use of the threads flag. 
