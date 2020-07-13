@@ -32,7 +32,7 @@ task HTSeqCount {
         String? idattr
         Array[String] additionalAttributes = []
 
-        String memory = "40G"
+        String memory = "8G"
         Int timeMinutes = 10 + ceil(size(inputBams, "G") * 60)
         String dockerImage = "quay.io/biocontainers/htseq:0.11.2--py37h637b7d7_1"
     }
