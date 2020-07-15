@@ -11,6 +11,13 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Default docker images for bwa, bwakit and hisat2 updated to include samtools
+  1.10.
++ Alignment tasks (STAR, Hisat2, BWA) now produce BAM files at level 1 
+  compression.
++ Hisat2 task has added controls for samtools.
++ Alignment tasks no longer produce BAM indexes as these are not needed
+  by the markduplicates step.
 + Picard Markduplicates now uses 7G of RAM just like in GATK's best practice
   example pipeline.
 + Picard SortSam added as a task.
@@ -18,7 +25,7 @@ version 4.0.0-develop
   BAM files.
 + Changed PicardMarkduplicates to use COMPRESSION_LEVEL=1 by default with
   the htsjdk deflater.
-  This makes the task finish in 30% less time at the cost of a 6% larger BAM 
+  This makes the task finish in 32% less time at the cost of a 8% larger BAM 
   file. 
 + Added sambamba markdup and sambamba sort. NOTE: samtools sort is more
   efficient and is recommended.
