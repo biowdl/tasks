@@ -469,6 +469,7 @@ task MarkDuplicates {
         Boolean createMd5File = false
         Boolean useJdkInflater = true  # Slightly faster than the intel one. 
         # Better results for compression level 1 (much smaller). Higher compression levels similar to intel deflater.
+        # NOTE: this might change in the future when the intel deflater is updated!
         Boolean useJdkDeflater = true
 
         # In GATK Best practices pipeline MarkDuplicates is given a 7G VM. 
@@ -530,7 +531,10 @@ task MarkDuplicates {
         outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
         metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
         read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
-
+        createMd5File: {description: "Whether to create a md5 file for the created BAM file.", category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
