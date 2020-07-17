@@ -34,12 +34,15 @@ task Hisat2 {
         String summaryFilePath = basename(outputBam, ".bam") + ".summary.txt"
 
         Int threads = 4
-        String memory = "~{threads + 5 + ceil(size(indexFiles, "G"))}G"
+        Int sortThreads = 1
+        Int sortMemoryPerThreadGb = 2
+        Int compressionLevel = 1
+        Int memoryGb = 1 + threads + ceil(size(indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
         Int timeMinutes = 1 + ceil(size([inputR1, inputR2], "G") * 180 / threads)
         # quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1
         # is a combination of hisat2 and samtools
-        # hisat2=2.1.0, samtools=1.8
-        String dockerImage = "quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1:2388ff67fc407dad75774291ca5038f40cac4be0-0"
+        # hisat2=2.2.0, samtools=1.10
+        String dockerImage = "quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1:2880dd9d8ad0a7b221d4eacda9a818e92983128d-0"
     }
 
     String bamIndexPath = sub(outputBam, "\.bam$", ".bai")
@@ -59,18 +62,21 @@ task Hisat2 {
         ~{true="--dta" false="" downstreamTranscriptomeAssembly} \
         --new-summary \
         --summary-file ~{summaryFilePath} \
-        | samtools sort > ~{outputBam}
-        samtools index ~{outputBam} ~{bamIndexPath}
+        | samtools sort \
+        ~{"-@ " + sortThreads} \
+        -m ~{sortMemoryPerThreadGb}G \
+        -l ~{compressionLevel} \
+        - \
+        -o ~{outputBam}
     }
 
     output {
         File bamFile = outputBam
-        File bamIndex = bamIndexPath
         File summaryFile = summaryFilePath
     }
 
     runtime {
-        memory: memory
+        memory: "~{memoryGb}G"
         cpu: threads + 1
         time_minutes: timeMinutes
         docker: dockerImage
@@ -88,9 +94,12 @@ task Hisat2 {
         downstreamTranscriptomeAssembly: {description: "Equivalent to hisat2's `--dta` flag.", category: "advanced"}
         summaryFilePath: {description: "Where the summary file should be written.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+        sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
+        sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
+        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
     }
 }
