@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Reworked bcf2vcf task into bcftools view task.
++ Update docker images for samtools, bcftools, picard, GATK, cutadapt and 
+  chunked-scatter.
 + Default docker images for bwa, bwakit and hisat2 updated to include samtools
   1.10.
 + Alignment tasks (STAR, Hisat2, BWA) now produce BAM files at level 1 
