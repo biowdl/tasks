@@ -560,7 +560,7 @@ task CreateReadCountPanelOfNormals {
         String memory = "8G"
         String javaXmx = "7G"
         Int timeMinutes = 5
-        String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer causes a spark related error for some reason...
+        String dockerImage = "broadinstitute/gatk:4.1.8.0" # The biocontainer causes a spark related error for some reason...
     }
 
     command {
@@ -1271,7 +1271,7 @@ task PlotDenoisedCopyRatios {
         String memory = "4G"
         String javaXmx = "3G"
         Int timeMinutes = 2
-        String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
+        String dockerImage = "broadinstitute/gatk:4.1.8.0"
     }
 
     command {
@@ -1289,7 +1289,7 @@ task PlotDenoisedCopyRatios {
 
     output {
         File denoisedCopyRatiosPlot = outputDir + "/" + outputPrefix + ".denoised.png"
-        File denoisedCopyRatiosLimitedPlot = outputDir + "/" + outputPrefix + ".denoisedLimit4.png"
+        File? denoisedCopyRatiosLimitedPlot = outputDir + "/" + outputPrefix + ".denoisedLimit4.png"
         File standardizedMedianAbsoluteDeviation = outputDir + "/" + outputPrefix + ".standardizedMAD.txt"
         File denoisedMedianAbsoluteDeviation = outputDir + "/" + outputPrefix + ".denoisedMAD.txt"
         File deltaMedianAbsoluteDeviation = outputDir + "/" + outputPrefix + ".deltaMAD.txt"
@@ -1331,7 +1331,7 @@ task PlotModeledSegments {
         String memory = "4G"
         String javaXmx = "3G"
         Int timeMinutes = 2
-        String dockerImage = "broadinstitute/gatk:4.1.4.0" # The biocontainer doesn't seem to contain R.
+        String dockerImage = "broadinstitute/gatk:4.1.8.0"
     }
 
     command {
