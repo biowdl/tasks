@@ -25,23 +25,23 @@ task HTSeqCount {
         Array[File]+ inputBams
         File gtfFile
         String outputTable = "output.tsv"
-        String format = "bam"
         String order = "pos"
         String stranded = "no"
         String? featureType
         String? idattr
         Array[String] additionalAttributes = []
 
+        Int threads = 1
         String memory = "8G"
         Int timeMinutes = 10 + ceil(size(inputBams, "G") * 60)
-        String dockerImage = "quay.io/biocontainers/htseq:0.11.2--py37h637b7d7_1"
+        String dockerImage = "quay.io/biocontainers/htseq:0.12.4--py37hb3f55d8_0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputTable})"
         htseq-count \
-        -f ~{format} \
+        --nprocesses ~{threads} \
         -r ~{order} \
         -s ~{stranded} \
         ~{"--type " + featureType} \
@@ -49,7 +49,7 @@ task HTSeqCount {
         ~{true="--additional-attr " false="" length(additionalAttributes) > 0 }~{sep=" --additional-attr " additionalAttributes} \
         ~{sep=" " inputBams} \
         ~{gtfFile} \
-        > ~{outputTable}
+        -c ~{outputTable}
     }
 
     output {
@@ -57,6 +57,7 @@ task HTSeqCount {
     }
 
     runtime {
+        cpu: threads
         time_minutes: timeMinutes
         memory: memory
         docker: dockerImage
