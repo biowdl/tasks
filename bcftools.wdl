@@ -22,23 +22,32 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task Bcf2Vcf {
+task View {
     input {
-        File bcf
-        String outputPath = "./bcftools/SV.vcf"
-        String memory = "2G"
-        Int timeMinutes = 1 + ceil(size(bcf, "G"))
+        File inputFile
+        String outputPath = "output.vcf.gz"
+        String memory = "256M"
+        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+        String outputType = "z"
+        Int compressionLevel = 1
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        bcftools view ~{bcf} -O v -o ~{outputPath}
+        bcftools view \
+        ~{inputFile}  -o ~{outputPath} \
+        -O ~{outputType} \
+        -l ~{compressionLevel}
+        ~{inputFile}
+        bcftools index --tbi ~{outputPath}
+
     }
 
     output {
         File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -48,9 +57,11 @@ task Bcf2Vcf {
     }
 
     parameter_meta {
-        bcf: {description: "The generated BCF from an SV caller", category: "required"}
+        inputFile: {description: "A vcf or bcf file", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
