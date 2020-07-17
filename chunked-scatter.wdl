@@ -30,7 +30,7 @@ task ChunkedScatter {
 
         String memory = "256M"
         Int timeMinutes = 2
-        String dockerImage = "quay.io/biocontainers/chunked-scatter:0.2.0--py_0"
+        String dockerImage = "quay.io/biocontainers/chunked-scatter:1.0.0--py_0"
     }
 
     command {
