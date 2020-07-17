@@ -25,23 +25,23 @@ task HTSeqCount {
         Array[File]+ inputBams
         File gtfFile
         String outputTable = "output.tsv"
-        String format = "bam"
         String order = "pos"
         String stranded = "no"
         String? featureType
         String? idattr
         Array[String] additionalAttributes = []
 
+        Int nprocesses = 1
         String memory = "8G"
         Int timeMinutes = 10 + ceil(size(inputBams, "G") * 60)
-        String dockerImage = "quay.io/biocontainers/htseq:0.11.2--py37h637b7d7_1"
+        String dockerImage = "quay.io/biocontainers/htseq:0.12.4--py37hb3f55d8_0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputTable})"
         htseq-count \
-        -f ~{format} \
+        --nprocesses ~{nprocesses} \
         -r ~{order} \
         -s ~{stranded} \
         ~{"--type " + featureType} \
@@ -49,7 +49,7 @@ task HTSeqCount {
         ~{true="--additional-attr " false="" length(additionalAttributes) > 0 }~{sep=" --additional-attr " additionalAttributes} \
         ~{sep=" " inputBams} \
         ~{gtfFile} \
-        > ~{outputTable}
+        -c ~{outputTable}
     }
 
     output {
@@ -57,6 +57,7 @@ task HTSeqCount {
     }
 
     runtime {
+        cpu: nprocesses
         time_minutes: timeMinutes
         memory: memory
         docker: dockerImage
@@ -66,7 +67,7 @@ task HTSeqCount {
         inputBams: {description: "The input BAM files.", category: "required"}
         gtfFile: {description: "A GTF/GFF file containing the features of interest.", category: "required"}
         outputTable: {description: "The path to which the output table should be written.", category: "common"}
-        format: {description: "Equivalent to the -f option of htseq-count.", category: "advanced"}
+        nprocesses: {description: "Number of processes to run htseq with.", category: "advanced"}
         order: {description: "Equivalent to the -r option of htseq-count.", category: "advanced"}
         stranded: {description: "Equivalent to the -s option of htseq-count.", category: "common"}
         featureType: {description: "Equivalent to the --type option of htseq-count.", category: "advanced"}
