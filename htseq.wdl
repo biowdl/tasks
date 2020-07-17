@@ -31,7 +31,7 @@ task HTSeqCount {
         String? idattr
         Array[String] additionalAttributes = []
 
-        Int threads = 1
+        Int nprocesses = 1
         String memory = "8G"
         Int timeMinutes = 10 + ceil(size(inputBams, "G") * 60)
         String dockerImage = "quay.io/biocontainers/htseq:0.12.4--py37hb3f55d8_0"
@@ -41,7 +41,7 @@ task HTSeqCount {
         set -e
         mkdir -p "$(dirname ~{outputTable})"
         htseq-count \
-        --nprocesses ~{threads} \
+        --nprocesses ~{nprocesses} \
         -r ~{order} \
         -s ~{stranded} \
         ~{"--type " + featureType} \
@@ -57,7 +57,7 @@ task HTSeqCount {
     }
 
     runtime {
-        cpu: threads
+        cpu: nprocesses
         time_minutes: timeMinutes
         memory: memory
         docker: dockerImage
@@ -67,7 +67,7 @@ task HTSeqCount {
         inputBams: {description: "The input BAM files.", category: "required"}
         gtfFile: {description: "A GTF/GFF file containing the features of interest.", category: "required"}
         outputTable: {description: "The path to which the output table should be written.", category: "common"}
-        format: {description: "Equivalent to the -f option of htseq-count.", category: "advanced"}
+        nprocesses: {description: "Number of processes to run htseq with.", category: "advanced"}
         order: {description: "Equivalent to the -r option of htseq-count.", category: "advanced"}
         stranded: {description: "Equivalent to the -s option of htseq-count.", category: "common"}
         featureType: {description: "Equivalent to the --type option of htseq-count.", category: "advanced"}
