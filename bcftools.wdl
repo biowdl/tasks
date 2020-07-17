@@ -37,9 +37,9 @@ task View {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
         bcftools view \
-        ~{inputFile}  -o ~{outputPath} \
+        -o ~{outputPath} \
         -O ~{outputType} \
-        -l ~{compressionLevel}
+        -l ~{compressionLevel} \
         ~{inputFile}
         bcftools index --tbi ~{outputPath}
 
