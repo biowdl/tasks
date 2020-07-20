@@ -42,7 +42,6 @@ task View {
         -l ~{compressionLevel} \
         ~{inputFile}
         bcftools index --tbi ~{outputPath}
-
     }
 
     output {
