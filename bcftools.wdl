@@ -57,7 +57,7 @@ task View {
     }
 
     parameter_meta {
-        inputFile: {description: "A vcf or bcf file", category: "required"}
+        inputFile: {description: "A vcf or bcf file.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
