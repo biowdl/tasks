@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Renamed outputs of tasks used in the TALON-WDL, PacBio-subreads-processing &
+  sequence-classification pipelines.
 + Reworked bcf2vcf task into bcftools view task.
 + Removed the redundant format flag from the htseq interface. This is 
   autodetected in newer versions of htseq.

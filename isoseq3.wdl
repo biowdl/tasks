@@ -51,12 +51,12 @@ task Refine {
     }
 
     output {
-        File outputFLNCfile = outputDir + "/" + outputNamePrefix + ".bam"
-        File outputFLNCindexFile = outputDir + "/" + outputNamePrefix + ".bam.pbi"
-        File outputConsensusReadsetFile = outputDir + "/" + outputNamePrefix + ".consensusreadset.xml"
-        File outputFilterSummaryFile = outputDir + "/" + outputNamePrefix + ".filter_summary.json"
-        File outputReportFile = outputDir + "/" + outputNamePrefix + ".report.csv"
-        File outputSTDERRfile = outputDir + "/" + outputNamePrefix + ".stderr.log"
+        File refineBam = outputDir + "/" + outputNamePrefix + ".bam"
+        File refineBamIndex = outputDir + "/" + outputNamePrefix + ".bam.pbi"
+        File refineConsensusReadset = outputDir + "/" + outputNamePrefix + ".consensusreadset.xml"
+        File refineFilterSummary = outputDir + "/" + outputNamePrefix + ".filter_summary.json"
+        File refineReport = outputDir + "/" + outputNamePrefix + ".report.csv"
+        File refineStderr = outputDir + "/" + outputNamePrefix + ".stderr.log"
     }
 
     runtime {
@@ -69,9 +69,9 @@ task Refine {
     parameter_meta {
         # inputs
         minPolyAlength: {description: "Minimum poly(A) tail length.", category: "advanced"}
-        requirePolyA: {description: "Require FL reads to have a poly(A) tail and remove it.", category: "common"}
+        requirePolyA: {description: "Require fl reads to have a poly(A) tail and remove it.", category: "common"}
         logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
-        inputBamFile: {description: "BAM input file.", category: "required"}
+        inputBamFile: {description: "Bam input file.", category: "required"}
         primerFile: {description: "Barcode/primer fasta file.", category: "required"}
         outputDir: {description: "Output directory path.", category: "required"}
         outputNamePrefix: {description: "Basename of the output files.", category: "required"}
@@ -81,11 +81,11 @@ task Refine {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputFLNCfile: {description: "Filtered reads output file."}
-        outputFLNCindexFile: {description: "Index of filtered reads output file."}
-        outputSTDERRfile: {description: "Refine STDERR log file."}
-        outputConsensusReadsetFile: {description: "Refine consensus readset XML file."}
-        outputFilterSummaryFile: {description: "Refine summary file."}
-        outputReportFile: {description: "Refine report file."}
+        refineBam: {description: "Filtered reads output file."}
+        refineBamIndex: {description: "Index of filtered reads output file."}
+        refineConsensusReadset: {description: "Refine consensus readset xml file."}
+        refineFilterSummary: {description: "Refine summary file."}
+        refineReport: {description: "Refine report file."}
+        refineStderr: {description: "Refine stderr log file."}
     }
 }
