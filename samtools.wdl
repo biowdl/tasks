@@ -423,6 +423,7 @@ task Sort {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+
         # outputs
         outputBam: {description: "Sorted BAM file."}
     }
@@ -526,7 +527,6 @@ task View {
         excludeFilter: {description: "Equivalent to samtools view's `-F` option.", category: "advanced"}
         excludeSpecificFilter: {description: "Equivalent to samtools view's `-G` option.", category: "advanced"}
         MAPQthreshold: {description: "Equivalent to samtools view's `-q` option.", category: "advanced"}
-
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}

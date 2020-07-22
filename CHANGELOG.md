@@ -11,14 +11,18 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Renamed a few inputs in centrifuge.wdl, isoseq3.wdl, talon.wdl,
+  transcriptclean.wdl to be more descriptive.
++ Renamed outputs of tasks used in the TALON-WDL, PacBio-subreads-processing &
+  sequence-classification pipelines.
 + Reworked bcf2vcf task into bcftools view task.
-+ Removed the redundant format flag from the htseq interface. This is 
++ Removed the redundant format flag from the htseq interface. This is
   autodetected in newer versions of htseq.
 + Update docker images for samtools, bcftools, picard, GATK, cutadapt, htseq
   and chunked-scatter.
 + Default docker images for bwa, bwakit and hisat2 updated to include samtools
   1.10.
-+ Alignment tasks (STAR, Hisat2, BWA) now produce BAM files at level 1 
++ Alignment tasks (STAR, Hisat2, BWA) now produce BAM files at level 1
   compression.
 + Hisat2 task has added controls for samtools.
 + Alignment tasks no longer produce BAM indexes as these are not needed
@@ -30,18 +34,18 @@ version 4.0.0-develop
   BAM files.
 + Changed PicardMarkduplicates to use COMPRESSION_LEVEL=1 by default with
   the htsjdk deflater.
-  This makes the task finish in 32% less time at the cost of a 8% larger BAM 
-  file. 
+  This makes the task finish in 32% less time at the cost of a 8% larger BAM
+  file.
 + Added sambamba markdup and sambamba sort. NOTE: samtools sort is more
   efficient and is recommended.
 + Correctly represent samtools inconsistent use of the threads flag. 
   Sometimes it means 'threads' sometimes it means 'additional threads'.
-  BioWDL tasks now use only threads. The `threads - 1` conversion is 
+  BioWDL tasks now use only threads. The `threads - 1` conversion is
   applied where necessary for samtools tools that use additional threads.
 + Updated BWA MEM  and BWA KIT tasks to use samtools sort version 1.10 for
   sorting the BAM file.
-+ Updated memory requirements on bcftools Stats, bwa mem, bwakit, GATK 
-  ApplyBQSR, GATK BaseRecalibrator, GATK GatherBqsrReports, Gatk 
++ Updated memory requirements on bcftools Stats, bwa mem, bwakit, GATK
+  ApplyBQSR, GATK BaseRecalibrator, GATK GatherBqsrReports, Gatk
   HaplotypeCaller, Picard CollectMultipleMetrics, Picard GatherBamFiles,
   samtools Flagstat, samtools sort and bcftools stats.
 + TALON: Update `FilterTalonTranscripts` to new version, which removes the
@@ -50,13 +54,13 @@ version 4.0.0-develop
 + TALON: Update to version 5.0.
 + Add tasks for pbmm2, the PacBio wrapper for minimap2.
 + Update the image for chunked-scatter and make use of new features from 0.2.0.
-+ Tuned resource requirements for GATK VariantEval, MultiQC, Picard metrics and 
++ Tuned resource requirements for GATK VariantEval, MultiQC, Picard metrics and
   STAR.
-+ Added a new task for [scatter-regions](https://github.com/biowdl/chunked-scatter) 
-  that replaces biopet-scatterregions. 
++ Added a new task for [scatter-regions](https://github.com/biowdl/chunked-scatter)
+  that replaces biopet-scatterregions.
 + The FastQC task now talks to the Java directly instead of using the included
   Perl wrapper for FastQC. This has the advantage that memory and threads can
-  be set independently. A rather high maximum heap size of 1750MB (Xmx1750M) 
+  be set independently. A rather high maximum heap size of 1750MB (Xmx1750M)
   was set, as OOM errors occurred frequently on some fastqs.
 + STAR: Add options regarding alignment score (regarding read length as well)
   for tweaking when processing rRNA depleted samples.
@@ -78,12 +82,12 @@ version 4.0.0-develop
   opposed to virtual memory).
 + Added `-XX:ParallelGCThreads=1` to the java options of java tasks.
 + Added `timeMinutes` input to many tasks, this indicates a maximum
-  number of minutes that the job will run. The associated runtime 
+  number of minutes that the job will run. The associated runtime
   attribute is `time_minutes` which can be used to inform
   a scheduler (eg. slurm) of the run time of the job.
 + Added STAR GenomeGenerate task.
-+ GATK.HaplotypeCaller: Add `--dont-use-soft-clipped-bases` and 
-  `--standard-min-confidence-threshold-for-calling` options. These are 
++ GATK.HaplotypeCaller: Add `--dont-use-soft-clipped-bases` and
+  `--standard-min-confidence-threshold-for-calling` options. These are
   required for RNA seq variant calling according to GATK best practices.
 + Samtools: Fix quotations in sort command.
 + Samtools SortByName is now called Sort.
@@ -95,7 +99,6 @@ version 4.0.0-develop
 + Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
 + Lima: Replace mv command with cp.
 + Add WDL task for smoove (lumpy) sv-caller.
-
 
 version 3.1.0
 ---------------------------
@@ -109,11 +112,10 @@ version 3.1.0
 + Lima: Add workaround for glob command not locating files in output directory.
 + CCS: Add missing backslash.
 + Cutadapt now explicitly calls the `--compression-level` flag with compression
-  level 1 to prevent cutadapt from using very high gzip compression level 6 
+  level 1 to prevent cutadapt from using very high gzip compression level 6
   that uses 400% more cpu time.
 + Update default docker image for cutadapt and fastqc.
 + Default number of cores for cutadapt and bwamem to 4 cores.
-
 
 version 3.0.0
 ---------------------------
@@ -125,7 +127,7 @@ version 3.0.0
 + Allow setting the `--emit-ref-confidence` flag for HaplotypeCaller.
 + Add `--output-mode` flag to HaplotypeCaller.
 + Added rtg.Format and rtg.VcfEval tasks.
-+ Added gatk.SelectVariants and gatk.VariantFiltration tasks. 
++ Added gatk.SelectVariants and gatk.VariantFiltration tasks.
 + Fixed a bug where the output directory was not created for bwa.Kit.
 + Add vt task for variants normalization and decomposition.
 + Update WDL task Picard (Add task RenameSample).
@@ -142,11 +144,11 @@ version 3.0.0
   biopet.ScatterRegions now always returns correctly ordered scatters.
 + Add tasks for umi-tools dedup and extract.
 + Add `GenomicsDBImport` task for GATK.
-+ Add `annotationGroups` input to `GenotypeGVCFs` to allow setting multiple 
++ Add `annotationGroups` input to `GenotypeGVCFs` to allow setting multiple
   annotation groups. The `StandardAnnotation` group is still used as default.
 + GenotypeGVCFs, only allow one input GVCF file, as the tool also only allows
-  one input file. 
-+ Rename HaplotypeCallerGVCF to HaplotypeCaller. Add `gvcf` option to set 
+  one input file.
++ Rename HaplotypeCallerGVCF to HaplotypeCaller. Add `gvcf` option to set
   whether output should be a GVCF.
 + Centrifuge: Add Krona task specific to Centrifuge.
 + Centrifuge: Fix Centrifuge tests, where sometimes the index files could still not be located.
@@ -171,7 +173,7 @@ version 3.0.0
     + PreprocessIntervals
 + Add common.TextToFile task.
 + Add bedtools.Intersect.
-+ Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files 
++ Add `-o pipefail` to bedtools.MergeBedFiles to prevent errors in BED files
   from going unnoticed.
 + Centrifuge: Fix -1/-U options for single end data.
 + Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
@@ -257,7 +259,7 @@ version 1.0.0
 + Common: Update dockerTag to dockerImage.
 + GATK: Add CombineVariants task that allows, e.g., to merge VCFs from different callers.
 + Mutect2: Add GATK tasks related to variant filtering (LearnReadOrientationModel, MergeStats, GetPileupSummaries, CalculateContamination and FilterMutectCalls).
-+ Mutect2: Add "--germline-resource" and "--f1r2-tar-gz" inputs, requiring an update to GATK 4.1.2.0. 
++ Mutect2: Add "--germline-resource" and "--f1r2-tar-gz" inputs, requiring an update to GATK 4.1.2.0.
 + Mutect2: Add necessary missing index attribute for panel of normals.
 + MultiQC: Add memory variable to multiqc task.
 + GATK: SplitNCigarReads, BaseRecalibration and ApplyBQSR do no longer need regions files as required inputs.
