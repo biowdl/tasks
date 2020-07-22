@@ -34,10 +34,10 @@ task Hisat2 {
         String summaryFilePath = basename(outputBam, ".bam") + ".summary.txt"
 
         Int threads = 4
-        Int sortThreads = 1
+        Int? sortThreads
         Int sortMemoryPerThreadGb = 2
         Int compressionLevel = 1
-        Int memoryGb = 1 + threads + ceil(size(indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
+        Int? memoryGb
         Int timeMinutes = 1 + ceil(size([inputR1, inputR2], "G") * 180 / threads)
         # quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1
         # is a combination of hisat2 and samtools
@@ -45,7 +45,12 @@ task Hisat2 {
         String dockerImage = "quay.io/biocontainers/mulled-v2-a97e90b3b802d1da3d6958e0867610c718cb5eb1:2880dd9d8ad0a7b221d4eacda9a818e92983128d-0"
     }
 
-    String bamIndexPath = sub(outputBam, "\.bam$", ".bai")
+    # Samtools sort may block the pipe while it is writing data to disk. 
+    # This can lead to cpu underutilization.
+    # 1 thread if threads is 1. For 2-4 threads 2 sort threads. 3 sort threads for 5-8 threads. 
+    Int estimatedSortThreads = if threads == 1 then 1 else 1 + ceil(threads / 4.0)
+    Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
+    Int estimatedMemoryGb = 1 + ceil(size(indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * totalSortThreads
 
     command {
         set -e -o pipefail
@@ -63,7 +68,7 @@ task Hisat2 {
         --new-summary \
         --summary-file ~{summaryFilePath} \
         | samtools sort \
-        ~{"-@ " + sortThreads} \
+        ~{"-@ " + totalSortThreads} \
         -m ~{sortMemoryPerThreadGb}G \
         -l ~{compressionLevel} \
         - \
@@ -76,8 +81,8 @@ task Hisat2 {
     }
 
     runtime {
-        memory: "~{memoryGb}G"
-        cpu: threads + 1
+        memory: "~{estimatedMemoryGb}G"
+        cpu: threads
         time_minutes: timeMinutes
         docker: dockerImage
     }
