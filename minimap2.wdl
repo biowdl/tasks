@@ -50,7 +50,7 @@ task Indexing {
     }
 
     output {
-        File outputIndexFile = outputPrefix + ".mmi"
+        File indexFile = outputPrefix + ".mmi"
     }
 
     runtime {
@@ -62,7 +62,7 @@ task Indexing {
 
     parameter_meta {
         # input
-        useHomopolymerCompressedKmer: {description: "Use homopolymer-compressed k-mer (preferrable for PacBio).", category: "advanced"}
+        useHomopolymerCompressedKmer: {description: "Use homopolymer-compressed k-mer (preferrable for pacbio).", category: "advanced"}
         kmerSize: {description: "K-mer size (no larger than 28).", category: "advanced"}
         minimizerWindowSize: {description: "Minimizer window size.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
@@ -74,7 +74,7 @@ task Indexing {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output
-        outputIndexFile: {description: "Indexed reference file."}
+        indexFile: {description: "Indexed reference file."}
     }
 }
 
@@ -83,9 +83,9 @@ task Mapping {
         String presetOption
         Int kmerSize = 15
         Boolean skipSelfAndDualMappings = false
-        Boolean outputSAM = false
+        Boolean outputSam = false
         String outputPrefix
-        Boolean addMDtagToSAM = false
+        Boolean addMDTagToSam = false
         Boolean secondaryAlignment = false
         File referenceFile
         File queryFile
@@ -110,9 +110,9 @@ task Mapping {
         -x ~{presetOption} \
         -k ~{kmerSize} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
-        ~{true="-a" false="" outputSAM} \
+        ~{true="-a" false="" outputSam} \
         -o ~{outputPrefix} \
-        ~{true="--MD" false="" addMDtagToSAM} \
+        ~{true="--MD" false="" addMDTagToSam} \
         --secondary=~{true="yes" false="no" secondaryAlignment} \
         -t ~{cores} \
         ~{"-G " + maxIntronLength} \
@@ -126,7 +126,7 @@ task Mapping {
     }
 
     output {
-        File outputAlignmentFile = outputPrefix
+        File alignmentFile = outputPrefix
     }
 
     runtime {
@@ -139,16 +139,16 @@ task Mapping {
     parameter_meta {
         presetOption: {description: "This option applies multiple options at the same time.", category: "common"}
         kmerSize: {description: "K-mer size (no larger than 28).", category: "advanced"}
-        outputSAM: {description: "Output in the SAM format.", category: "common"}
+        outputSam: {description: "Output in the sam format.", category: "common"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         maxIntronLength: {description: "Max intron length (effective with -xsplice; changing -r).", category: "advanced"}
         maxFragmentLength: {description: "Max fragment length (effective with -xsr or in the fragment mode).", category: "advanced"}
         skipSelfAndDualMappings: {description: "Skip self and dual mappings (for the all-vs-all mode).", category: "advanced"}
-        retainMaxSecondaryAlignments: {description: "Retain at most INT secondary alignments.", category: "advanced"}
+        retainMaxSecondaryAlignments: {description: "Retain at most N secondary alignments.", category: "advanced"}
         matchingScore: {description: "Matching score.", category: "advanced"}
         mismatchPenalty: {description: "Mismatch penalty.", category: "advanced"}
         howToFindGTAG: {description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.", category: "common"}
-        addMDtagToSAM: {description: "Adds a MD tag to the SAM output file.", category: "common"}
+        addMDTagToSam: {description: "Adds a MD tag to the sam output file.", category: "common"}
         secondaryAlignment: {description: "Whether to output secondary alignments.", category: "advanced"}
         referenceFile: {description: "Reference fasta file.", category: "required"}
         queryFile: {description: "Input fasta file.", category: "required"}
@@ -158,6 +158,6 @@ task Mapping {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output
-        outputAlignmentFile: {description: "Mapping and alignment between collections of DNA sequences file."}
+        alignmentFile: {description: "Mapping and alignment between collections of dna sequences file."}
     }
 }

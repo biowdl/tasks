@@ -59,7 +59,7 @@ task Build {
     }
 
     output {
-        Array[File] outputIndex = glob(outputPrefix + "/" + indexBasename + "*.cf")
+        Array[File] index = glob(outputPrefix + "/" + indexBasename + "*.cf")
     }
 
     runtime {
@@ -75,7 +75,7 @@ task Build {
         conversionTable: {description: "List of UIDs (unique ID) and corresponding taxonomic IDs.", category: "required"}
         taxonomyTree: {description: "Taxonomic tree (e.g. nodes.dmp).", category: "required"}
         nameTable: {description: "Name table (e.g. names.dmp).", category: "required"}
-        referenceFile: {description: "A comma-separated list of FASTA files containing the reference sequences to be aligned to.", category: "required"}
+        referenceFile: {description: "A comma-separated list of fasta files containing the reference sequences to be aligned to.", category: "required"}
         indexBasename: {description: "The basename of the index files to write.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         offrate: {description: "The number of rows marked by the indexer.", category: "common"}
@@ -88,7 +88,7 @@ task Build {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputIndex: {description: "Generated Centrifuge index."}
+        index: {description: "Generated centrifuge index."}
     }
 }
 
@@ -142,9 +142,9 @@ task Classify {
     >>>
 
     output {
-        File outputMetrics = outputPrefix + "_alignment_metrics.tsv"
-        File outputClassification = outputPrefix + "_classification.tsv"
-        File outputReport = outputPrefix + "_output_report.tsv"
+        File metrics = outputPrefix + "_alignment_metrics.tsv"
+        File classification = outputPrefix + "_classification.tsv"
+        File report = outputPrefix + "_output_report.tsv"
     }
 
     runtime {
@@ -156,7 +156,7 @@ task Classify {
     parameter_meta {
         # inputs
         inputFormat: {description: "The format of the read file(s).", category: "required"}
-        phred64: {description: "If set to true, Phred+64 encoding is used.", category: "required"}
+        phred64: {description: "If set to true, phred+64 encoding is used.", category: "required"}
         minHitLength: {description: "Minimum length of partial hits.", category: "required"}
         indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
         read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
@@ -172,9 +172,9 @@ task Classify {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputMetrics: {description: "File with Centrifuge metrics."}
-        outputClassification: {description: "File with the classification results."}
-        outputReport: {description: "File with a classification summary."}
+        metrics: {description: "File with centrifuge metrics."}
+        classification: {description: "File with the classification results."}
+        report: {description: "File with a classification summary."}
     }
 }
 
@@ -209,7 +209,7 @@ task Inspect {
     >>>
 
     output {
-        File outputInspect = outputPrefix + "/" + printOption
+        File inspectResult = outputPrefix + "/" + printOption
     }
 
     runtime {
@@ -223,13 +223,13 @@ task Inspect {
         printOption: {description: "The output option for inspect (fasta, summary, conversionTable, taxonomyTree, nameTable, sizeTable)", category: "required"}
         indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        across: {description: "When printing FASTA output, output a newline character every <int> bases.", category: "common"}
+        across: {description: "When printing fasta output, output a newline character every <int> bases.", category: "common"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputInspect: {description: "Output file according to output option."}
+        inspectResult: {description: "Output file according to output option."}
     }
 }
 
@@ -281,7 +281,7 @@ task Download {
 
 task DownloadTaxonomy {
     input {
-        String centrifugeTaxonomyDir
+        String taxonomyDir
         String executable = "centrifuge-download"
         String? preCommand
     }
@@ -290,19 +290,19 @@ task DownloadTaxonomy {
         set -e -o pipefail
         ~{preCommand}
         ~{executable} \
-        -o ~{centrifugeTaxonomyDir} \
+        -o ~{taxonomyDir} \
         taxonomy
     }
 
     output {
-        File taxonomyTree = centrifugeTaxonomyDir + "/nodes.dmp"
-        File nameTable = centrifugeTaxonomyDir + "/names.dmp"
+        File taxonomyTree = taxonomyDir + "/nodes.dmp"
+        File nameTable = taxonomyDir + "/names.dmp"
     }
  }
 
-task Kreport {
+task KReport {
     input {
-        File centrifugeClassification
+        File classification
         String outputPrefix
         Array[File]+ indexFiles
         Boolean noLCA = false
@@ -332,12 +332,12 @@ task Kreport {
         ~{true="--is-count-table" false="" isCountTable} \
         ~{"--min-score " + minimumScore} \
         ~{"--min-length " + minimumLength} \
-        ~{centrifugeClassification} \
+        ~{classification} \
         > ~{outputPrefix + "_kreport.tsv"}
     >>>
 
     output {
-        File outputKreport = outputPrefix + "_kreport.tsv"
+        File KReport = outputPrefix + "_kreport.tsv"
     }
 
     runtime {
@@ -348,10 +348,10 @@ task Kreport {
 
     parameter_meta {
         # inputs
-        centrifugeClassification: {description: "File with Centrifuge classification results.", category: "required"}
+        classification: {description: "File with centrifuge classification results.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
-        noLCA: {description: "Do not report the LCA of multiple assignments, but report count fractions at the taxa.", category: "advanced"}
+        noLCA: {description: "Do not report the lca of multiple assignments, but report count fractions at the taxa.", category: "advanced"}
         showZeros: {description: "Show clades that have zero reads.", category: "advanced"}
         isCountTable: {description: "The format of the file is taxID<tab>COUNT.", category: "advanced"}
         minimumScore: {description: "Require a minimum score for reads to be counted.", category: "advanced"}
@@ -361,7 +361,7 @@ task Kreport {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputKreport: {description: "File with kraken style report."}
+        KReport: {description: "File with kraken style report."}
     }
 }
 
@@ -384,7 +384,7 @@ task KTimportTaxonomy {
     }
 
     output {
-        File outputKronaPlot = outputPrefix + "_krona.html"
+        File kronaPlot = outputPrefix + "_krona.html"
     }
 
     runtime {
@@ -395,13 +395,13 @@ task KTimportTaxonomy {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "File with Centrifuge classification results.", category: "required"}
+        inputFile: {description: "File with centrifuge classification results.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputKronaPlot: {description: "Krona taxonomy plot html file."}
+        kronaPlot: {description: "Krona taxonomy plot html file."}
     }
 }
