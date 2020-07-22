@@ -242,9 +242,9 @@ task GetReadAnnotations {
 
 task GetSpliceJunctions {
     input {
-        File SJinformationFile
+        File sjInformationFile
         String inputFileType = "db"
-        File referenceGTF
+        File referenceGtf
         String runMode = "intron"
         String outputPrefix
 
@@ -259,8 +259,8 @@ task GetSpliceJunctions {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_get_sjs \
-        ~{SJfileType[inputFileType] + SJinformationFile} \
-        --ref ~{referenceGTF} \
+        ~{SJfileType[inputFileType] + sjInformationFile} \
+        --ref ~{referenceGtf} \
         --mode ~{runMode} \
         --outprefix ~{outputPrefix}
     }
@@ -277,9 +277,9 @@ task GetSpliceJunctions {
 
     parameter_meta {
         # inputs
-        SJinformationFile: {description: "Talon gtf file or database from which to extract exons/introns.", category: "required"}
-        inputFileType: {description: "The file type of SJinformationFile.", category: "common"}
-        referenceGTF: {description: "Gtf reference file (ie gencode).", category: "required"}
+        sjInformationFile: {description: "Talon gtf file or database from which to extract exons/introns.", category: "required"}
+        inputFileType: {description: "The file type of sjInformationFile.", category: "common"}
+        referenceGtf: {description: "Gtf reference file (ie gencode).", category: "required"}
         runMode: {description: "Determines whether to include introns or exons in the output.", category: "common"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
@@ -293,13 +293,13 @@ task GetSpliceJunctions {
 
 task InitializeTalonDatabase {
     input {
-        File GTFfile
+        File gtfFile
         String genomeBuild
         String annotationVersion
         Int minimumLength = 300
-        String novelIDprefix = "TALON"
-        Int cutoff5p = 500
-        Int cutoff3p = 300
+        String novelPrefix = "TALON"
+        Int cutOff5p = 500
+        Int cutOff3p = 300
         String outputPrefix
 
         String memory = "10G"
@@ -311,13 +311,13 @@ task InitializeTalonDatabase {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_initialize_database \
-        --f=~{GTFfile} \
+        --f=~{gtfFile} \
         --g=~{genomeBuild} \
         --a=~{annotationVersion} \
         --l=~{minimumLength} \
-        --idprefix=~{novelIDprefix} \
-        --5p=~{cutoff5p} \
-        --3p=~{cutoff3p} \
+        --idprefix=~{novelPrefix} \
+        --5p=~{cutOff5p} \
+        --3p=~{cutOff3p} \
         --o=~{outputPrefix}
     }
 
@@ -333,13 +333,13 @@ task InitializeTalonDatabase {
 
     parameter_meta {
         # inputs
-        GTFfile: {description: "Gtf annotation containing genes, transcripts, and edges.", category: "required"}
+        gtfFile: {description: "Gtf annotation containing genes, transcripts, and edges.", category: "required"}
         genomeBuild: {description: "Name of genome build that the gtf file is based on (ie hg38).", category: "required"}
         annotationVersion: {description: "Name of supplied annotation (will be used to label data).", category: "required"}
         minimumLength: { description: "Minimum required transcript length.", category: "common"}
-        novelIDprefix: {description: "Prefix for naming novel discoveries in eventual talon runs.", category: "common"}
-        cutoff5p: { description: "Maximum allowable distance (bp) at the 5' end during annotation.", category: "advanced"}
-        cutoff3p: {description: "Maximum allowable distance (bp) at the 3' end during annotation.", category: "advanced"}
+        novelPrefix: {description: "Prefix for naming novel discoveries in eventual talon runs.", category: "common"}
+        cutOff5p: { description: "Maximum allowable distance (bp) at the 5' end during annotation.", category: "advanced"}
+        cutOff3p: {description: "Maximum allowable distance (bp) at the 3' end during annotation.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -352,7 +352,7 @@ task InitializeTalonDatabase {
 
 task LabelReads {
     input {
-        File SAMfile
+        File samFile
         File referenceGenome
         Int fracaRangeSize = 20
         String tmpDir = "./tmp_label_reads"
@@ -369,7 +369,7 @@ task LabelReads {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_label_reads \
-        --f=~{SAMfile} \
+        --f=~{samFile} \
         --g=~{referenceGenome} \
         --t=~{threads} \
         --ar=~{fracaRangeSize} \
@@ -392,7 +392,7 @@ task LabelReads {
 
     parameter_meta {
         # inputs
-        SAMfile: {description: "Sam file of transcripts.", category: "required"}
+        samFile: {description: "Sam file of transcripts.", category: "required"}
         referenceGenome: {description: "Reference genome fasta file.", category: "required"}
         fracaRangeSize: {description: "Size of post-transcript interval to compute fraction.", category: "common"}
         tmpDir: {description: "Path to directory for tmp files.", category: "advanced"}
@@ -411,7 +411,7 @@ task LabelReads {
 
 task ReformatGtf {
     input {
-        File GTFfile
+        File gtfFile
 
         String memory = "4G"
         Int timeMinutes = 30
@@ -421,11 +421,11 @@ task ReformatGtf {
     command {
         set -e
         talon_reformat_gtf \
-        -gtf ~{GTFfile}
+        -gtf ~{gtfFile}
     }
 
     output {
-        File reformattedGtf = GTFfile
+        File reformattedGtf = gtfFile
     }
 
     runtime {
@@ -436,7 +436,7 @@ task ReformatGtf {
 
     parameter_meta {
         # inputs
-        GTFfile: {description: "Gtf annotation containing genes, transcripts, and edges.", category: "required"}
+        gtfFile: {description: "Gtf annotation containing genes, transcripts, and edges.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -452,7 +452,7 @@ task SummarizeDatasets {
         Boolean setVerbose = false
         String outputPrefix
 
-        File? datasetGroupsCSV
+        File? datasetGroupsCsv
 
         String memory = "4G"
         Int timeMinutes = 50
@@ -466,7 +466,7 @@ task SummarizeDatasets {
         --db ~{databaseFile} \
         ~{true="--verbose" false="" setVerbose} \
         --o ~{outputPrefix} \
-        ~{"--groups " + datasetGroupsCSV}
+        ~{"--groups " + datasetGroupsCsv}
     }
 
     output {
@@ -484,7 +484,7 @@ task SummarizeDatasets {
         databaseFile: {description: "Talon database.", category: "required"}
         setVerbose: {description: "Print out the counts in terminal.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        datasetGroupsCSV: {description: "File of comma-delimited dataset groups to process together.", category: "advanced"}
+        datasetGroupsCsv: {description: "File of comma-delimited dataset groups to process together.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -496,7 +496,7 @@ task SummarizeDatasets {
 
 task Talon {
     input {
-        Array[File] SAMfiles
+        Array[File] samFiles
         String organism
         String sequencingPlatform = "PacBio-RS-II"
         File databaseFile
@@ -518,7 +518,7 @@ task Talon {
         ln -s $PWD/tmp /tmp/sqltmp #Multiprocessing will crash if the absolute path is too long.
         export TMPDIR=/tmp/sqltmp
         printf "" > ~{outputPrefix}/talonConfigFile.csv #File needs to be emptied when task is rerun.
-        for file in ~{sep=" " SAMfiles}
+        for file in ~{sep=" " samFiles}
         do
             configFileLine="$(basename ${file%.*}),~{organism},~{sequencingPlatform},${file}"
             echo ${configFileLine} >> ~{outputPrefix}/talonConfigFile.csv
@@ -549,7 +549,7 @@ task Talon {
 
     parameter_meta {
         # inputs
-        SAMfiles: {description: "Input sam files.", category: "required"}
+        samFiles: {description: "Input sam files.", category: "required"}
         organism: {description: "The name of the organism from which the samples originated.", category: "required"}
         sequencingPlatform: {description: "The sequencing platform used to generate long reads.", category: "required"}
         databaseFile: {description: "Talon database. Created using initialize_talon_database.py.", category: "required"}

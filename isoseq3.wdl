@@ -22,7 +22,7 @@ version 1.0
 
 task Refine {
     input {
-        Int minPolyAlength = 20
+        Int minPolyALength = 20
         Boolean requirePolyA = false
         String logLevel = "WARN"
         File inputBamFile
@@ -40,7 +40,7 @@ task Refine {
         set -e
         mkdir -p "~{outputDir}"
         isoseq3 refine \
-        --min-polya-length ~{minPolyAlength} \
+        --min-polya-length ~{minPolyALength} \
         ~{true="--require-polya" false="" requirePolyA} \
         --log-level ~{logLevel} \
         --num-threads ~{cores} \
@@ -68,7 +68,7 @@ task Refine {
 
     parameter_meta {
         # inputs
-        minPolyAlength: {description: "Minimum poly(A) tail length.", category: "advanced"}
+        minPolyALength: {description: "Minimum poly(A) tail length.", category: "advanced"}
         requirePolyA: {description: "Require fl reads to have a poly(A) tail and remove it.", category: "common"}
         logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
         inputBamFile: {description: "Bam input file.", category: "required"}

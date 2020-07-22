@@ -22,7 +22,7 @@ version 1.0
 
 task GetSJsFromGtf {
     input {
-        File GTFfile
+        File gtfFile
         File genomeFile
         String outputPrefix
         Int minIntronSize = 21
@@ -36,14 +36,14 @@ task GetSJsFromGtf {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         get_SJs_from_gtf \
-        --f=~{GTFfile} \
+        --f=~{gtfFile} \
         --g=~{genomeFile} \
         --minIntronSize=~{minIntronSize} \
         ~{"--o=" + outputPrefix + ".tsv"}
     }
 
     output {
-        File outputSJsFile = outputPrefix + ".tsv"
+        File spliceJunctionFile = outputPrefix + ".tsv"
     }
 
     runtime {
@@ -54,22 +54,21 @@ task GetSJsFromGtf {
 
     parameter_meta {
         # inputs
-        GTFfile: {description: "Input GTF file", category: "required"}
+        gtfFile: {description: "Input gtf file", category: "required"}
         genomeFile: {description: "Reference genome", category: "required"}
         minIntronSize: {description: "Minimum size of intron to consider a junction.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         # outputs
-        outputSJsFile: {description: "Extracted splice junctions."}
+        spliceJunctionFile: {description: "Extracted splice junctions."}
     }
 }
 
 task GetTranscriptCleanStats {
     input {
-        File transcriptCleanSAMfile
+        File transcriptCleanSamFile
         String outputPrefix
 
         String memory = "4G"
@@ -81,12 +80,12 @@ task GetTranscriptCleanStats {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         get_TranscriptClean_stats \
-        ~{transcriptCleanSAMfile} \
+        ~{transcriptCleanSamFile} \
         ~{outputPrefix}
     }
 
     output {
-        File outputStatsFile = stdout()
+        File statsFile = stdout()
     }
 
     runtime {
@@ -97,24 +96,23 @@ task GetTranscriptCleanStats {
 
     parameter_meta {
         # inputs
-        transcriptCleanSAMfile: {description: "Output SAM file from TranscriptClean", category: "required"}
+        transcriptCleanSamFile: {description: "Output sam file from transcriptclean", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputStatsFile: {description: "Summary stats from TranscriptClean run."}
+        statsFile: {description: "Summary stats from transcriptclean run."}
     }
 }
 
 task TranscriptClean {
     input {
-        File SAMfile
+        File samFile
         File referenceGenome
         Int maxLenIndel = 5
-        Int maxSJoffset = 5
+        Int maxSJOffset = 5
         String outputPrefix
         Boolean correctMismatches = true
         Boolean correctIndels = true
@@ -138,7 +136,7 @@ task TranscriptClean {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         TranscriptClean \
-        -s ~{SAMfile} \
+        -s ~{samFile} \
         -g ~{referenceGenome} \
         -t ~{cores} \
         --maxLenIndel=~{maxLenIndel} \
@@ -157,10 +155,10 @@ task TranscriptClean {
     }
 
     output {
-        File outputTranscriptCleanFasta = outputPrefix + "_clean.fa"
-        File outputTranscriptCleanLog = outputPrefix + "_clean.log"
-        File outputTranscriptCleanSAM = outputPrefix + "_clean.sam"
-        File outputTranscriptCleanTElog = outputPrefix + "_clean.TE.log"
+        File fastaFile = outputPrefix + "_clean.fa"
+        File logFile = outputPrefix + "_clean.log"
+        File samFile = outputPrefix + "_clean.sam"
+        File logFileTE = outputPrefix + "_clean.TE.log"
     }
 
     runtime {
@@ -172,21 +170,21 @@ task TranscriptClean {
 
     parameter_meta {
         # inputs
-        SAMfile: {description: "Input SAM file containing transcripts to correct.", category: "required"}
+        samFile: {description: "Input sam file containing transcripts to correct.", category: "required"}
         referenceGenome: {description: "Reference genome fasta file.", category: "required"}
         maxLenIndel: {description: "Maximum size indel to correct.", category: "advanced"}
-        maxSJoffset: {description: "Maximum distance from annotated splice junction to correct.", category: "advanced"}
+        maxSJOffset: {description: "Maximum distance from annotated splice junction to correct.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        correctMismatches: {description: "Set this to make TranscriptClean correct mismatches.", category: "common"}
-        correctIndels: {description: "Set this to make TranscriptClean correct indels.", category: "common"}
-        correctSJs: {description: "Set this to make TranscriptClean correct splice junctions.", category: "common"}
-        dryRun: {description: "TranscriptClean will read in the data but don't do any correction.", category: "advanced"}
+        correctMismatches: {description: "Set this to make transcriptclean correct mismatches.", category: "common"}
+        correctIndels: {description: "Set this to make transcriptclean correct indels.", category: "common"}
+        correctSJs: {description: "Set this to make transcriptclean correct splice junctions.", category: "common"}
+        dryRun: {description: "Transcriptclean will read in the data but don't do any correction.", category: "advanced"}
         primaryOnly: {description: "Only output primary mappings of transcripts.", category: "advanced"}
         canonOnly: {description: "Only output canonical transcripts and transcript containing annotated noncanonical junctions.", category: "advanced"}
         bufferSize: {description: "Number of lines to output to file at once by each thread during run.", category: "common"}
-        deleteTmp: {description: "The temporary directory generated by TranscriptClean will be removed.", category: "common"}
+        deleteTmp: {description: "The temporary directory generated by transcriptclean will be removed.", category: "common"}
         spliceJunctionAnnotation: {description: "Splice junction file.", category: "common"}
-        variantFile: {description: "VCF formatted file of variants.", category: "common"}
+        variantFile: {description: "Vcf formatted file of variants.", category: "common"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -194,9 +192,9 @@ task TranscriptClean {
                       category: "advanced"}
         
         # outputs
-        outputTranscriptCleanFasta: {description: "Fasta file containing corrected reads."}
-        outputTranscriptCleanLog: {description: "Log file of TranscriptClean run."}
-        outputTranscriptCleanSAM: {description: "SAM file containing corrected aligned reads."}
-        outputTranscriptCleanTElog: {description: "TE log file of TranscriptClean run."}
+        fastaFile: {description: "Fasta file containing corrected reads."}
+        logFile: {description: "Log file of transcriptclean run."}
+        samFile: {description: "Sam file containing corrected aligned reads."}
+        logFileTE: {description: "TE log file of transcriptclean run."}
    }
 }

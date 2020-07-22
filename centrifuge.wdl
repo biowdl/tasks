@@ -281,7 +281,7 @@ task Download {
 
 task DownloadTaxonomy {
     input {
-        String centrifugeTaxonomyDir
+        String taxonomyDir
         String executable = "centrifuge-download"
         String? preCommand
     }
@@ -290,19 +290,19 @@ task DownloadTaxonomy {
         set -e -o pipefail
         ~{preCommand}
         ~{executable} \
-        -o ~{centrifugeTaxonomyDir} \
+        -o ~{taxonomyDir} \
         taxonomy
     }
 
     output {
-        File taxonomyTree = centrifugeTaxonomyDir + "/nodes.dmp"
-        File nameTable = centrifugeTaxonomyDir + "/names.dmp"
+        File taxonomyTree = taxonomyDir + "/nodes.dmp"
+        File nameTable = taxonomyDir + "/names.dmp"
     }
  }
 
 task KReport {
     input {
-        File centrifugeClassification
+        File classification
         String outputPrefix
         Array[File]+ indexFiles
         Boolean noLCA = false
@@ -332,7 +332,7 @@ task KReport {
         ~{true="--is-count-table" false="" isCountTable} \
         ~{"--min-score " + minimumScore} \
         ~{"--min-length " + minimumLength} \
-        ~{centrifugeClassification} \
+        ~{classification} \
         > ~{outputPrefix + "_kreport.tsv"}
     >>>
 
@@ -348,7 +348,7 @@ task KReport {
 
     parameter_meta {
         # inputs
-        centrifugeClassification: {description: "File with centrifuge classification results.", category: "required"}
+        classification: {description: "File with centrifuge classification results.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
         noLCA: {description: "Do not report the lca of multiple assignments, but report count fractions at the taxa.", category: "advanced"}
