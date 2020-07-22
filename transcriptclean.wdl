@@ -109,7 +109,7 @@ task GetTranscriptCleanStats {
 
 task TranscriptClean {
     input {
-        File samFile
+        File inputSam
         File referenceGenome
         Int maxLenIndel = 5
         Int maxSJOffset = 5
@@ -136,7 +136,7 @@ task TranscriptClean {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         TranscriptClean \
-        -s ~{samFile} \
+        -s ~{inputSam} \
         -g ~{referenceGenome} \
         -t ~{cores} \
         --maxLenIndel=~{maxLenIndel} \
@@ -170,7 +170,7 @@ task TranscriptClean {
 
     parameter_meta {
         # inputs
-        samFile: {description: "Input sam file containing transcripts to correct.", category: "required"}
+        inputSam: {description: "Input sam file containing transcripts to correct.", category: "required"}
         referenceGenome: {description: "Reference genome fasta file.", category: "required"}
         maxLenIndel: {description: "Maximum size indel to correct.", category: "advanced"}
         maxSJOffset: {description: "Maximum distance from annotated splice junction to correct.", category: "advanced"}
