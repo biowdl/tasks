@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Renamed a few inputs in centrifuge.wdl, isoseq3.wdl, talon.wdl,
+  transcriptclean.wdl to be more descriptive.
 + Renamed outputs of tasks used in the TALON-WDL, PacBio-subreads-processing &
   sequence-classification pipelines.
 + Reworked bcf2vcf task into bcftools view task.
