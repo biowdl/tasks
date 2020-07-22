@@ -68,7 +68,7 @@ task GetSJsFromGtf {
 
 task GetTranscriptCleanStats {
     input {
-        File transcriptCleanSamFile
+        File inputSam
         String outputPrefix
 
         String memory = "4G"
@@ -80,7 +80,7 @@ task GetTranscriptCleanStats {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         get_TranscriptClean_stats \
-        ~{transcriptCleanSamFile} \
+        ~{inputSam} \
         ~{outputPrefix}
     }
 
@@ -96,7 +96,7 @@ task GetTranscriptCleanStats {
 
     parameter_meta {
         # inputs
-        transcriptCleanSamFile: {description: "Output sam file from transcriptclean", category: "required"}
+        inputSam: {description: "Output sam file from transcriptclean", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -157,7 +157,7 @@ task TranscriptClean {
     output {
         File fastaFile = outputPrefix + "_clean.fa"
         File logFile = outputPrefix + "_clean.log"
-        File samFile = outputPrefix + "_clean.sam"
+        File outputSam = outputPrefix + "_clean.sam"
         File logFileTE = outputPrefix + "_clean.TE.log"
     }
 
@@ -194,7 +194,7 @@ task TranscriptClean {
         # outputs
         fastaFile: {description: "Fasta file containing corrected reads."}
         logFile: {description: "Log file of transcriptclean run."}
-        samFile: {description: "Sam file containing corrected aligned reads."}
+        outputSam: {description: "Sam file containing corrected aligned reads."}
         logFileTE: {description: "TE log file of transcriptclean run."}
    }
 }
