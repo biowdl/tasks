@@ -322,7 +322,7 @@ task InitializeTalonDatabase {
     }
 
     output {
-        File database = outputPrefix + ".db"
+        File databaseFile = outputPrefix + ".db"
     }
 
     runtime {
@@ -346,13 +346,13 @@ task InitializeTalonDatabase {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        database: {description: "Talon database."}
+        databaseFile: {description: "Talon database."}
     }
 }
 
 task LabelReads {
     input {
-        File samFile
+        File inputSam
         File referenceGenome
         Int fracaRangeSize = 20
         String tmpDir = "./tmp_label_reads"
@@ -369,7 +369,7 @@ task LabelReads {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         talon_label_reads \
-        --f=~{samFile} \
+        --f=~{inputSam} \
         --g=~{referenceGenome} \
         --t=~{threads} \
         --ar=~{fracaRangeSize} \
@@ -392,7 +392,7 @@ task LabelReads {
 
     parameter_meta {
         # inputs
-        samFile: {description: "Sam file of transcripts.", category: "required"}
+        inputSam: {description: "Sam file of transcripts.", category: "required"}
         referenceGenome: {description: "Reference genome fasta file.", category: "required"}
         fracaRangeSize: {description: "Size of post-transcript interval to compute fraction.", category: "common"}
         tmpDir: {description: "Path to directory for tmp files.", category: "advanced"}
