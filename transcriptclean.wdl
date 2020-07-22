@@ -61,6 +61,7 @@ task GetSJsFromGtf {
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
         # outputs
         spliceJunctionFile: {description: "Extracted splice junctions."}
     }
@@ -140,7 +141,7 @@ task TranscriptClean {
         -g ~{referenceGenome} \
         -t ~{cores} \
         --maxLenIndel=~{maxLenIndel} \
-        --maxSJOffset=~{maxSJoffset} \
+        --maxSJOffset=~{maxSJOffset} \
         -o ~{outputPrefix} \
         ~{true="-m true" false="-m false" correctMismatches} \
         ~{true="-i true" false="-i false" correctIndels} \
