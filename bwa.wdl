@@ -25,82 +25,10 @@ task Mem {
         File read1
         File? read2
         BwaIndex bwaIndex
-        String outputPath
-        String? readgroup
-
-        Int threads = 4
-        Int? sortThreads
-        Int sortMemoryPerThreadGb = 2
-        Int compressionLevel = 1
-        Int? memoryGb 
-        Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 200 / threads)
-        # This container contains: samtools (1.10), bwa (0.7.17-r1188)
-        String dockerImage = "quay.io/biocontainers/mulled-v2-fe8faa35dbf6dc65a0f7f5d4ea12e31a79f73e40:eabfac3657eda5818bae4090db989e3d41b01542-0"
-    }
-
-    # Samtools sort may block the pipe while it is writing data to disk. 
-    # This can lead to cpu underutilization.
-    # 1 thread if threads is 1. For 2-4 threads 2 sort threads. 3 sort threads for 5-8 threads. 
-    Int estimatedSortThreads = if threads == 1 then 1 else 1 + ceil(threads / 4.0)
-    Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
-    # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.  
-    Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * totalSortThreads
-
-    command {
-        set -e -o pipefail
-        mkdir -p "$(dirname ~{outputPath})"
-        bwa mem \
-        ~{"-t " + threads} \
-        ~{"-R '" + readgroup}~{true="'" false="" defined(readgroup)} \
-        ~{bwaIndex.fastaFile} \
-        ~{read1} \
-        ~{read2} \
-        | samtools sort \
-        ~{"-@ " + totalSortThreads} \
-        -m ~{sortMemoryPerThreadGb}G \
-        -l ~{compressionLevel} \
-        - \
-        -o ~{outputPath}
-    }
-
-    output {
-        File outputBam = outputPath
-    }
-
-    runtime {
-        cpu: threads
-        memory: "~{select_first([memoryGb, estimatedMemoryGb])}G"
-        time_minutes: timeMinutes
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        read1: {description: "The first or single end fastq file.", category: "required"}
-        read2: {description: "The second end fastq file.", category: "common"}
-        bwaIndex: {description: "The BWA index files.", category: "required"}
-        outputPath: {description: "The location the output BAM file should be written to.", category: "required"}
-        readgroup: {description: "The readgroup to be assigned to the reads. See BWA mem's `-R` option.", category: "common"}
-
-        threads: {description: "The number of threads to use.", category: "advanced"}
-        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
-        sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
-        sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
-        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task Kit {
-    input {
-        File read1
-        File? read2
-        BwaIndex bwaIndex
         String outputPrefix
         String? readgroup
         Boolean sixtyFour = false
-
+        Boolean usePostalt = false
         Int threads = 4
         Int? sortThreads
         Int sortMemoryPerThreadGb = 2
@@ -118,6 +46,8 @@ task Kit {
     Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
     # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.  
     Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * totalSortThreads
+    String bwaKitCommand =  "bwa-postalt.js -p ~{outputPrefix}.hla ~{bwaIndex.fastaFile}" + (if sixtyFour then ".64.alt" else ".alt") + " | "
+    String kitCommandString = if usePostalt then bwaKitCommand else ""
     
     command {
         set -e
@@ -129,10 +59,8 @@ task Kit {
           ~{read1} \
           ~{read2} \
           2> ~{outputPrefix}.log.bwamem | \
-        bwa-postalt.js \
-          -p ~{outputPrefix}.hla \
-          ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
-        samtools sort \
+          ~{kitCommandString} \
+          samtools sort \
           ~{"-@ " + totalSortThreads} \
           -m ~{sortMemoryPerThreadGb}G \
           -l ~{compressionLevel} \
@@ -157,7 +85,8 @@ task Kit {
         # inputs
         read1: {description: "The first-end fastq file.", category: "required"}
         read2: {description: "The second-end fastq file.", category: "common"}
-        bwaIndex: {description: "The BWA index, including a .alt file.", category: "required"}
+        bwaIndex: {description: "The BWA index, including (optionally) a .alt file.", category: "required"}
+        usePostalt: {description: "Whether to use the postalt script from bwa kit."}
         outputPrefix: {description: "The prefix of the output files, including any parent directories.", category: "required"}
         readgroup: {description: "A readgroup identifier.", category: "common"}
         sixtyFour: {description: "Whether or not the index uses the '.64' suffixes.", category: "common"}
