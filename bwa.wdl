@@ -46,9 +46,8 @@ task Mem {
     Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
     # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.  
     Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * totalSortThreads
-    String bwaKitCommand =  "bwa-postalt.js -p ~{outputPrefix}.hla ~{bwaIndex.fastaFile}" + (if sixtyFour then ".64.alt" else ".alt") + " | "
-    String kitCommandString = if usePostalt then bwaKitCommand else ""
     
+    # The bwa postalt script is out commented as soon as usePostalt = false. It is a hack but it should work.
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
@@ -59,7 +58,7 @@ task Mem {
           ~{read1} \
           ~{read2} \
           2> ~{outputPrefix}.log.bwamem | \
-          ~{kitCommandString} \
+          ~{true="" false="#" usePostalt} bwa-postalt.js -p ~{outputPrefix}.hla ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
           samtools sort \
           ~{"-@ " + totalSortThreads} \
           -m ~{sortMemoryPerThreadGb}G \
@@ -70,6 +69,7 @@ task Mem {
 
     output {
         File outputBam = outputPrefix + ".aln.bam"
+        File? outputHla = outputPrefix + ".hla"
     }
 
     runtime {
