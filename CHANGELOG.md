@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ bwa mem, bwa mem+kit and hisat2 have their samtools sort threads tweaked. The
+  number of threads is now related to the number of threads on the aligner.
+  Using more threads reduces the chance of the samtools sort pipe getting 
+  blocked if it's full.
 + Renamed a few inputs in centrifuge.wdl, isoseq3.wdl, talon.wdl,
   transcriptclean.wdl to be more descriptive.
 + Renamed outputs of tasks used in the TALON-WDL, PacBio-subreads-processing &

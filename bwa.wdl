@@ -29,15 +29,22 @@ task Mem {
         String? readgroup
 
         Int threads = 4
-        Int sortThreads = 1
+        Int? sortThreads
         Int sortMemoryPerThreadGb = 2
         Int compressionLevel = 1
-        # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
-        Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
+        Int? memoryGb 
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 200 / threads)
         # This container contains: samtools (1.10), bwa (0.7.17-r1188)
         String dockerImage = "quay.io/biocontainers/mulled-v2-fe8faa35dbf6dc65a0f7f5d4ea12e31a79f73e40:eabfac3657eda5818bae4090db989e3d41b01542-0"
     }
+
+    # Samtools sort may block the pipe while it is writing data to disk. 
+    # This can lead to cpu underutilization.
+    # 1 thread if threads is 1. For 2-4 threads 2 sort threads. 3 sort threads for 5-8 threads. 
+    Int estimatedSortThreads = if threads == 1 then 1 else 1 + ceil(threads / 4.0)
+    Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
+    # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.  
+    Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * totalSortThreads
 
     command {
         set -e -o pipefail
@@ -49,7 +56,7 @@ task Mem {
         ~{read1} \
         ~{read2} \
         | samtools sort \
-        ~{"-@ " + sortThreads} \
+        ~{"-@ " + totalSortThreads} \
         -m ~{sortMemoryPerThreadGb}G \
         -l ~{compressionLevel} \
         - \
@@ -62,7 +69,7 @@ task Mem {
 
     runtime {
         cpu: threads
-        memory: "~{memoryGb}G"
+        memory: "~{select_first([memoryGb, estimatedMemoryGb])}G"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -95,16 +102,23 @@ task Kit {
         Boolean sixtyFour = false
 
         Int threads = 4
-        Int sortThreads = 1
+        Int? sortThreads
         Int sortMemoryPerThreadGb = 2
         Int compressionLevel = 1
-        # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.
-        Int memoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * sortThreads
+        Int? memoryGb 
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         # Contains bwa 0.7.17 bwakit 0.7.17.dev1 and samtools 1.10
         String dockerImage = "quay.io/biocontainers/mulled-v2-ad317f19f5881324e963f6a6d464d696a2825ab6:c59b7a73c87a9fe81737d5d628e10a3b5807f453-0"
     }
 
+    # Samtools sort may block the pipe while it is writing data to disk. 
+    # This can lead to cpu underutilization.
+    # 1 thread if threads is 1. For 2-4 threads 2 sort threads. 3 sort threads for 5-8 threads. 
+    Int estimatedSortThreads = if threads == 1 then 1 else 1 + ceil(threads / 4.0)
+    Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
+    # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.  
+    Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * totalSortThreads
+    
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
@@ -119,7 +133,7 @@ task Kit {
           -p ~{outputPrefix}.hla \
           ~{bwaIndex.fastaFile}~{true=".64.alt" false=".alt" sixtyFour} | \
         samtools sort \
-          ~{"-@ " + sortThreads} \
+          ~{"-@ " + totalSortThreads} \
           -m ~{sortMemoryPerThreadGb}G \
           -l ~{compressionLevel} \
           - \
@@ -134,7 +148,7 @@ task Kit {
         # One extra thread for bwa-postalt + samtools is not needed.
         # These only use 5-10% of compute power and not always simultaneously.
         cpu: threads  
-        memory: "~{memoryGb}G"
+        memory: "~{select_first([memoryGb, estimatedMemoryGb])}G"
         time_minutes: timeMinutes
         docker: dockerImage
     }
