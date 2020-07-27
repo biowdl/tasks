@@ -37,7 +37,7 @@ task Mem {
         Int? memoryGb 
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         # Contains bwa-mem2 2.0 bwakit 0.7.17.dev1 and samtools 1.10
-        String dockerImage = "biowdl/bwamem2-kit:2.0-dev2"  # TODO: Update to biocontainer.
+        String dockerImage = "quay.io/biocontainers/mulled-v2-6a15c99309c82b345497d24489bee67bbb76c2f6:1c9c3227b9bf825a8dc9726a25701aa23c0b1f12-0"
     }
 
     # Samtools sort may block the pipe while it is writing data to disk. 
