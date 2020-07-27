@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ A bwa-mem2 task was created with the same interface (including usePostalt) 
+  as the bwa mem task.
++ bwa mem and bwa kit are now one task. The usePostalt boolean can be used to
+  switch the postalt script on and off.
 + bwa mem, bwa mem+kit and hisat2 have their samtools sort threads tweaked. The
   number of threads is now related to the number of threads on the aligner.
   Using more threads reduces the chance of the samtools sort pipe getting 
