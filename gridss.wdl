@@ -38,6 +38,8 @@ task GRIDSS {
     }
 
     command {
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
         gridss \
         --reference ~{reference.fastaFile} \
         --output ~{outputPrefix}.vcf.gz \
@@ -61,5 +63,19 @@ task GRIDSS {
         cpu: threads
         memory: "32G"
         docker: dockerImage
+    }
+
+    parameter_meta {
+        tumorBam: {description: "The input BAM file. This should be the tumor/case sample in case of a paired analysis.", category: "required"}
+        tumorBai: {description: "The index for tumorBam.", category: "required"}
+        tumorLabel: {description: "The name of the (tumor) sample.", category: "required"}
+        normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
+        normalBai: {description: "The index for normalBam.", category: "advanced"}
+        normalLabel: {description: "The name of the normal sample.", category: "advanced"}
+        BwaIndex reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
+        outputPrefix: {description: "The prefix for the output files. This may include parent directories.", category: "common"}
+
+        threads: {description: "The number of the threads to use.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
