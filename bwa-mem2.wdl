@@ -21,7 +21,6 @@ version 1.0
 # SOFTWARE.
 
 task Mem {
-    # NOTE: THIS IS A COPY OF THE BWA TASK WITH ONLY bwa CHANGED TO bwa-mem2 AND A DIFFERENT DOCKER IMAGE.
     input {
         File read1
         File? read2
@@ -45,8 +44,13 @@ task Mem {
     # 1 thread if threads is 1. For 2-4 threads 2 sort threads. 3 sort threads for 5-8 threads. 
     Int estimatedSortThreads = if threads == 1 then 1 else 1 + ceil(threads / 4.0)
     Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
-    # BWA needs slightly more memory than the size of the index files (~10%). Add a margin for safety here.  
-    Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 1.2) + sortMemoryPerThreadGb * totalSortThreads
+    # BWA-mem2's index files contain 2 BWT indexes of which only one is used. .2bit64 is used by default and 
+    # .8bit32 is used for avx2.
+    # The larger one of these is the 8bit32 index. Since we do not know beforehand which one is used we need to accomodate for that.
+    # Using only the 8bit32 index uses 57,5% of the index files. Since bwa-mem2 uses slightly more memory than the index
+    # We put it at 62% as a safety factor. That means the memory usage for bwa-mem will be 53G for a human genome. Resulting in 60G total
+    # on 8 cores with samtools with 3 sort threads.
+    Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 0.62) + sortMemoryPerThreadGb * totalSortThreads
     
     # The bwa postalt script is out commented as soon as usePostalt = false. 
     # This hack was tested with bash, dash and ash. It seems that comments in between pipes work for all of them.
