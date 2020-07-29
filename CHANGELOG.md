@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 4.0.0-develop
 ---------------------------
++ Added a task for GRIDSS.
 + Picard MergeVcf now uses compression level 1 by default.
 + bwa mem, bwa mem+kit and hisat2 have their samtools sort threads tweaked. The
   number of threads is now related to the number of threads on the aligner.
