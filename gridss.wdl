@@ -72,7 +72,7 @@ task GRIDSS {
         normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
         normalBai: {description: "The index for normalBam.", category: "advanced"}
         normalLabel: {description: "The name of the normal sample.", category: "advanced"}
-        BwaIndex reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
+        reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
         outputPrefix: {description: "The prefix for the output files. This may include parent directories.", category: "common"}
 
         threads: {description: "The number of the threads to use.", category: "advanced"}
