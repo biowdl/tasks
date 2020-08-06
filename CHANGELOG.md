@@ -9,9 +9,10 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 4.0.0-develop
+version 4.0.0
 ---------------------------
 + Made intervals optional for GATK GenotypeGVCFs.
++ Picard MergeVcf now uses compression level 1 by default.
 + bwa mem, bwa mem+kit and hisat2 have their samtools sort threads tweaked. The
   number of threads is now related to the number of threads on the aligner.
   Using more threads reduces the chance of the samtools sort pipe getting 
