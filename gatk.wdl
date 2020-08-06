@@ -866,7 +866,7 @@ task GenotypeGVCFs {
     parameter_meta {
         gvcfFile: {description: "The GVCF file to be genotyped.", category: "required"}
         gvcfFileIndex: {description: "The index of the input GVCF file.", category: "required"}
-        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "optional"}
+        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "common"}
         outputPath: {description: "The location to write the output VCF file to.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}
@@ -1693,4 +1693,3 @@ task VariantFiltration {
                       category: "advanced"}
     }
 }
-
