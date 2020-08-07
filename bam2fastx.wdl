@@ -102,7 +102,7 @@ task Bam2Fastq {
     }
 
     output {
-        File fastaFile = outputPrefix + ".fastq.gz"
+        File fastqFile = outputPrefix + ".fastq.gz"
     }
 
     runtime {
@@ -124,6 +124,6 @@ task Bam2Fastq {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        fastaFile: {description: "The fastq output file."}
+        fastqFile: {description: "The fastq output file."}
     }
 }
