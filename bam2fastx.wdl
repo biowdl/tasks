@@ -39,7 +39,6 @@ task Bam2Fasta {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        chmod 755 ~{inputFile}
         bam2fasta \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
@@ -96,7 +95,6 @@ task Bam2Fastq {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        chmod 755 ~{inputFile}
         bam2fastq \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
