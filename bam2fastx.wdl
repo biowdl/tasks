@@ -23,6 +23,7 @@ version 1.0
 task Bam2Fasta {
     input {
         File inputFile
+        File bamIndex
         String outputPrefix
         Int compressionLevel = 1
         Boolean uncompressedOutput = false
@@ -60,6 +61,7 @@ task Bam2Fasta {
     parameter_meta {
         # inputs
         inputFile: {description: "The input pacbio bam file.", category: "required"}
+        bamIndex: {description: "The .pbi index for the input file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
         uncompressedOutput: {description: "Do not compress. In this case, we will not add .gz, and we ignore any -c setting.", category: "advanced"}
@@ -77,6 +79,7 @@ task Bam2Fasta {
 task Bam2Fastq {
     input {
         File inputFile
+        File bamIndex
         String outputPrefix
         Int compressionLevel = 1
         Boolean uncompressedOutput = false
@@ -114,6 +117,7 @@ task Bam2Fastq {
     parameter_meta {
         # inputs
         inputFile: {description: "The input pacbio bam file.", category: "required"}
+        bamIndex: {description: "The .pbi index for the input file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
         uncompressedOutput: {description: "Do not compress. In this case, we will not add .gz, and we ignore any -c setting.", category: "advanced"}
