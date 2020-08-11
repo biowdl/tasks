@@ -11,7 +11,8 @@ that users understand how the changes affect the new version.
 
 version 4.1.0-dev
 ---------------------------
-+ Remove globs from lima outputs.
++ Bam2fastx: Input bam and index are now arrays.
++ Lima: Remove globs from outputs.
 + Added a task for GRIDSS.
 + Add wdl file for pacbio's bam2fastx tool.
 
