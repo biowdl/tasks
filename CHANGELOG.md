@@ -9,7 +9,7 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 4.1.0-dev
+version 5.0.0-dev
 ---------------------------
 + A bwa-mem2 task was created with the same interface (including usePostalt) 
   as the bwa mem task.
