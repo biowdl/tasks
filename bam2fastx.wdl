@@ -26,7 +26,6 @@ task Bam2Fasta {
         File bamIndex
         String outputPrefix
         Int compressionLevel = 1
-        Boolean uncompressedOutput = false
         Boolean splitByBarcode = false
 
         String? seqIdPrefix
@@ -42,7 +41,6 @@ task Bam2Fasta {
         bam2fasta \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
-        ~{true="-u" false="" uncompressedOutput} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
         ~{inputFile}
@@ -64,7 +62,6 @@ task Bam2Fasta {
         bamIndex: {description: "The .pbi index for the input file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
-        uncompressedOutput: {description: "Do not compress. In this case, we will not add .gz, and we ignore any -c setting.", category: "advanced"}
         splitByBarcode: {description: "Split output into multiple fasta files, by barcode pairs.", category: "advanced"}
         seqIdPrefix: {description: "Prefix for sequence IDs in headers.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
@@ -82,7 +79,6 @@ task Bam2Fastq {
         File bamIndex
         String outputPrefix
         Int compressionLevel = 1
-        Boolean uncompressedOutput = false
         Boolean splitByBarcode = false
 
         String? seqIdPrefix
@@ -98,7 +94,6 @@ task Bam2Fastq {
         bam2fastq \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
-        ~{true="-u" false="" uncompressedOutput} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
         ~{inputFile}
@@ -120,7 +115,6 @@ task Bam2Fastq {
         bamIndex: {description: "The .pbi index for the input file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
-        uncompressedOutput: {description: "Do not compress. In this case, we will not add .gz, and we ignore any -c setting.", category: "advanced"}
         splitByBarcode: {description: "Split output into multiple fastq files, by barcode pairs.", category: "advanced"}
         seqIdPrefix: {description: "Prefix for sequence IDs in headers.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
