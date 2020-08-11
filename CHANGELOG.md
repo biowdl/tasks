@@ -9,13 +9,13 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 5.0.0-dev
+version 4.1.0-dev
 ---------------------------
++ Added a task for GRIDSS.
 + Add wdl file for pacbio's bam2fastx tool.
 
 version 4.0.0
 ---------------------------
-+ Added a task for GRIDSS.
 + Picard MergeVcf now uses compression level 1 by default.
 + bwa mem, bwa mem+kit and hisat2 have their samtools sort threads tweaked. The
   number of threads is now related to the number of threads on the aligner.
