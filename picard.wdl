@@ -553,8 +553,14 @@ task MergeVCFs {
 
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = 1 + ceil(size(inputVCFs, "G"))
+        Int timeMinutes = 1 + ceil(size(inputVCFs, "G")) * 2
         String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        Int compressionLevel = 1
+        Boolean useJdkInflater = true  # Slightly faster than the intel one. 
+        # Better results for compression level 1 (much smaller). Higher compression levels similar to intel deflater.
+        # NOTE: this might change in the future when the intel deflater is updated!
+        Boolean useJdkDeflater = true
+
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
@@ -566,7 +572,10 @@ task MergeVCFs {
         picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
-        OUTPUT=~{outputVcfPath}
+        OUTPUT=~{outputVcfPath} \
+        COMPRESSION_LEVEL=~{compressionLevel} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}   
     }
 
     output {
@@ -592,6 +601,9 @@ task MergeVCFs {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written", category: "advanced"}
     }
 }
 
