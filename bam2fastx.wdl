@@ -24,7 +24,6 @@ task Bam2Fasta {
     input {
         File inputFile
         File bamIndex
-        String basenameInputFile = basename(inputFile)
         String outputPrefix
         Int compressionLevel = 1
         Boolean splitByBarcode = false
@@ -39,16 +38,12 @@ task Bam2Fasta {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        # The bam file and its index need to be in the same directory.
-        # Cromwell will put them in separate iputs folders.
-        cp ~{inputFile} ./
-        cp ~{bamIndex} ./
         bam2fasta \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ./~{basenameInputFile}
+        ~{inputFile}
     }
 
     output {
@@ -81,7 +76,6 @@ task Bam2Fasta {
 task Bam2Fastq {
     input {
         File inputFile
-        String basenameInputFile = basename(inputFile)
         File bamIndex
         String outputPrefix
         Int compressionLevel = 1
@@ -97,16 +91,12 @@ task Bam2Fastq {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
-        # The bam file and its index need to be in the same directory.
-        # Cromwell will put them in separate iputs folders.
-        cp ~{inputFile} ./
-        cp ~{bamIndex} ./
         bam2fastq \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ./~{basenameInputFile}
+        ~{inputFile}
     }
 
     output {

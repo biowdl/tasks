@@ -11,8 +11,7 @@ that users understand how the changes affect the new version.
 
 version 4.1.0-dev
 ---------------------------
-+ Add copy command to bam2fastx tasks to make sure bam file and its index are
-  always in the same directory.
++ Remove globs from lima outputs.
 + Added a task for GRIDSS.
 + Add wdl file for pacbio's bam2fastx tool.
 
