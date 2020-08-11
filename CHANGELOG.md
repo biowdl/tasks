@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Add copy command to bam2fastx tasks to make sure bam file and its index are
+  always in the same directory.
 + Add wdl file for pacbio's bam2fastx tool.
 
 version 4.0.0
