@@ -9,8 +9,12 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 4.1.0-dev
+version 5.0.0-dev
 ---------------------------
++ A bwa-mem2 task was created with the same interface (including usePostalt) 
+  as the bwa mem task.
++ bwa mem and bwa kit are now one task. The usePostalt boolean can be used to
+  switch the postalt script on and off.
 + Added a task for GRIDSS.
 + Add wdl file for pacbio's bam2fastx tool.
 
