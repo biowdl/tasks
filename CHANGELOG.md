@@ -9,7 +9,11 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 4.0.0-develop
+version 5.0.0-dev
+---------------------------
++ Add wdl file for pacbio's bam2fastx tool.
+
+version 4.0.0
 ---------------------------
 + Added a task for GRIDSS.
 + Picard MergeVcf now uses compression level 1 by default.
