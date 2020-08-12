@@ -98,14 +98,14 @@ task Lima {
     }
 
     output {
-        Array[File] outputFLfile = glob("*.bam")
-        Array[File] outputFLindexFile = glob("*.bam.pbi")
-        Array[File] outputFLxmlFile = glob("*.subreadset.xml")
-        File outputSTDERRfile = outputPrefix + ".fl.stderr.log"
-        File outputJSONfile = outputPrefix + ".fl.json"
-        File outputCountsFile = outputPrefix + ".fl.lima.counts"
-        File outputReportFile = outputPrefix + ".fl.lima.report"
-        File outputSummaryFile = outputPrefix + ".fl.lima.summary"
+        Array[File] limaBam = glob("*.bam")
+        Array[File] limaBamIndex = glob("*.bam.pbi")
+        Array[File] limaXml = glob("*.subreadset.xml")
+        File limaStderr = outputPrefix + ".fl.stderr.log"
+        File limaJson = outputPrefix + ".fl.json"
+        File limaCounts = outputPrefix + ".fl.lima.counts"
+        File limaReport = outputPrefix + ".fl.lima.report"
+        File limaSummary = outputPrefix + ".fl.lima.summary"
     }
 
     runtime {
@@ -131,15 +131,15 @@ task Lima {
         minEndScore: {description: "Minimum end barcode score threshold is applied to the individual leading and trailing ends.", category: "advanced"}
         minSignalIncrease: {description: "The minimal score difference, between first and combined, required to call a barcode pair different.", category: "advanced"}
         minScoreLead: {description: "The minimal score lead required to call a barcode pair significant.", category: "common"}
-        ccsMode: {description: "CCS mode, use optimal alignment options.", category: "common"}
-        splitBamNamed: {description: "Split BAM output by resolved barcode pair name.", category: "common"}
+        ccsMode: {description: "Ccs mode, use optimal alignment options.", category: "common"}
+        splitBamNamed: {description: "Split bam output by resolved barcode pair name.", category: "common"}
         scoredAdapterRatio: {description: "Minimum ratio of scored vs sequenced adapters.", category: "advanced"}
         peek: {description: "Demux the first N ZMWs and return the mean score, 0 means peeking deactivated.", category: "advanced"}
         guess: {description: "Try to guess the used barcodes, using the provided mean score threshold, 0 means guessing deactivated.", category: "advanced"}
         guessMinCount: {description: "Minimum number of ZMWs observed to whitelist barcodes.", category: "advanced"}
         peekGuess: {description: "Try to infer the used barcodes subset, by peeking at the first 50,000 ZMWs.", category: "advanced"}
         logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
-        inputBamFile: {description: "BAM input file.", category: "required"}
+        inputBamFile: {description: "Bam input file.", category: "required"}
         barcodeFile: {description: "Barcode/primer fasta file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
@@ -148,13 +148,13 @@ task Lima {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputFLfile: {description: "Demultiplexed reads output file(s)."}
-        outputFLindexFile: {description: "Index of demultiplexed reads output file(s)."}
-        outputFLxmlFile: {description: "XML file of the subreadset(s)."}
-        outputSTDERRfile: {description: "Lima STDERR log file."}
-        outputJSONfile: {description: "Lima JSON file."}
-        outputCountsFile: {description: "Lima counts file."}
-        outputReportFile: {description: "Lima report file."}
-        outputSummaryFile: {description: "Lima summary file."}
+        limaBam: {description: "Demultiplexed reads output file(s)."}
+        limaBamIndex: {description: "Index of demultiplexed reads output file(s)."}
+        limaXml: {description: "Xml file of the subreadset(s)."}
+        limaStderr: {description: "Lima stderr log file."}
+        limaJson: {description: "Lima json file."}
+        limaCounts: {description: "Lima counts file."}
+        limaReport: {description: "Lima report file."}
+        limaSummary: {description: "Lima summary file."}
     }
 }

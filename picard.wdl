@@ -89,7 +89,7 @@ task CollectMultipleMetrics {
         Int javaXmxMb = 3072
         # Additional * 2 because picard multiple metrics reads the reference fasta twice.
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
 
@@ -205,7 +205,7 @@ task CollectRnaSeqMetrics {
         String javaXmx =  "8G"
         # With 6 minutes per G there were several timeouts. 
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 12)
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
     command {
@@ -263,7 +263,7 @@ task CollectTargetedPcrMetrics {
         String memory = "4G"
         String javaXmx = "3G"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
     command {
@@ -322,7 +322,7 @@ task CreateSequenceDictionary {
 
         String memory = "3G"
         String javaXmx = "2G"
-        String dockerImage = "quay.io/biocontainers/picard:2.22.3--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
     command {
@@ -370,7 +370,7 @@ task GatherBamFiles {
         Boolean createMd5File = false
         # One minute per input gigabyte.
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 1)
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
     command {
@@ -422,7 +422,7 @@ task GatherVcfs {
         String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 1 + ceil(size(inputVcfs, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
     command {
@@ -469,6 +469,7 @@ task MarkDuplicates {
         Boolean createMd5File = false
         Boolean useJdkInflater = true  # Slightly faster than the intel one. 
         # Better results for compression level 1 (much smaller). Higher compression levels similar to intel deflater.
+        # NOTE: this might change in the future when the intel deflater is updated!
         Boolean useJdkDeflater = true
 
         # In GATK Best practices pipeline MarkDuplicates is given a 7G VM. 
@@ -477,7 +478,7 @@ task MarkDuplicates {
         String memoryMb = javaXmxMb + 512
 
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -530,7 +531,10 @@ task MarkDuplicates {
         outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
         metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
         read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
-
+        createMd5File: {description: "Whether to create a md5 file for the created BAM file.", category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -549,8 +553,14 @@ task MergeVCFs {
 
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = 1 + ceil(size(inputVCFs, "G"))
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        Int timeMinutes = 1 + ceil(size(inputVCFs, "G")) * 2
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        Int compressionLevel = 1
+        Boolean useJdkInflater = true  # Slightly faster than the intel one. 
+        # Better results for compression level 1 (much smaller). Higher compression levels similar to intel deflater.
+        # NOTE: this might change in the future when the intel deflater is updated!
+        Boolean useJdkDeflater = true
+
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices
@@ -562,7 +572,10 @@ task MergeVCFs {
         picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         MergeVcfs \
         INPUT=~{sep=' INPUT=' inputVCFs} \
-        OUTPUT=~{outputVcfPath}
+        OUTPUT=~{outputVcfPath} \
+        COMPRESSION_LEVEL=~{compressionLevel} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}   
     }
 
     output {
@@ -588,6 +601,9 @@ task MergeVCFs {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written", category: "advanced"}
     }
 }
 
@@ -599,7 +615,7 @@ task SamToFastq {
 
         String memory = "17G"
         String javaXmx = "16G" # High memory default to avoid crashes.
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
         File? NONE
     }
 
@@ -636,7 +652,7 @@ task ScatterIntervalList {
 
         String memory = "4G"
         String javaXmx = "3G"
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
     command {
@@ -677,9 +693,7 @@ task SortSam {
         # GATK Best practices uses 75000 here: https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L778
         Int XmxGb = ceil(maxRecordsInRam / 125001.0)
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
-        # A mulled container is needed to have both picard and bwa in one container.
-        # This container contains: picard (2.18.7), bwa (0.7.17-r1188)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.1--h37ae868_0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
     command {

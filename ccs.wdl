@@ -55,10 +55,10 @@ task CCS {
     }
 
     output {
-        File outputCCSfile = outputPrefix + ".ccs.bam"
-        File outputCCSindexFile = outputPrefix + ".ccs.bam.pbi"
-        File outputReportFile = outputPrefix + ".ccs.report.txt"
-        File outputSTDERRfile = outputPrefix + ".ccs.stderr.log"
+        File ccsBam = outputPrefix + ".ccs.bam"
+        File ccsBamIndex = outputPrefix + ".ccs.bam.pbi"
+        File ccsReport = outputPrefix + ".ccs.report.txt"
+        File ccsStderr = outputPrefix + ".ccs.stderr.log"
     }
 
     runtime {
@@ -70,7 +70,7 @@ task CCS {
 
     parameter_meta {
         # inputs
-        minPasses: {description: "Minimum number of full-length subreads required to generate CCS for a ZMW.", category: "advanced"}
+        minPasses: {description: "Minimum number of full-length subreads required to generate ccs for a ZMW.", category: "advanced"}
         minLength: {description: "Minimum draft length before polishing.", category: "advanced"}
         maxLength: {description: "Maximum draft length before polishing.", category: "advanced"}
         byStrand: {description: "Generate a consensus for each strand.", category: "advanced"}
@@ -84,9 +84,9 @@ task CCS {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputCCSfile: {description: "Consensus reads output file."}
-        outputCCSindexFile: {description: "Index of consensus reads output file."}
-        outputReportFile: {description: "CCS results report file."}
-        outputSTDERRfile: {description: "CCS STDERR log file."}
+        ccsBam: {description: "Consensus reads output file."}
+        ccsBamIndex: {description: "Index of consensus reads output file."}
+        ccsReport: {description: "Ccs results report file."}
+        ccsStderr: {description: "Ccs STDERR log file."}
     }
 }
