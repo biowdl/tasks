@@ -33,7 +33,7 @@ task GRIDSS {
         BwaIndex reference
         String outputPrefix = "gridss"
 
-        Int jvmHeapSizeGb = 1
+        Int jvmHeapSizeGb = 30
         Int threads = 1
         String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
     }
@@ -63,7 +63,7 @@ task GRIDSS {
 
     runtime {
         cpu: threads
-        memory: "~{jvmHeapSizeGb}G"
+        memory: "~{jvmHeapSizeGb + 1}G"
         docker: dockerImage
     }
 
