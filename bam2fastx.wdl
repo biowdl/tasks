@@ -22,7 +22,7 @@ version 1.0
 
 task Bam2Fasta {
     input {
-        Array[File]+ inputFile
+        Array[File]+ bam
         Array[File]+ bamIndex
         String outputPrefix
         Int compressionLevel = 1
@@ -43,7 +43,7 @@ task Bam2Fasta {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{sep=" " inputFile}
+        ~{sep=" " bam}
     }
 
     output {
@@ -58,7 +58,7 @@ task Bam2Fasta {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "The input pacbio bam file(s).", category: "required"}
+        bam: {description: "The input pacbio bam file(s).", category: "required"}
         bamIndex: {description: "The .pbi index for the input file(s).", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
@@ -75,7 +75,7 @@ task Bam2Fasta {
 
 task Bam2Fastq {
     input {
-        Array[File]+ inputFile
+        Array[File]+ bam
         Array[File]+ bamIndex
         String outputPrefix
         Int compressionLevel = 1
@@ -96,7 +96,7 @@ task Bam2Fastq {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{sep=" " inputFile}
+        ~{sep=" " bam}
     }
 
     output {
@@ -111,7 +111,7 @@ task Bam2Fastq {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "The input pacbio bam file(s).", category: "required"}
+        bam: {description: "The input pacbio bam file(s).", category: "required"}
         bamIndex: {description: "The .pbi index for the input file(s).", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
