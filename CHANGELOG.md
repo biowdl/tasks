@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
+
++ Updated task gridss.wdl: add --jvmheap parameter
 + A bwa-mem2 task was created with the same interface (including usePostalt) 
   as the bwa mem task.
 + bwa mem and bwa kit are now one task. The usePostalt boolean can be used to
