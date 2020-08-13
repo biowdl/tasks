@@ -33,6 +33,7 @@ task GRIDSS {
         BwaIndex reference
         String outputPrefix = "gridss"
 
+        String jvmheapsize = "25G"
         Int threads = 1
         String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
     }
@@ -45,6 +46,7 @@ task GRIDSS {
         --output ~{outputPrefix}.vcf.gz \
         --assembly ~{outputPrefix}_assembly.bam \
         ~{"-t " + threads} \
+        ~{"--jvmheap " + jvmheapsize} \
         --label ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
         ~{normalBam} \
         ~{tumorBam}
