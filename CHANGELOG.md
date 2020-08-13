@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 4.1.0-dev
 ---------------------------
++ Updated task gridss.wdl: add --jvmheap parameter
 + Added a task for GRIDSS.
 + Add wdl file for pacbio's bam2fastx tool.
 
