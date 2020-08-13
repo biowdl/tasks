@@ -95,12 +95,15 @@ task Lima {
         cp "~{basename(outputPrefix)}.fl.lima.counts" "~{outputPrefix}.fl.lima.counts"
         cp "~{basename(outputPrefix)}.fl.lima.report" "~{outputPrefix}.fl.lima.report"
         cp "~{basename(outputPrefix)}.fl.lima.summary" "~{outputPrefix}.fl.lima.summary"
+        find . -path "*.bam" > bamFiles.txt
+        find . -path "*.bam.pbi" > bamIndexes.txt
+        find . -path "*.subreadset.xml" > subreadsets.txt
     }
 
     output {
-        Array[File] limaBam = glob("*.bam")
-        Array[File] limaBamIndex = glob("*.bam.pbi")
-        Array[File] limaXml = glob("*.subreadset.xml")
+        Array[File] limaBam = read_lines("bamFiles.txt")
+        Array[File] limaBamIndex = read_lines("bamIndexes.txt")
+        Array[File] limaXml = read_lines("subreadsets.txt")
         File limaStderr = outputPrefix + ".fl.stderr.log"
         File limaJson = outputPrefix + ".fl.json"
         File limaCounts = outputPrefix + ".fl.lima.counts"
