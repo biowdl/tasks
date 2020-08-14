@@ -22,8 +22,8 @@ version 1.0
 
 task Bam2Fasta {
     input {
-        File inputFile
-        File bamIndex
+        Array[File]+ bam
+        Array[File]+ bamIndex
         String outputPrefix
         Int compressionLevel = 1
         Boolean splitByBarcode = false
@@ -43,7 +43,7 @@ task Bam2Fasta {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{inputFile}
+        ~{sep=" " bam}
     }
 
     output {
@@ -58,8 +58,8 @@ task Bam2Fasta {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "The input pacbio bam file.", category: "required"}
-        bamIndex: {description: "The .pbi index for the input file.", category: "required"}
+        bam: {description: "The input pacbio bam file(s).", category: "required"}
+        bamIndex: {description: "The .pbi index for the input file(s).", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
         splitByBarcode: {description: "Split output into multiple fasta files, by barcode pairs.", category: "advanced"}
@@ -75,8 +75,8 @@ task Bam2Fasta {
 
 task Bam2Fastq {
     input {
-        File inputFile
-        File bamIndex
+        Array[File]+ bam
+        Array[File]+ bamIndex
         String outputPrefix
         Int compressionLevel = 1
         Boolean splitByBarcode = false
@@ -96,7 +96,7 @@ task Bam2Fastq {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{inputFile}
+        ~{sep=" " bam}
     }
 
     output {
@@ -111,8 +111,8 @@ task Bam2Fastq {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "The input pacbio bam file.", category: "required"}
-        bamIndex: {description: "The .pbi index for the input file.", category: "required"}
+        bam: {description: "The input pacbio bam file(s).", category: "required"}
+        bamIndex: {description: "The .pbi index for the input file(s).", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         compressionLevel: {description: "Gzip compression level [1-9]", category: "advanced"}
         splitByBarcode: {description: "Split output into multiple fastq files, by barcode pairs.", category: "advanced"}

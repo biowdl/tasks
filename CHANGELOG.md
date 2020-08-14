@@ -11,7 +11,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
-
++ Bam2fastx: Input bam and index are now arrays.
++ Lima: Remove globs from outputs.
 + Updated task gridss.wdl: add --jvmheap parameter
 + A bwa-mem2 task was created with the same interface (including usePostalt) 
   as the bwa mem task.
