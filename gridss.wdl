@@ -78,7 +78,7 @@ task GRIDSS {
         outputPrefix: {description: "The prefix for the output files. This may include parent directories.", category: "common"}
 
         threads: {description: "The number of the threads to use.", category: "advanced"}
-        javaXmxMb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}
+        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
