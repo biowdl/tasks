@@ -122,6 +122,44 @@ task Annotate {
     }
 }
 
+task Sort {
+    input {
+        File inputFile
+        String outputPath = "output.vcf.gz"
+        String memory = "256M"
+        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+        String outputType = "z"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        bcftools sort \
+        -o ~{outputPath} \
+        -O ~{outputType} \
+        ~{inputFile}
+        bcftools index --tbi ~{outputPath}
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputFile: {description: "A vcf or bcf file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
+
+    
+}
+
 task View {
     input {
         File inputFile
