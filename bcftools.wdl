@@ -142,6 +142,11 @@ task Sort {
         bcftools index --tbi ~{outputPath}
     }
 
+    output {
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
+    }
+    
     runtime {
         memory: memory
         time_minutes: timeMinutes
