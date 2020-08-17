@@ -25,7 +25,7 @@ version 1.0
 task Annotation {
     input {
         File vcfFile
-        Array[String] customs_arr
+        File customs
         String cacheDir
         String cacheVersion
         String outputPath = "./annotated.vcf.gz"
@@ -70,7 +70,7 @@ task Annotation {
         ~{true="--canonical" false="" canonical} \
         ~{true="--coding_only" false="" coding} \
         ~{true="" false="--no_intergenic" intergenic} \
-        ~{sep=" " prefix("--customs ", customs_arr)}
+        ~{if defined(customs) then prefix("--customs ", read_lines(customs)) else ""}
 
     }
     
