@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ bcftools: add sorting and annotation
 + Bam2fastx: Input bam and index are now arrays.
 + Lima: Remove globs from outputs.
 + Updated task gridss.wdl: add --jvmheap parameter
