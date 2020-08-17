@@ -28,7 +28,7 @@ task CallSV {
         File bamIndex
         File referenceFasta
         File referenceFastaFai
-        String outputPath = "./delly/delly.vcf"
+        String outputPath = "./delly/delly.bcf"
 
         String memory = "15G"
         Int timeMinutes = 300
