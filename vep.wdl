@@ -22,9 +22,10 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task annotation {
+task Annotation {
     input {
         File vcfFile
+        Array[String] customs_arr
         String cacheDir
         String cacheVersion
         String outputPath = "./annotated.vcf.gz"
@@ -44,7 +45,6 @@ task annotation {
         String memory = "15G"
         String dockerImage = "quay.io/biocontainers/ensembl-vep:100.1--pl526hecc5488_0"
     }
-
 
     command {
         set -e
@@ -69,7 +69,9 @@ task annotation {
         ~{true="--regulatory" false="" regulatory} \
         ~{true="--canonical" false="" canonical} \
         ~{true="--coding_only" false="" coding} \
-        ~{true="" false="--no_intergenic" intergenic}
+        ~{true="" false="--no_intergenic" intergenic} \
+        ~{sep=" " prefix("--customs ", customs_arr)}
+
     }
     
     output {
