@@ -84,7 +84,7 @@ task Annotation {
     }
     
     output {
-        File annotations = outputPath
+        File outputVcf = outputPath
     }
 
     runtime {
