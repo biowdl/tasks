@@ -22,10 +22,12 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task Annotation {
+task Annotate {
     input {
         File vcfFile
-        File customs
+        Array[File]? customFiles
+        Array[File]? customFileIndices
+        Array[String]? customFields
         String cacheDir
         String cacheVersion
         String outputPath = "./annotated.vcf.gz"
@@ -47,8 +49,16 @@ task Annotation {
     }
 
     command {
-        set -e
+        set -e 
         mkdir -p "$(dirname ~{outputPath})"
+        customs=$(python3 <<CODE
+        files = "~{sep=' ' customFields}".split(" ")
+        fields = "~{sep=' ' customFields}".split(" ")
+        customs = ["--custom " + ','.join(pair) for pair in zip(files,fields)]
+        print(" ".join(customs))
+        CODE
+        )
+
         vep \
         --offline \
         --dir_cache ${cacheDir} \
@@ -70,14 +80,16 @@ task Annotation {
         ~{true="--canonical" false="" canonical} \
         ~{true="--coding_only" false="" coding} \
         ~{true="" false="--no_intergenic" intergenic} \
-        ~{if defined(customs) then prefix("--customs ", read_lines(customs)) else ""}
-
+        $customs
     }
     
     output {
-        File outputVcf = outputPath
+        File annotations = outputPath
     }
- 
+
+    runtime {
+        docker: dockerImage
+    }
 
 
 }
