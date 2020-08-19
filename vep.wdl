@@ -25,7 +25,7 @@ version 1.0
 task Annotation {
     input {
         File vcfFile
-        String customs
+        File customs
         String cacheDir
         String cacheVersion
         String outputPath = "./annotated.vcf.gz"
@@ -70,7 +70,7 @@ task Annotation {
         ~{true="--canonical" false="" canonical} \
         ~{true="--coding_only" false="" coding} \
         ~{true="" false="--no_intergenic" intergenic} \
-        ~{customs}
+        ~{if defined(customs) then prefix("--customs ", read_lines(customs)) else ""}
 
     }
     
@@ -78,36 +78,6 @@ task Annotation {
         File outputVcf = outputPath
     }
  
-    runtime {
-        memory: memory
-        docker: dockerImage
-    }
 
-}
-
-task Customs {
-    input {
-        Array[File]? customFiles
-        Array[File]? customFileIndices
-        Array[String]? customFields
-    }
-
-    Int ArrSize = if defined(customFields) then length(select_first([customFields])) else [""]
-
-    command {
-        set -e
-        customs=$(for i in $(seq 1 ~{ArrSize});do 
-            customString="--custom "
-            customString=$customString""$(echo ~{sep=" " customFiles} | cut -d " " -f$i)
-            customString=$customString","$(echo ~{sep=" " customFields} | cut -d " " -f$i)
-            echo $customString
-        done)
-        echo $customs
-        
-    }
-
-    output {
-        String out = stdout()
-    }
 
 }
