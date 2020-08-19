@@ -22,7 +22,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task Annotate {
+task Annotation {
     input {
         File vcfFile
         Array[File]? customFiles
