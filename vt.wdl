@@ -59,7 +59,7 @@ task Normalize {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        ignoreMaskedRef: {description: "Warns but does not exit when REF is inconsistent with masked reference sequence for non SNPs", category: "advanced"
+        ignoreMaskedRef: {description: "Warns but does not exit when REF is inconsistent with masked reference sequence for non SNPs", category: "advanced"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
