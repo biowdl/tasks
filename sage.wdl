@@ -28,32 +28,27 @@ task Sage {
         String? normalName
         File? normalBam
         File? normalBai
-        String assembly
         File referenceFasta
-        File hotspotVcf
-        File panelBed
-        File highConfidenceBed
+        File referenceFastaDict
+        File referenceFastaFai
+        File knownHotspots
+        File codingRegsions
 
         Int timeMinutes = 60 #FIXME I've no idea how long this takes...
-        Int threads = 2
         String javaXmx = "32G"
+        String memory = "33G"
         String dockerImage = "quay.io/biocontainers/hmftools-sage:2.2--0"
     }
 
     command {
-        SAGE \
-        -Xmx~{javaXmx} \
+        SAGE -Xmx~{javaXmx} \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
         ~{"-reference " + normalName} \
         ~{"-reference_bam " + normalBam} \
-        -assembly ~{assembly} \
         -ref_genome ~{referenceFasta} \
-        -hotspots ~{hotspotVcf} \
-        -panel_bed ~{panelBed} \
-        -high_confidence_bed ~{highConfidenceBed} \
-        -threads ~{threads} \
-
+        -known_hotspots ~{knownHotspots} \
+        -coding_regions ~{codingRegsions} \
         -out ~{outputPath}
     }
 
@@ -74,12 +69,13 @@ task Sage {
         tumorBai: {description: "The index of the BAM file for the tumor sample.", category: "required"}
         normalName: {description: "The name of the normal/reference sample.", category: "common"}
         normalBam: {description: "The BAM file for the normal sample.", category: "common"}
-        normalBam: {description: "The BAM file for the normal sample.", category: "common"}
-        assembly: {description: "The assembly of the reference genomes, either hg19 or hg38.", category: "required"}
+        normalBai: {description: "The index of the BAM file for the normal sample.", category: "common"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
-        hotspotVcf: {description: "A VCF file with hotspot variant sites.", category: "required"}
-        panelBed: {description: "A bed file describing a panel of cancer related genes.", category: "required"}
-        highConfidenceBed: {description: "A bed file describing high confidence regions.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        knownHotspots: {description: "A TSV file with hotspot variant sites.", category: "required"}
+        codingRegsions: {description: "A bed file describing coding regions to search for inframe indels.", category: "required"}
 
         threads: {description: "The number of threads to be used.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
