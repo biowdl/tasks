@@ -52,7 +52,7 @@ task Annotation {
         set -e 
         mkdir -p "$(dirname ~{outputPath})"
         customs=$(python3 <<CODE
-        files = "~{sep=' ' customFields}".split(" ")
+        files = "~{sep=' ' customFiles}".split(" ")
         fields = "~{sep=' ' customFields}".split(" ")
         customs = ["--custom " + ','.join(pair) for pair in zip(files,fields)]
         print(" ".join(customs))
