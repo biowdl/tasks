@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ survivor: replace integer boolean type to logical true or false value.
 + vt: Add option to ignore masked reference.
 + bcftools: add sorting and annotation
 + Bam2fastx: Input bam and index are now arrays.
