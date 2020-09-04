@@ -49,15 +49,15 @@ task View {
         bcftools view \
         -o ~{outputPath} \
         -O ~{outputType} \
-        ~{-l compressionLevel} \
+        ~{"--compression-level " + compressionLevel} \
         ~{"--regions " + regions} \
         ~{"--regions-file " + regionsFile} \
-        ~{true="--samples" false="" length(samples) > 0} ~{sep="," samples} \
+        ~{true="--samples " false="" length(samples) > 0} ~{sep="," samples} \
         ~{"--samples-file " + samplesFile} \
         ~{"--exclude " + exclude} \
         ~{"--include " + include} \
         ~{true="--no-version" false="" noVersion} \
-        ~{--threads threads} \
+        ~{"--threads " + threads} \
         ~{inputFile}
     }
 
@@ -143,7 +143,7 @@ task Annotate {
         ~{"--samples-file " + samplesFile} \
         ~{true="--single-overlaps" false="" singleOverlaps} \
         ~{true="--remove" false="" length(removeAnns) > 0} ~{sep="," removeAnns} \
-        ~{--threads threads} \
+        ~{"--threads " + threads} \
         ~{inputFile}
 
     }
