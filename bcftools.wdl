@@ -22,6 +22,74 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+task View {
+    input {
+        File inputFile
+        String outputType = "z"
+        String outputPath = "output.vcf.gz"
+        String memory = "256M"
+        String? regions
+        File? regionsFile
+        Array[String] samples = []
+        File? samplesFile
+        String? include
+        String? exclude
+        Boolean noVersion = false
+        Int? compressionLevel
+        
+        Int threads = 0
+        String memory = "256M"
+        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        bcftools view \
+        -o ~{outputPath} \
+        -O ~{outputType} \
+        ~{-l compressionLevel} \
+        ~{"--regions " + regions} \
+        ~{"--regions-file " + regionsFile} \
+        ~{true="--samples" false="" length(samples) > 0} ~{sep="," samples} \
+        ~{"--samples-file " + samplesFile} \
+        ~{"--exclude " + exclude} \
+        ~{"--include " + include} \
+        ~{true="--no-version" false="" noVersion} \
+        ~{--threads threads} \
+        ~{inputFile}
+    }
+
+    output {
+        File outputFile = outputPath
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputFile: {description: "A vcf or bcf file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
+        exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
+        include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
+        noVersion: {description: "Do not append version and command line information to the output VCF header.", category: "advanced"}
+        regions: {description: "Restrict to comma-separated list of regions.", category: "advanced"}
+        regionsFile: {description: "Restrict to regions listed in a file.", category: "advanced"}
+        samples: {description: "List of samples for sample stats or subsetting, \"-\" to include all samples.", category: "advanced"}
+        samplesFile: {description: "File of samples to include.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
+}
+
 task Annotate {
     input {
         File? annsFile
@@ -76,14 +144,13 @@ task Annotate {
         ~{"--samples-file " + samplesFile} \
         ~{true="--single-overlaps" false="" singleOverlaps} \
         ~{true="--remove" false="" length(removeAnns) > 0} ~{sep="," removeAnns} \
+        ~{--threads threads} \
         ~{inputFile}
-        bcftools index --tbi ~{outputPath}
 
     }
     
     output {
         File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -109,7 +176,7 @@ task Annotate {
         regions: {description: "Restrict to comma-separated list of regions.", category: "advanced"}
         regionsFile: {description: "Restrict to regions listed in a file.", category: "advanced"}
         renameChrs: {description: "rename chromosomes according to the map in file (see man page for details).", category: "advanced"}
-        samples: {description: "List of samples for sample stats, \"-\" to include all samples.", category: "advanced"}
+        samples: {description: "List of samples for sample stats or subsetting, \"-\" to include all samples.", category: "advanced"}
         samplesFile: {description: "File of samples to include.", category: "advanced"}
         singleOverlaps: {description: "keep memory requirements low with very large annotation files.", category: "advanced"}
         removeAnns: {description: "List of annotations to remove (see man page for details).", category: "advanced"}
@@ -139,12 +206,10 @@ task Sort {
         -o ~{outputPath} \
         -O ~{outputType} \
         ~{inputFile}
-        bcftools index --tbi ~{outputPath}
     }
 
     output {
         File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
     }
     
     runtime {
@@ -165,31 +230,30 @@ task Sort {
     
 }
 
-task View {
+task Index {
     input {
         File inputFile
-        String outputPath = "output.vcf.gz"
+        Int minShift = 14
         String memory = "256M"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
-        String outputType = "z"
-        Int compressionLevel = 1
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        bcftools view \
-        -o ~{outputPath} \
-        -O ~{outputType} \
-        -l ~{compressionLevel} \
+        bcftools index \
+        --csi \
+        --tbi \
+        --force \
+        --min-shift ~{minShift} \
         ~{inputFile}
-        bcftools index --tbi ~{outputPath}
+   
     }
 
     output {
-        File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
+        File outputFileIndex = inputFile + ".tbi"
+        File outputFileCsi = inputFile + ".csi"
     }
 
     runtime {
@@ -200,10 +264,9 @@ task View {
 
     parameter_meta {
         inputFile: {description: "A vcf or bcf file.", category: "required"}
+        minShift: {description: "Set minimal interval size for CSI indices to 2^INT; default: 14",category: "advanced"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
@@ -300,7 +363,7 @@ task Stats {
         splitByID: {description: "Collect stats for sites with ID separately (known vs novel).", category: "advanced"}
         regions: {description: "Restrict to comma-separated list of regions.", category: "advanced"}
         regionsFile: {description: "Restrict to regions listed in a file.", category: "advanced"}
-        samples: {description: "List of samples for sample stats, \"-\" to include all samples.", category: "advanced"}
+        samples: {description: "List of samples for sample stats or subsetting, \"-\" to include all samples.", category: "advanced"}
         samplesFile: {description: "File of samples to include.", category: "advanced"}
         targets: {description: "Similar to regions but streams rather than index-jumps.", category: "advanced"}
         targetsFile: {description: "Similar to regionsFile but streams rather than index-jumps.", category: "advanced"}
