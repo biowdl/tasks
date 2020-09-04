@@ -239,7 +239,6 @@ task Index {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputPath})"
         bcftools index \
         --csi \
         --tbi \
@@ -263,7 +262,6 @@ task Index {
     parameter_meta {
         inputFile: {description: "A vcf or bcf file.", category: "required"}
         minShift: {description: "Set minimal interval size for CSI indices to 2^INT; default: 14",category: "advanced"}
-        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
