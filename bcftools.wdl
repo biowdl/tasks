@@ -82,7 +82,6 @@ task View {
         regionsFile: {description: "Restrict to regions listed in a file.", category: "advanced"}
         samples: {description: "List of samples for sample stats or subsetting, \"-\" to include all samples.", category: "advanced"}
         samplesFile: {description: "File of samples to include.", category: "advanced"}
-
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -181,7 +180,6 @@ task Annotate {
         singleOverlaps: {description: "keep memory requirements low with very large annotation files.", category: "advanced"}
         removeAnns: {description: "List of annotations to remove (see man page for details).", category: "advanced"}
         inputFile: {description: "A vcf or bcf file.", category: "required"}
-
         threads: {description: "Number of extra decompression threads [0].", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
