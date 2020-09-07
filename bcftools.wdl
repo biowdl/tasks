@@ -288,6 +288,7 @@ task View {
 
     String outputType = if compressionLevel > 0 then "z" else "v"
     Boolean indexing = if compressionLevel > 0 then true else false
+    String outputFilePath = if compressionLevel > 0 then outputPath + ".gz" else outputPath
 
     command {
         set -e
