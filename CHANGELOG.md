@@ -11,6 +11,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ collect-columns: updated docker image to version 1.0.0 and added the
+  `sumOnDuplicateId` input (defaults to false).
 + survivor: replace integer boolean type to logical true or false value.
 + vt: Add option to ignore masked reference.
 + bcftools: add sorting and annotation
