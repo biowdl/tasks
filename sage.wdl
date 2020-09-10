@@ -31,33 +31,45 @@ task Sage {
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
-        File knownHotspots
-        File codingRegsions
+        File hotspots
+        File panelBed
+        File highConfidenceBed
+        Boolean hg38 = false
+        String outputPath
 
-        Int timeMinutes = 60 #FIXME I've no idea how long this takes...
+        Int threads = 2
         String javaXmx = "32G"
         String memory = "33G"
-        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.2--0"
+        Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 10 / threads) #FIXME make sure this is enough
+        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.2--2"
     }
 
     command {
-        SAGE -Xmx~{javaXmx} \
+        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -cp /usr/local/share/hmftools-sage-2.2-2/sage.jar \
+        com.hartwig.hmftools.sage.SageApplication \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
         ~{"-reference " + normalName} \
         ~{"-reference_bam " + normalBam} \
         -ref_genome ~{referenceFasta} \
-        -known_hotspots ~{knownHotspots} \
-        -coding_regions ~{codingRegsions} \
+        -hotspots ~{hotspots} \
+        -panel_bed ~{panelBed} \
+        -high_confidence_bed ~{highConfidenceBed} \
+        -assembly ~{true="hg38" false="hg19" hg38} \
+        -threads ~{threads} \
         -out ~{outputPath}
     }
 
     output {
         File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
+        # There is some plots as well, but in the current container the labels in the plots are just series of `□`s.
+        # This seems to be a systemic issue with R generated plots in biocontainers...
     }
 
     runtime {
-        time_minutes: timeMinutes
+        time_minutes: timeMinutes # !UnknownRuntimeKey
         cpu: threads
         docker: dockerImage
         memory: memory
@@ -74,8 +86,9 @@ task Sage {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        knownHotspots: {description: "A TSV file with hotspot variant sites.", category: "required"}
-        codingRegsions: {description: "A bed file describing coding regions to search for inframe indels.", category: "required"}
+        hotspots: {description: "A vcf file with hotspot variant sites.", category: "required"}
+        panelBed: {description: "A bed file describing coding regions to search for in frame indels.", category: "required"}
+        highConfidenceBed: {description: "A bed files describing high confidence mapping regions.", category: "required"}
 
         threads: {description: "The number of threads to be used.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
