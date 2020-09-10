@@ -27,9 +27,9 @@ task Merge {
         Array[File] filePaths
         Int breakpointDistance = 1000
         Int suppVecs = 2
-        Int svType = 1
-        Int strandType = 1
-        Int distanceBySvSize = 0
+        Boolean svType = true
+        Boolean strandType = true
+        Boolean distanceBySvSize = false
         Int minSize = 30
         String outputPath = "./survivor/merged.vcf"
         String memory = "24G"
@@ -45,9 +45,9 @@ task Merge {
         fileList \
         ~{breakpointDistance} \
         ~{suppVecs} \
-        ~{svType} \
-        ~{strandType} \
-        ~{distanceBySvSize} \
+        ~{true=1 false=0 svType} \
+        ~{true=1 false=0 strandType} \
+        ~{true=1 false=0 distanceBySvSize} \
         ~{minSize} \
         ~{outputPath}
     }

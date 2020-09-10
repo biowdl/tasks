@@ -29,13 +29,14 @@ task CollectColumns {
         Int? separator
         Array[String]? sampleNames
         Boolean header = false
+        Boolean sumOnDuplicateId = false
         Array[String]? additionalAttributes
         File? referenceGtf
         String? featureAttribute
 
         Int memoryGb = 4 + ceil(0.5 * length(inputTables))
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/collect-columns:0.2.0--py_1"
+        String dockerImage = "quay.io/biocontainers/collect-columns:1.0.0--py_0"
     }
 
     command {
@@ -49,6 +50,7 @@ task CollectColumns {
         ~{"-s " + separator} \
         ~{true="-n" false="" defined(sampleNames)} ~{sep=" " sampleNames} \
         ~{true="-H" false="" header} \
+        ~{true="-S" false="" sumOnDuplicateId} \
         ~{true="-a" false="" defined(additionalAttributes)} ~{sep=" " additionalAttributes} \
         ~{"-g " + referenceGtf} \
         ~{"-F " + featureAttribute}
@@ -72,6 +74,7 @@ task CollectColumns {
         separator: {description: "Equivalent to the -s option of collect-columns.", category: "advanced"}
         sampleNames: {description: "Equivalent to the -n option of collect-columns.", category: "advanced"}
         header: {description: "Equivalent to the -H flag of collect-columns.", category: "advanced"}
+        sumOnDuplicateId: {description: "Equivalent to the -S flag of collect-columns.", category: "advanced"}
         additionalAttributes: {description: "Equivalent to the -a option of collect-columns.", category: "advanced"}
         referenceGtf: {description: "Equivalent to the -g option of collect-columns.", category: "advanced"}
         featureAttribute: {description: "Equivalent to the -F option of collect-columns.", category: "advanced"}
