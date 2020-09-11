@@ -81,7 +81,7 @@ task Sage {
         tumorBamIndex: {description: "The index of the BAM file for the tumor sample.", category: "required"}
         normalName: {description: "The name of the normal/reference sample.", category: "common"}
         normalBam: {description: "The BAM file for the normal sample.", category: "common"}
-        normalBai: {description: "The index of the BAM file for the normal sample.", category: "common"}
+        normalBamIndex: {description: "The index of the BAM file for the normal sample.", category: "common"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
