@@ -78,7 +78,7 @@ task Sage {
     parameter_meta {
         tumorName: {description: "The name of the tumor sample.", category: "required"}
         tumorBam: {description: "The BAM file for the tumor sample.", category: "required"}
-        tumorBai: {description: "The index of the BAM file for the tumor sample.", category: "required"}
+        tumorBamIndex: {description: "The index of the BAM file for the tumor sample.", category: "required"}
         normalName: {description: "The name of the normal/reference sample.", category: "common"}
         normalBam: {description: "The BAM file for the normal sample.", category: "common"}
         normalBai: {description: "The index of the BAM file for the normal sample.", category: "common"}
