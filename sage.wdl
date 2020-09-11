@@ -35,7 +35,7 @@ task Sage {
         File panelBed
         File highConfidenceBed
         Boolean hg38 = false
-        String outputPath = "./sage_hotspot.vcf.gz"
+        String outputPath = "./sage.vcf.gz"
 
         Int threads = 2
         String javaXmx = "32G"
