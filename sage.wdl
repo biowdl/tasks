@@ -24,10 +24,10 @@ task Sage {
     input {
         String tumorName
         File tumorBam
-        File tumorBai
+        File tumorBamIndex
         String? normalName
         File? normalBam
-        File? normalBai
+        File? normalBamIndex
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
