@@ -16,10 +16,10 @@ version 5.0.0-dev
   `sumOnDuplicateId` input (defaults to false).
 + survivor: replace integer boolean type to logical true or false value.
 + vt: Add option to ignore masked reference.
-+ bcftools: add sorting and annotation
++ bcftools: add sorting and annotation.
 + Bam2fastx: Input bam and index are now arrays.
 + Lima: Remove globs from outputs.
-+ Updated task gridss.wdl: add --jvmheap parameter
++ Updated task gridss.wdl: add --jvmheap parameter.
 + A bwa-mem2 task was created with the same interface (including usePostalt) 
   as the bwa mem task.
 + bwa mem and bwa kit are now one task. The usePostalt boolean can be used to
