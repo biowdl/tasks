@@ -59,11 +59,11 @@ task NanoPlot {
         ~{true="--loglength" false="" logLengths} \
         --format ~{format} \
         ~{true="--N50" false="--no-N50" showN50} \
-        ~{fileTypeOptions[inputFileType] + inputFile} \
         ~{"--maxlength " + maxLength} \
         ~{"--minlength " + minLength} \
         ~{"--minqual " + minQual} \
-        ~{"--readtype " + readType}
+        ~{"--readtype " + readType} \
+        ~{fileTypeOptions[inputFileType] + inputFile}
     }
 
     output {
@@ -129,7 +129,6 @@ task NanoQc {
 
         Int? minLength
 
-        Int threads = 2
         String memory = "2G"
         Int timeMinutes = 15
         String dockerImage = "quay.io/biocontainers/nanoqc:0.9.4--py_0"
@@ -151,7 +150,6 @@ task NanoQc {
     }
 
     runtime {
-        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -163,7 +161,6 @@ task NanoQc {
         outputDir: {description: "Output directory path.", category: "required"}
         directRna: {description: "Fastq is from direct RNA-seq and contains U nucleotides.", category: "common"}
         minLength: {description: "Filters the reads on a minimal length of the given range. Also plots the given length/2 of the begin and end of the reads.", category: "advanced"}
-        threads: {description: "The number of threads to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
