@@ -26,6 +26,7 @@ task Normalize {
         File inputVCFIndex
         File referenceFasta
         File referenceFastaFai
+        Boolean ignoreMaskedRef = false
         String outputPath = "./vt/normalized_decomposed.vcf"
         String dockerImage = "quay.io/biocontainers/vt:0.57721--hdf88d34_2"
         String memory = "4G"
@@ -33,9 +34,12 @@ task Normalize {
     }
 
     command {
-        set -e
+        set -eo pipefail
         mkdir -p "$(dirname ~{outputPath})"
-        vt normalize ~{inputVCF} -r ~{referenceFasta} | vt decompose -s - -o ~{outputPath}
+        vt normalize ~{inputVCF} \
+        -r ~{referenceFasta} \
+        ~{true="-m " false="" ignoreMaskedRef} \
+        | vt decompose -s - -o ~{outputPath}
     }
 
     output {
@@ -55,6 +59,7 @@ task Normalize {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        ignoreMaskedRef: {description: "Warns but does not exit when REF is inconsistent with masked reference sequence for non SNPs", category: "advanced"}
         memory: {description: "The memory required to run the programs", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
