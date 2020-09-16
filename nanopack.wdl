@@ -108,16 +108,16 @@ task NanoPlot {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        dynamicHistogram: {description: ""}
-        readLengthHistogram: {description: ""}
-        lengthVsQualityScatterPlotDot: {description: ""}
-        lengthVsQualityScatterPlotKde: {description: ""}
-        logScaleReadLengthHistogram: {description: ""}
-        report: {description: ""}
-        weightedHistogram: {description: ""}
-        weightedLogScaleHistogram: {description: ""}
-        yieldByLength: {description: ""}
-        stats: {description: ""}
+        dynamicHistogram: {description: "Dynamic histogram of read length."}
+        readLengthHistogram: {description: "Histogram of read length."}
+        lengthVsQualityScatterPlotDot: {description: "Read lengths vs average read quality plot."}
+        lengthVsQualityScatterPlotKde: {description: "Read lengths vs average read quality plot."}
+        logScaleReadLengthHistogram: {description: "Histogram of read lengths after log transformation."}
+        report: {description: "Html summary report."}
+        weightedHistogram: {description: "Weighted histogram of read lengths."}
+        weightedLogScaleHistogram: {description: "Weighted histogram of read lengths after log transformation."}
+        yieldByLength: {description: "Cumulative yield plot."}
+        stats: {description: "NanoStats report."}
     }
 }
 
@@ -166,7 +166,7 @@ task NanoQc {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        report: {description: ""}
-        log: {description: ""}
+        report: {description: "Html summary report."}
+        log: {description: "Progress report."}
     }
 }
