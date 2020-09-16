@@ -69,13 +69,13 @@ task NanoPlot {
     output {
         File dynamicHistogram = outputDir + outputPrefix + "Dynamic_Histogram_Read_length.html"
         File readLengthHistogram = outputDir + outputPrefix + "HistogramReadlength.png"
-        File lengthVsQualityScatterPlotDot = outputDir + outputPrefix + "LengthvsQualityScatterPlot_dot.png"
-        File lengthVsQualityScatterPlotKde = outputDir + outputPrefix + "LengthvsQualityScatterPlot_kde.png"
         File logScaleReadLengthHistogram = outputDir + outputPrefix + "LogTransformed_HistogramReadlength.png"
         File report = outputDir + outputPrefix + "NanoPlot-report.html"
         File weightedHistogram = outputDir + outputPrefix + "Weighted_HistogramReadlength.png"
         File weightedLogScaleHistogram = outputDir + outputPrefix + "Weighted_LogTransformed_HistogramReadlength.png"
         File yieldByLength = outputDir + outputPrefix + "Yield_By_Length.png"
+        File? lengthVsQualityScatterPlotDot = outputDir + outputPrefix + "LengthvsQualityScatterPlot_dot.png"
+        File? lengthVsQualityScatterPlotKde = outputDir + outputPrefix + "LengthvsQualityScatterPlot_kde.png"
         File? stats = outputDir + outputPrefix + "NanoStats.txt"
     }
 
@@ -110,13 +110,13 @@ task NanoPlot {
         # outputs
         dynamicHistogram: {description: "Dynamic histogram of read length."}
         readLengthHistogram: {description: "Histogram of read length."}
-        lengthVsQualityScatterPlotDot: {description: "Read lengths vs average read quality plot."}
-        lengthVsQualityScatterPlotKde: {description: "Read lengths vs average read quality plot."}
         logScaleReadLengthHistogram: {description: "Histogram of read lengths after log transformation."}
         report: {description: "Html summary report."}
         weightedHistogram: {description: "Weighted histogram of read lengths."}
         weightedLogScaleHistogram: {description: "Weighted histogram of read lengths after log transformation."}
         yieldByLength: {description: "Cumulative yield plot."}
+        lengthVsQualityScatterPlotDot: {description: "Read lengths vs average read quality plot."}
+        lengthVsQualityScatterPlotKde: {description: "Read lengths vs average read quality plot."}
         stats: {description: "NanoStats report."}
     }
 }
