@@ -52,6 +52,8 @@ task Annotate {
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
+    Boolean indexing = if outputType == "z" then true else false
+
     command {
         set -e 
         mkdir -p "$(dirname ~{outputPath})"
@@ -77,13 +79,14 @@ task Annotate {
         ~{true="--single-overlaps" false="" singleOverlaps} \
         ~{true="--remove" false="" length(removeAnns) > 0} ~{sep="," removeAnns} \
         ~{inputFile}
-        bcftools index --tbi ~{outputPath}
+
+        ~{if indexing then 'bcftools index --tbi ~{outputPath}' else ''}
 
     }
     
     output {
         File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
+        File? outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -132,6 +135,8 @@ task Sort {
         String outputType = "z"
     }
 
+    Boolean indexing = if outputType == "z" then true else false
+
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
@@ -139,12 +144,13 @@ task Sort {
         -o ~{outputPath} \
         -O ~{outputType} \
         ~{inputFile}
-        bcftools index --tbi ~{outputPath}
+
+        ~{if indexing then 'bcftools index --tbi ~{outputPath}' else ''}
     }
 
     output {
         File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
+        File? outputVcfIndex = outputPath + ".tbi"
     }
     
     runtime {
@@ -163,50 +169,6 @@ task Sort {
     }
 
     
-}
-
-task View {
-    input {
-        File inputFile
-        String outputPath = "output.vcf.gz"
-        String memory = "256M"
-        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
-        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
-        String outputType = "z"
-        Int compressionLevel = 1
-    }
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputPath})"
-        bcftools view \
-        -o ~{outputPath} \
-        -O ~{outputType} \
-        -l ~{compressionLevel} \
-        ~{inputFile}
-        bcftools index --tbi ~{outputPath}
-    }
-
-    output {
-        File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
-    }
-
-    runtime {
-        memory: memory
-        time_minutes: timeMinutes
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        inputFile: {description: "A vcf or bcf file.", category: "required"}
-        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-    }
 }
 
 task Stats {
@@ -311,5 +273,51 @@ task Stats {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+    }
+}
+
+task View {
+    input {
+        File inputFile
+        String outputPath = "output.vcf"
+        Int compressionLevel = 0
+        String memory = "256M"
+        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+    }
+
+    String outputType = if compressionLevel > 0 then "z" else "v"
+    Boolean indexing = if compressionLevel > 0 then true else false
+    String outputFilePath = if compressionLevel > 0 then outputPath + ".gz" else outputPath
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        bcftools view \
+        -o ~{outputPath} \
+        -l ~{compressionLevel} \
+        -O ~{outputType} \
+        ~{inputFile}
+
+        ~{if indexing then 'bcftools index --tbi ~{outputPath}' else ''}
+    }
+    output {
+        File outputVcf = outputPath
+        File? outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputFile: {description: "A vcf or bcf file.", category: "required"}
+        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
