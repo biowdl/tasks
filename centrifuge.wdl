@@ -128,7 +128,6 @@ task Classify {
         ~{inputFormatOptions[inputFormat]} \
         ~{true="--phred64" false="--phred33" phred64} \
         --min-hitlen ~{minHitLength} \
-        ~{"--met-file " + outputPrefix + "_alignment_metrics.tsv"} \
         --threads ~{threads} \
         ~{"--trim5 " + trim5} \
         ~{"--trim3 " + trim3} \
@@ -143,7 +142,6 @@ task Classify {
     >>>
 
     output {
-        File metrics = outputPrefix + "_alignment_metrics.tsv"
         File classification = outputPrefix + "_classification.tsv"
         File report = outputPrefix + "_output_report.tsv"
     }
@@ -175,7 +173,6 @@ task Classify {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        metrics: {description: "File with centrifuge metrics."}
         classification: {description: "File with the classification results."}
         report: {description: "File with a classification summary."}
     }

@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Centrifuge: Remove metrics file from classification (which causes the
+  summary report to be empty).
+  https://github.com/DaehwanKimLab/centrifuge/issues/83
 + Add NanoPlot and NanoQC tasks.
 + Centrifuge: Add `timeMinutes` to `Classify` task and remove unnecessary
   downloading tasks (alternative is refseqtools).
