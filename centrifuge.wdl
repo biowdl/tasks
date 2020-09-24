@@ -110,6 +110,7 @@ task Classify {
 
         Int threads = 4
         String memory = "16G"
+        Int timeMinutes = 2880
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
 
@@ -127,7 +128,6 @@ task Classify {
         ~{inputFormatOptions[inputFormat]} \
         ~{true="--phred64" false="--phred33" phred64} \
         --min-hitlen ~{minHitLength} \
-        ~{"--met-file " + outputPrefix + "_alignment_metrics.tsv"} \
         --threads ~{threads} \
         ~{"--trim5 " + trim5} \
         ~{"--trim3 " + trim3} \
@@ -142,7 +142,6 @@ task Classify {
     >>>
 
     output {
-        File metrics = outputPrefix + "_alignment_metrics.tsv"
         File classification = outputPrefix + "_classification.tsv"
         File report = outputPrefix + "_output_report.tsv"
     }
@@ -150,6 +149,7 @@ task Classify {
     runtime {
         cpu: threads
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -169,10 +169,10 @@ task Classify {
         excludeTaxIDs: {description: "A comma-separated list of taxonomic IDs that will be excluded in classification procedure.", category: "common"}
         threads: {description: "The number of threads to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        metrics: {description: "File with centrifuge metrics."}
         classification: {description: "File with the classification results."}
         report: {description: "File with a classification summary."}
     }
@@ -232,73 +232,6 @@ task Inspect {
         inspectResult: {description: "Output file according to output option."}
     }
 }
-
-task Download {
-    input {
-        String libraryPath
-        Array[String]? domain
-        String executable = "centrifuge-download"
-        String? preCommand
-        String? seqTaxMapPath
-        String database = "refseq"
-        String? assemblyLevel
-        String? refseqCategory
-        Array[String]? taxIds
-        Boolean filterUnplaced = false
-        Boolean maskLowComplexRegions = false
-        Boolean downloadRnaSeqs = false
-        Boolean modifyHeader = false
-        Boolean downloadGiMap = false
-    }
-
-    # This will use centrifuge-download to download.
-    # The bash statement at the beginning is to make sure
-    # the directory for the SeqTaxMapPath exists.
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{"mkdir -p $(dirname " + seqTaxMapPath + ")"}
-        ~{executable} \
-        -o ~{libraryPath} \
-        ~{true='-d ' false='' defined(domain)}~{sep=','  domain} \
-        ~{'-a "' + assemblyLevel + '"'} \
-        ~{"-c " + refseqCategory} \
-        ~{true='-t' false='' defined(taxIds)} '~{sep=',' taxIds}' \
-        ~{true='-r' false='' downloadRnaSeqs} \
-        ~{true='-u' false='' filterUnplaced} \
-        ~{true='-m' false='' maskLowComplexRegions} \
-        ~{true='-l' false='' modifyHeader} \
-        ~{true='-g' false='' downloadGiMap} \
-        ~{database} ~{">> " + seqTaxMapPath}
-    }
-
-    output {
-        File seqTaxMap = "~{seqTaxMapPath}"
-        File library = libraryPath
-        Array[File] fastaFiles = glob(libraryPath + "/*/*.fna")
-    }
- }
-
-task DownloadTaxonomy {
-    input {
-        String taxonomyDir
-        String executable = "centrifuge-download"
-        String? preCommand
-    }
-
-    command {
-        set -e -o pipefail
-        ~{preCommand}
-        ~{executable} \
-        -o ~{taxonomyDir} \
-        taxonomy
-    }
-
-    output {
-        File taxonomyTree = taxonomyDir + "/nodes.dmp"
-        File nameTable = taxonomyDir + "/names.dmp"
-    }
- }
 
 task KReport {
     input {

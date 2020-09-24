@@ -11,14 +11,20 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Centrifuge: Remove metrics file from classification (which causes the
+  summary report to be empty).
+  https://github.com/DaehwanKimLab/centrifuge/issues/83
++ Add NanoPlot and NanoQC tasks.
++ Centrifuge: Add `timeMinutes` to `Classify` task and remove unnecessary
+  downloading tasks (alternative is refseqtools).
 + collect-columns: updated docker image to version 1.0.0 and added the
   `sumOnDuplicateId` input (defaults to false).
 + survivor: replace integer boolean type to logical true or false value.
 + vt: Add option to ignore masked reference.
-+ bcftools: add sorting and annotation
++ bcftools: add sorting and annotation.
 + Bam2fastx: Input bam and index are now arrays.
 + Lima: Remove globs from outputs.
-+ Updated task gridss.wdl: add --jvmheap parameter
++ Updated task gridss.wdl: add --jvmheap parameter.
 + A bwa-mem2 task was created with the same interface (including usePostalt) 
   as the bwa mem task.
 + bwa mem and bwa kit are now one task. The usePostalt boolean can be used to
