@@ -1,6 +1,6 @@
 version 1.0
 
-task snpEff {
+task SnpEff {
     input {
         File vcf
         File vcfIndex
