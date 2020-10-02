@@ -125,6 +125,53 @@ task Annotate {
     }
 }
 
+task Filter {
+    input {
+        File vcf
+        File vcfIndex
+        Array[String] include = []
+        String outputPath = "./filtered.vcf.gz"
+
+        String memory = "256M"
+        Int timeMinutes = 1 + ceil(size(vcf, "G"))
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+    }
+
+    command {
+        set -e 
+        mkdir -p "$(dirname ~{outputPath})"
+        bcftools \
+	    filter \
+        ~{true="-i" false="" length(include) > 0} ~{sep=" -i " include} \
+	    ~{vcf} \
+	    -O z \
+	    -o ~{outputPath}
+        bctools index --tbi ~{outputPath}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        vcf: {description: "The VCF file to operate on.", category: "required"}
+        vcfIndex: {description: "The index for the VCF file.", category: "required"}
+        include: {description: "Equivalent to the `-i` option.", category: "common"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+    }
+}
+
 task Sort {
     input {
         File inputFile
