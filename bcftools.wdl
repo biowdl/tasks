@@ -141,11 +141,11 @@ task Filter {
         set -e 
         mkdir -p "$(dirname ~{outputPath})"
         bcftools \
-	    filter \
+        filter \
         ~{true="-i" false="" length(include) > 0} ~{sep=" -i " include} \
-	    ~{vcf} \
-	    -O z \
-	    -o ~{outputPath}
+        ~{vcf} \
+        -O z \
+        -o ~{outputPath}
         bctools index --tbi ~{outputPath}
     }
 
