@@ -129,7 +129,9 @@ task Filter {
     input {
         File vcf
         File vcfIndex
-        Array[String] include = []
+        String? include
+        String? exclude
+        String? softFilter
         String outputPath = "./filtered.vcf.gz"
 
         String memory = "256M"
@@ -142,7 +144,9 @@ task Filter {
         mkdir -p "$(dirname ~{outputPath})"
         bcftools \
         filter \
-        ~{true="-i" false="" length(include) > 0} ~{sep=" -i " include} \
+        ~{"-i " + include} \
+        ~{"-e " + exclude} \
+        ~{"-s " + softFilter}
         ~{vcf} \
         -O z \
         -o ~{outputPath}
