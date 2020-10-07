@@ -92,6 +92,7 @@ task NanoPlot {
         inputFileType: {description: "The format of the read file.", category: "required"}
         outputDir: {description: "Output directory path.", category: "required"}
         outputPrefix: {description: "Output file prefix.", category: "required"}
+        outputPath: {description: "Combination of the outputDir & outputPrefix strings.", category: "advanced"}
         outputTsvStats: {description: "Output the stats file as a properly formatted TSV.", category: "common"}
         dropOutliers: {description: "Drop outlier reads with extreme long length.", category: "advanced"}
         logLengths: {description: "Additionally show logarithmic scaling of lengths in plots.", category: "advanced"}

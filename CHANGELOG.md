@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ NanoPack: Add parameter_meta to NanoPlot task.
 + Centrifuge: Remove metrics file from classification (which causes the
   summary report to be empty).
   https://github.com/DaehwanKimLab/centrifuge/issues/83
