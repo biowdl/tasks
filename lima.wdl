@@ -58,7 +58,6 @@ task Lima {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputPrefix})"
         lima \
         ~{libraryDesignOptions[libraryDesign]} \
         ~{true="--score-full-pass" false="" scoreFullPass} \
@@ -83,32 +82,21 @@ task Lima {
         ~{true="--peek-guess" false="" peekGuess} \
         --log-level ~{logLevel} \
         --num-threads ~{cores} \
-        ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
+        ~{"--log-file " + outputPrefix + ".stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \
-        ~{basename(outputPrefix) + ".fl.bam"}
-
-        # copy commands below are needed because glob command does not find
-        # multiple bam/bam.pbi/subreadset.xml files when not located in working
-        # directory.
-        cp "~{basename(outputPrefix)}.fl.json" "~{outputPrefix}.fl.json"
-        cp "~{basename(outputPrefix)}.fl.lima.counts" "~{outputPrefix}.fl.lima.counts"
-        cp "~{basename(outputPrefix)}.fl.lima.report" "~{outputPrefix}.fl.lima.report"
-        cp "~{basename(outputPrefix)}.fl.lima.summary" "~{outputPrefix}.fl.lima.summary"
-        find . -path "*.bam" > bamFiles.txt
-        find . -path "*.bam.pbi" > bamIndexes.txt
-        find . -path "*.subreadset.xml" > subreadsets.txt
+        ~{outputPrefix + ".bam"}
     }
 
     output {
-        Array[File] limaBam = read_lines("bamFiles.txt")
-        Array[File] limaBamIndex = read_lines("bamIndexes.txt")
-        Array[File] limaXml = read_lines("subreadsets.txt")
-        File limaStderr = outputPrefix + ".fl.stderr.log"
-        File limaJson = outputPrefix + ".fl.json"
-        File limaCounts = outputPrefix + ".fl.lima.counts"
-        File limaReport = outputPrefix + ".fl.lima.report"
-        File limaSummary = outputPrefix + ".fl.lima.summary"
+        Array[File] limaBam = glob("*.bam")
+        Array[File] limaBamIndex = glob("*.bam.pbi")
+        Array[File] limaXml = glob("*.subreadset.xml")
+        File limaStderr = outputPrefix + ".stderr.log"
+        File limaJson = outputPrefix + ".json"
+        File limaCounts = outputPrefix + ".lima.counts"
+        File limaReport = outputPrefix + ".lima.report"
+        File limaSummary = outputPrefix + ".lima.summary"
     }
 
     runtime {
