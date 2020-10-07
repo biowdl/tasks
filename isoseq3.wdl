@@ -26,6 +26,7 @@ task Refine {
         Boolean requirePolyA = false
         String logLevel = "WARN"
         File inputBamFile
+        File inputBamIndex
         File primerFile
         String outputDir
         String outputNamePrefix
