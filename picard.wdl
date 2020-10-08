@@ -119,6 +119,8 @@ task CollectHsMetrics {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        targets: {description: "Picard interval file of the capture targets.", category: "required"}
+        baits: {description: "Picard interval file of the capture bait set.", category: "advanced"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
