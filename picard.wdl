@@ -77,7 +77,6 @@ task CollectHsMetrics {
         File? baits
         String basename
 
-
         # Use the targets file as baits as a fallback, since often the baits
         # for a certain capture kit are not available.
         File baitsFile = select_first([baits, targets])
