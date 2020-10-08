@@ -73,6 +73,7 @@ task Refine {
         requirePolyA: {description: "Require fl reads to have a poly(A) tail and remove it.", category: "common"}
         logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
         inputBamFile: {description: "Bam input file.", category: "required"}
+        inputBamIndex: {description: "Index for the Bam input file.", category: "required"}
         primerFile: {description: "Barcode/primer fasta file.", category: "required"}
         outputDir: {description: "Output directory path.", category: "required"}
         outputNamePrefix: {description: "Basename of the output files.", category: "required"}

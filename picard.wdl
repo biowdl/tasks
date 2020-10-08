@@ -415,6 +415,10 @@ task CollectVariantCallingMetrics {
 
     parameter_meta {
         # inputs
+        dbsnp: {description: "DBSNP vcf file to use with CollectVariantCallingMetrics.", category: "required"}
+        dbsnpIndex: {description: "Index file for the DBSNP VCF.", category: "required"}
+        inputVCF: {description: "Input VCF file", category: "required"}
+        inputVCFIndex: {description: "Index file for the input VCF.", category: "required"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
