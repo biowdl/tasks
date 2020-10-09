@@ -35,7 +35,6 @@ task Annotate {
         Boolean keepSites = false
         String? markSites
         Boolean noVersion = false
-        String outputType = "z"
         String? regions
         File? regionsFile
         File? renameChrs
@@ -52,14 +51,14 @@ task Annotate {
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
-    Boolean indexing = if outputType == "z" then true else false
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
 
     command {
         set -e 
         mkdir -p "$(dirname ~{outputPath})"
         bcftools annotate \
         -o ~{outputPath} \
-        -O ~{outputType} \
+        -O ~{true="z" false="v" compressed} \
         ~{"--annotations " + annsFile} \
         ~{"--collapse " + collapse} \
         ~{true="--columns" false="" length(columns) > 0} ~{sep="," columns} \
@@ -80,7 +79,7 @@ task Annotate {
         ~{true="--remove" false="" length(removeAnns) > 0} ~{sep="," removeAnns} \
         ~{inputFile}
 
-        ~{if indexing then 'bcftools index --tbi ~{outputPath}' else ''}
+        ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
 
     }
     
@@ -97,7 +96,6 @@ task Annotate {
 
     parameter_meta {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
         annsFile: {description: "Bgzip-compressed and tabix-indexed file with annotations (see man page for details).", category: "advanced"}
         collapse: {description: "Treat as identical records with <snps|indels|both|all|some|none>, see man page for details.", category: "advanced"}
         columns: {description: "Comma-separated list of columns or tags to carry over from the annotation file (see man page for details).", category: "advanced"}
@@ -132,20 +130,19 @@ task Sort {
         String memory = "256M"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
-        String outputType = "z"
     }
 
-    Boolean indexing = if outputType == "z" then true else false
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
         bcftools sort \
         -o ~{outputPath} \
-        -O ~{outputType} \
+        -O ~{true="z" false="v" compressed} \
         ~{inputFile}
 
-        ~{if indexing then 'bcftools index --tbi ~{outputPath}' else ''}
+        ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
     }
 
     output {
@@ -162,7 +159,6 @@ task Sort {
     parameter_meta {
         inputFile: {description: "A vcf or bcf file.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -280,26 +276,22 @@ task View {
     input {
         File inputFile
         String outputPath = "output.vcf"
-        Int compressionLevel = 0
         String memory = "256M"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
-    String outputType = if compressionLevel > 0 then "z" else "v"
-    Boolean indexing = if compressionLevel > 0 then true else false
-    String outputFilePath = if compressionLevel > 0 then outputPath + ".gz" else outputPath
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
         bcftools view \
         -o ~{outputPath} \
-        -l ~{compressionLevel} \
-        -O ~{outputType} \
+        -O ~{true="z" false="v" compressed} \
         ~{inputFile}
 
-        ~{if indexing then 'bcftools index --tbi ~{outputPath}' else ''}
+        ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
     }
     output {
         File outputVcf = outputPath
@@ -314,7 +306,6 @@ task View {
 
     parameter_meta {
         inputFile: {description: "A vcf or bcf file.", category: "required"}
-        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
