@@ -127,6 +127,7 @@ task Sort {
     input {
         File inputFile
         String outputPath = "output.vcf.gz"
+        String tmpDir = "./sorting-tmp"
         String memory = "256M"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
@@ -136,10 +137,11 @@ task Sort {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputPath})"
+        mkdir -p "$(dirname ~{outputPath})" ~{tmpDir}
         bcftools sort \
         -o ~{outputPath} \
         -O ~{true="z" false="v" compressed} \
+        -T ~{tmpDir} \
         ~{inputFile}
 
         ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
