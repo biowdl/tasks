@@ -16,6 +16,9 @@ version 5.0.0-dev
 + isoseq3: Add required bam index input to isoseq3.
 + pbbam: Add task for indexing PacBio bam files
 + picard: Add CollectHsMetrics and CollectVariantCallingMetrics.
++ bcftools: add tmpDir input to specify temporary directory when sorting.
++ bcftools: remove outputType and implement indexing based on output file extension. 
++ NanoPack: Add parameter_meta to NanoPlot task.
 + Centrifuge: Remove metrics file from classification (which causes the
   summary report to be empty).
   https://github.com/DaehwanKimLab/centrifuge/issues/83
