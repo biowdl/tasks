@@ -183,7 +183,7 @@ task Haplotag {
     parameter_meta {
         outputFile: "Output file. If omitted, use standard output."
         reference: "Reference file. Provide this to detect alleles through re-alignment. If no index (.fai) exists, it will be created."
-        referenceIndex: "Index for the reference file."
+        referenceFastaIndex: "Index for the reference file."
         regions: "Specify region(s) of interest to limit the tagging to reads/variants overlapping those regions. You can specify a space-separated list of regions in the form of chrom:start-end, chrom (consider entire chromosome), or chrom:start (consider region from this start to end of chromosome)."
         sample: "Name of a sample to phase. If not given, all samples in the input VCF are phased. Can be used multiple times."
         vcf: "VCF file with phased variants (must be gzip-compressed and indexed)."
