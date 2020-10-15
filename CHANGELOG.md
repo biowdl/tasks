@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Samtools: Add `threads` to parameter meta for Merge task.
 + bcftools: add tmpDir input to specify temporary directory when sorting.
 + bcftools: remove outputType and implement indexing based on output file extension. 
 + NanoPack: Add parameter_meta to NanoPlot task.
