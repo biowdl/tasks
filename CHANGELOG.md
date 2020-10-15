@@ -16,6 +16,7 @@ version 5.0.0-dev
 + isoseq3: Add required bam index input to isoseq3.
 + pbbam: Add task for indexing PacBio bam files
 + picard: Add CollectHsMetrics and CollectVariantCallingMetrics.
++ Samtools: Add `threads` to parameter meta for Merge task.
 + bcftools: add tmpDir input to specify temporary directory when sorting.
 + bcftools: remove outputType and implement indexing based on output file extension. 
 + NanoPack: Add parameter_meta to NanoPlot task.
