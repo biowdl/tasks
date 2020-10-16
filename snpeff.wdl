@@ -24,7 +24,7 @@ task SnpEff {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
         unzip ~{datadirZip}
-        snpEff -Xmx~{javaXmx}  -XX:ParallelGCThreads=1 \
+        snpEff -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -v \
         ~{genomeVersion} \
         -noDownload \

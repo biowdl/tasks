@@ -150,7 +150,7 @@ task Filter {
         ~{vcf} \
         -O z \
         -o ~{outputPath}
-        bctools index --tbi ~{outputPath}
+        bcftools index --tbi ~{outputPath}
     }
 
     output {

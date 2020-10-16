@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2017 Leiden University Medical Center
+# Copyright (c) 2020 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,8 @@ task GRIDSS {
         String outputPrefix = "gridss"
 
         Int jvmHeapSizeGb = 30
-        Int threads = 1
+        Int threads = 2
+        Int timeMinutes = ceil(1440 / threads) + 10
         String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
     }
 
@@ -64,6 +65,7 @@ task GRIDSS {
     runtime {
         cpu: threads
         memory: "~{jvmHeapSizeGb + 1}G"
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
@@ -79,6 +81,7 @@ task GRIDSS {
 
         threads: {description: "The number of the threads to use.", category: "advanced"}
         jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
