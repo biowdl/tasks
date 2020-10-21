@@ -67,7 +67,7 @@ task CreateSampleGetCount {
 task CreateAnnotation {
     input {
         File referenceFasta
-        File? referenceGtfFile
+        File referenceGtfFile
         String shinyDir = "."
 
         Int threads = 1
