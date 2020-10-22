@@ -20,7 +20,7 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task CreateSampleGetCount {
+task CreateSamplesheet {
     input {
         File countTable
         String shinyDir = "."
@@ -40,7 +40,7 @@ task CreateSampleGetCount {
     }
 
     output {
-        File shinySamples = shinyDir + "/sampleSheet.tsv"
+        File dgeSamples = shinyDir + "/sampleSheet.tsv"
     }
 
     runtime {
@@ -84,7 +84,7 @@ task CreateAnnotation {
     }
 
     output {        
-        File shinyAnnotation = shinyDir + "/annotation.tsv"
+        File dgeAnnotation = shinyDir + "/annotation.tsv"
     }
 
     runtime {
