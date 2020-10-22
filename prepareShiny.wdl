@@ -37,12 +37,10 @@ task CreateSampleGetCount {
         sampleSheet.py \
             -i ${countTable} \
             -o ${shinyDir}
-        cp ${countTable} ${shinyDir}/allCounts.tsv
     }
 
     output {
         File shinySamples = shinyDir + "/sampleSheet.tsv"
-        File shinyCounts = shinyDir + "/allCounts.tsv"
     }
 
     runtime {
