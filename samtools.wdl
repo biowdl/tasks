@@ -362,6 +362,7 @@ task Merge {
         # inputs
         bamFiles: {description: "The BAM files to merge.", category: "required"}
         outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
+        threads: {description: "Number of threads to use.", category: "advanced"}
         force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
