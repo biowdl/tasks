@@ -54,7 +54,7 @@ task ApplicationKt {
 
     runtime {
         memory: memory
-        time_minutes: timeMinutes
+        time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }
 
@@ -100,7 +100,7 @@ task HardFilterApplicationKt {
 
     runtime {
         memory: memory
-        time_minutes: timeMinutes
+        time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }
 

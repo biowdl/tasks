@@ -45,7 +45,7 @@ task SnpEff {
 
     runtime {
         docker: dockerImage
-        time_minutes: timeMinutes
+        time_minutes: timeMinutes # !UnknownRuntimeKey
         memory: memory
     }
 

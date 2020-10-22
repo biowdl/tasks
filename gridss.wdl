@@ -65,7 +65,7 @@ task GRIDSS {
     runtime {
         cpu: threads
         memory: "~{jvmHeapSizeGb + 1}G"
-        time_minutes: timeMinutes
+        time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }
 
@@ -124,7 +124,7 @@ task AnnotateInsertedSequence {
     runtime {
         cpu: threads
         memory: memory
-        time_minutes: timeMinutes
+        time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }
 
