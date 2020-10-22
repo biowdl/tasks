@@ -85,3 +85,59 @@ task GRIDSS {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
+
+task AnnotateInsertedSequence {
+    input {
+        File inputVcf
+        String outputPath = "gridss.annotated.vcf.gz"
+        File viralReference
+
+        Int threads = 8
+        String javaXmx = "8G"
+        String memory = "9G"
+        String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
+        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 2 / threads)
+    }
+
+    command {
+        java -Xmx~{javaXmx} \
+        -Dsamjdk.create_index=true \
+        -Dsamjdk.use_async_io_read_samtools=true \
+        -Dsamjdk.use_async_io_write_samtools=true \
+        -Dsamjdk.use_async_io_write_tribble=true \
+        -Dsamjdk.buffer_size=4194304 \
+        -cp /usr/local/share/gridss-2.9.4-0/gridss.jar \
+        gridss.AnnotateInsertedSequence \
+        REFERENCE_SEQUENCE=~{viralReference} \
+        INPUT=~{inputVcf} \
+        OUTPUT=~{outputPath} \
+        ALIGNMENT=APPEND \
+        WORKING_DIR='.' \
+        WORKER_THREADS=~{threads}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputVcf: {description: "The input VCF file.", category: "required"}
+        outputPath: {description: "The path the output will be written to.", category: "common"}
+        viralReference: {description: "A fasta file with viral sequences.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
