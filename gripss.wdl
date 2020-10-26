@@ -25,6 +25,8 @@ task ApplicationKt {
         File inputVcf
         String outputPath = "gripss.vcf.gz"
         File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
         File breakpointHotspot
         File breakendPon
         File breakpointPon
@@ -61,7 +63,10 @@ task ApplicationKt {
     parameter_meta {
         inputVcf: {description: "The input VCF.", category: "required"}
         outputPath: {description: "The path where th eoutput VCF will be written.", category: "common"}
-        referenceFasta: {description: "The reference fasta file.", category: "advanced"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         breakpointHotspot: {description: "Equivalent to the `-breakpoint_hotspot` option.", category: "required"}
         breakendPon: {description: "Equivalent to the `-breakend_pon` option.", category: "required"}
         breakpointPon: {description: "Equivalent to the `breakpoint_pon` option.", category: "required"}
