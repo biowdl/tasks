@@ -118,7 +118,7 @@ task Annotate {
         singleOverlaps: {description: "keep memory requirements low with very large annotation files.", category: "advanced"}
         removeAnns: {description: "List of annotations to remove (see man page for details).", category: "advanced"}
         inputFile: {description: "A vcf or bcf file.", category: "required"}
-        ipnutFileIndex: {description: "The index for the input vcf or bcf.", category: "common"}
+        inputFileIndex: {description: "The index for the input vcf or bcf.", category: "common"}
 
         threads: {description: "Number of extra decompression threads [0].", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
