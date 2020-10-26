@@ -59,6 +59,7 @@ task SnpEff {
         ~{true="-noShiftHgvs" false="" noShiftHgvs} \
         ~{"-upDownStreamLen " + upDownStreamLen} \
         > ~{outputPath}
+        rm -r $PWD/data
     }
 
     output {
