@@ -146,7 +146,7 @@ task Filter {
         filter \
         ~{"-i " + include} \
         ~{"-e " + exclude} \
-        ~{"-s " + softFilter}
+        ~{"-s " + softFilter} \
         ~{vcf} \
         -O z \
         -o ~{outputPath}

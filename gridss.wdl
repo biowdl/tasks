@@ -91,6 +91,8 @@ task AnnotateInsertedSequence {
         File inputVcf
         String outputPath = "gridss.annotated.vcf.gz"
         File viralReference
+        File viralReferenceFai
+        File viralReferenceDict
 
         Int threads = 8
         String javaXmx = "8G"
