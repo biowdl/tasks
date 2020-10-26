@@ -25,6 +25,7 @@ version 1.0
 task Annotate {
     input {
         File? annsFile
+        File? annsFileIndex
         String? collapse
         Array[String] columns = []
         String? exclude
@@ -99,7 +100,8 @@ task Annotate {
     parameter_meta {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
-        annsFile: {description: "Bgzip-compressed and tabix-indexed file with annotations (see man page for details).", category: "advanced"}
+        annsFile: {description: "Bgzip-compressed and tabix-indexed file with annotations (see man page for details).", category: "common"}
+        annsFileIndex: {description: "The index for annsFile.", category: "common"}
         collapse: {description: "Treat as identical records with <snps|indels|both|all|some|none>, see man page for details.", category: "advanced"}
         columns: {description: "Comma-separated list of columns or tags to carry over from the annotation file (see man page for details).", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
