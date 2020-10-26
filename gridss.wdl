@@ -93,6 +93,7 @@ task AnnotateInsertedSequence {
         File viralReference
         File viralReferenceFai
         File viralReferenceDict
+        File viralReferenceImg
 
         Int threads = 8
         String javaXmx = "8G"
@@ -134,6 +135,9 @@ task AnnotateInsertedSequence {
         inputVcf: {description: "The input VCF file.", category: "required"}
         outputPath: {description: "The path the output will be written to.", category: "common"}
         viralReference: {description: "A fasta file with viral sequences.", category: "required"}
+        viralReferenceFai: {description: "The index for the viral reference fasta.", category: "required"}
+        viralReferenceDict: {description: "The dict file for the viral reference.", category: "required"}
+        viralReferenceImg: {description: "The BWA index image (generated with GATK BwaMemIndexImageCreator) of the viral reference.", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
