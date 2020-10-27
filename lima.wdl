@@ -58,6 +58,7 @@ task Lima {
 
     command {
         set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
         lima \
         ~{libraryDesignOptions[libraryDesign]} \
         ~{true="--score-full-pass" false="" scoreFullPass} \
@@ -86,6 +87,15 @@ task Lima {
         ~{inputBamFile} \
         ~{barcodeFile} \
         ~{outputPrefix + ".bam"}
+
+        # copy the files with the default filename to the folder specified in
+        # outputPrefix.
+        if [ "~{basename(outputPrefix)}.json" != "~{outputPrefix}.json" ]; then
+            cp "~{basename(outputPrefix)}.json" "~{outputPrefix}.json"
+            cp "~{basename(outputPrefix)}.lima.counts" "~{outputPrefix}.lima.counts"
+            cp "~{basename(outputPrefix)}.lima.report" "~{outputPrefix}.lima.report"
+            cp "~{basename(outputPrefix)}.lima.summary" "~{outputPrefix}.lima.summary"
+        fi
     }
 
     output {

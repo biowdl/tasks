@@ -24,6 +24,7 @@ task ChunkedScatter {
     input {
         File inputFile
         String prefix = "./scatter"
+        Boolean splitContigs = false
         Int? chunkSize
         Int? overlap
         Int? minimumBasesPerFile
@@ -40,6 +41,7 @@ task ChunkedScatter {
         ~{"-c " + chunkSize} \
         ~{"-o " + overlap} \
         ~{"-m " + minimumBasesPerFile} \
+        ~{true="--split-contigs " false="" splitContigs} \
         ~{inputFile}
     }
 
@@ -108,6 +110,7 @@ task ScatterRegions {
         splitContigs: {description: "If set, contigs are allowed to be split up over multiple files.", category: "advanced"}
         scatterSizeMillions: {description: "Over how many million base pairs should be scattered.", category: "common"}
         scatterSize: {description: "Overrides scatterSizeMillions with a smaller value if set.", category: "advanced"}
+        splitContigs: {description: "Allow contigs to be split during scattering.", category: "advanced"}
 
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
