@@ -332,6 +332,7 @@ task Merge {
         Int threads = 1
 
         Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
+        String memory = "4G"
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
     }
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
@@ -355,6 +356,7 @@ task Merge {
     runtime {
         cpu: threads
         docker: dockerImage
+        memory: memory
         time_minutes: timeMinutes
     }
 
@@ -362,7 +364,7 @@ task Merge {
         # inputs
         bamFiles: {description: "The BAM files to merge.", category: "required"}
         outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
-        threads: {description: "Number of threads to use.", category: "advanced"}
+        threads: {description: "Number of threads to use.", category: "common"}
         force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",

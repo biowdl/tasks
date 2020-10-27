@@ -91,12 +91,25 @@ task Bam2Fastq {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
+
+        # Localise the bam and pbi files so they are next to each other in the
+        # current folder
+        bamfiles=""
+        for bamfile in ~{sep=" " bam};do
+            ln $bamfile .
+            bamfiles=$bamfiles" $(basename $bamfile)"
+        done
+
+        for bamindex in ~{sep=" " bamIndex}; do
+            ln $bamindex .
+        done
+
         bam2fastq \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{sep=" " bam}
+        $bamfiles
     }
 
     output {

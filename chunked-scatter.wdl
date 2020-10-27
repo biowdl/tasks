@@ -24,6 +24,7 @@ task ChunkedScatter {
     input {
         File inputFile
         String prefix = "./scatter"
+        Boolean splitContigs = false
         Int? chunkSize
         Int? overlap
         Int? minimumBasesPerFile
@@ -40,6 +41,7 @@ task ChunkedScatter {
         ~{"-c " + chunkSize} \
         ~{"-o " + overlap} \
         ~{"-m " + minimumBasesPerFile} \
+        ~{true="--split-contigs " false="" splitContigs} \
         ~{inputFile}
     }
 

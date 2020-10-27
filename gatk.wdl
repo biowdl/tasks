@@ -820,7 +820,7 @@ task GenotypeGVCFs {
     input {
         File gvcfFile
         File gvcfFileIndex
-        Array[File]+ intervals
+        Array[File]? intervals
         String outputPath
         File referenceFasta
         File referenceFastaDict
@@ -846,9 +846,9 @@ task GenotypeGVCFs {
         ~{"-D " + dbsnpVCF} \
         ~{"--pedigree " + pedigree} \
         ~{true="-G" false="" length(annotationGroups) > 0} ~{sep=" -G " annotationGroups} \
-        --only-output-calls-starting-in-intervals \
         -V ~{gvcfFile} \
-        -L ~{sep=' -L ' intervals}
+        ~{true="--only-output-calls-starting-in-intervals" false="" defined(intervals)} \
+        ~{true="-L" false="" defined(intervals)} ~{sep=' -L ' intervals}
     }
 
     output {
@@ -866,7 +866,7 @@ task GenotypeGVCFs {
     parameter_meta {
         gvcfFile: {description: "The GVCF file to be genotyped.", category: "required"}
         gvcfFileIndex: {description: "The index of the input GVCF file.", category: "required"}
-        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "required"}
+        intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "optional"}
         outputPath: {description: "The location to write the output VCF file to.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.",
                          category: "required"}

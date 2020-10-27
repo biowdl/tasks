@@ -66,6 +66,71 @@ task BedToIntervalList {
     }
 }
 
+task CollectHsMetrics {
+    input {
+        File inputBam
+        File inputBamIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        File targets
+        File? baits
+        String basename
+
+        # Use the targets file as baits as a fallback, since often the baits
+        # for a certain capture kit are not available.
+        File baitsFile = select_first([baits, targets])
+        File targetsFile = targets
+
+        Int memoryMb = javaXmxMb + 512
+        Int javaXmxMb = 3072
+        # Additional * 2 because picard multiple metrics reads the reference fasta twice.
+        Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{basename})"
+        picard -Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1 \
+        CollectHsMetrics \
+        I=~{inputBam} \
+        R=~{referenceFasta} \
+        BAIT_INTERVALS=~{baitsFile} \
+        TARGET_INTERVALS=~{targetsFile} \
+        O="~{basename}.hs_metrics.txt"
+    }
+
+    output {
+        File HsMetrics = basename + ".hs_metrics.txt"
+    }
+
+    runtime {
+        docker: dockerImage
+        time_minutes: timeMinutes
+        memory: "~{memoryMb}M"
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        targets: {description: "Picard interval file of the capture targets.", category: "required"}
+        baits: {description: "Picard interval file of the capture bait set.", category: "advanced"}
+        basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task CollectMultipleMetrics {
     input {
         File inputBam
@@ -306,6 +371,57 @@ task CollectTargetedPcrMetrics {
                           category: "required"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
 
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task CollectVariantCallingMetrics {
+    input {
+        File dbsnp
+        File dbsnpIndex
+        File inputVCF
+        File inputVCFIndex
+        String basename
+
+        String memory = "9G"
+        String javaXmx =  "8G"
+        Int timeMinutes = 1440
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{basename})"
+        picard -Xmx~{javaXmx} \
+        CollectVariantCallingMetrics -XX:ParallelGCThreads=1 \
+        DBSNP=~{dbsnp} \
+        INPUT=~{inputVCF} \
+        OUTPUT=~{basename}
+    }
+
+    output {
+        File details = basename + ".variant_calling_detail_metrics"
+        File summary = basename + ".variant_calling_summary_metrics"
+    }
+
+    runtime {
+        docker: dockerImage
+        time_minutes: timeMinutes
+        memory: memory
+    }
+
+    parameter_meta {
+        # inputs
+        dbsnp: {description: "DBSNP vcf file to use with CollectVariantCallingMetrics.", category: "required"}
+        dbsnpIndex: {description: "Index file for the DBSNP VCF.", category: "required"}
+        inputVCF: {description: "Input VCF file", category: "required"}
+        inputVCFIndex: {description: "Index file for the input VCF.", category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
