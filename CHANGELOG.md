@@ -14,7 +14,7 @@ version 5.0.0-dev
 + deepvariant: Add task for DeepVariant.
 + gatk: Make intervals optional for GenotypeGVCFs.
 + isoseq3: Add required bam index input to isoseq3.
-+ pbbam: Add task for indexing PacBio bam files
++ pbbam: Add task for indexing PacBio bam files.
 + picard: Add CollectHsMetrics and CollectVariantCallingMetrics.
 + Samtools: Add `threads` to parameter meta for Merge task.
 + bcftools: add tmpDir input to specify temporary directory when sorting.
