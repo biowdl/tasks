@@ -28,6 +28,7 @@ task RunDeepVariant {
         File inputBamIndex
         String modelType
         String outputVcf
+        String? postprocessVariantsExtraArgs
         File? customizedModel
         Int? numShards
         String? outputGVcf
@@ -51,8 +52,9 @@ task RunDeepVariant {
         ~{"--output_gvcf " + outputGVcf} \
         ~{"--customized_model " + customizedModel} \
         ~{"--num_shards " + numShards} \
-        ~{"--regions} " + regions} \
+        ~{"--regions "  + regions} \
         ~{"--sample_name " + sampleName} \
+        ~{"--postprocess_variants_extra_args " + postprocessVariantsExtraArgs} \
         ~{true="--vcf_stats_report" false="--novcf_stats_report" VCFStatsReport}
     }
 
@@ -83,6 +85,7 @@ task RunDeepVariant {
         regions: {description: "List of regions we want to process, in BED/BEDPE format.", category: "advanced"}
         sampleName: {description: "Sample name to use instead of the sample name from the input reads BAM (SM tag in the header).", category: "common"}
         VCFStatsReport: {description: "Output a visual report (HTML) of statistics about the output VCF.", category: "common"}
+        postprocessVariantsExtraArgs: {description: "A comma-separated list of flag_name=flag_value. 'flag_name' has to be valid flags for calpostprocess_variants.py.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",

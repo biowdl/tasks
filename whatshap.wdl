@@ -45,6 +45,8 @@ task Phase {
     }
 
     command {
+        set -e
+
         whatshap phase \
         ~{vcf} \
         ~{phaseInput} \
@@ -56,7 +58,8 @@ task Phase {
         ~{if defined(sample) then ("--sample " +  '"' + sample + '"') else ""} \
         ~{if defined(chromosome) then ("--chromosome " +  '"' + chromosome + '"') else ""} \
         ~{if defined(threshold) then ("--threshold " +  '"' + threshold + '"') else ""} \
-        ~{if defined(ped) then ("--ped " +  '"' + ped + '"') else ""} \
+        ~{if defined(ped) then ("--ped " +  '"' + ped + '"') else ""}
+
         tabix -p vcf ~{outputVCF}
     }
 
@@ -159,13 +162,16 @@ task Haplotag {
     }
 
     command {
+        set -e
+
         whatshap haplotag \
           ~{vcf} \
           ~{alignments} \
           ~{if defined(outputFile) then ("--output " +  '"' + outputFile+ '"') else ""} \
           ~{if defined(reference) then ("--reference " +  '"' + reference + '"') else ""} \
           ~{if defined(regions) then ("--regions " +  '"' + regions + '"') else ""} \
-          ~{if defined(sample) then ("--sample " +  '"' + sample + '"') else ""} \
+          ~{if defined(sample) then ("--sample " +  '"' + sample + '"') else ""}
+
           python3 -c "import pysam; pysam.index('~{outputFile}')"
     }
 
