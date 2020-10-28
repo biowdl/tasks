@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ CCS: Update CCS to version 5.
 + deepvariant: Add task for DeepVariant.
 + gatk: Make intervals optional for GenotypeGVCFs.
 + isoseq3: Add required bam index input to isoseq3.
