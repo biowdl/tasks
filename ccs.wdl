@@ -80,7 +80,7 @@ task CCS {
         minReadQuality: {description: "Minimum predicted accuracy in [0, 1].", category: "common"}
         logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
         subreadsFile: {description: "Subreads input file.", category: "required"}
-        subreadsIndexFile: {description: "Index for the subreads input file.", category: "required"}
+        subreadsIndexFile: {description: "Index for the subreads input file, required when using chunkString.", category: "advanced"}
         chunkString: {descpription: "Chunk string (e.g. 1/4, 5/5) for CCS.", category: "advanced"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
