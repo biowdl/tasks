@@ -81,7 +81,7 @@ task RunDeepVariant {
         modelType: {description: "<WGS|WES|PACBIO>. Type of model to use for variant calling. Each model_type has an associated default model, which can be overridden by the --customized_model flag.", category: "required"}
         outputVcf: {description: "Path where we should write VCF file.", category: "required"}
         postprocessVariantsExtraArgs: {description: "A comma-separated list of flag_name=flag_value. 'flag_name' has to be valid flags for calpostprocess_variants.py.", category: "advanced"}
-        customizedModel: {description: "A path to a model checkpoint to load for the `call_variants` step. If not set, the default for each --model_type will be used"., category: "advanced"}
+        customizedModel: {description: "A path to a model checkpoint to load for the `call_variants` step. If not set, the default for each --model_type will be used.", category: "advanced"}
         numShards: {description: "Number of shards for make_examples step.", category: "common"}
         outputGVcf: {description: "Path where we should write gVCF file.", category: "common"}
         regions: {description: "List of regions we want to process, in BED/BEDPE format.", category: "advanced"}
