@@ -32,6 +32,7 @@ task InputConverter {
         Boolean checkFileMd5sums=false
         Boolean old=false
 
+        String memory = "128M"
         Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
@@ -52,22 +53,20 @@ task InputConverter {
     }
 
     runtime {
-        memory: "128M"
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         samplesheet: {description: "The samplesheet to be processed.", category: "required"}
-        outputFile: {description: "The location the JSON representation of the samplesheet should be written to.",
-                     category: "advanced"}
-        skipFileCheck: {description: "Whether or not the existance of the files mentioned in the samplesheet should be checked.",
-                        category: "advanced"}
-        checkFileMd5sums: {description: "Whether or not the MD5 sums of the files mentioned in the samplesheet should be checked.",
-                           category: "advanced"}
+        outputFile: {description: "The location the JSON representation of the samplesheet should be written to.", category: "advanced"}
+        skipFileCheck: {description: "Whether or not the existance of the files mentioned in the samplesheet should be checked.", category: "advanced"}
+        checkFileMd5sums: {description: "Whether or not the MD5 sums of the files mentioned in the samplesheet should be checked.", category: "advanced"}
         old: {description: "Whether or not the old samplesheet format should be used.", category: "advanced"}
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

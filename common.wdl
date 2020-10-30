@@ -45,7 +45,7 @@ task CheckFileMD5 {
     input {
         File file
         String md5
-        # By default cromwell expects /bin/bash to be present in the container
+        # By default cromwell expects /bin/bash to be present in the container.
         # The 'bash' container does not fill this requirement. (It is in /usr/local/bin/bash)
         # Use a stable version of debian:stretch-slim for this. (Smaller than ubuntu)
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
@@ -71,7 +71,7 @@ task ConcatenateTextFiles {
         Boolean zip = false
     }
 
-    # When input and output is both compressed decompression is not needed
+    # When input and output is both compressed decompression is not needed.
     String cmdPrefix = if (unzip && !zip) then "zcat " else "cat "
     String cmdSuffix = if (!unzip && zip) then " | gzip -c " else ""
 
@@ -116,8 +116,8 @@ task Copy {
 }
 
 task CreateLink {
-    # Making this of type File will create a link to the copy of the file in the execution
-    # folder, instead of the actual file.
+    # Making this of type File will create a link to the copy of the file in
+    # the execution folder, instead of the actual file.
     # This cannot be propperly call-cached or used within a container.
     input {
         String inputFile
@@ -182,6 +182,7 @@ task TextToFile {
     input {
         String text
         String outputFile = "out.txt"
+
         Int timeMinutes = 1
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
@@ -194,17 +195,18 @@ task TextToFile {
         File out = outputFile
     }
 
-    parameter_meta {
-        text: {description: "The text to print", category: "required"}
-        outputFile: {description: "The name of the output file", category: "common"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
     runtime {
         memory: "1G"
         time_minutes: timeMinutes
         docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        text: {description: "The text to print.", category: "required"}
+        outputFile: {description: "The name of the output file.", category: "common"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -213,11 +215,12 @@ task YamlToJson {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
 
-        Int timeMinutes = 1
         String  memory = "128M"
+        Int timeMinutes = 1
         # biowdl-input-converter has python and pyyaml.
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
     }
+
     command {
         set -e
         mkdir -p "$(dirname ~{outputJson})"
@@ -230,6 +233,7 @@ task YamlToJson {
             json.dump(content, output_json)
         CODE
     }
+
     output {
         File json = outputJson
     }
@@ -241,12 +245,12 @@ task YamlToJson {
     }
 
     parameter_meta {
+        # inputs
         yaml: {description: "The YAML file to convert.", category: "required"}
         outputJson: {description: "The location the output JSON file should be written to.", category: "advanced"}
         memory: {description: "The maximum amount of memory the job will need.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 

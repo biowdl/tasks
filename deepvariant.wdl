@@ -28,6 +28,7 @@ task RunDeepVariant {
         File inputBamIndex
         String modelType
         String outputVcf
+
         String? postprocessVariantsExtraArgs
         File? customizedModel
         Int? numShards
@@ -43,7 +44,6 @@ task RunDeepVariant {
 
     command {
         set -e
-
         /opt/deepvariant/bin/run_deepvariant \
         --ref ~{referenceFasta} \
         --reads ~{inputBam} \
@@ -59,36 +59,36 @@ task RunDeepVariant {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     output {
         File outputVCF = outputVcf
         File outputVCFIndex = outputVCF + ".tbi"
+        Array[File] outputVCFStatsReport = glob("*.visual_report.html")
         File? outputGVCF = outputGVcf
         File? outputGVCFIndex = outputGVcf + ".tbi"
-        Array[File] outputVCFStatsReport = glob("*.visual_report.html")
     }
-    
+
     parameter_meta {
-        referenceFasta: {description: "Genome reference to use", category: "required"}
+        # inputs
+        referenceFasta: {description: "Genome reference to use.", category: "required"}
         referenceFastaIndex: {description: "Index for the genome reference file.", category: "required"}
         inputBam: {description: "Aligned, sorted, indexed BAM file containing the reads we want to call.", category: "required"}
         inputBamIndex: {description: "Index for the input bam file.", category: "required"}
-        modelType: {description: "<WGS|WES|PACBIO>. Type of model to use for variant calling. Each model_type has an associated default model, which can be overridden by the --customized_model flag", category: "required"}
+        modelType: {description: "<WGS|WES|PACBIO>. Type of model to use for variant calling. Each model_type has an associated default model, which can be overridden by the --customized_model flag.", category: "required"}
         outputVcf: {description: "Path where we should write VCF file.", category: "required"}
-        customizedModel: {description: "A path to a model checkpoint to load for the `call_variants` step. If not set, the default for each --model_type will be used", category: "advanced"}
+        postprocessVariantsExtraArgs: {description: "A comma-separated list of flag_name=flag_value. 'flag_name' has to be valid flags for calpostprocess_variants.py.", category: "advanced"}
+        customizedModel: {description: "A path to a model checkpoint to load for the `call_variants` step. If not set, the default for each --model_type will be used"., category: "advanced"}
         numShards: {description: "Number of shards for make_examples step.", category: "common"}
         outputGVcf: {description: "Path where we should write gVCF file.", category: "common"}
         regions: {description: "List of regions we want to process, in BED/BEDPE format.", category: "advanced"}
         sampleName: {description: "Sample name to use instead of the sample name from the input reads BAM (SM tag in the header).", category: "common"}
         VCFStatsReport: {description: "Output a visual report (HTML) of statistics about the output VCF.", category: "common"}
-        postprocessVariantsExtraArgs: {description: "A comma-separated list of flag_name=flag_value. 'flag_name' has to be valid flags for calpostprocess_variants.py.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

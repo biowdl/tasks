@@ -94,13 +94,13 @@ task Build {
 
 task Classify {
     input {
+        Array[File]+ read1
+        Array[File] read2 = []
         String inputFormat = "fastq"
         Boolean phred64 = false
         Int minHitLength = 22
         Array[File]+ indexFiles
-        Array[File]+ read1
         String outputPrefix
-        Array[File] read2 = []
 
         Int? trim5
         Int? trim3
@@ -155,13 +155,13 @@ task Classify {
 
     parameter_meta {
         # inputs
+        read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
+        read2: {description: "List of files containing mate 2s.", category: "common"}
         inputFormat: {description: "The format of the read file(s).", category: "required"}
         phred64: {description: "If set to true, phred+64 encoding is used.", category: "required"}
         minHitLength: {description: "Minimum length of partial hits.", category: "required"}
         indexFiles: {description: "The files of the index for the reference genomes.", category: "required"}
-        read1: {description: "List of files containing mate 1s, or unpaired reads.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        read2: {description: "List of files containing mate 2s.", category: "common"}
         trim5: {description: "Trim <int> bases from 5' (left) end of each read before alignment.", category: "common"}
         trim3: {description: "Trim <int> bases from 3' (right) end of each read before alignment.", category: "common"}
         reportMaxDistinct: {description: "It searches for at most <int> distinct, primary assignments for each read or pair.", category: "common"}

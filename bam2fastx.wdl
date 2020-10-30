@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2020 Sequencing Analysis Support Core - Leiden University Medical Center
+# Copyright (c) 2020 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,7 +37,22 @@ task Bam2Fasta {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputPrefix})"
+        mkdir -p "$(dirname ~{outputPrefix})"'
+
+        # Localise the bam and pbi files so they are next to each other in the
+        # current folder.
+        bamFiles=""
+        for bamFile in ~{sep=" " bam};
+        do
+            ln ${bamFile} .
+            bamFiles=${bamFiles}" $(basename ${bamFile})"
+        done
+
+        for index in ~{sep=" " bamIndex};
+        do
+            ln ${index} .
+        done
+
         bam2fasta \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
@@ -93,15 +108,17 @@ task Bam2Fastq {
         mkdir -p "$(dirname ~{outputPrefix})"
 
         # Localise the bam and pbi files so they are next to each other in the
-        # current folder
-        bamfiles=""
-        for bamfile in ~{sep=" " bam};do
-            ln $bamfile .
-            bamfiles=$bamfiles" $(basename $bamfile)"
+        # current folder.
+        bamFiles=""
+        for bamFile in ~{sep=" " bam};
+        do
+            ln ${bamFile} .
+            bamFiles=${bamFiles}" $(basename ${bamFile})"
         done
 
-        for bamindex in ~{sep=" " bamIndex}; do
-            ln $bamindex .
+        for index in ~{sep=" " bamIndex};
+        do
+            ln ${index} .
         done
 
         bam2fastq \
@@ -109,7 +126,7 @@ task Bam2Fastq {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        $bamfiles
+        ${bamFiles}
     }
 
     output {
