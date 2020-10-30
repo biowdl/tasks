@@ -44,13 +44,13 @@ task Bam2Fasta {
         bamFiles=""
         for bamFile in ~{sep=" " bam}
         do
-            ln ${bamFile} .
-            bamFiles=${bamFiles}" $(basename ${bamFile})"
+            ln $bamFile .
+            bamFiles=$bamFiles" $(basename $bamFile)"
         done
 
         for index in ~{sep=" " bamIndex}
         do
-            ln ${index} .
+            ln $index .
         done
 
         bam2fasta \
