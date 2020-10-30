@@ -37,18 +37,18 @@ task Bam2Fasta {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputPrefix})"'
+        mkdir -p "$(dirname ~{outputPrefix})"
 
         # Localise the bam and pbi files so they are next to each other in the
         # current folder.
         bamFiles=""
-        for bamFile in ~{sep=" " bam};
+        for bamFile in ~{sep=" " bam}
         do
             ln ${bamFile} .
             bamFiles=${bamFiles}" $(basename ${bamFile})"
         done
 
-        for index in ~{sep=" " bamIndex};
+        for index in ~{sep=" " bamIndex}
         do
             ln ${index} .
         done
@@ -110,13 +110,13 @@ task Bam2Fastq {
         # Localise the bam and pbi files so they are next to each other in the
         # current folder.
         bamFiles=""
-        for bamFile in ~{sep=" " bam};
+        for bamFile in ~{sep=" " bam}
         do
             ln ${bamFile} .
             bamFiles=${bamFiles}" $(basename ${bamFile})"
         done
 
-        for index in ~{sep=" " bamIndex};
+        for index in ~{sep=" " bamIndex}
         do
             ln ${index} .
         done

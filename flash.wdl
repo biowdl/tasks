@@ -24,13 +24,14 @@ import "common.wdl" as common
 
 task Flash {
     input {
-        String? preCommand
         FastqPair inputFastq
         String outdirPath
         String outPrefix = "flash"
+        Boolean compress = true
+
+        String? preCommand
         Int? minOverlap
         Int? maxOverlap
-        Boolean compress = true
 
         Int threads = 2
         String memory = "2G"
@@ -55,8 +56,8 @@ task Flash {
         File notCombined1 = outdirPath + "/" + outPrefix + ".notCombined_1.fastq.gz"
         File notCombined2 = outdirPath + "/" + outPrefix + ".notCombined_2.fastq.gz"
         FastqPair notCombined = object {
-          R1: notCombined1,
-          R2: notCombined2
+            R1: notCombined1,
+            R2: notCombined2
         }
         File hist = outdirPath + "/" + outPrefix + ".hist"
         File histogram = outdirPath + "/" + outPrefix + ".histogram"
@@ -66,5 +67,4 @@ task Flash {
         cpu: threads
         memory: memory
     }
-
 }

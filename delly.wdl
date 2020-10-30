@@ -1,7 +1,5 @@
 version 1.0
 
-# MIT License
-#
 # Copyright (c) 2018 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -59,9 +57,9 @@ task CallSV {
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index bam file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
-        referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
+        referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        memory: {description: "The memory required to run the programs", category: "advanced"}
+        memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
