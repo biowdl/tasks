@@ -112,13 +112,13 @@ task Bam2Fastq {
         bamFiles=""
         for bamFile in ~{sep=" " bam}
         do
-            ln ${bamFile} .
-            bamFiles=${bamFiles}" $(basename ${bamFile})"
+            ln $bamFile .
+            bamFiles=$bamFiles" $(basename $bamFile)"
         done
 
         for index in ~{sep=" " bamIndex}
         do
-            ln ${index} .
+            ln $index .
         done
 
         bam2fastq \
@@ -126,7 +126,7 @@ task Bam2Fastq {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ${bamFiles}
+        $bamFiles
     }
 
     output {
