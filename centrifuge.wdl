@@ -270,7 +270,7 @@ task KReport {
     >>>
 
     output {
-        File KReport = outputPrefix + "_kreport.tsv"
+        File KrakenReport = outputPrefix + "_kreport.tsv"
     }
 
     runtime {
@@ -294,7 +294,7 @@ task KReport {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        KReport: {description: "File with kraken style report."}
+        KrakenReport: {description: "File with kraken style report."}
     }
 }
 

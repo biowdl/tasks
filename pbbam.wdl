@@ -18,12 +18,14 @@ version 1.0
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 task Index {
     input {
         File bamFile
+
         String? outputBamPath
-        
+
         String memory = "2G"
         Int timeMinutes = 1 + ceil(size(bamFile, "G") * 4)
         String dockerImage = "quay.io/biocontainers/pbbam:1.6.0--h5b7e6e0_0"
@@ -60,11 +62,9 @@ task Index {
     parameter_meta {
         # inputs
         bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
-        outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
-                        category: "common"}
+        outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.", category: "common"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

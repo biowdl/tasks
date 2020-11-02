@@ -11,6 +11,10 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Picard: Add parameter_meta to `SortSam`.
++ pbmm2: Add parameter_meta for `sample`.
++ Centrifuge: Rename output in task `KReport` to `KrakenReport` to resolve
+  name collision with task name.
 + Bwa & bwa-mem2: Add parameter_meta for `outputHla`.
 + Multiqc: Removed WDL_AID excludes of "finished" & "dependencies" inputs.
 + Bam2fastx: Add localisation of input files to Bam2Fasta task.
