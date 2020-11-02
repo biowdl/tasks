@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2017 Sequencing Analysis Support Core - Leiden University Medical Center
+# Copyright (c) 2017 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,9 +26,10 @@ task Extract {
         File? read2
         String bcPattern
         String? bcPattern2
-        Boolean threePrime = false
         String read1Output = "umi_extracted_R1.fastq.gz"
         String? read2Output = "umi_extracted_R2.fastq.gz"
+        Boolean threePrime = false
+
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 2)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
     }
@@ -50,21 +51,21 @@ task Extract {
     }
 
     runtime {
-        docker: dockerImage
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         read1: {description: "The first/single-end fastq file.", category: "required"}
         read2: {description: "The second-end fastq file.", category: "common"}
         bcPattern: {description: "The pattern to be used for UMI extraction. See the umi_tools docs for more information.", category: "required"}
         bcPattern2: {description: "The pattern to be used for UMI extraction in the second-end reads. See the umi_tools docs for more information.", category: "advanced"}
-        threePrime: {description: "Whether or not the UMI's are at the reads' 3' end. If false the UMIs are extracted from the 5' end.", category: "advanced"}
         read1Output: {description: "The location to write the first/single-end output fastq file to.", category: "advanced"}
         read2Output: {description: "The location to write the second-end output fastq file to.", category: "advanced"}
+        threePrime: {description: "Whether or not the UMI's are at the reads' 3' end. If false the UMIs are extracted from the 5' end.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -72,15 +73,15 @@ task Dedup {
     input {
         File inputBam
         File inputBamIndex
-        String? umiSeparator
         String outputBamPath
-        String? statsPrefix
         Boolean paired = true
+
+        String? umiSeparator
+        String? statsPrefix
 
         String memory = "25G"
         Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
-
-        # Use a multi-package-container which includes umi_tools (0.5.5) and samtools (1.9)
+        # Use a multi-package-container which includes umi_tools (0.5.5) and samtools (1.9).
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
     }
 
@@ -107,21 +108,21 @@ task Dedup {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         inputBam: {description: "The input BAM file.", categrory: "required"}
         inputBamIndex: {description: "The index for the ipnut BAM file.", cateogry: "required"}
         outputBamPath: {description: "The location to write the output BAM file to.", category: "required"}
-        statsPrefix: {description: "The prefix for the stats files.", category: "advanced"}
-        umiSeparator: {description: "Seperator used for UMIs in the read names.", category: "advanced"}
         paired: {description: "Whether or not the data is paired.", category: "common"}
+        umiSeparator: {description: "Seperator used for UMIs in the read names.", category: "advanced"}
+        statsPrefix: {description: "The prefix for the stats files.", category: "advanced"}
         memory: {description: "The amount of memory required for the task.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Samtools: `Sort` task now has `threads` in runtime instead of `1`.
 + Picard: Add parameter_meta to `SortSam`.
 + pbmm2: Add parameter_meta for `sample`.
 + Centrifuge: Rename output in task `KReport` to `KrakenReport` to resolve
@@ -20,6 +21,7 @@ version 5.0.0-dev
 + Bam2fastx: Add localisation of input files to Bam2Fasta task.
 + isoseq3: `cores` input has been renamed to `threads` to match tool naming.
 + CCS: `cores` input has been renamed to `threads` to match tool naming.
++ Add PacBio preprocessing specific tasks `mergePacBio` & `ccsChunks`.
 + CCS: Update CCS to version 5.
 + deepvariant: Add task for DeepVariant.
 + gatk: Make intervals optional for GenotypeGVCFs.

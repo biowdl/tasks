@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2020 Sequencing Analysis Support Core - Leiden University Medical Center
+# Copyright (c) 2020 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,9 +28,10 @@ task Normalize {
         File referenceFastaFai
         Boolean ignoreMaskedRef = false
         String outputPath = "./vt/normalized_decomposed.vcf"
-        String dockerImage = "quay.io/biocontainers/vt:0.57721--hdf88d34_2"
+
         String memory = "4G"
         Int timeMinutes = 30
+        String dockerImage = "quay.io/biocontainers/vt:0.57721--hdf88d34_2"
     }
 
     command {
@@ -56,13 +57,12 @@ task Normalize {
         # inputs
         inputVCF: {description: "The VCF file to process.", category: "required"}
         inputVCFIndex: {description: "The index of the VCF file to be processed.", category: "required"}
-        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        ignoreMaskedRef: {description: "Warns but does not exit when REF is inconsistent with masked reference sequence for non SNPs", category: "advanced"}
-        memory: {description: "The memory required to run the programs", category: "advanced"}
+        ignoreMaskedRef: {description: "Warns but does not exit when REF is inconsistent with masked reference sequence for non SNPs.", category: "advanced"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
-

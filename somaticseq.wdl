@@ -22,17 +22,18 @@ version 1.0
 
 task ParallelPaired {
     input {
-        File? classifierSNV
-        File? classifierIndel
         String outputDir
         File referenceFasta
         File referenceFastaFai
-        File? inclusionRegion
-        File? exclusionRegion
         File tumorBam
         File tumorBamIndex
         File normalBam
         File normalBamIndex
+
+        File? classifierSNV
+        File? classifierIndel
+        File? inclusionRegion
+        File? exclusionRegion
         File? mutect2VCF
         File? varscanSNV
         File? varscanIndel
@@ -95,17 +96,18 @@ task ParallelPaired {
     }
 
     parameter_meta {
-        classifierSNV: {description: "A somaticseq SNV classifier.", category: "common"}
-        classifierIndel: {description: "A somaticseq Indel classifier.", category: "common"}
+        # inputs
         outputDir: {description: "The directory to write the output to.", category: "common"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
-        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
-        normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
-        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
         tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
+        classifierSNV: {description: "A somaticseq SNV classifier.", category: "common"}
+        classifierIndel: {description: "A somaticseq Indel classifier.", category: "common"}
+        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
+        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
         mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
         varscanSNV: {description: "An SNV VCF as produced by varscan.", category: "advanced"}
         varscanIndel: {description: "An indel VCF as produced by varscan.", category: "advanced"}
@@ -118,11 +120,9 @@ task ParallelPaired {
         scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
         strelkaSNV: {description: "An SNV VCF as produced by strelka.", category: "advanced"}
         strelkaIndel: {description: "An indel VCF as produced by somaticsniper.", category: "advanced"}
-
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -133,12 +133,13 @@ task ParallelPairedTrain {
         String outputDir
         File referenceFasta
         File referenceFastaFai
-        File? inclusionRegion
-        File? exclusionRegion
         File tumorBam
         File tumorBamIndex
         File normalBam
         File normalBamIndex
+
+        File? inclusionRegion
+        File? exclusionRegion
         File? mutect2VCF
         File? varscanSNV
         File? varscanIndel
@@ -200,17 +201,18 @@ task ParallelPairedTrain {
     }
 
     parameter_meta {
+        # inputs
         truthSNV: {description: "A VCF of true SNVs.", category: "required"}
         truthIndel: {description: "A VCF of true indels.", category: "required"}
         outputDir: {description: "The directory to write the output to.", category: "common"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
-        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
-        normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
-        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
         tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
+        inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
+        exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
         mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
         varscanSNV: {description: "An SNV VCF as produced by varscan.", category: "advanced"}
         varscanIndel: {description: "An indel VCF as produced by varscan.", category: "advanced"}
@@ -223,25 +225,24 @@ task ParallelPairedTrain {
         scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
         strelkaSNV: {description: "An SNV VCF as produced by strelka.", category: "advanced"}
         strelkaIndel: {description: "An indel VCF as produced by somaticsniper.", category: "advanced"}
-
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
 task ParallelSingle {
     input {
-        File? classifierSNV
-        File? classifierIndel
+        File bam
+        File bamIndex
         String outputDir
         File referenceFasta
         File referenceFastaFai
+
+        File? classifierSNV
+        File? classifierIndel
         File? inclusionRegion
         File? exclusionRegion
-        File bam
-        File bamIndex
         File? mutect2VCF
         File? varscanVCF
         File? vardictVCF
@@ -291,40 +292,40 @@ task ParallelSingle {
     }
 
     parameter_meta {
-        classifierSNV: {description: "A somaticseq SNV classifier.", category: "common"}
-        classifierIndel: {description: "A somaticseq Indel classifier.", category: "common"}
+        # inputs
+        bam: {description: "The input BAM file.", category: "required"}
+        bamIndex: {description: "The index for the input BAM file.", category: "required"}
         outputDir: {description: "The directory to write the output to.", category: "common"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        classifierSNV: {description: "A somaticseq SNV classifier.", category: "common"}
+        classifierIndel: {description: "A somaticseq Indel classifier.", category: "common"}
         inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
         exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
-        bam: {description: "The input BAM file.", category: "required"}
-        bamIndex: {description: "The index for the input BAM file.", category: "required"}
         mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
         varscanVCF: {description: "A VCF as produced by varscan.", category: "advanced"}
         vardictVCF: {description: "A VCF as produced by vardict.", category: "advanced"}
         lofreqVCF: {description: "A VCF as produced by lofreq.", category: "advanced"}
         scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
         strelkaVCF: {description: "A VCF as produced by strelka.", category: "advanced"}
-
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
 task ParallelSingleTrain {
     input {
+        File bam
+        File bamIndex
         File truthSNV
         File truthIndel
         String outputDir
         File referenceFasta
         File referenceFastaFai
+
         File? inclusionRegion
         File? exclusionRegion
-        File bam
-        File bamIndex
         File? mutect2VCF
         File? varscanVCF
         File? vardictVCF
@@ -373,6 +374,9 @@ task ParallelSingleTrain {
     }
 
     parameter_meta {
+        # inputs
+        bam: {description: "The input BAM file.", category: "required"}
+        bamIndex: {description: "The index for the input BAM file.", category: "required"}
         truthSNV: {description: "A VCF of true SNVs.", category: "required"}
         truthIndel: {description: "A VCF of true indels.", category: "required"}
         outputDir: {description: "The directory to write the output to.", category: "common"}
@@ -380,19 +384,15 @@ task ParallelSingleTrain {
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         inclusionRegion: {description: "A bed file describing regions to include.", category: "common"}
         exclusionRegion: {description: "A bed file describing regions to exclude.", category: "common"}
-        bam: {description: "The input BAM file.", category: "required"}
-        bamIndex: {description: "The index for the input BAM file.", category: "required"}
         mutect2VCF: {description: "A VCF as produced by mutect2.", category: "advanced"}
         varscanVCF: {description: "A VCF as produced by varscan.", category: "advanced"}
         vardictVCF: {description: "A VCF as produced by vardict.", category: "advanced"}
         lofreqVCF: {description: "A VCF as produced by lofreq.", category: "advanced"}
         scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
         strelkaVCF: {description: "A VCF as produced by strelka.", category: "advanced"}
-
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -400,17 +400,16 @@ task ModifyStrelka {
     input {
         File strelkaVCF
         String outputVCFName = basename(strelkaVCF, ".gz")
-        String dockerImage = "lethalfang/somaticseq:3.1.0"
+
         Int timeMinutes = 20
+        String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
     command {
         set -e
-
         /opt/somaticseq/vcfModifier/modify_Strelka.py \
         -infile ~{strelkaVCF} \
         -outfile "modified_strelka.vcf"
-
         first_FORMAT_line_num=$(grep -n -m 1 '##FORMAT' "modified_strelka.vcf" | cut -d : -f 1)
         sed "$first_FORMAT_line_num"'i##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">' "modified_strelka.vcf" > ~{outputVCFName}
     }
@@ -425,10 +424,10 @@ task ModifyStrelka {
     }
 
     parameter_meta {
+        # inputs
         strelkaVCF: {description: "A vcf file as produced by strelka.", category: "required"}
         outputVCFName: {description: "The location the output VCF file should be written to.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

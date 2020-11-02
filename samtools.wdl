@@ -431,7 +431,7 @@ task Sort {
 
         # outputs
         outputBam: {description: "Sorted BAM file."}
-        outputBamIndex: {description "Sorted BAM file index."}
+        outputBamIndex: {description: "Sorted BAM file index."}
     }
 }
 

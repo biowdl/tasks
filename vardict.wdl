@@ -27,29 +27,28 @@ task VarDict {
         String tumorSampleName
         File tumorBam
         File tumorBamIndex
-        String? normalSampleName
-        File? normalBam
-        File? normalBamIndex
         File referenceFasta
         File referenceFastaFai
         File bedFile
         String outputVcf
-
-        Int chromosomeColumn = 1
-        Int startColumn = 2
-        Int endColumn = 3
-        Int geneColumn = 4
-
         Boolean outputCandidateSomaticOnly = true
         Boolean outputAllVariantsAtSamePosition = true
         Float mappingQuality = 20
         Int minimumTotalDepth = 8
         Int minimumVariantDepth = 4
         Float minimumAlleleFrequency = 0.02
+        Int chromosomeColumn = 1
+        Int startColumn = 2
+        Int endColumn = 3
+        Int geneColumn = 4
 
+        String? normalSampleName
+        File? normalBam
+        File? normalBamIndex
+
+        String javaXmx = "16G"
         Int threads = 1
         String memory = "18G"
-        String javaXmx = "16G"
         Int timeMinutes = 300
         String dockerImage = "quay.io/biocontainers/vardict-java:1.5.8--1"
     }
@@ -93,33 +92,31 @@ task VarDict {
     }
 
     parameter_meta {
+        # inputs
         tumorSampleName: {description: "The name of the tumor/case sample.", category: "required"}
         tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
-        normalSampleName: {description: "The name of the normal/control sample.", category: "common"}
-        normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
-        normalBamIndex: {description: "The normal/control sample's BAM file.", category: "common"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         bedFile: {description: "A bed file describing the regions to operate on. These regions must be below 1e6 bases in size.", category: "required"}
         outputVcf: {description: "The location to write the output VCF file to.", category: "required"}
-        chromosomeColumn: {description: "Equivalent to vardict-java's `-c` option.", category: "advanced"}
-        startColumn: {description: "Equivalent to vardict-java's `-S` option.", category: "advanced"}
-        endColumn: {description: "Equivalent to vardict-java's `-E` option.", category: "advanced"}
-        geneColumn: {description: "Equivalent to vardict-java's `-g` option.", category: "advanced"}
         outputCandidateSomaticOnly: {description: "Equivalent to var2vcf_paired.pl or var2vcf_valid.pl's `-M` flag.", category: "advanced"}
         outputAllVariantsAtSamePosition: {description: "Equivalent to var2vcf_paired.pl or var2vcf_valid.pl's `-A` flag.", category: "advanced"}
         mappingQuality: {description: "Equivalent to var2vcf_paired.pl or var2vcf_valid.pl's `-Q` option.", category: "advanced"}
         minimumTotalDepth: {description: "Equivalent to var2vcf_paired.pl or var2vcf_valid.pl's `-d` option.", category: "advanced"}
         minimumVariantDepth: {description: "Equivalent to var2vcf_paired.pl or var2vcf_valid.pl's `-v` option.", category: "advanced"}
         minimumAlleleFrequency: {description: "Equivalent to var2vcf_paired.pl or var2vcf_valid.pl's `-f` option.", category: "advanced"}
-
+        chromosomeColumn: {description: "Equivalent to vardict-java's `-c` option.", category: "advanced"}
+        startColumn: {description: "Equivalent to vardict-java's `-S` option.", category: "advanced"}
+        endColumn: {description: "Equivalent to vardict-java's `-E` option.", category: "advanced"}
+        geneColumn: {description: "Equivalent to vardict-java's `-g` option.", category: "advanced"}
+        normalSampleName: {description: "The name of the normal/control sample.", category: "common"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
+        normalBamIndex: {description: "The normal/control sample's BAM file.", category: "common"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

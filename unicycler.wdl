@@ -22,12 +22,13 @@ version 1.0
 
 task Unicycler {
     input {
+        String out
+
         String? preCommand
         File? short1
         File? short2
         File? unpaired
         File? long
-        String out
         Int? verbosity
         Int? minFastaLength
         Int? keep
