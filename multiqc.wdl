@@ -22,16 +22,28 @@ version 1.0
 
 task MultiQC {
     input {
-        # Use a string here so cromwell does not relocate an entire analysis directory
+        # Use a string here so cromwell does not relocate an entire
+        # analysis directory.
         Array[File] reports
         Boolean force = false
         Boolean dirs = false
-        Int? dirsDepth
         Boolean fullNames = false
+        String outDir = "."
+        Boolean dataDir = false
+        Boolean zipDataDir = true
+        Boolean export = false
+        Boolean flat = false
+        Boolean interactive = true
+        Boolean lint = false
+        Boolean pdf = false
+        # This must be actively enabled in my opinion.
+        # The tools default is to upload.
+        Boolean megaQCUpload = false
+
+        Int? dirsDepth
         String? title
         String? comment
         String? fileName
-        String outDir = "."
         String? template
         String? tag
         String? ignore
@@ -40,21 +52,15 @@ task MultiQC {
         File? fileList
         Array[String]+? exclude
         Array[String]+? module
-        Boolean dataDir = false
         String? dataFormat
-        Boolean zipDataDir = true
-        Boolean export = false
-        Boolean flat = false
-        Boolean interactive = true
-        Boolean lint = false
-        Boolean pdf = false
-        Boolean megaQCUpload = false # This must be actively enabled in my opinion. The tools default is to upload.
         File? config  # A directory
         String? clConfig
+
         String? memory
         Int timeMinutes = 2 + ceil(size(reports, "G") * 8)
         String dockerImage = "quay.io/biocontainers/multiqc:1.7--py_1"
     }
+
     Int memoryGb = 2 + ceil(size(reports, "G"))
 
     # This is where the reports end up. It does not need to be changed by the
@@ -69,8 +75,9 @@ task MultiQC {
     # By hashing the parent path we make sure there are no file colissions as 
     # files from the same directory end up in the same directory, while files 
     # from other directories get their own directory. Cromwell also uses this 
-    # strategy. Using python's builtin hash is unique enough for these purposes.
-    
+    # strategy. Using python's builtin hash is unique enough
+    # for these purposes.
+
     command {
         python3 <<CODE
         import os
@@ -138,15 +145,24 @@ task MultiQC {
     }
 
     parameter_meta {
+        # inputs
         reports: {description: "Reports which multiqc should run on.", category: "required"}
         force: {description: "Equivalent to MultiQC's `--force` flag.", category: "advanced"}
         dirs: {description: "Equivalent to MultiQC's `--dirs` flag.", category: "advanced"}
-        dirsDepth: {description: "Equivalent to MultiQC's `--dirs-depth` option.", category: "advanced"}
         fullNames: {description: "Equivalent to MultiQC's `--fullnames` flag.", category: "advanced"}
+        outDir: {description: "Directory in whihc the output should be written.", category: "common"}
+        dataDir: {description: "Whether to output a data dir. Sets `--data-dir` or `--no-data-dir` flag.", category: "advanced"}
+        zipDataDir: {description: "Equivalent to MultiQC's `--zip-data-dir` flag.", category: "advanced"}
+        export: {description: "Equivalent to MultiQC's `--export` flag.", category: "advanced"}
+        flat: {description: "Equivalent to MultiQC's `--flat` flag.", category: "advanced"}
+        interactive: {description: "Equivalent to MultiQC's `--interactive` flag.", category: "advanced"}
+        lint: {description: "Equivalent to MultiQC's `--lint` flag.", category: "advanced"}
+        pdf: {description: "Equivalent to MultiQC's `--pdf` flag.", category: "advanced"}
+        megaQCUpload: {description: "Opposite to MultiQC's `--no-megaqc-upload` flag.", category: "advanced"}
+        dirsDepth: {description: "Equivalent to MultiQC's `--dirs-depth` option.", category: "advanced"}
         title: {description: "Equivalent to MultiQC's `--title` option.", category: "advanced"}
         comment: {description: "Equivalent to MultiQC's `--comment` option.", category: "advanced"}
         fileName: {description: "Equivalent to MultiQC's `--filename` option.", category: "advanced"}
-        outDir: {description: "Directory in whihc the output should be written.", category: "common"}
         template: {description: "Equivalent to MultiQC's `--template` option.", category: "advanced"}
         tag: {description: "Equivalent to MultiQC's `--tag` option.", category: "advanced"}
         ignore: {description: "Equivalent to MultiQC's `--ignore` option.", category: "advanced"}
@@ -155,26 +171,11 @@ task MultiQC {
         fileList: {description: "Equivalent to MultiQC's `--file-list` option.", category: "advanced"}
         exclude: {description: "Equivalent to MultiQC's `--exclude` option.", category: "advanced"}
         module: {description: "Equivalent to MultiQC's `--module` option.", category: "advanced"}
-        dataDir: {description: "Whether to output a data dir. Sets `--data-dir` or `--no-data-dir` flag.", category: "advanced"}
         dataFormat: {description: "Equivalent to MultiQC's `--data-format` option.", category: "advanced"}
-        zipDataDir: {description: "Equivalent to MultiQC's `--zip-data-dir` flag.", category: "advanced"}
-        export: {description: "Equivalent to MultiQC's `--export` flag.", category: "advanced"}
-        flat: {description: "Equivalent to MultiQC's `--flat` flag.", category: "advanced"}
-        interactive: {description: "Equivalent to MultiQC's `--interactive` flag.", category: "advanced"}
-        lint: {description: "Equivalent to MultiQC's `--lint` flag.", category: "advanced"}
-        pdf: {description: "Equivalent to MultiQC's `--pdf` flag.", category: "advanced"}
-        megaQCUpload: {description: "Opposite to MultiQC's `--no-megaqc-upload` flag.", category: "advanced"}
         config: {description: "Equivalent to MultiQC's `--config` option.", category: "advanced"}
         clConfig: {description: "Equivalent to MultiQC's `--cl-config` option.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-
-    meta {
-        WDL_AID: {
-            exclude: ["finished", "dependencies"]
-        }
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

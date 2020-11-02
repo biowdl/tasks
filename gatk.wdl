@@ -64,6 +64,7 @@ task AnnotateIntervals {
     }
 
     parameter_meta {
+        # inputs
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}

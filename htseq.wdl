@@ -27,9 +27,10 @@ task HTSeqCount {
         String outputTable = "output.tsv"
         String order = "pos"
         String stranded = "no"
+        Array[String] additionalAttributes = []
+
         String? featureType
         String? idattr
-        Array[String] additionalAttributes = []
 
         Int nprocesses = 1
         String memory = "8G"
@@ -58,24 +59,24 @@ task HTSeqCount {
 
     runtime {
         cpu: nprocesses
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         inputBams: {description: "The input BAM files.", category: "required"}
         gtfFile: {description: "A GTF/GFF file containing the features of interest.", category: "required"}
         outputTable: {description: "The path to which the output table should be written.", category: "common"}
-        nprocesses: {description: "Number of processes to run htseq with.", category: "advanced"}
         order: {description: "Equivalent to the -r option of htseq-count.", category: "advanced"}
         stranded: {description: "Equivalent to the -s option of htseq-count.", category: "common"}
+        additionalAttributes: {description: "Equivalent to the --additional-attr option of htseq-count.", category: "advanced"}
         featureType: {description: "Equivalent to the --type option of htseq-count.", category: "advanced"}
         idattr: {description: "Equivalent to the --idattr option of htseq-count.", category: "advanced"}
-        additionalAttributes: {description: "Equivalent to the --additional-attr option of htseq-count.", category: "advanced"}
+        nprocesses: {description: "Number of processes to run htseq with.", category: "advanced"}
         memory: {description: "The amount of memory the job requires in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

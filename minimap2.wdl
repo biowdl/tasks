@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2019 Sequencing Analysis Support Core - Leiden University Medical Center
+# Copyright (c) 2019 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -61,7 +61,7 @@ task Indexing {
     }
 
     parameter_meta {
-        # input
+        # inputs
         useHomopolymerCompressedKmer: {description: "Use homopolymer-compressed k-mer (preferrable for pacbio).", category: "advanced"}
         kmerSize: {description: "K-mer size (no larger than 28).", category: "advanced"}
         minimizerWindowSize: {description: "Minimizer window size.", category: "advanced"}
@@ -73,7 +73,7 @@ task Indexing {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
-        # output
+        # outputs
         indexFile: {description: "Indexed reference file."}
     }
 }
@@ -137,27 +137,28 @@ task Mapping {
     }
 
     parameter_meta {
+        # inputs
         presetOption: {description: "This option applies multiple options at the same time.", category: "common"}
         kmerSize: {description: "K-mer size (no larger than 28).", category: "advanced"}
+        skipSelfAndDualMappings: {description: "Skip self and dual mappings (for the all-vs-all mode).", category: "advanced"}
         outputSam: {description: "Output in the sam format.", category: "common"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        maxIntronLength: {description: "Max intron length (effective with -xsplice; changing -r).", category: "advanced"}
-        maxFragmentLength: {description: "Max fragment length (effective with -xsr or in the fragment mode).", category: "advanced"}
-        skipSelfAndDualMappings: {description: "Skip self and dual mappings (for the all-vs-all mode).", category: "advanced"}
-        retainMaxSecondaryAlignments: {description: "Retain at most N secondary alignments.", category: "advanced"}
-        matchingScore: {description: "Matching score.", category: "advanced"}
-        mismatchPenalty: {description: "Mismatch penalty.", category: "advanced"}
-        howToFindGTAG: {description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.", category: "common"}
         addMDTagToSam: {description: "Adds a MD tag to the sam output file.", category: "common"}
         secondaryAlignment: {description: "Whether to output secondary alignments.", category: "advanced"}
         referenceFile: {description: "Reference fasta file.", category: "required"}
         queryFile: {description: "Input fasta file.", category: "required"}
+        maxIntronLength: {description: "Max intron length (effective with -xsplice; changing -r).", category: "advanced"}
+        maxFragmentLength: {description: "Max fragment length (effective with -xsr or in the fragment mode).", category: "advanced"}
+        retainMaxSecondaryAlignments: {description: "Retain at most N secondary alignments.", category: "advanced"}
+        matchingScore: {description: "Matching score.", category: "advanced"}
+        mismatchPenalty: {description: "Mismatch penalty.", category: "advanced"}
+        howToFindGTAG: {description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.", category: "common"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
-        # output
+        # outputs
         alignmentFile: {description: "Mapping and alignment between collections of dna sequences file."}
     }
 }

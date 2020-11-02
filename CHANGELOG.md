@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ isoseq3: `cores` input has been renamed to `threads` to match tool naming.
 + CCS: `cores` input has been renamed to `threads` to match tool naming.
 + CCS: Update CCS to version 5.
 + deepvariant: Add task for DeepVariant.

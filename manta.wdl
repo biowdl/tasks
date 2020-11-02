@@ -27,9 +27,10 @@ task Germline {
         File referenceFasta
         File referenceFastaFai
         String runDir = "./manta_run"
+        Boolean exome = false
+
         File? callRegions
         File? callRegionsIndex
-        Boolean exome = false
 
         Int cores = 1
         Int memoryGb = 4
@@ -71,9 +72,9 @@ task Germline {
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
         runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
-        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         cores: {description: "The the number of cores required to run a program", category: "required"}
         memoryGb: {description: "The memory required to run the manta", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -85,14 +86,15 @@ task Somatic {
     input {
         File tumorBam
         File tumorBamIndex
-        File? normalBam
-        File? normalBamIndex
         File referenceFasta
         File referenceFastaFai
         String runDir = "./manta_run"
+        Boolean exome = false
+
+        File? normalBam
+        File? normalBamIndex
         File? callRegions
         File? callRegionsIndex
-        Boolean exome = false
 
         Int cores = 1
         Int memoryGb = 4
@@ -138,16 +140,17 @@ task Somatic {
     }
 
     parameter_meta {
+        # inputs
         tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
-        normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
-        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "common"}
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
-        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
