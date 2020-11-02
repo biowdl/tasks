@@ -11,6 +11,9 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Bwa & bwa-mem2: Add parameter_meta for `outputHla`.
++ Multiqc: Removed WDL_AID excludes of "finished" & "dependencies" inputs.
++ Bam2fastx: Add localisation of input files to Bam2Fasta task.
 + isoseq3: `cores` input has been renamed to `threads` to match tool naming.
 + CCS: `cores` input has been renamed to `threads` to match tool naming.
 + CCS: Update CCS to version 5.
