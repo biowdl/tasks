@@ -19,6 +19,7 @@ version 5.0.0-dev
 + Bwa & bwa-mem2: Add parameter_meta for `outputHla`.
 + Multiqc: Removed WDL_AID excludes of "finished" & "dependencies" inputs.
 + Bam2fastx: Add localisation of input files to Bam2Fasta task.
++ Lima: `cores` input has been renamed to `threads` to match tool naming.
 + isoseq3: `cores` input has been renamed to `threads` to match tool naming.
 + CCS: `cores` input has been renamed to `threads` to match tool naming.
 + Add PacBio preprocessing specific tasks `mergePacBio` & `ccsChunks`.
