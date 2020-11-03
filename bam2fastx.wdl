@@ -58,7 +58,7 @@ task Bam2Fasta {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{sep=" " bam}
+        $bamFiles
     }
 
     output {
