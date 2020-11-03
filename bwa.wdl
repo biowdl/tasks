@@ -33,8 +33,8 @@ task Mem {
 
         String? readgroup
         Int? sortThreads
+        
         Int? memoryGb
-
         Int threads = 4
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         # Contains bwa 0.7.17 bwakit 0.7.17.dev1 and samtools 1.10
