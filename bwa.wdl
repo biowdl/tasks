@@ -33,9 +33,9 @@ task Mem {
 
         String? readgroup
         Int? sortThreads
-        
-        Int? memoryGb
+
         Int threads = 4
+        Int? memoryGb
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
         # Contains bwa 0.7.17 bwakit 0.7.17.dev1 and samtools 1.10.
         String dockerImage = "quay.io/biocontainers/mulled-v2-ad317f19f5881324e963f6a6d464d696a2825ab6:c59b7a73c87a9fe81737d5d628e10a3b5807f453-0"
@@ -96,8 +96,8 @@ task Mem {
         compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
         readgroup: {description: "A readgroup identifier.", category: "common"}
         sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
-        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
         threads: {description: "The number of threads to use for alignment.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
