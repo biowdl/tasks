@@ -26,33 +26,35 @@ task Mem {
         File? read2
         BwaIndex bwaIndex
         String outputPrefix
-        String? readgroup
         Boolean sixtyFour = false
         Boolean usePostalt = false
-        Int threads = 4
-        Int? sortThreads
         Int sortMemoryPerThreadGb = 2
         Int compressionLevel = 1
-        Int? memoryGb 
+
+        String? readgroup
+        Int? sortThreads
+        
+        Int threads = 4
+        Int? memoryGb
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
-        # Contains bwa-mem2 2.0 bwakit 0.7.17.dev1 and samtools 1.10
+        # Contains bwa-mem2 2.0 bwakit 0.7.17.dev1 and samtools 1.10.
         String dockerImage = "quay.io/biocontainers/mulled-v2-6a15c99309c82b345497d24489bee67bbb76c2f6:1c9c3227b9bf825a8dc9726a25701aa23c0b1f12-0"
     }
 
-    # Samtools sort may block the pipe while it is writing data to disk. 
+    # Samtools sort may block the pipe while it is writing data to disk.
     # This can lead to cpu underutilization.
-    # 1 thread if threads is 1. For 2-4 threads 2 sort threads. 3 sort threads for 5-8 threads. 
+    # 1 thread if threads is 1. For 2-4 threads 2 sort threads. 3 sort threads for 5-8 threads.
     Int estimatedSortThreads = if threads == 1 then 1 else 1 + ceil(threads / 4.0)
     Int totalSortThreads = select_first([sortThreads, estimatedSortThreads])
-    # BWA-mem2's index files contain 2 BWT indexes of which only one is used. .2bit64 is used by default and 
+    # BWA-mem2's index files contain 2 BWT indexes of which only one is used. .2bit64 is used by default and
     # .8bit32 is used for avx2.
     # The larger one of these is the 8bit32 index. Since we do not know beforehand which one is used we need to accomodate for that.
-    # Using only the 8bit32 index uses 57,5% of the index files. Since bwa-mem2 uses slightly more memory than the index
+    # Using only the 8bit32 index uses 57,5% of the index files. Since bwa-mem2 uses slightly more memory than the index.
     # We put it at 62% as a safety factor. That means the memory usage for bwa-mem will be 53G for a human genome. Resulting in 60G total
     # on 8 cores with samtools with 3 sort threads.
     Int estimatedMemoryGb = 1 + ceil(size(bwaIndex.indexFiles, "G") * 0.62) + sortMemoryPerThreadGb * totalSortThreads
     
-    # The bwa postalt script is out commented as soon as usePostalt = false. 
+    # The bwa postalt script is out commented as soon as usePostalt = false.
     # This hack was tested with bash, dash and ash. It seems that comments in between pipes work for all of them.
     command {
         set -e
@@ -81,7 +83,7 @@ task Mem {
     runtime {
         # One extra thread for bwa-postalt + samtools is not needed.
         # These only use 5-10% of compute power and not always simultaneously.
-        cpu: threads  
+        cpu: threads
         memory: "~{select_first([memoryGb, estimatedMemoryGb])}G"
         time_minutes: timeMinutes
         docker: dockerImage
@@ -92,21 +94,21 @@ task Mem {
         read1: {description: "The first-end fastq file.", category: "required"}
         read2: {description: "The second-end fastq file.", category: "common"}
         bwaIndex: {description: "The BWA index, including (optionally) a .alt file.", category: "required"}
-        usePostalt: {description: "Whether to use the postalt script from bwa kit."}
         outputPrefix: {description: "The prefix of the output files, including any parent directories.", category: "required"}
-        readgroup: {description: "A readgroup identifier.", category: "common"}
         sixtyFour: {description: "Whether or not the index uses the '.64' suffixes.", category: "common"}
-        threads: {description: "The number of threads to use for alignment.", category: "advanced"}
-        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
-        sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
+        usePostalt: {description: "Whether to use the postalt script from bwa kit."}
         sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
         compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
+        readgroup: {description: "A readgroup identifier.", category: "common"}
+        sortThreads: {description: "The number of threads to use for sorting.", category: "advanced"}
+        threads: {description: "The number of threads to use for alignment.", category: "advanced"}
+        memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputBam: "The produced BAM file."
+        outputBam: {description: "The produced BAM file."}
+        outputHla: {description: "The produced HLA file."}
     }
 }
 

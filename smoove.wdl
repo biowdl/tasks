@@ -1,7 +1,5 @@
 version 1.0
 
-# MIT License
-#
 # Copyright (c) 2020 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,8 +30,8 @@ task Call {
         String outputDir = "./smoove"
 
         String memory = "15G"
-        String dockerImage = "quay.io/biocontainers/smoove:0.2.5--0"
         Int timeMinutes = 1440
+        String dockerImage = "quay.io/biocontainers/smoove:0.2.5--0"
     }
 
     command {
@@ -52,9 +50,8 @@ task Call {
 
     runtime {
         memory: memory
-        docker: dockerImage
         time_minutes: timeMinutes
-
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -63,8 +60,8 @@ task Call {
         bamIndex: {description: "The index of the bam file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
-        outputDir: {description: "The location the output VCF file should be written.", category: "common"}
         sample: {description: "The name of the sample.", category: "required"}
+        outputDir: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum duration (in minutes) the tool is allowed to run.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}

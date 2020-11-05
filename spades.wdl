@@ -22,10 +22,11 @@ version 1.0
 
 task Spades {
     input {
-        String outputDir
-        String? preCommand
         File read1
         File? read2
+        String outputDir
+
+        String? preCommand
         File? interlacedReads
         File? sangerReads
         File? pacbioReads
@@ -44,12 +45,13 @@ task Spades {
         Boolean? disableGzipOutput
         Boolean? disableRepeatResolution
         File? dataset
-        Int threads = 1
-        Int memoryGb = 16
         File? tmpDir
         String? k
         Float? covCutoff
         Int? phredOffset
+
+        Int threads = 1
+        Int memoryGb = 16
     }
 
     command {

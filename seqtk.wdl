@@ -24,11 +24,12 @@ task Sample {
     input {
         File sequenceFile
         String outFilePath = "subsampledReads.fq.gz"
+        Boolean twoPassMode = false
+        Float fractionOrNumber # When above 1.0 is the number of reads, otherwise it's a fraction.
+        Boolean zip = true
+
         String? preCommand
         Int? seed
-        Boolean twoPassMode = false
-        Float fractionOrNumber # when above 1.0 is the number of reads, otherwise it's a fraction
-        Boolean zip = true
     }
 
     command {

@@ -25,6 +25,7 @@ task Complement {
         File faidx
         File inputBed
         String outputBed = basename(inputBed, "\.bed") + ".complement.bed"
+
         String memory = "~{512 + ceil(size([inputBed, faidx], "M"))}M"
         Int timeMinutes = 1 + ceil(size([inputBed, faidx], "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
@@ -52,13 +53,13 @@ task Complement {
     }
 
     parameter_meta {
+        # inputs
         faidx: {description: "The fasta index (.fai) file from which to extract the genome sizes.", category: "required"}
         inputBed: {description: "The inputBed to complement.", category: "required"}
         outputBed: {description: "The path to write the output to.", category: "advanced"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -66,12 +67,14 @@ task Merge {
     input {
         File inputBed
         String outputBed = "merged.bed"
+
         String memory = "~{512 + ceil(size(inputBed, "M"))}M"
         Int timeMinutes = 1 + ceil(size(inputBed, "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 
     command {
+        set -e
         bedtools merge -i ~{inputBed} > ~{outputBed}
     }
 
@@ -86,12 +89,12 @@ task Merge {
     }
 
     parameter_meta {
+        # inputs
         inputBed: {description: "The bed to merge.", category: "required"}
         outputBed: {description: "The path to write the output to.", category: "advanced"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -100,6 +103,7 @@ task MergeBedFiles {
     input {
         Array[File]+ bedFiles
         String outputBed = "merged.bed"
+
         String memory = "~{512 + ceil(size(bedFiles, "M"))}M"
         Int timeMinutes = 1 + ceil(size(bedFiles, "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
@@ -120,13 +124,14 @@ task MergeBedFiles {
         time_minutes: timeMinutes
         docker: dockerImage
     }
+
     parameter_meta {
+        # inputs
         bedFiles: {description: "The bed files to merge.", category: "required"}
         outputBed: {description: "The path to write the output to.", category: "advanced"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -139,9 +144,13 @@ task Sort {
         Boolean chrThenSizeD = false
         Boolean chrThenScoreA = false
         Boolean chrThenScoreD = false
+        String outputBed = "output.sorted.bed"
+
         File? genome
         File? faidx
-        String outputBed = "output.sorted.bed"
+
+        String memory = "~{512 + ceil(size(inputBed, "M"))}M"
+        Int timeMinutes = 1 + ceil(size(inputBed, "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 
@@ -166,6 +175,8 @@ task Sort {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes
         docker: dockerImage
     }
 }
@@ -174,13 +185,15 @@ task Intersect {
     input {
         File regionsA
         File regionsB
-        # Giving a faidx file will set the sorted option.
-        File? faidx
         String outputBed = "intersect.bed"
+
+        File? faidx # Giving a faidx file will set the sorted option.
+
         String memory = "~{512 + ceil(size([regionsA, regionsB], "M"))}M"
         Int timeMinutes = 1 + ceil(size([regionsA, regionsB], "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
+
     Boolean sorted = defined(faidx)
 
     command {
@@ -205,14 +218,13 @@ task Intersect {
     }
 
     parameter_meta {
-        faidx: {description: "The fasta index (.fai) file that is used to create the genome file required for sorted output. Implies sorted option.",
-                category: "common"}
-        regionsA: {description: "Region file a to intersect", category: "required"}
-        regionsB: {description: "Region file b to intersect", category: "required"}
-        outputBed: {description: "The path to write the output to", category: "advanced"}
+        # inputs
+        regionsA: {description: "Region file a to intersect.", category: "required"}
+        regionsB: {description: "Region file b to intersect.", category: "required"}
+        outputBed: {description: "The path to write the output to.", category: "advanced"}
+        faidx: {description: "The fasta index (.fai) file that is used to create the genome file required for sorted output. Implies sorted option.", category: "common"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

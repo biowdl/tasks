@@ -55,8 +55,7 @@ task BgzipAndIndex {
         outputDir: {description: "The directory in which the output will be placed.", category: "required"}
         type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -104,11 +103,12 @@ task Fastq {
         String outputRead1
         String? outputRead2
         String? outputRead0
+        Boolean appendReadNumber = false
+        Boolean outputQuality = false
+
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
-        Boolean appendReadNumber = false
-        Boolean outputQuality = false
         Int? compressionLevel
 
         Int threads = 1
@@ -151,16 +151,16 @@ task Fastq {
         outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
         outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
         outputRead0: {description: "The location the unpaired reads should be written to (in case of paired-end sequenicng).", category: "advanced"}
-        includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`", category: "advanced"}
-        excludeFilter: {description: "Exclude reads with ONE OR MORE of these flags. Corresponds to `-F`", category: "advanced"}
-        excludeSpecificFilter: {description: "Exclude reads with ALL of these flags. Corresponds to `-G`", category: "advanced"}
-        appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`", category: "advanced"}
+        appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`.", category: "advanced"}
         outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
+        includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`.", category: "advanced"}
+        excludeFilter: {description: "Exclude reads with ONE OR MORE of these flags. Corresponds to `-F`.", category: "advanced"}
+        excludeSpecificFilter: {description: "Exclude reads with ALL of these flags. Corresponds to `-G`.", category: "advanced"}
+        compressionLevel: {description: "Set compression level when writing gz or bgzf fastq files.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -168,6 +168,7 @@ task FilterShortReadsBam {
     input {
         File bamFile
         String outputPathBam
+
         String memory = "1G"
         Int timeMinutes = 1 + ceil(size(bamFile, "G") * 8)
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
@@ -196,6 +197,7 @@ task FilterShortReadsBam {
     }
 
     parameter_meta {
+        # inputs
         bamFile: {description: "The bam file to process.", category: "required"}
         outputPathBam: {description: "The filtered bam file.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
@@ -236,15 +238,16 @@ task Flagstat {
         outputPath: {description: "The location the ouput should be written to.", category: "required"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
 task Index {
     input {
         File bamFile
+
         String? outputBamPath
+
         String memory = "2G"
         Int timeMinutes = 1 + ceil(size(bamFile, "G") * 4)
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
@@ -281,12 +284,10 @@ task Index {
     parameter_meta {
         # inputs
         bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
-        outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.",
-                        category: "common"}
+        outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.", category: "common"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -319,8 +320,7 @@ task Markdup {
         inputBam: {description: "The BAM file to be processed.", category: "required"}
         outputBamPath: {description: "The location of the output BAM file.", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -329,12 +329,13 @@ task Merge {
         Array[File]+ bamFiles
         String outputBamPath = "merged.bam"
         Boolean force = true
-        Int threads = 1
 
-        Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
+        Int threads = 1
         String memory = "4G"
+        Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
     }
+
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
 
     # Samtools uses additional threads for merge.
@@ -355,21 +356,20 @@ task Merge {
 
     runtime {
         cpu: threads
-        docker: dockerImage
         memory: memory
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
         # inputs
         bamFiles: {description: "The BAM files to merge.", category: "required"}
         outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
-        threads: {description: "Number of threads to use.", category: "common"}
         force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        threads: {description: "Number of threads to use.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
@@ -379,14 +379,15 @@ task Sort {
         String outputPath = basename(inputBam, "\.bam") + ".sorted.bam"
         Boolean sortByName = false
         Int compressionLevel = 1
-        Int threads = 1
+
         Int memoryPerThreadGb = 4
+        Int threads = 1
         Int memoryGb = 1 + threads * memoryPerThreadGb
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
+        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
     }
 
-    # Select first needed as outputPath is optional input. (bug in cromwell)
+    # Select first needed as outputPath is optional input (bug in cromwell).
     String bamIndexPath = sub(select_first([outputPath]), "\.bam$", ".bai")
 
     command {
@@ -410,10 +411,10 @@ task Sort {
     }
 
     runtime {
-        cpu: 1
+        cpu: threads
         memory: "~{memoryGb}G"
-        docker: dockerImage
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -422,14 +423,15 @@ task Sort {
         outputPath: {description: "Output directory path + output file.", category: "required"}
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
         compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
-        memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
-        memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes.", category: "advanced"}
         threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
+        memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         outputBam: {description: "Sorted BAM file."}
+        outputBamIndex: {description: "Sorted BAM file index."}
     }
 }
 
@@ -438,10 +440,13 @@ task Tabix {
         File inputFile
         String outputFilePath = "indexed.vcf.gz"
         String type = "vcf"
+
         Int timeMinutes = 1 + ceil(size(inputFile, "G") * 2)
         String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
-    # FIXME: It is better to do the indexing on VCF creation. Not in a separate task. With file localization this gets hairy fast.
+
+    # FIXME: It is better to do the indexing on VCF creation.
+    # Not in a separate task. With file localization this gets hairy fast.
     command {
         set -e
         mkdir -p "$(dirname ~{outputFilePath})"
@@ -459,27 +464,26 @@ task Tabix {
 
     runtime {
         time_minutes: timeMinutes
-       docker: dockerImage
+        docker: dockerImage
     }
 
     parameter_meta {
         # inputs
         inputFile: {description: "The file to be indexed.", category: "required"}
-        outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.",
-                        category: "common"}
+        outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.", category: "common"}
         type: {description: "The type of file (eg. vcf or bed) to be indexed.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
 task View {
     input {
         File inFile
-        File? referenceFasta
         String outputFileName = "view.bam"
         Boolean uncompressedBamOutput = false
+
+        File? referenceFasta
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
@@ -490,9 +494,10 @@ task View {
         Int timeMinutes = 1 + ceil(size(inFile, "G") * 5)
         String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
     }
+
     String outputIndexPath = basename(outputFileName) + ".bai"
 
-    # Always output to bam and output header
+    # Always output to bam and output header.
     command {
         set -e
         mkdir -p "$(dirname ~{outputFileName})"
@@ -524,9 +529,9 @@ task View {
     parameter_meta {
         # inputs
         inFile: {description: "A BAM, SAM or CRAM file.", category: "required"}
-        referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
         outputFileName: {description: "The location the output BAM file should be written.", category: "common"}
         uncompressedBamOutput: {description: "Equivalent to samtools view's `-u` flag.", category: "advanced"}
+        referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
         includeFilter: {description: "Equivalent to samtools view's `-f` option.", category: "advanced"}
         excludeFilter: {description: "Equivalent to samtools view's `-F` option.", category: "advanced"}
         excludeSpecificFilter: {description: "Equivalent to samtools view's `-G` option.", category: "advanced"}
@@ -534,7 +539,6 @@ task View {
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }

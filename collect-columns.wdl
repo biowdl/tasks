@@ -24,12 +24,13 @@ task CollectColumns {
     input {
         Array[File]+ inputTables
         String outputPath
+        Boolean header = false
+        Boolean sumOnDuplicateId = false
+
         Int? featureColumn
         Int? valueColumn
         Int? separator
         Array[String]? sampleNames
-        Boolean header = false
-        Boolean sumOnDuplicateId = false
         Array[String]? additionalAttributes
         File? referenceGtf
         String? featureAttribute
@@ -67,20 +68,20 @@ task CollectColumns {
     }
 
     parameter_meta {
+        # inputs
         inputTables: {description: "The tables from which columns should be taken.", category: "required"}
         outputPath: {description: "The path to which the output should be written.", category: "required"}
+        header: {description: "Equivalent to the -H flag of collect-columns.", category: "advanced"}
+        sumOnDuplicateId: {description: "Equivalent to the -S flag of collect-columns.", category: "advanced"}
         featureColumn: {description: "Equivalent to the -f option of collect-columns.", category: "advanced"}
         valueColumn: {description: "Equivalent to the -c option of collect-columns.", category: "advanced"}
         separator: {description: "Equivalent to the -s option of collect-columns.", category: "advanced"}
         sampleNames: {description: "Equivalent to the -n option of collect-columns.", category: "advanced"}
-        header: {description: "Equivalent to the -H flag of collect-columns.", category: "advanced"}
-        sumOnDuplicateId: {description: "Equivalent to the -S flag of collect-columns.", category: "advanced"}
         additionalAttributes: {description: "Equivalent to the -a option of collect-columns.", category: "advanced"}
         referenceGtf: {description: "Equivalent to the -g option of collect-columns.", category: "advanced"}
         featureAttribute: {description: "Equivalent to the -F option of collect-columns.", category: "advanced"}
-        memoryGb: {description: "The maximum amount of memory the job will need in GB", category: "advanced"}
+        memoryGb: {description: "The maximum amount of memory the job will need in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
