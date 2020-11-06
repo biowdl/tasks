@@ -24,18 +24,19 @@ import "../common.wdl" as common
 
 task SampleConfig {
     input {
-        File? toolJar
-        String? preCommand
         Array[File]+ inputFiles
         String keyFilePath
+
+        File? toolJar
+        String? preCommand
         String? sample
         String? library
         String? readgroup
         String? jsonOutputPath
         String? tsvOutputPath
 
-        String memory = "17G"
         String javaXmx = "16G"
+        String memory = "17G"
     }
 
     String toolCommand = if defined(toolJar)
@@ -69,13 +70,14 @@ task SampleConfig {
 
 task SampleConfigCromwellArrays {
     input {
-        File? toolJar
-        String? preCommand
         Array[File]+ inputFiles
         String outputPath
 
-        String memory = "5G"
+        File? toolJar
+        String? preCommand
+
         String javaXmx = "4G"
+        String memory = "5G"
     }
 
     String toolCommand = if defined(toolJar)
@@ -102,16 +104,17 @@ task SampleConfigCromwellArrays {
 
 task CaseControl {
     input {
-        File? toolJar
-        String? preCommand
         Array[File]+ inputFiles
         Array[File]+ inputIndexFiles
         Array[File]+ sampleConfigs
         String outputPath
         String controlTag = "control"
 
-        String memory = "5G"
+        File? toolJar
+        String? preCommand
+
         String javaXmx = "4G"
+        String memory = "5G"
     }
 
     String toolCommand = if defined(toolJar)

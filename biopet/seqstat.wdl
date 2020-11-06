@@ -24,16 +24,17 @@ import "../common.wdl" as common
 
 task Generate {
     input {
-        String? preCommand
-        File? toolJar
         FastqPair fastq
         String outputFile
         String sample
         String library
         String readgroup
 
-        String memory = "5G"
+        String? preCommand
+        File? toolJar
+
         String javaXmx = "4G"
+        String memory = "5G"
     }
 
     String toolCommand = if defined(toolJar)

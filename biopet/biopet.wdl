@@ -24,15 +24,16 @@ import "../common.wdl"
 
 task BaseCounter {
     input {
-        String? preCommand
-        File? toolJar
         IndexedBamFile bam
         File refFlat
         String outputDir
         String prefix
 
-        String memory = "5G"
+        String? preCommand
+        File? toolJar
+
         String javaXmx = "4G"
+        String memory = "5G"
     }
 
     String toolCommand = if defined(toolJar)
@@ -98,16 +99,17 @@ task ExtractAdaptersFastqc {
         String outputDir
         String adapterOutputFilePath = outputDir + "/adapter.list"
         String contamsOutputFilePath = outputDir + "/contaminations.list"
+
         Boolean? skipContams
         File? knownContamFile
         File? knownAdapterFile
         Float? adapterCutoff
         Boolean? outputAsFasta
 
-        String memory = "9G"
         String javaXmx = "8G"
-        String dockerImage = "quay.io/biocontainers/biopet-extractadaptersfastqc:0.2--1"
+        String memory = "9G"
         Int timeMinutes = 5
+        String dockerImage = "quay.io/biocontainers/biopet-extractadaptersfastqc:0.2--1"
     }
 
     command {
@@ -133,20 +135,21 @@ task ExtractAdaptersFastqc {
 
     runtime {
         memory: memory
-        docker: dockerImage
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 }
 
 task FastqSplitter {
     input {
-        String? preCommand
         File inputFastq
         Array[String]+ outputPaths
+
+        String? preCommand
         File? toolJar
 
-        String memory = "5G"
         String javaXmx = "4G"
+        String memory = "5G"
         String dockerImage = "quay.io/biocontainers/biopet-fastqsplitter:0.1--2"
     }
 
@@ -170,15 +173,16 @@ task FastqSplitter {
 
 task FastqSync {
     input {
-        String? preCommand
         FastqPair refFastq
         FastqPair inputFastq
         String out1path
         String out2path
+
+        String? preCommand
         File? toolJar
 
-        String memory = "5G"
         String javaXmx = "4G"
+        String memory = "5G"
     }
 
     String toolCommand = if defined(toolJar)
@@ -200,8 +204,8 @@ task FastqSync {
 
     output {
         FastqPair out1 = object {
-          R1: out1path,
-          R2: out2path
+            R1: out1path,
+            R2: out2path
         }
     }
     
@@ -215,14 +219,15 @@ task ScatterRegions {
         File referenceFasta
         File referenceFastaDict
         Int scatterSizeMillions = 1000
+        Boolean notSplitContigs = false
+
         Int? scatterSize
         File? regions
-        Boolean notSplitContigs = false
         File? bamFile
         File? bamIndex
 
-        String memory = "1G"
         String javaXmx = "500M"
+        String memory = "1G"
         Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/biopet-scatterregions:0.2--0"
     }
@@ -264,41 +269,40 @@ task ScatterRegions {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         referenceFasta: {description: "The reference fasta file.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
-                             category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         scatterSizeMillions: {description: "Over how many million base pairs should be scattered.", category: "common"}
+        notSplitContigs: {description: "Equivalent to biopet scatterregions' `--notSplitContigs` flag.", category: "advanced"}
         scatterSize: {description: "Overrides scatterSizeMillions with a smaller value if set.", category: "advanced"}
         regions: {description: "The regions to be scattered.", category: "advanced"}
-        notSplitContigs: {description: "Equivalent to biopet scatterregions' `--notSplitContigs` flag.",
-                          category: "advanced"}
-        bamFile: {description: "Equivalent to biopet scatterregions' `--bamfile` option.",
-                  category: "advanced"}
+        bamFile: {description: "Equivalent to biopet scatterregions' `--bamfile` option.", category: "advanced"}
         bamIndex: {description: "The index for the bamfile given through bamFile.", category: "advanced"}
-
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        scatters: {description: "Smaller scatter regions of equal size."}
     }
 }
 
 task ValidateAnnotation {
     input {
-        File? refRefflat
-        File? gtfFile
         Reference reference
 
-        String memory = "4G"
+        File? refRefflat
+        File? gtfFile
+
         String javaXmx = "3G"
+        String memory = "4G"
         String dockerImage = "quay.io/biocontainers/biopet-validateannotation:0.1--0"
     }
 
@@ -323,8 +327,9 @@ task ValidateFastq {
     input {
         File read1
         File? read2
-        String memory = "4G"
+
         String javaXmx = "3G"
+        String memory = "4G"
         String dockerImage = "quay.io/biocontainers/biopet-validatefastq:0.1.1--1"
     }
 
@@ -348,8 +353,9 @@ task ValidateVcf {
     input {
         IndexedVcfFile vcf
         Reference reference
-        String memory = "4G"
+
         String javaXmx = "3G"
+        String memory = "4G"
         String dockerImage = "quay.io/biocontainers/biopet-validatevcf:0.1--0"
     }
 
@@ -374,12 +380,6 @@ task VcfStats {
         IndexedVcfFile vcf
         Reference reference
         String outputDir
-        File? intervals
-        Array[String]+? infoTags
-        Array[String]+? genotypeTags
-        Int? sampleToSampleMinDepth
-        Int? binSize
-        Int? maxContigsInSingleJob
         Boolean writeBinStats = false
         Int localThreads = 1
         Boolean notWriteContigStats = false
@@ -387,13 +387,20 @@ task VcfStats {
         Boolean skipGenotype = false
         Boolean skipSampleDistributions = false
         Boolean skipSampleCompare = false
+
+        File? intervals
+        Array[String]+? infoTags
+        Array[String]+? genotypeTags
+        Int? sampleToSampleMinDepth
+        Int? binSize
+        Int? maxContigsInSingleJob
         String? sparkMaster
         Int? sparkExecutorMemory
         Array[String]+? sparkConfigValues
 
-        String dockerImage = "quay.io/biocontainers/biopet-vcfstats:1.2--0"
-        String memory = "5G"
         String javaXmx = "4G"
+        String memory = "5G"
+        String dockerImage = "quay.io/biocontainers/biopet-vcfstats:1.2--0"
     }
 
     command {

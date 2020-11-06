@@ -24,18 +24,19 @@ import "../common.wdl" as common
 
 task Generate {
     input {
-        String? preCommand
-        File? toolJar
         IndexedBamFile bam
-        File? bedFile
         Boolean scatterMode = false
         Boolean onlyUnmapped = false
         Boolean tsvOutputs = false
         String outputDir
+
+        String? preCommand
+        File? toolJar
+        File? bedFile
         Reference? reference
 
-        String memory = "9G"
         String javaXmx = "8G"
+        String memory = "9G"
     }
 
     File referenceFasta = if defined(reference) then select_first([reference]).fasta else ""

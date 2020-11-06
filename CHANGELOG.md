@@ -11,6 +11,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Complete `parameter_meta` for tasks missing the outputs.
 + Samtools: `Sort` task now has `threads` in runtime instead of `1`.
 + Picard: Add parameter_meta to `SortSam`.
 + pbmm2: Add parameter_meta for `sample`.
