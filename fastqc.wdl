@@ -127,11 +127,11 @@ task Fastqc {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        htmlReport: {description: ""}
-        reportZip: {description: ""}
-        summary: {description: ""}
-        rawReport: {description: ""}
-        images: {description: ""}
+        htmlReport: {description: "HTML report file."}
+        reportZip: {description: "Source data file."}
+        summary: {description: "Summary file."}
+        rawReport: {description: "Raw report file."}
+        images: {description: "Images in report file."}
     }
 
     meta {
@@ -176,8 +176,8 @@ task GetConfiguration {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        adapterList: {description: ""}
-        contaminantList: {description: ""}
-        limits: {description: ""}
+        adapterList: {description: "List of adapters found."}
+        contaminantList: {description: "List of contaminants found."}
+        limits: {description: "Limits file."}
     }
 }

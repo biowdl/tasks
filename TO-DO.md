@@ -7,6 +7,8 @@
 * seqstat.wdl: `Generate`
 * common.wdl: `AppendToStringArray`, `CheckFileMD5`, `ConcatenateTextFiles`,
               `Copy`, `CreateLink`, `MapMd5`, `StringArrayMd5`
+* fastqsplitter.wdl: `Fastqsplitter`
+* flash.wdl: `Flash`
 
 ## Imports other tasks:
 * bamstats.wdl
