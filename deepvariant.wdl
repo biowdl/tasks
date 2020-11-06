@@ -90,5 +90,12 @@ task RunDeepVariant {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVCF: {description: "Output VCF file."}
+        outputVCFIndex: {description: "Index of output VCF file."}
+        outputVCFStatsReport: {description: "Statistics file."}
+        outputGVCF: {description: "GVCF version of VCF file(s)."}
+        outputGVCFIndex: {description: "Index of GVCF file(s)."}
     }
 }
