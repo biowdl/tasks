@@ -138,6 +138,29 @@ task ExtractAdaptersFastqc {
         time_minutes: timeMinutes
         docker: dockerImage
     }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "Input fastq file.", category: "required"}
+        outputDir: {description: "The path to which the output should be written.", category: "required"}
+        adapterOutputFilePath: {description: "Output file for adapters, if not supplied output will go to stdout.", category: "common"}
+        contamsOutputFilePath: {description: "Output file for contaminations, if not supplied output will go to stdout.", category: "common"}
+        skipContams: {description: "If this is set only the adapters block is used, other wise contaminations is also used.", category: "advanced"}
+        knownContamFile: {description: "This file should contain the known contaminations from fastqc.", category: ""advanced}
+        knownAdapterFile: {description: "This file should contain the known adapters from fastqc.", category: "advanced"}
+        adapterCutoff: {description: "The fraction of the adapters in a read should be above this fraction, default is 0.001.", category: "advanced"}
+        outputAsFasta: {description: "Output in fasta format, default only sequences.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        adapterOutputFile: {description: "Output file with adapters."}
+        contamsOutputFile: {description: "Output file with contaminations."}
+        adapterList: {description: "List of adapters."}
+        contamsList: {description: "List of contaminations."}
+    }
 }
 
 task FastqSplitter {

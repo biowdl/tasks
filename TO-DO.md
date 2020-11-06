@@ -1,10 +1,4 @@
 #TO DO
-## Requires parameter_meta:
-* biopet.wdl: `ExtractAdaptersFastqc`
-
-## Duplicate tasks:
-* 
-
 ## Out of date with new cluster & parameter_meta:
 * bamstats.wdl: `Generate`
 * biopet.wdl: `BaseCounter`, `FastqSplitter`, `FastqSync`,
@@ -20,3 +14,9 @@
 * sampleconfig.wdl
 * seqstat.wdl
 * clever.wdl
+
+## Requires parameter_meta:
+* 
+
+## Duplicate tasks:
+* 
