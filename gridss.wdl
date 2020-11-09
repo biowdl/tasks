@@ -83,9 +83,9 @@ task GRIDSS {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        vcf: {description: ""}
-        vcfIndex: {description: ""}
-        assembly: {description: ""}
-        assemblyIndex: {description: ""}
+        vcf: {description: "VCF file including variant allele fractions."}
+        vcfIndex: {description: "Index of output VCF."}
+        assembly: {description: "The GRIDSS assembly BAM."}
+        assemblyIndex: {description: "Index of output BAM file."}
     }
 }

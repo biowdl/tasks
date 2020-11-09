@@ -79,6 +79,10 @@ task Germline {
         memoryGb: {description: "The memory required to run the manta", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        mantaVCF: {description: ""}
+        mantaVCFindex: {description: ""}
     }
 }
 
@@ -155,5 +159,8 @@ task Somatic {
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        
     }
 }
