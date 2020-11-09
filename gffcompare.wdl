@@ -142,6 +142,15 @@ task GffCompare {
         namePrefix: {description: "Equivalent to gffcompare's `-p` option.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        annotated: {description: ""}
+        loci: {description: ""}
+        stats: {description: ""}
+        tracking: {description: ""}
+        allFiles: {description: ""}
+        redundant: {description: ""}
+        missedIntrons: {description: ""}
     }
 
     meta {
