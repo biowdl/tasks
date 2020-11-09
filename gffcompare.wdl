@@ -144,13 +144,13 @@ task GffCompare {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        annotated: {description: ""}
+        annotated: {description: "Annotated GTF file."}
         loci: {description: ""}
-        stats: {description: ""}
-        tracking: {description: ""}
-        allFiles: {description: ""}
-        redundant: {description: ""}
-        missedIntrons: {description: ""}
+        stats: {description: "Various statistics related to the “accuracy” (or a measure of agreement) of the input transcripts when compared to reference annotation data."}
+        tracking: {description: "File matching transcripts up between samples."}
+        allFiles: {description: "A collection of all outputs files."}
+        redundant: {description: "File containing "duplicate"/"redundant" transcripts."}
+        missedIntrons: {description: "File denoting missed introns."}
     }
 
     meta {
