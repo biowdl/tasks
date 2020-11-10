@@ -28,11 +28,11 @@ task RunDeepVariant {
         File inputBamIndex
         String modelType
         String outputVcf
-
         String? postprocessVariantsExtraArgs
         File? customizedModel
         Int? numShards
         String? outputGVcf
+        String? outputGVcfIndex
         File? regions
         String? sampleName
         Boolean? VCFStatsReport = true
@@ -44,6 +44,7 @@ task RunDeepVariant {
 
     command {
         set -e
+
         /opt/deepvariant/bin/run_deepvariant \
         --ref ~{referenceFasta} \
         --reads ~{inputBam} \
@@ -66,10 +67,10 @@ task RunDeepVariant {
 
     output {
         File outputVCF = outputVcf
-        File outputVCFIndex = outputVCF + ".tbi"
+        File outputVCFIndex = outputVcf + ".tbi"
         Array[File] outputVCFStatsReport = glob("*.visual_report.html")
         File? outputGVCF = outputGVcf
-        File? outputGVCFIndex = outputGVcf + ".tbi"
+        File? outputGVCFIndex = outputGVcfIndex
     }
 
     parameter_meta {
@@ -84,6 +85,7 @@ task RunDeepVariant {
         customizedModel: {description: "A path to a model checkpoint to load for the `call_variants` step. If not set, the default for each --model_type will be used.", category: "advanced"}
         numShards: {description: "Number of shards for make_examples step.", category: "common"}
         outputGVcf: {description: "Path where we should write gVCF file.", category: "common"}
+        outputGVcfIndex: {description: "Path to where the gVCF index file will be written. This is needed as a workaround, set it to outputGVcf+.tbi.", category: "common"}
         regions: {description: "List of regions we want to process, in BED/BEDPE format.", category: "advanced"}
         sampleName: {description: "Sample name to use instead of the sample name from the input reads BAM (SM tag in the header).", category: "common"}
         VCFStatsReport: {description: "Output a visual report (HTML) of statistics about the output VCF.", category: "common"}
