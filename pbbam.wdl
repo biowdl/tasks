@@ -66,5 +66,9 @@ task Index {
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indexedBam: {description: "The original input BAM file."}
+        index: {description: "The index of the input BAM file."}
     }
 }

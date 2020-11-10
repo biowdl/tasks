@@ -18,6 +18,8 @@ Some tasks are importing other WDL files.
 * fastqsplitter.wdl: `Fastqsplitter`
 * flash.wdl: `Flash`
 * macs2.wdl: `PeakCalling`
+* ncbi.wdl: `GenomeDownload`, `DownloadNtFasta`, `DownloadAccessionToTaxId`
+* 
 
 ## Imports other tasks:
 * bamstats.wdl

@@ -43,7 +43,7 @@ task mergePacBio {
     }
 
     output {
-        File MergedReport = mergedReport
+        File outputMergedReport = mergedReport
     }
 
     parameter_meta {
@@ -52,6 +52,9 @@ task mergePacBio {
         mergedReport: {description: "The location the merged PacBio report file should be written to.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputMergedReport: {description: "The PacBio reports merged into one."}
     }
 }
 
@@ -85,5 +88,8 @@ task ccsChunks {
         chunkCount: {description: "The number of chunks to create.", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        chunks: {description: "The chunks created based on `chunkCount`."}
     }
 }

@@ -61,6 +61,9 @@ task BedToIntervalList {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        intervalList: {description: "Picard Interval List from a BED file."}
     }
 }
 
@@ -125,6 +128,9 @@ task CollectHsMetrics {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        HsMetrics: {description: "Hybrid-selection (HS) metrics for the input BAM file."}
     }
 }
 
@@ -240,6 +246,9 @@ task CollectMultipleMetrics {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        alignmentSummary: {description: ""}
     }
 }
 

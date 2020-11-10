@@ -179,7 +179,7 @@ task MultiQC {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        multiqcReport: {description: ""}
-        multiqcDataDirZip: {description: ""}
+        multiqcReport: {description: "Results from bioinformatics analyses across many samples in a single report."}
+        multiqcDataDirZip: {description: "The parsed data directory compressed with zip."}
     }
 }
