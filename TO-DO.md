@@ -19,7 +19,7 @@ Some tasks are importing other WDL files.
 * flash.wdl: `Flash`
 * macs2.wdl: `PeakCalling`
 * ncbi.wdl: `GenomeDownload`, `DownloadNtFasta`, `DownloadAccessionToTaxId`
-* 
+* seqtk.wdl: `Sample`
 
 ## Imports other tasks:
 * bamstats.wdl

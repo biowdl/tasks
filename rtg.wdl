@@ -52,7 +52,7 @@ task Format {
 
     parameter_meta {
         # inputs
-        inputFiles: {description: "input sequence files. May be specified 1 or more times.", category: "required"}
+        inputFiles: {description: "Input sequence files. May be specified 1 or more times.", category: "required"}
         format: {description: "Format of input. Allowed values are [fasta, fastq, fastq-interleaved, sam-se, sam-pe].", category: "advanced"}
         outputPath: {description: "Where the output should be placed.", category: "advanced"}
         rtgMem: {description: "The amount of memory rtg will allocate to the JVM.", category: "advanced"}
@@ -61,7 +61,7 @@ task Format {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        sdf: {description: ""}
+        sdf: {description: "RTGSequence Data File (SDF) format version of the input file(s)."}
     }
 }
 
@@ -166,6 +166,18 @@ task VcfEval {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        
+        falseNegativesVcf: {description: "Variants from thebaselineVCF which were not correctly called."}
+        falseNegativesVcfIndex: {description: "Index of the output VCF file `falseNegativesVcf`."}
+        falsePositivesVcf: {description: "Variants from thecallsVCF which do not agree with baseline variants."}
+        falsePositivesVcfIndex: {description: "Index of the output VCF file `falsePositivesVcf`."}
+        summary: {description: "Summary statistic file."}
+        truePositivesBaselineVcf: {description: "Variants from thebaselineVCF which agree with variants in thecalls VCF."}
+        truePositivesBaselineVcfIndex: {description: "Index of the output VCF file `truePositivesBaselineVcf`."}
+        truePositivesVcf: {description: "Variants from thecallsVCF which agree with variants in the baseline VCF."}
+        truePositivesVcfIndex: {description: "Index of the output VCF file `truePositivesVcf`."}
+        nonSnpRoc: {description: "ROC data derived from those variants which were not represented asSNPs."}
+        phasing: {description: "Phasing file."}
+        weightedRoc: {description: "ROC data derived from all analyzed call variants, regardless of their representation."}
+        allStats: {description: "All output files combined in a array."}
     }
 }

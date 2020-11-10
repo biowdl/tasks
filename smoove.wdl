@@ -65,5 +65,8 @@ task Call {
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum duration (in minutes) the tool is allowed to run.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        smooveVcf: {description: "Calls and genotyping of structural variants in VCF file."
     }
 }
