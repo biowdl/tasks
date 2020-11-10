@@ -249,6 +249,24 @@ task CollectMultipleMetrics {
 
         # outputs
         alignmentSummary: {description: ""}
+        baitBiasDetail: {description: ""}
+        baitBiasSummary: {description: ""}
+        baseDistributionByCycle: {description: ""}
+        baseDistributionByCyclePdf: {description: ""}
+        errorSummary: {description: ""}
+        gcBiasDetail: {description: ""}
+        gcBiasPdf: {description: ""}
+        gcBiasSummary: {description: ""}
+        insertSizeHistogramPdf: {description: ""}
+        insertSize: {description: ""}
+        preAdapterDetail: {description: ""}
+        preAdapterSummary: {description: ""}
+        qualityByCycle: {description: ""}
+        qualityByCyclePdf: {description: ""}
+        qualityDistribution: {description: ""}
+        qualityDistributionPdf: {description: ""}
+        qualityYield: {description: ""}
+        allStats: {description: ""}
     }
 }
 
@@ -301,6 +319,10 @@ task CollectRnaSeqMetrics {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        metrics: {description: ""}
+        chart: {description: ""}
     }
 }
 
@@ -361,6 +383,11 @@ task CollectTargetedPcrMetrics {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        perTargetCoverage: {description: ""}
+        perBaseCoverage: {description: ""}
+        metrics: {description: ""}
     }
 }
 
@@ -410,6 +437,10 @@ task CollectVariantCallingMetrics {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        details: {description: ""}
+        summary: {description: ""}
     }
 }
 
