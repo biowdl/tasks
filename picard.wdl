@@ -541,9 +541,9 @@ task GatherBamFiles {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputBam: {description: ""}
-        outputBamIndex: {description: ""}
-        outputBamMd5: {description: ""}
+        outputBam: {description: "Concatenated BAM files."}
+        outputBamIndex: {description: "Index of the output `outputBam`."}
+        outputBamMd5: {description: "MD5 of the output `outputBam`."}
     }
 }
 
@@ -589,7 +589,7 @@ task GatherVcfs {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputVcf: {description: ""}
+        outputVcf: {description: "Multiple VCF files gathered into one file."}
     }
 }
 
