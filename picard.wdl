@@ -800,6 +800,7 @@ task SamToFastq {
         read1: {description: "Fastq file containing reads from the first pair."}
         read2: {description: "Fastq file containing reads from the second pair."}
         unpairedRead: {description: "Fastq file containing unpaired reads."}
+    }
 
     meta {
         WDL_AID: {
