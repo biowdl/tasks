@@ -67,6 +67,6 @@ task Call {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        smooveVcf: {description: "Calls and genotyping of structural variants in VCF file."
+        smooveVcf: {description: "Calls and genotyping of structural variants in VCF file."}
     }
 }
