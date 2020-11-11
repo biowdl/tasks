@@ -321,8 +321,8 @@ task CollectRnaSeqMetrics {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        metrics: {description: ""}
-        chart: {description: ""}
+        metrics: {description: "Metrics describing the distribution of bases within the transcripts."}
+        chart: {description: "Plot of normalized position vs. coverage."}
     }
 }
 
@@ -385,9 +385,9 @@ task CollectTargetedPcrMetrics {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        perTargetCoverage: {description: ""}
-        perBaseCoverage: {description: ""}
-        metrics: {description: ""}
+        perTargetCoverage: {description: "Per target coverage information."}
+        perBaseCoverage: {description: "Per base coverage information to."}
+        metrics: {description: "File containing metrics."}
     }
 }
 
@@ -539,6 +539,11 @@ task GatherBamFiles {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: ""}
+        outputBamIndex: {description: ""}
+        outputBamMd5: {description: ""}
     }
 }
 
@@ -582,6 +587,9 @@ task GatherVcfs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: ""}
     }
 }
 
@@ -666,6 +674,12 @@ task MarkDuplicates {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: ""}
+        outputBamIndex: {description: ""}
+        outputBamMd5: {description: ""}
+        metricsFile: {description: ""}
     }
 }
 
@@ -725,6 +739,10 @@ task MergeVCFs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Multiple variant files combined into a single variant file."}
+        outputVcfIndex: {description: "Index of `outputVcf`."}
     }
 }
 
@@ -767,6 +785,21 @@ task SamToFastq {
         time_minutes: timeMinutes
         docker: dockerImage
     }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "Input BAM file to extract reads from.", category: "required"}
+        inputBamIndex: {description: "Input BAM index file.", category: "required"}
+        paired: {description: "Set to false when input data is single-end.", category: "common"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        read1: {description: "Fastq file containing reads from the first pair."}
+        read2: {description: "Fastq file containing reads from the second pair."}
+        unpairedRead: {description: "Fastq file containing unpaired reads."}
 
     meta {
         WDL_AID: {
@@ -864,6 +897,10 @@ task SortSam {
         XmxGb: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: "Sorted BAM file."}
+        outputBamIndex: {description: "Index of sorted BAM file."}
     }
 }
 
@@ -911,6 +948,10 @@ task SortVcf {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Sorted VCF file(s)."}
+        outputVcfIndex: {description: "Index(es) of sort(ed) VCF file(s)."}
     }
 }
 
@@ -955,5 +996,8 @@ task RenameSample {
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        renamedVcf: {description: "New VCF with renamed sample."}
     }
 }

@@ -23,6 +23,7 @@ Some tasks are importing other WDL files.
 * spades.wdl: `Spades`
 * unicycler.wdl: `Unicycler`
 * wisestork.wdl: `Count`, `GcCorrect`, `Newref`, `Zscore`
+* picard.wdl: `ScatterIntervalList`
 
 ## Imports other tasks:
 * bamstats.wdl
