@@ -66,6 +66,10 @@ task Extract {
         threePrime: {description: "Whether or not the UMI's are at the reads' 3' end. If false the UMIs are extracted from the 5' end.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        extractedRead1: {description: "First read with UMI extracted to read name."}
+        extractedRead2: {description: "Second read with UMI extracted to read name."}
     }
 }
 
@@ -124,5 +128,12 @@ task Dedup {
         memory: {description: "The amount of memory required for the task.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        deduppedBam: {description: "Deduplicated BAM file."}
+        deduppedBamIndex: {description: "Index of the deduplicated BAM file."}
+        editDistance: {description: "Report of the (binned) average edit distance between the UMIs at each position."}
+        umiStats: {description: "UMI-level summary statistics."}
+        positionStats: {description: "The counts for unique combinations of UMI and position."}
     }
 }

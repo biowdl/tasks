@@ -20,6 +20,9 @@ Some tasks are importing other WDL files.
 * macs2.wdl: `PeakCalling`
 * ncbi.wdl: `GenomeDownload`, `DownloadNtFasta`, `DownloadAccessionToTaxId`
 * seqtk.wdl: `Sample`
+* spades.wdl: `Spades`
+* unicycler.wdl: `Unicycler`
+
 
 ## Imports other tasks:
 * bamstats.wdl
@@ -27,9 +30,7 @@ Some tasks are importing other WDL files.
 * sampleconfig.wdl
 * seqstat.wdl
 * clever.wdl
+* strelka.wdl
 
-## Requires parameter_meta:
-* 
-
-## Duplicate tasks:
-* 
+## Requires input from others:
+* somaticseq.wdl
