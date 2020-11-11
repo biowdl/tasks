@@ -56,6 +56,10 @@ task BgzipAndIndex {
         type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        compressed: {description: ""}
+        index: {description: ""}
     }
 }
 
@@ -161,6 +165,11 @@ task Fastq {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        read1: {description: ""}
+        read2: {description: ""}
+        read0: {description: ""}
     }
 }
 
@@ -203,6 +212,10 @@ task FilterShortReadsBam {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        filteredBam: {description: ""}
+        filteredBamIndex: {description: ""}
     }
 }
 
@@ -239,6 +252,9 @@ task Flagstat {
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        flagstat: {description: ""}
     }
 }
 
@@ -288,6 +304,10 @@ task Index {
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indexedBam: {description: ""}
+        index: {description: ""}
     }
 }
 
@@ -321,6 +341,9 @@ task Markdup {
         outputBamPath: {description: "The location of the output BAM file.", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: ""}
     }
 }
 
@@ -370,6 +393,10 @@ task Merge {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: ""}
+        outputBamIndex: {description: ""}
     }
 }
 
@@ -474,6 +501,10 @@ task Tabix {
         type: {description: "The type of file (eg. vcf or bed) to be indexed.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indexedFile: {description: ""}
+        index: {description: ""}
     }
 }
 
@@ -540,5 +571,9 @@ task View {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: ""}
+        outputBamIndex: {description: ""}
     }
 }
