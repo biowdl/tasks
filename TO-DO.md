@@ -22,7 +22,7 @@ Some tasks are importing other WDL files.
 * seqtk.wdl: `Sample`
 * spades.wdl: `Spades`
 * unicycler.wdl: `Unicycler`
-
+* wisestork.wdl: `Count`, `GcCorrect`, `Newref`, `Zscore`
 
 ## Imports other tasks:
 * bamstats.wdl

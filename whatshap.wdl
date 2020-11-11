@@ -92,6 +92,10 @@ task Phase {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        phasedVCF: {description: "VCF file containing phased variants."}
+        phasedVCFIndex: {description: "Index of phased VCF file."}
     }
 }
 
@@ -144,6 +148,11 @@ task Stats {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        phasedGTF: {description: "Phasing statistics for a single VCF file."}
+        phasedTSV: {description: "Statistics in a tab-separated value format."}
+        phasedBlockList: {description: "List of the total number of phase sets/blocks."}
     }
 }
 
@@ -204,5 +213,9 @@ task Haplotag {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        bam: {description: "BAM file containing tagged reads for haplotype."}
+        bamIndex: {description: "Index of the tagged BAM file."}
     }
 }
