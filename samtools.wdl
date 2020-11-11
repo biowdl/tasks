@@ -58,8 +58,8 @@ task BgzipAndIndex {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        compressed: {description: ""}
-        index: {description: ""}
+        compressed: {description: "Compressed input file."}
+        index: {description: "Index of the compressed input file."}
     }
 }
 
@@ -167,9 +167,9 @@ task Fastq {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        read1: {description: ""}
-        read2: {description: ""}
-        read0: {description: ""}
+        read1: {description: "Reads with the READ1 FLAG set."}
+        read2: {description: "Reads with the READ2 FLAG set."}
+        read0: {description: "Reads with either READ1 FLAG or READ2 flag set."}
     }
 }
 
@@ -214,8 +214,8 @@ task FilterShortReadsBam {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        filteredBam: {description: ""}
-        filteredBamIndex: {description: ""}
+        filteredBam: {description: "BAM file filtered for short reads."}
+        filteredBamIndex: {description: "Index of filtered BAM file."}
     }
 }
 
@@ -254,7 +254,7 @@ task Flagstat {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        flagstat: {description: ""}
+        flagstat: {description: "The number of alignments for each FLAG type."}
     }
 }
 
@@ -306,8 +306,8 @@ task Index {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        indexedBam: {description: ""}
-        index: {description: ""}
+        indexedBam: {description: "BAM file that was indexed."}
+        index: {description: "Index of the input BAM file."}
     }
 }
 
@@ -343,7 +343,7 @@ task Markdup {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputBam: {description: ""}
+        outputBam: {description: "BAM file with duplicate alignments marked."}
     }
 }
 
@@ -395,8 +395,8 @@ task Merge {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputBam: {description: ""}
-        outputBamIndex: {description: ""}
+        outputBam: {description: "Multiple BAM files merged into one."}
+        outputBamIndex: {description: "Index of the merged BAM file."}
     }
 }
 
@@ -503,8 +503,8 @@ task Tabix {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        indexedFile: {description: ""}
-        index: {description: ""}
+        indexedFile: {description: "Indexed input file."}
+        index: {description: "Index of the input file."}
     }
 }
 
@@ -573,7 +573,7 @@ task View {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputBam: {description: ""}
-        outputBamIndex: {description: ""}
+        outputBam: {description: "Processed input file."}
+        outputBamIndex: {description: "Index of the processed input file."}
     }
 }
