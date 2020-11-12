@@ -235,5 +235,19 @@ task Cutadapt {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        cutRead1: {description: "Trimmed read one."}
+        report: {description: "Per-adapter statistics file."}
+        cutRead2: {description: "Trimmed read two in pair."}
+        tooLongOutput: {description: "Reads that are too long according to -M."}
+        tooShortOutput: {description: "Reads that are too short according to -m."}
+        untrimmedOutput: {description: "All reads without adapters (instead of the regular output file)."}
+        tooLongPairedOutput: {description: "Second reads in a pair."}
+        tooShortPairedOutput: {description: "Second reads in a pair."}
+        untrimmedPairedOutput: {description: "The second reads in a pair that were not trimmed."}
+        infoFile: {description: "Detailed information about where adapters were found in each read."}
+        restFile: {description: "The rest file."}
+        wildcardFile: {description: "The wildcard file."}
     }
 }

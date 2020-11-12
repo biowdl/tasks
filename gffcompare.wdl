@@ -142,6 +142,15 @@ task GffCompare {
         namePrefix: {description: "Equivalent to gffcompare's `-p` option.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        annotated: {description: "Annotated GTF file."}
+        loci: {description: "File describing the processed loci."}
+        stats: {description: "Various statistics related to the “accuracy” (or a measure of agreement) of the input transcripts when compared to reference annotation data."}
+        tracking: {description: "File matching up transcripts between samples."}
+        allFiles: {description: "A collection of all output files."}
+        redundant: {description: "File containing duplicate/redundant transcripts."}
+        missedIntrons: {description: "File denoting missed introns."}
     }
 
     meta {

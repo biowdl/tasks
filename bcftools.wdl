@@ -118,6 +118,10 @@ task Annotate {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Annotated VCF file."}
+        outputVcfIndex: {description: "Index of the annotated VCF file."}
     }
 }
 
@@ -165,6 +169,10 @@ task Sort {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Sorted VCF file."}
+        outputVcfIndex: {description: "Index of sorted VCF file."}
     }
 }
 
@@ -272,6 +280,9 @@ task Stats {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        stats: {description: "Text file stats which is suitable for machine processing and can be plotted using plot-vcfstats."}
     }
 }
 
@@ -316,5 +327,9 @@ task View {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "VCF file."}
+        outputVcfIndex: {description: "Index of VCF file."}
     }
 }

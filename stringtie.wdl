@@ -78,6 +78,10 @@ task Stringtie {
         memory: {description: "The amount of memory needed for this task in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        assembledTranscripts: {description: "GTF file containing the assembled transcripts."}
+        geneAbundance: {description: "Gene abundances in tab-delimited format."}
     }
 }
 
@@ -141,5 +145,8 @@ task Merge {
         memory: {description: "The amount of memory needed for this task in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        mergedGtfFile: {description: "A merged GTF file from a set of GTF files."}
     }
 }

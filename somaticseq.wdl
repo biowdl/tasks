@@ -123,6 +123,12 @@ task ParallelPaired {
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indels: {description: ""}
+        snvs: {description: ""}
+        ensembleIndels: {description: ""}
+        ensembleSNV: {description: ""}
     }
 }
 
@@ -228,6 +234,14 @@ task ParallelPairedTrain {
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        consensusIndels: {description: ""}
+        consensusSNV: {description: ""}
+        ensembleIndels: {description: ""}
+        ensembleSNV: {description: ""}
+        ensembleIndelsClassifier: {description: ""}
+        ensembleSNVClassifier: {description: ""}
     }
 }
 
@@ -311,6 +325,12 @@ task ParallelSingle {
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indels: {description: ""}
+        snvs: {description: ""}
+        ensembleIndels: {description: ""}
+        ensembleSNV: {description: ""}
     }
 }
 
@@ -393,6 +413,14 @@ task ParallelSingleTrain {
         threads: {description: "The number of threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        consensusIndels: {description: ""}
+        consensusSNV: {description: ""}
+        ensembleIndels: {description: ""}
+        ensembleSNV: {description: ""}
+        ensembleIndelsClassifier: {description: ""}
+        ensembleSNVClassifier: {description: ""}
     }
 }
 
@@ -429,5 +457,8 @@ task ModifyStrelka {
         outputVCFName: {description: "The location the output VCF file should be written to.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: ""}
     }
 }

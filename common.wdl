@@ -207,6 +207,9 @@ task TextToFile {
         outputFile: {description: "The name of the output file.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        out: {description: "File containing input text."}
     }
 }
 
@@ -251,6 +254,9 @@ task YamlToJson {
         memory: {description: "The maximum amount of memory the job will need.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        json: {description: "JSON file version of input YAML."}
     }
 }
 

@@ -2,7 +2,6 @@ Changelog
 ==========
 
 <!--
-
 Newest changes should be on top.
 
 This document is user facing. Please word the changes in such a way
@@ -11,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Complete `parameter_meta` for tasks missing the outputs.
 + DeepVariant: Add an optional input for the gvcf index.
 + Samtools: `Sort` task now has `threads` in runtime instead of `1`.
 + Picard: Add parameter_meta to `SortSam`.
@@ -49,7 +49,7 @@ version 5.0.0-dev
 + Bam2fastx: Input bam and index are now arrays.
 + Lima: Remove globs from outputs.
 + Updated task gridss.wdl: add --jvmheap parameter.
-+ A bwa-mem2 task was created with the same interface (including usePostalt) 
++ A bwa-mem2 task was created with the same interface (including usePostalt)
   as the bwa mem task.
 + bwa mem and bwa kit are now one task. The usePostalt boolean can be used to
   switch the postalt script on and off.
@@ -90,7 +90,7 @@ version 4.0.0
   file.
 + Added sambamba markdup and sambamba sort. NOTE: samtools sort is more
   efficient and is recommended.
-+ Correctly represent samtools inconsistent use of the threads flag. 
++ Correctly represent samtools inconsistent use of the threads flag.
   Sometimes it means 'threads' sometimes it means 'additional threads'.
   BioWDL tasks now use only threads. The `threads - 1` conversion is
   applied where necessary for samtools tools that use additional threads.
@@ -234,7 +234,7 @@ version 3.0.0
   from going unnoticed.
 + Centrifuge: Fix -1/-U options for single end data.
 + Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
-  bed files called bedtools.MergeBedFiles. This task combines bedtools merge 
+  bed files called bedtools.MergeBedFiles. This task combines bedtools merge
   and sort.
 + Change `g` parameter on bedtools.Sort to `genome`.
 + Add `ploidity` and `excludeIntervalList` to gatk.HaplotypeCallerGvcf.
@@ -292,7 +292,7 @@ version 2.0.0
   amount of containers needed.
 + Add biowdl-input-converter and remove SampleConfigToSampleReadgroupLists
   which it replaces.
-+ GATK.GenotypeGVCFs: Increased memoryMultiplier from 2.0 to 3.0 .
++ GATK.GenotypeGVCFs: Increased memoryMultiplier from 2.0 to 3.0.
 + Minimap2: Add -k option to minimap2 mapping.
 + Added bwakit task.
 + Minimap2: Add the option for --MD tag.
@@ -302,9 +302,7 @@ version 1.0.0
 ---------------------------
 + Common: Add "SampleConfigToSampleReadgroupLists" task.
 + MultiQC: the "interactive" input is now set to true by default.
-+ Removed deprecated tasks:
-  + bioconda.installPrefix
-  + mergecounts.MergeCounts
++ Removed deprecated tasks: bioconda.installPrefix, mergecounts.MergeCounts
 + GATK.BaseRecalibrator: "knownIndelsSitesVCFs"
   and "knownIndelsSitesVCFIndexes" are no longer optional, but
   now have a default of "[]".

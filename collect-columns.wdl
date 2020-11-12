@@ -83,5 +83,8 @@ task CollectColumns {
         memoryGb: {description: "The maximum amount of memory the job will need in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputTable: {description: "All input columns combined into one table."}
     }
 }

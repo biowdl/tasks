@@ -79,6 +79,10 @@ task Germline {
         memoryGb: {description: "The memory required to run the manta", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        mantaVCF: {description: "SVs and indels scored and genotyped under a diploid model for the set of samples in a joint diploid sample analysis or for the normal sample in a tumor/normal subtraction analysis."}
+        mantaVCFindex: {description: "Index of output mantaVCF."}
     }
 }
 
@@ -155,5 +159,15 @@ task Somatic {
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        candidateSmallIndelsVcf: {description: "Subset of the candidateSV.vcf.gz file containing only simple insertion and deletion variants less than the minimum scored variant size."}
+        candidateSmallIndelsVcfIndex: {description: "Index of output VCF file candidateSmallIndelsVcf."}
+        candidateSVVcf: {description: "Unscored SV and indel candidates."}
+        candidatSVVcfIndex: {description: "Index of output VCF file candidateSVVcf."}
+        tumorSVVcf: {description: "Subset of the candidateSV.vcf.gz file after removing redundant candidates and small indels less than the minimum scored variant size."}
+        tumorSVVcfIndex: {description: "Index of output VCF file tumorSVVcf."}
+        diploidSV: {description: "SVs and indels scored and genotyped under a diploid model for the set of samples in a joint diploid sample analysis or for the normal sample in a tumor/normal subtraction analysis."}
+        diploidSVindex: {description: "Index of output VCF file diploidSV."}
     }
 }

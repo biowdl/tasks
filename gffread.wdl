@@ -80,5 +80,11 @@ task GffRead {
         filteredGffPath: {description: "The location the filtered GFF should be written to.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        exonsFasta: {description: "Fasta file containing exons."}
+        CDSFasta: {description: "Fasta file containing CDS's."}
+        proteinFasta: {description: "Fasta file containing proteins."}
+        filteredGff: {description: "Filtered GFF file."}
     }
 }

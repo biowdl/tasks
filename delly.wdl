@@ -62,5 +62,8 @@ task CallSV {
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        dellyBcf: {description: "File containing structural variants."}
     }
 }

@@ -106,5 +106,9 @@ task Hisat2 {
         memoryGb: {description: "The amount of memory this job will use in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        bamFile: {description: "Output BAM file."}
+        summaryFile: {description: "Alignment summary file."}
     }
 }

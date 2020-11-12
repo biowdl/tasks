@@ -86,6 +86,24 @@ task GenomeGenerate {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        chrLength: {description: "Text chromosome lengths file."}
+        chrNameLength: {description: "Text chromosome name lengths file."}
+        chrName: {description: "Text chromosome names file."}
+        chrStart: {description: "Chromosome start sites file."}
+        genome: {description: "Binary genome sequence file."}
+        genomeParameters: {description: "Genome parameters file."}
+        sa: {description: "Suffix arrays file."}
+        saIndex: {description: "Index file of suffix arrays."}
+        exonGeTrInfo: {description: "Exon, gene and transcript information file."}
+        exonInfo: {description: "Exon information file."}
+        geneInfo: {description: "Gene information file."}
+        sjdbInfo: {description: "Splice junctions coordinates file."}
+        sjdbListFromGtfOut: {description: "Splice junctions from input GTF file."}
+        sjdbListOut: {description: "Splice junction list file."}
+        transcriptInfo: {description: "Transcripts information file."}
+        starIndex: {description: "A collection of all STAR index files."}
     }
 }
 
@@ -181,6 +199,10 @@ task Star {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        bamFile: {description: "Alignment file."}
+        logFinalOut: {description: "Log information file."}
     }
 }
 

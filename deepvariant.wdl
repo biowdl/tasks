@@ -44,7 +44,6 @@ task RunDeepVariant {
 
     command {
         set -e
-
         /opt/deepvariant/bin/run_deepvariant \
         --ref ~{referenceFasta} \
         --reads ~{inputBam} \
@@ -85,12 +84,19 @@ task RunDeepVariant {
         customizedModel: {description: "A path to a model checkpoint to load for the `call_variants` step. If not set, the default for each --model_type will be used.", category: "advanced"}
         numShards: {description: "Number of shards for make_examples step.", category: "common"}
         outputGVcf: {description: "Path where we should write gVCF file.", category: "common"}
-        outputGVcfIndex: {description: "Path to where the gVCF index file will be written. This is needed as a workaround, set it to outputGVcf+.tbi.", category: "common"}
+        outputGVcfIndex: {description: "Path to where the gVCF index file will be written. This is needed as a workaround, set it to `outputGVcf + '.tbi.'`", category: "common"}
         regions: {description: "List of regions we want to process, in BED/BEDPE format.", category: "advanced"}
         sampleName: {description: "Sample name to use instead of the sample name from the input reads BAM (SM tag in the header).", category: "common"}
         VCFStatsReport: {description: "Output a visual report (HTML) of statistics about the output VCF.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVCF: {description: "Output VCF file."}
+        outputVCFIndex: {description: "Index of output VCF file."}
+        outputVCFStatsReport: {description: "Statistics file."}
+        outputGVCF: {description: "GVCF version of VCF file(s)."}
+        outputGVCFIndex: {description: "Index of GVCF file(s)."}
     }
 }

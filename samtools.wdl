@@ -56,6 +56,10 @@ task BgzipAndIndex {
         type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        compressed: {description: "Compressed input file."}
+        index: {description: "Index of the compressed input file."}
     }
 }
 
@@ -161,6 +165,11 @@ task Fastq {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        read1: {description: "Reads with the READ1 FLAG set."}
+        read2: {description: "Reads with the READ2 FLAG set."}
+        read0: {description: "Reads with either READ1 FLAG or READ2 flag set."}
     }
 }
 
@@ -203,6 +212,10 @@ task FilterShortReadsBam {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        filteredBam: {description: "BAM file filtered for short reads."}
+        filteredBamIndex: {description: "Index of filtered BAM file."}
     }
 }
 
@@ -239,6 +252,9 @@ task Flagstat {
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        flagstat: {description: "The number of alignments for each FLAG type."}
     }
 }
 
@@ -288,6 +304,10 @@ task Index {
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indexedBam: {description: "BAM file that was indexed."}
+        index: {description: "Index of the input BAM file."}
     }
 }
 
@@ -321,6 +341,9 @@ task Markdup {
         outputBamPath: {description: "The location of the output BAM file.", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: "BAM file with duplicate alignments marked."}
     }
 }
 
@@ -370,6 +393,10 @@ task Merge {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: "Multiple BAM files merged into one."}
+        outputBamIndex: {description: "Index of the merged BAM file."}
     }
 }
 
@@ -474,6 +501,10 @@ task Tabix {
         type: {description: "The type of file (eg. vcf or bed) to be indexed.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indexedFile: {description: "Indexed input file."}
+        index: {description: "Index of the input file."}
     }
 }
 
@@ -540,5 +571,9 @@ task View {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: "Processed input file."}
+        outputBamIndex: {description: "Index of the processed input file."}
     }
 }

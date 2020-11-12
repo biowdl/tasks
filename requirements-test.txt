@@ -1,2 +1,11 @@
+# These are the programs used for testing these biowdl tasks.
+# These requirements can be installed with conda with the bioconda channel
+# activated.
+# For more information on how to set up conda with bioconda channel see:
+# http://bioconda.github.io/#install-conda
+# This file can be installed with "conda install --file requirements-test.txt".
+
 cromwell
+womtool
 miniwdl
+wdl-aid

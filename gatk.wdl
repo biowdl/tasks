@@ -78,6 +78,9 @@ task AnnotateIntervals {
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        annotatedIntervals: {description: "This is a tab-separated values (TSV) file with a SAM-style header containing a sequence dictionary, a row specifying the column headers for the contained annotations, and the corresponding entry rows."}
     }
 }
 
@@ -145,6 +148,11 @@ task ApplyBQSR {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        recalibratedBam: {description: "A BAM file containing the recalibrated read data."}
+        recalibratedBamIndex: {description: "Index of recalibrated BAM file."}
+        recalibratedBamMd5: {description: "MD5 of recalibrated BAM file."}
     }
 }
 
@@ -211,6 +219,9 @@ task BaseRecalibrator {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        recalibrationReport: {description: "A GATK Report file with many tables."}
     }
 }
 
@@ -255,6 +266,10 @@ task CalculateContamination {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        contaminationTable: {description: "Table with fractions of reads from cross-sample contamination."}
+        mafTumorSegments: {description: "Tumor segments table."}
     }
 }
 
@@ -297,6 +312,10 @@ task CallCopyRatioSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        calledSegments: {description: "This is a tab-separated values (TSV) file with a SAM-style header containing a read group sample name, a sequence dictionary, a row specifying the column headers contained in CalledCopyRatioSegmentCollection.CalledCopyRatioSegmentTableColumn, and the corresponding entry rows."}
+        calledSegmentsIgv: {description: "This is a tab-separated values (TSV) file with CBS-format column headers and the corresponding entry rows that can be plotted using IGV."}
     }
 }
 
@@ -353,6 +372,9 @@ task CollectAllelicCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        allelicCounts: {description: "This is a tab-separated values (TSV) file with a SAM-style header containing a read group sample name, a sequence dictionary, a row specifying the column headers contained in AllelicCountCollection.AllelicCountTableColumn, and the corresponding entry rows."}
     }
 }
 
@@ -410,6 +432,9 @@ task CollectReadCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        counts: {description: "Read counts at specified intervals."}
     }
 }
 
@@ -464,6 +489,10 @@ task CombineGVCFs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "A combined multi-sample gVCF."}
+        outputVcfIndex: {description: "Index of the output file."}
     }
 }
 
@@ -535,6 +564,10 @@ task CombineVariants {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        combinedVcf: {description: "Combined VCF file."}
+        combinedVcfIndex: {description: "Index of combined VCF file."}
     }
 }
 
@@ -548,7 +581,8 @@ task CreateReadCountPanelOfNormals {
         String javaXmx = "7G"
         String memory = "8G"
         Int timeMinutes = 5
-        String dockerImage = "broadinstitute/gatk:4.1.8.0" # The biocontainer causes a spark related error for some reason...
+        # The biocontainer causes a spark related error for some reason.
+        String dockerImage = "broadinstitute/gatk:4.1.8.0"
     }
 
     command {
@@ -580,6 +614,9 @@ task CreateReadCountPanelOfNormals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        PON: {description: "Panel-of-normals file."}
     }
 }
 
@@ -630,6 +667,10 @@ task DenoiseReadCounts {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        standardizedCopyRatios: {description: "This is a tab-separated values (TSV) file with a SAM-style header containing a read group sample name, a sequence dictionary, a row specifying the column headers contained in CopyRatioCollection.CopyRatioTableColumn, and the corresponding entry rows."}
+        denoisedCopyRatios: {description: "This is a tab-separated values (TSV) file with a SAM-style header containing a read group sample name, a sequence dictionary, a row specifying the column headers contained in CopyRatioCollection.CopyRatioTableColumn, and the corresponding entry rows."}
     }
 }
 
@@ -700,6 +741,11 @@ task FilterMutectCalls {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        filteredVcf: {description: "VCF file with filtered variants from a Mutect2 VCF callset."}
+        filteredVcfIndex: {description: "Index of output VCF file."}
+        filteringStats: {description: "The output filtering stats file."}
     }
 }
 
@@ -742,6 +788,9 @@ task GatherBqsrReports {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBQSRreport: {description: "Single file with scattered BQSR recalibration reports gathered into one."}
     }
 }
 
@@ -795,6 +844,9 @@ task GenomicsDBImport {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        genomicsDbTarArchive: {description: "Imported VCFs to GenomicsDB file."}
     }
 }
 
@@ -862,6 +914,10 @@ task GenotypeGVCFs {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVCF: {description: "A final VCF in which all samples have been jointly genotyped. "}
+        outputVCFIndex: {description: "Index of final VCF file."}
     }
 }
 
@@ -914,6 +970,9 @@ task GetPileupSummaries {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        pileups: {description: "Pileup metrics for inferring contamination."}
     }
 }
 
@@ -1002,6 +1061,10 @@ task HaplotypeCaller {
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVCF: {description: "Raw, unfiltered SNP and indel calls."}
+        outputVCFIndex: {description: "Index of output VCF."}
     }
 }
 
@@ -1040,6 +1103,9 @@ task LearnReadOrientationModel {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        artifactPriorsTable: {description: "Maximum likelihood estimates of artifact prior probabilities in the orientation bias mixture model filter."}
     }
 }
 
@@ -1078,6 +1144,9 @@ task MergeStats {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        mergedStats: {description: "Merged stats from scattered Mutect2 runs."}
     }
 }
 
@@ -1145,6 +1214,19 @@ task ModelSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        hetrozygousAllelicCounts: {description: "Allelic-counts file containing the counts at sites genotyped as heterozygous in the case sample."}
+        copyRatioSegments: {description: "It contains the segments from the .modelFinal.seg file converted to a format suitable for input to CallCopyRatioSegments."}
+        copyRatioCBS: {description: "The posterior medians of the log2 copy ratio."}
+        alleleFractionCBS: {description: "Minor-allele fraction."}
+        unsmoothedModeledSegments: {description: "The initial modeled-segments result before segmentation smoothing."}
+        unsmoothedCopyRatioParameters: {description: "The initial copy-ratio-model global-parameter result before segmentation smoothing."}
+        unsmoothedAlleleFractionParameters: {description: "The initial allele-fraction-model global-parameter result before segmentation smoothing."}
+        modeledSegments: {description: "The final modeled-segments result after segmentation smoothing."}
+        copyRatioParameters: {description: "The final copy-ratio-model global-parameter result after segmentation smoothing."}
+        alleleFractionParameters: {description: "The final allele-fraction-model global-parameter result after segmentation smoothing."}
+        normalHetrozygousAllelicCounts: {description: "Allelic-counts file containing the counts at sites genotyped as heterozygous in the matched-normal sample."}
     }
 }
 
@@ -1223,6 +1305,12 @@ task MuTect2 {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        vcfFile: {description: "Somatic SNVs and indels called via local assembly of haplotypes."}
+        vcfFileIndex: {description: "Index for Mutect2 VCF."}
+        f1r2File: {description: "Contains information that can then be passed to LearnReadOrientationModel, which generate an artifact prior table for each tumor sample for FilterMutectCalls to use."}
+        stats: {description: "Stats file."}
     }
 }
 
@@ -1282,6 +1370,14 @@ task PlotDenoisedCopyRatios {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        denoisedCopyRatiosPlot: {description: "Plot showing the entire range of standardized and denoised copy ratios."}
+        standardizedMedianAbsoluteDeviation: {description: "Standardized median absolute deviation copy ratios."}
+        denoisedMedianAbsoluteDeviation: {description: "Denoised median absolute deviation copy ratios."}
+        deltaMedianAbsoluteDeviation: {description: "The change between `standardizedMedianAbsoluteDeviation` & `denoisedMedianAbsoluteDeviation`."}
+        deltaScaledMedianAbsoluteDeviation: {description: "The change between `standardizedMedianAbsoluteDeviation` & `denoisedMedianAbsoluteDeviation` scaled by standardized MAD."}
+        denoisedCopyRatiosLimitedPlot: {description: "Plot showing the standardized and denoised copy ratios limited to ratios within [0, 4]."}
     }
 }
 
@@ -1339,6 +1435,9 @@ task PlotModeledSegments {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        modeledSegmentsPlot: {description: "This plot shows the input denoised copy ratios and/or alternate-allele fractions as points, as well as box plots for the available posteriors in each segment."}
     }
 }
 
@@ -1398,6 +1497,9 @@ task PreprocessIntervals {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        intervalList: {description: "Preprocessed Picard interval-list file."}
     }
 }
 
@@ -1456,6 +1558,10 @@ task SelectVariants {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "A new VCF file containing the selected subset of variants."}
+        outputVcfIndex: {description: "Index of the new output VCF file."}
     }
 }
 
@@ -1510,6 +1616,10 @@ task SplitNCigarReads {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        bam: {description: "BAM file with reads split at N CIGAR elements and CIGAR strings updated."}
+        bamIndex: {description: "Index of output BAM file."}
     }
 }
 
@@ -1594,6 +1704,9 @@ task VariantEval {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        table: {description: "Evaluation tables detailing the results of the eval modules which were applied."}
     }
 }
 
@@ -1651,5 +1764,9 @@ task VariantFiltration {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        filteredVcf: {description: "A filtered VCF in which passing variants are annotated as PASS and failing variants are annotated with the name(s) of the filter(s) they failed."}
+        filteredVcfIndex: {description: "Index of filtered VCF."}
     }
 }

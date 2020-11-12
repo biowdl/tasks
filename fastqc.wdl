@@ -125,6 +125,13 @@ task Fastqc {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        htmlReport: {description: "HTML report file."}
+        reportZip: {description: "Source data file."}
+        summary: {description: "Summary file."}
+        rawReport: {description: "Raw report file."}
+        images: {description: "Images in report file."}
     }
 
     meta {
@@ -167,5 +174,10 @@ task GetConfiguration {
         # inputs
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        adapterList: {description: "List of adapters found."}
+        contaminantList: {description: "List of contaminants found."}
+        limits: {description: "Limits file."}
     }
 }
