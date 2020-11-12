@@ -1,4 +1,4 @@
-#TO DO
+#TO-DO
 This file describes WDL files and tasks within those files which need
 more specific attention than just adding outputs to the parameter_meta.
 
@@ -8,11 +8,6 @@ missing a parameter_meta section.
 Some tasks are importing other WDL files.
 
 ## Out of date with new cluster & parameter_meta:
-* bamstats.wdl: `Generate`
-* biopet.wdl: `BaseCounter`, `FastqSplitter`, `FastqSync`,
-              `ValidateAnnotation`, `ValidateFastq`, `ValidateVcf`, `VcfStats`
-* sampleconfig.wdl: `SampleConfig`, `SampleConfigCromwellArrays`, `CaseControl`
-* seqstat.wdl: `Generate`
 * common.wdl: `AppendToStringArray`, `CheckFileMD5`, `ConcatenateTextFiles`,
               `Copy`, `CreateLink`, `MapMd5`, `StringArrayMd5`
 * fastqsplitter.wdl: `Fastqsplitter`
@@ -25,13 +20,8 @@ Some tasks are importing other WDL files.
 * wisestork.wdl: `Count`, `GcCorrect`, `Newref`, `Zscore`
 * picard.wdl: `ScatterIntervalList`
 
-## Imports other tasks:
-* bamstats.wdl
-* biopet.wdl
-* sampleconfig.wdl
-* seqstat.wdl
-* clever.wdl
-* strelka.wdl
-
 ## Requires input from others:
+These tasks below are still missing descriptions `outputs` in
+the `parameter_meta`.
 * somaticseq.wdl
+* picard.wdl
