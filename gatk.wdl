@@ -1221,10 +1221,10 @@ task ModelSegments {
         copyRatioCBS: {description: "The posterior medians of the log2 copy ratio."}
         alleleFractionCBS: {description: "Minor-allele fraction."}
         unsmoothedModeledSegments: {description: "The initial modeled-segments result before segmentation smoothing."}
-        unsmoothedCopyRatioParameters: {description: "The initial copy-ratio-model global-parameter result before segmentation smoothing"}
+        unsmoothedCopyRatioParameters: {description: "The initial copy-ratio-model global-parameter result before segmentation smoothing."}
         unsmoothedAlleleFractionParameters: {description: "The initial allele-fraction-model global-parameter result before segmentation smoothing."}
         modeledSegments: {description: "The final modeled-segments result after segmentation smoothing."}
-        copyRatioParameters: {description: "The final copy-ratio-model global-parameter result after segmentation smoothing"}
+        copyRatioParameters: {description: "The final copy-ratio-model global-parameter result after segmentation smoothing."}
         alleleFractionParameters: {description: "The final allele-fraction-model global-parameter result after segmentation smoothing."}
         normalHetrozygousAllelicCounts: {description: "Allelic-counts file containing the counts at sites genotyped as heterozygous in the matched-normal sample."}
     }
@@ -1766,7 +1766,7 @@ task VariantFiltration {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        filteredVcf: {description: "A filtered VCF in which passing variants are annotated as PASS and failing variants are annotated with the name(s) of the filter(s) they failed. "}
+        filteredVcf: {description: "A filtered VCF in which passing variants are annotated as PASS and failing variants are annotated with the name(s) of the filter(s) they failed."}
         filteredVcfIndex: {description: "Index of filtered VCF."}
     }
 }
