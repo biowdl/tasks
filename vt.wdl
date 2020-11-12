@@ -66,6 +66,6 @@ task Normalize {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputVcf: {description: "Output VCF file."}
+        outputVcf: {description: "Normalized & decomposed VCF file."}
     }
 }
