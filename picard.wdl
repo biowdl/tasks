@@ -122,7 +122,7 @@ task CollectHsMetrics {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         targets: {description: "Picard interval file of the capture targets.", category: "required"}
-        targetsFile: {description: "Picard interval file of the capture targets, the same as targets.", category: "required"}
+        targetsFile: {description: "Picard interval file of the capture targets, the same as targets.", category: "advanced"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
         baits: {description: "Picard interval file of the capture bait set.", category: "advanced"}
         baitsFile: {description: "Picard interval file of the bait set. Uses targets as a fallback when baits is not set.", category: "advanced"}
