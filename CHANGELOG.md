@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Update CutAdapt to version 3.0.0.
++ Update StringTie to version 2.1.4.
 + Complete `parameter_meta` for tasks missing the outputs.
 + DeepVariant: Add an optional input for the gvcf index.
 + Samtools: `Sort` task now has `threads` in runtime instead of `1`.

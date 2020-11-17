@@ -35,7 +35,7 @@ task Stringtie {
         Int threads = 1
         String memory = "2G"
         Int timeMinutes = 1 + ceil(size(bam, "G") * 60 / threads)
-        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:2.1.4--h7e0af3c_0"
     }
 
     command {
@@ -101,7 +101,7 @@ task Merge {
 
         String memory = "10G"
         Int timeMinutes = 1 + ceil(size(gtfFiles, "G") * 20)
-        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:2.1.4--h7e0af3c_0"
     }
 
     command {

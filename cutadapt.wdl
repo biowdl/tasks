@@ -85,7 +85,7 @@ task Cutadapt {
         Int cores = 4
         String memory = "~{300 + 100 * cores}M"
         Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
-        String dockerImage = "quay.io/biocontainers/cutadapt:2.10--py37hf01694f_1"
+        String dockerImage = "quay.io/biocontainers/cutadapt:3.0--py37hf01694f_0"
     }
 
     String realRead2output = select_first([read2output, "cut_r2.fq.gz"])
