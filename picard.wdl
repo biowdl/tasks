@@ -125,7 +125,7 @@ task CollectHsMetrics {
         targetsFile: {description: "Picard interval file of the capture targets, the same as targets.", category: "required"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
         baits: {description: "Picard interval file of the capture bait set.", category: "advanced"}
-        baitsFile: {description: "Picard interval file of the bait set. Uses targets as a fallback when baits is not set", category: "advanced"}
+        baitsFile: {description: "Picard interval file of the bait set. Uses targets as a fallback when baits is not set.", category: "advanced"}
         javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
