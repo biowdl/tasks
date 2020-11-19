@@ -2,7 +2,6 @@ Changelog
 ==========
 
 <!--
-
 Newest changes should be on top.
 
 This document is user facing. Please word the changes in such a way
@@ -12,9 +11,30 @@ that users understand how the changes affect the new version.
 version 5.0.0-dev
 ---------------------------
 + Add new wdl file prepareShiny.wdl for creating input files for shiny app.
++ Complete `parameter_meta` for tasks missing the outputs.
++ DeepVariant: Add an optional input for the gvcf index.
++ Samtools: `Sort` task now has `threads` in runtime instead of `1`.
++ Picard: Add parameter_meta to `SortSam`.
++ pbmm2: Add parameter_meta for `sample`.
++ Centrifuge: Rename output in task `KReport` to `KrakenReport` to resolve
+  name collision with task name.
++ Bwa & bwa-mem2: Add parameter_meta for `outputHla`.
++ Multiqc: Removed WDL_AID excludes of "finished" & "dependencies" inputs.
++ Bam2fastx: Add localisation of input files to Bam2Fasta task.
++ Lima: `cores` input has been renamed to `threads` to match tool naming.
++ isoseq3: `cores` input has been renamed to `threads` to match tool naming.
++ CCS: `cores` input has been renamed to `threads` to match tool naming.
++ Add PacBio preprocessing specific tasks `mergePacBio` & `ccsChunks`.
++ CCS: Update CCS to version 5.
++ deepvariant: Add task for DeepVariant.
++ gatk: Make intervals optional for GenotypeGVCFs.
++ isoseq3: Add required bam index input to isoseq3.
++ pbbam: Add task for indexing PacBio bam files.
++ picard: Add CollectHsMetrics and CollectVariantCallingMetrics.
 + Samtools: Add `threads` to parameter meta for Merge task.
 + bcftools: add tmpDir input to specify temporary directory when sorting.
-+ bcftools: remove outputType and implement indexing based on output file extension. 
++ bcftools: remove outputType and implement indexing based on output
+  file extension.
 + NanoPack: Add parameter_meta to NanoPlot task.
 + Centrifuge: Remove metrics file from classification (which causes the
   summary report to be empty).
@@ -30,7 +50,7 @@ version 5.0.0-dev
 + Bam2fastx: Input bam and index are now arrays.
 + Lima: Remove globs from outputs.
 + Updated task gridss.wdl: add --jvmheap parameter.
-+ A bwa-mem2 task was created with the same interface (including usePostalt) 
++ A bwa-mem2 task was created with the same interface (including usePostalt)
   as the bwa mem task.
 + bwa mem and bwa kit are now one task. The usePostalt boolean can be used to
   switch the postalt script on and off.
@@ -71,7 +91,7 @@ version 4.0.0
   file.
 + Added sambamba markdup and sambamba sort. NOTE: samtools sort is more
   efficient and is recommended.
-+ Correctly represent samtools inconsistent use of the threads flag. 
++ Correctly represent samtools inconsistent use of the threads flag.
   Sometimes it means 'threads' sometimes it means 'additional threads'.
   BioWDL tasks now use only threads. The `threads - 1` conversion is
   applied where necessary for samtools tools that use additional threads.
@@ -106,8 +126,8 @@ version 4.0.0
 + Change MultiQC inputs. It now accepts an array of reports files. It does not
   need access to a folder with the reports anymore. MultiQC can now be used
   as a normal WDL task without hacks.
-+ Picard: Make all outputs in `CollectMultipleMetrics` optional. This will make sure the
-  task will not fail if one of the metrics is set to false.
++ Picard: Make all outputs in `CollectMultipleMetrics` optional. This will
+  make sure the task will not fail if one of the metrics is set to false.
 + The struct `BowtieIndex` was removed, as it has become obsolete.
 + The task `ReorderGlobbedScatters` was removed, as it has become obsolete.
 + Adjusted the memory settings of many tools, especially java tools.
@@ -129,7 +149,8 @@ version 4.0.0
 + Add faidx task to samtools.
 + Isoseq3: Remove dirname command from output folder creation step.
 + Isoseq3: Requires more memory by default, is now 2G.
-+ Isoseq3: Remove cp commands and other bash magic, file naming is now solved by pipeline.
++ Isoseq3: Remove cp commands and other bash magic, file naming is now
+  solved by pipeline.
 + Lima: Replace mv command with cp.
 + Add WDL task for smoove (lumpy) sv-caller.
 
@@ -140,7 +161,8 @@ version 3.1.0
 + Lima: Add missing output to parameter_meta.
 + Lima: Remove outputPrefix variable from output section.
 + Isoseq3: Make sure stderr log file from Refine is unique and not overwritten.
-+ Isoseq3: Add workaround in Refine for glob command not locating files in output directory.
++ Isoseq3: Add workaround in Refine for glob command not locating files
+  in output directory.
 + Isoseq3: Fix --min-polya-length argument syntax.
 + Lima: Add workaround for glob command not locating files in output directory.
 + CCS: Add missing backslash.
@@ -184,10 +206,13 @@ version 3.0.0
 + Rename HaplotypeCallerGVCF to HaplotypeCaller. Add `gvcf` option to set
   whether output should be a GVCF.
 + Centrifuge: Add Krona task specific to Centrifuge.
-+ Centrifuge: Fix Centrifuge tests, where sometimes the index files could still not be located.
++ Centrifuge: Fix Centrifuge tests, where sometimes the index files could
+  still not be located.
 + Update parameter_meta for TALON, Centrifuge and Minimap2.
-+ Centrifuge: Fix issue where Centrifuge Inspect did not get the correct index files location.
-+ Add `minimumContigLength` input to PlotDenoisedCopyRatios and PlotModeledSegments.
++ Centrifuge: Fix issue where Centrifuge Inspect did not get the correct
+  index files location.
++ Add `minimumContigLength` input to PlotDenoisedCopyRatios
+  and PlotModeledSegments.
 + Add `commonVariantSitesIndex` input to CollectAllelicCounts.
 + Centrifuge: Fix issue where Centrifuge could not locate index files.
 + Increase default memory of BWA mem to 32G (was 16G).
@@ -210,7 +235,7 @@ version 3.0.0
   from going unnoticed.
 + Centrifuge: Fix -1/-U options for single end data.
 + Add bedtools.Complement, bedtools.Merge, and add a task to combine multiple
-  bed files called bedtools.MergeBedFiles. This task combines bedtools merge 
+  bed files called bedtools.MergeBedFiles. This task combines bedtools merge
   and sort.
 + Change `g` parameter on bedtools.Sort to `genome`.
 + Add `ploidity` and `excludeIntervalList` to gatk.HaplotypeCallerGvcf.
@@ -223,11 +248,13 @@ version 3.0.0
 + Removed the "extraArgs" input from FilterMutectCalls.
 + Removed unused "verbose" and "quiet" inputs from multiqc.
 + Added parameter_meta sections to a variety of tasks.
-+ Picard's BedToIntervalList outputPath input is now optional (with a default of "regions.interval_list").
++ Picard's BedToIntervalList outputPath input is now
+  optional (with a default of "regions.interval_list").
 + TALON: Fix SQLite error concerning database/disk space being full.
 + Update htseq to default image version 0.11.2.
 + Update biowdl-input-converter in common.wdl to version 0.2.1.
-+ Update TALON section to now include the new annotation file output, and add config file creation to the TALON task.
++ Update TALON section to now include the new annotation file output, and
+  add config file creation to the TALON task.
 + Removed unused inputs (trimPrimer and format) for cutadapt.
 + Various minor command tweaks to increase stability.
 + Fixed unused inputs in bedtools sort (inputs are now used).
@@ -240,7 +267,8 @@ version 2.1.0
 + Updated biowdl-input-converter version.
 + GATK CombineGVCFs memory was tripled to prevent it from using a lot of CPU in
   Garbage Collection mode.
-+ Updated parameter_meta sections for Minimap2 and TranscriptClean to wdl-aid format.
++ Updated parameter_meta sections for Minimap2 and TranscriptClean to
+  wdl-aid format.
 + Updated cores variable for TALON, the default is now 4.
 + Updated TALON to version 4.4.
 + Added parameter_meta sections to the following tools:
@@ -257,11 +285,15 @@ version 2.1.0
 version 2.0.0
 ---------------------------
 + TranscriptClean: Update TranscriptClean to version 2.0.2.
-+ Memory runtime attributes are now Strings indicating total memory, as opposed to Ints indicating memory per core.
-+ Memory inputs for most tasks are now Strings, remaining Int memory inputs are renamed to "memoryGb".
-+ Use the biowdl-input-converter container for JsonToYaml, to reduce the amount of containers needed.
-+ Add biowdl-input-converter and remove SampleConfigToSampleReadgroupLists which it replaces.
-+ GATK.GenotypeGVCFs: Increased memoryMultiplier from 2.0 to 3.0 .
++ Memory runtime attributes are now Strings indicating total memory, as
+  opposed to Ints indicating memory per core.
++ Memory inputs for most tasks are now Strings, remaining Int memory inputs
+  are renamed to "memoryGb".
++ Use the biowdl-input-converter container for JsonToYaml, to reduce the
+  amount of containers needed.
++ Add biowdl-input-converter and remove SampleConfigToSampleReadgroupLists
+  which it replaces.
++ GATK.GenotypeGVCFs: Increased memoryMultiplier from 2.0 to 3.0.
 + Minimap2: Add -k option to minimap2 mapping.
 + Added bwakit task.
 + Minimap2: Add the option for --MD tag.
@@ -271,10 +303,10 @@ version 1.0.0
 ---------------------------
 + Common: Add "SampleConfigToSampleReadgroupLists" task.
 + MultiQC: the "interactive" input is now set to true by default.
-+ Removed deprecated tasks:
-  + bioconda.installPrefix
-  + mergecounts.MergeCounts
-+ GATK.BaseRecalibrator: "knownIndelsSitesVCFs" and "knownIndelsSitesVCFIndexes" are no longer optional, but now have a default of "[]".
++ Removed deprecated tasks: bioconda.installPrefix, mergecounts.MergeCounts
++ GATK.BaseRecalibrator: "knownIndelsSitesVCFs"
+  and "knownIndelsSitesVCFIndexes" are no longer optional, but
+  now have a default of "[]".
 + Removed BWA index task.
 + Removed unused "picardJar" input from bwa.wdl.
 + All inputs to bedtools Sort are now reflected in the generated command.
@@ -290,17 +322,25 @@ version 1.0.0
 + Fastqsplitter: use version 1.1.
 + Picard: Use version 2.20.5 of the biocontainer as this includes the R dependency.
 + Common: Update dockerTag to dockerImage.
-+ GATK: Add CombineVariants task that allows, e.g., to merge VCFs from different callers.
-+ Mutect2: Add GATK tasks related to variant filtering (LearnReadOrientationModel, MergeStats, GetPileupSummaries, CalculateContamination and FilterMutectCalls).
-+ Mutect2: Add "--germline-resource" and "--f1r2-tar-gz" inputs, requiring an update to GATK 4.1.2.0.
++ GATK: Add CombineVariants task that allows, e.g., to merge VCFs
+  from different callers.
++ Mutect2: Add GATK tasks related to variant
+  filtering (LearnReadOrientationModel, MergeStats, GetPileupSummaries,
+  CalculateContamination and FilterMutectCalls).
++ Mutect2: Add "--germline-resource" and "--f1r2-tar-gz" inputs, requiring
+  an update to GATK 4.1.2.0.
 + Mutect2: Add necessary missing index attribute for panel of normals.
 + MultiQC: Add memory variable to multiqc task.
-+ GATK: SplitNCigarReads, BaseRecalibration and ApplyBQSR do no longer need regions files as required inputs.
-+ VarDict: Add user definable flags (-M, -A, -Q, -d, -v, -f) to the paired VCF filtering script.
-+ Cutadapt: If the output is a gzipped file, compress with level 1 (instead of default 6).
++ GATK: SplitNCigarReads, BaseRecalibration and ApplyBQSR do no longer need
+  regions files as required inputs.
++ VarDict: Add user definable flags (-M, -A, -Q, -d, -v, -f) to the paired
+  VCF filtering script.
++ Cutadapt: If the output is a gzipped file, compress with
+  level 1 (instead of default 6).
 + Cutadapt: Fix issues with read2output when using single-end reads.
 + Add feature type, idattr and additional attributes to htseq-count.
 + Added allow-contain option to bowtie.
 + Added a changelog to keep track of changes.
-+ Added sortByName task in samtools to support more memory efficient execution of HTSeqCount.
++ Added sortByName task in samtools to support more memory efficient
+  execution of HTSeqCount.
 + Removed the bam index from HTSeqCount's inputs.
