@@ -34,7 +34,7 @@ task Refine {
         Int threads = 2
         String memory = "2G"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/isoseq3:3.3.0--0"
+        String dockerImage = "quay.io/biocontainers/isoseq3:3.4.0--0"
     }
 
     command {

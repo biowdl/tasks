@@ -69,7 +69,7 @@ task Faidx {
         String outputDir
 
         String memory = "2G"
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     command {
@@ -118,7 +118,7 @@ task Fastq {
         Int threads = 1
         String memory = "1G"
         Int timeMinutes = 1 + ceil(size(inputBam) * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     command {
@@ -180,7 +180,7 @@ task FilterShortReadsBam {
 
         String memory = "1G"
         Int timeMinutes = 1 + ceil(size(bamFile, "G") * 8)
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
@@ -226,7 +226,7 @@ task Flagstat {
 
         String memory = "256M"  # Only 40.5 MiB used for 150G bam file.
         Int timeMinutes = 1 + ceil(size(inputBam, "G"))
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     command {
@@ -266,7 +266,7 @@ task Index {
 
         String memory = "2G"
         Int timeMinutes = 1 + ceil(size(bamFile, "G") * 4)
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     # Select_first is needed, otherwise womtool validate fails.
@@ -317,7 +317,7 @@ task Markdup {
         String outputBamPath
 
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     command {
@@ -356,7 +356,7 @@ task Merge {
         Int threads = 1
         String memory = "4G"
         Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
@@ -411,7 +411,7 @@ task Sort {
         Int threads = 1
         Int memoryGb = 1 + threads * memoryPerThreadGb
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     # Select first needed as outputPath is optional input (bug in cromwell).
@@ -523,7 +523,7 @@ task View {
         Int threads = 1
         String memory = "1G"
         Int timeMinutes = 1 + ceil(size(inFile, "G") * 5)
-        String dockerImage = "quay.io/biocontainers/samtools:1.10--h9402c20_2"
+        String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
     String outputIndexPath = basename(outputFileName) + ".bai"
