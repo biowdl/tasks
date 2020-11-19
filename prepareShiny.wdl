@@ -20,27 +20,27 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task CreateSamplesheet {
+task CreateDesignMatrix {
     input {
         File countTable
         String shinyDir = "."
 
         Int threads = 1
-        String memory = "6G"
+        String memory = "5G"
         Int timeMinutes = 45
-        String dockerImage = "tomkuipers1402/shiny-py:v1.0.1"
+        String dockerImage = "tomkuipers1402/shiny-py:v1.0.2"
     }
 
     command {
         set -e
         mkdir -p ${shinyDir}
-        sampleSheet.py \
+        designMatrix.py \
             -i ${countTable} \
             -o ${shinyDir}
     }
 
     output {
-        File dgeSamples = shinyDir + "/sampleSheet.tsv"
+        File dgeDesign = shinyDir + "/design_matrix.tsv"
     }
 
     runtime {
@@ -69,9 +69,9 @@ task CreateAnnotation {
         String shinyDir = "."
 
         Int threads = 1
-        String memory = "6G"
+        String memory = "10G"
         Int timeMinutes = 45
-        String dockerImage = "tomkuipers1402/shiny-py:v1.0.1"
+        String dockerImage = "tomkuipers1402/shiny-py:v1.0.2"
     }
 
     command {
