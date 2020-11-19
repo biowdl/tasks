@@ -35,7 +35,7 @@ task Amber {
         File referenceFastaDict
 
         Int threads = 2
-        String memory = = "33G"
+        String memory = "33G"
         String javaXmx = "32G"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/hmftools-amber:3.5--0"
@@ -112,7 +112,7 @@ task Cobalt {
         File gcProfile
         
         Int threads = 1
-        String memory = = "9G"
+        String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.10--0"
@@ -286,10 +286,10 @@ task Purple {
         File hotspots
         
         Int threads = 1
-        Int time_minutes = 60
+        Int timeMinutes = 60
         String memory = "13G"
         String javaXmx = "12G"
-        String docker = "quay.io/biocontainers/hmftools-purple:2.51--1"
+        String dockerImage = "quay.io/biocontainers/hmftools-purple:2.51--1"
     }
 
     command {
@@ -297,8 +297,8 @@ task Purple {
         -reference ~{normalName} \
         -tumor ~{tumorName} \
         -output_dir ~{outputDir} \
-        -amber ~{sub(amberOutput, basename(amberOutput[0]), "")} \
-        -cobalt ~{sub(cobaltOutput, basename(cobaltOutput[0]), "")} \
+        -amber ~{sub(amberOutput[0], basename(amberOutput[0]), "")} \
+        -cobalt ~{sub(cobaltOutput[0], basename(cobaltOutput[0]), "")} \
         -gc_profile ~{gcProfile} \
         -somatic_vcf ~{somaticVcf} \
         -structural_vcf ~{filteredSvVcf} \
