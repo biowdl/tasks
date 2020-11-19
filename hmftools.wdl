@@ -283,6 +283,7 @@ task Purple {
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
+        File driverGenePanel
         File hotspots
         
         Int threads = 1
@@ -306,6 +307,7 @@ task Purple {
         -circos /usr/local/bin/circos \
         -ref_genome ~{referenceFasta} \
         -driver_catalog \
+        -driver_gene_panel ~{driverGenePanel} \
         -hotspots ~{hotspots} \
         -threads ~{threads}
 
@@ -340,6 +342,7 @@ task Purple {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        driverGenePanel: {description: "A bed file describing the driver gene panel.", category: "required"}
         hotspots: {description: "A vcf file with hotspot variant sites.", category: "required"}
 
         threads: {description: "The number of threads the program will use.", category: "advanced"}
