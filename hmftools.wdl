@@ -54,7 +54,7 @@ task Amber {
     }
 
     output {
-        File version = "amber.version"
+        File version = "~{outputDir}/amber.version"
         File tumorBafPcf = "~{outputDir}/~{tumorName}.amber.baf.pcf"
         File tumorBafTsv = "~{outputDir}/~{tumorName}.amber.baf.tsv"
         File tumorBafVcf = "~{outputDir}/~{tumorName}.amber.baf.vcf.gz"
@@ -130,7 +130,7 @@ task Cobalt {
     }
 
     output {
-        File version = "cobalt.version"
+        File version = "~{outputDir}/cobalt.version"
         File normalGcMedianTsv = "~{outputDir}/~{normalName}.cobalt.gc.median.tsv"
         File normalRationMedianTsv = "~{outputDir}/~{normalName}.cobalt.ratio.median.tsv"
         File normalRationPcf = "~{outputDir}/~{normalName}.cobalt.ratio.pcf"
