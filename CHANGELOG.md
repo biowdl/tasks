@@ -16,7 +16,6 @@ version 5.0.0-dev
 + Update Picard to version 2.23.8.
 + Update NanoPlot to version 1.32.1.
 + Update MultiQC to version 1.9.
-+ Update CutAdapt to version 3.0.0.
 + Update StringTie to version 2.1.4.
 + Complete `parameter_meta` for tasks missing the outputs.
 + DeepVariant: Add an optional input for the gvcf index.
