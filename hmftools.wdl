@@ -124,7 +124,7 @@ task Cobalt {
         -reference_bam ~{normalBam} \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
-        -output_dir ~{outputDir}\
+        -output_dir ~{outputDir} \
         -threads ~{threads} \
         -gc_profile ~{gcProfile}
     }
