@@ -27,7 +27,7 @@ task CreateDesignMatrix {
 
         Int threads = 1
         String memory = "5G"
-        Int timeMinutes = 45
+        Int timeMinutes = 30
         String dockerImage = "tomkuipers1402/shiny-py:v1.0.2"
     }
 
@@ -70,7 +70,7 @@ task CreateAnnotation {
 
         Int threads = 1
         String memory = "10G"
-        Int timeMinutes = 45
+        Int timeMinutes = 90
         String dockerImage = "tomkuipers1402/shiny-py:v1.0.2"
     }
 
