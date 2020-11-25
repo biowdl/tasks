@@ -33,7 +33,7 @@ task Indexing {
         Int cores = 1
         String memory = "4G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/minimap2:2.17--h84994c4_0"
+        String dockerImage = "quay.io/biocontainers/minimap2:2.17--hed695b0_3"
     }
 
     command {
@@ -100,7 +100,7 @@ task Mapping {
         Int cores = 4
         String memory = "30G"
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 200 / cores)
-        String dockerImage = "quay.io/biocontainers/minimap2:2.17--h84994c4_0"
+        String dockerImage = "quay.io/biocontainers/minimap2:2.17--hed695b0_3"
     }
 
     command {

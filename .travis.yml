@@ -19,4 +19,5 @@ before_install:
 install:
   - conda install --file requirements-test.txt
 
-script: bash scripts/biowdl_lint.sh
+script:
+  - bash scripts/biowdl_lint.sh

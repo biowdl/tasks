@@ -51,7 +51,7 @@ task Lima {
         Int threads = 2
         String memory = "2G"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/lima:1.11.0--0"
+        String dockerImage = "quay.io/biocontainers/lima:2.0.0--0"
     }
 
     Map[String, String] libraryDesignOptions = {"same": "--same", "different": "--different", "neighbors": "--neighbors"}
