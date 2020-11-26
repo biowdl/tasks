@@ -41,11 +41,13 @@ task Call {
         --outdir ~{outputDir} \
         --name ~{sample} \
         --fasta ~{referenceFasta} \
+        --removepr \
+        --genotype \
         ~{bamFile}
     }
 
     output {
-        File smooveVcf = outputDir + "/" + sample + "-smoove.vcf.gz"
+        File smooveVcf = outputDir + "/" + sample + "-smoove.genotyped.vcf.gz"
     }
 
     runtime {
