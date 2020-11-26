@@ -88,9 +88,12 @@ task Lima {
         ~{barcodeFile} \
         ~{outputPrefix + ".bam"}
 
-        # copy the files with the default filename to the folder specified in
+        # Copy the files with the default filename to the folder specified in
         # outputPrefix.
-        if [ "~{basename(outputPrefix)}.json" != "~{outputPrefix}.json" ]; then
+        if [[ -f "~{outputPrefix}.json" ]]
+        then
+            echo "Log files already at output location."
+        else
             cp "~{basename(outputPrefix)}.json" "~{outputPrefix}.json"
             cp "~{basename(outputPrefix)}.lima.counts" "~{outputPrefix}.lima.counts"
             cp "~{basename(outputPrefix)}.lima.report" "~{outputPrefix}.lima.report"

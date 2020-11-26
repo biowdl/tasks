@@ -23,7 +23,7 @@ version 1.0
 task mergePacBio {
     input {
         Array[File]+ reports
-        String mergedReport
+        String outputPathMergedReport
 
         String memory = "4G"
         String dockerImage = "lumc/pacbio-merge:0.2"
@@ -31,10 +31,10 @@ task mergePacBio {
 
     command {
         set -e
-        mkdir -p $(dirname ~{mergedReport})
+        mkdir -p $(dirname ~{outputPathMergedReport})
         pacbio_merge \
         --reports ~{sep=" " reports} \
-        --json-output ~{mergedReport}
+        --json-output ~{outputPathMergedReport}
     }
 
     runtime {
@@ -43,13 +43,13 @@ task mergePacBio {
     }
 
     output {
-        File outputMergedReport = mergedReport
+        File outputMergedReport = outputPathMergedReport
     }
 
     parameter_meta {
         # inputs
         reports: {description: "The PacBio report files to merge.", category: "required"}
-        mergedReport: {description: "The location the merged PacBio report file should be written to.", category: "common"}
+        outputPathMergedReport: {description: "The location the merged PacBio report file should be written to.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
