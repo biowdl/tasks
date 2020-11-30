@@ -32,7 +32,7 @@ task GffRead {
         String? proteinFastaPath
         String? filteredGffPath
 
-        Int timeMinutes = 1 + ceil(size(inputGff) * 10)
+        Int timeMinutes = 1 + ceil(size(inputGff, "G") * 10)
         String dockerImage = "quay.io/biocontainers/gffread:0.9.12--0"
     }
 
