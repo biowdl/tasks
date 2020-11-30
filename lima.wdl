@@ -56,7 +56,7 @@ task Lima {
 
     Map[String, String] libraryDesignOptions = {"same": "--same", "different": "--different", "neighbors": "--neighbors"}
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         lima \
@@ -83,33 +83,26 @@ task Lima {
         ~{true="--peek-guess" false="" peekGuess} \
         --log-level ~{logLevel} \
         --num-threads ~{threads} \
-        ~{"--log-file " + outputPrefix + ".stderr.log"} \
+        ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \
-        ~{outputPrefix + ".bam"}
+        ~{outputPrefix + ".fl.bam"}
 
-        # Copy the files with the default filename to the folder specified in
-        # outputPrefix.
-        if [[ -f "~{outputPrefix}.json" ]]
-        then
-            echo "Log files already at output location."
-        else
-            cp "~{basename(outputPrefix)}.json" "~{outputPrefix}.json"
-            cp "~{basename(outputPrefix)}.lima.counts" "~{outputPrefix}.lima.counts"
-            cp "~{basename(outputPrefix)}.lima.report" "~{outputPrefix}.lima.report"
-            cp "~{basename(outputPrefix)}.lima.summary" "~{outputPrefix}.lima.summary"
-        fi
-    }
+        dirName="$(dirname ~{outputPrefix})"
+        find "$(cd ${dirName}; pwd)" -name "*.fl.*.bam" > bamFiles.txt
+        find "$(cd ${dirName}; pwd)" -name "*.fl.*.bam.pbi" > bamIndexes.txt
+        find "$(cd ${dirName}; pwd)" -name "*.fl.*.subreadset.xml" > subreadsets.txt
+    >>>
 
     output {
-        Array[File] limaBam = glob("*.bam")
-        Array[File] limaBamIndex = glob("*.bam.pbi")
-        Array[File] limaXml = glob("*.subreadset.xml")
-        File limaStderr = outputPrefix + ".stderr.log"
-        File limaJson = outputPrefix + ".json"
-        File limaCounts = outputPrefix + ".lima.counts"
-        File limaReport = outputPrefix + ".lima.report"
-        File limaSummary = outputPrefix + ".lima.summary"
+        Array[File] limaBam = read_lines("bamFiles.txt")
+        Array[File] limaBamIndex = read_lines("bamIndexes.txt")
+        Array[File] limaXml = read_lines("subreadsets.txt")
+        File limaStderr = outputPrefix + ".fl.stderr.log"
+        File limaJson = outputPrefix + ".fl.json"
+        File limaCounts = outputPrefix + ".fl.lima.counts"
+        File limaReport = outputPrefix + ".fl.lima.report"
+        File limaSummary = outputPrefix + ".fl.lima.summary"
     }
 
     runtime {

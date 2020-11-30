@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ mergePacBio: Rename `mergedReport` to `outputPathMergedReport`.
++ Lima: Fix copy commands.
 + Update Lima to version 2.0.0.
 + Update IsoSeq3 to version 3.4.0.
 + Update samtools to version 1.11.
