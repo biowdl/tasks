@@ -11,7 +11,7 @@ that users understand how the changes affect the new version.
 version 5.0.0-dev
 ---------------------------
 + mergePacBio: Rename `mergedReport` to `outputPathMergedReport`.
-+ Lima: Fix copy commands & return to `fl` naming.
++ Lima: Fix copy commands.
 + Fixed the `size` call in the default for gffread's timeMinutes, to retrieve
   GBs instead of bytes.
 + Update stringtie to version 1.3.6.
