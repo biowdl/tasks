@@ -83,26 +83,26 @@ task Lima {
         ~{true="--peek-guess" false="" peekGuess} \
         --log-level ~{logLevel} \
         --num-threads ~{threads} \
-        ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
+        ~{"--log-file " + outputPrefix + ".lima.stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \
-        ~{outputPrefix + ".fl.bam"}
+        ~{outputPrefix + ".bam"}
 
         dirName="$(dirname ~{outputPrefix})"
-        find "$(cd ${dirName}; pwd)" -name "*.fl.*.bam" > bamFiles.txt
-        find "$(cd ${dirName}; pwd)" -name "*.fl.*.bam.pbi" > bamIndexes.txt
-        find "$(cd ${dirName}; pwd)" -name "*.fl.*.subreadset.xml" > subreadsets.txt
+        find "$(cd ${dirName}; pwd)" -name "*.bam" > bamFiles.txt
+        find "$(cd ${dirName}; pwd)" -name "*.bam.pbi" > bamIndexes.txt
+        find "$(cd ${dirName}; pwd)" -name "*.subreadset.xml" > subreadsets.txt
     >>>
 
     output {
         Array[File] limaBam = read_lines("bamFiles.txt")
         Array[File] limaBamIndex = read_lines("bamIndexes.txt")
         Array[File] limaXml = read_lines("subreadsets.txt")
-        File limaStderr = outputPrefix + ".fl.stderr.log"
-        File limaJson = outputPrefix + ".fl.json"
-        File limaCounts = outputPrefix + ".fl.lima.counts"
-        File limaReport = outputPrefix + ".fl.lima.report"
-        File limaSummary = outputPrefix + ".fl.lima.summary"
+        File limaStderr = outputPrefix + ".lima.stderr.log"
+        File limaJson = outputPrefix + ".json"
+        File limaCounts = outputPrefix + ".lima.counts"
+        File limaReport = outputPrefix + ".lima.report"
+        File limaSummary = outputPrefix + ".lima.summary"
     }
 
     runtime {
