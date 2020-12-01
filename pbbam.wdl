@@ -36,7 +36,6 @@ task Index {
     String bamIndexPath = outputPath + ".pbi"
 
     command {
-        bash -c '
         set -e
         # Make sure outputBamPath does not exist.
         if [ ! -f ~{outputPath} ]
@@ -45,7 +44,6 @@ task Index {
             ln ~{bamFile} ~{outputPath}
         fi
         pbindex ~{outputPath} ~{bamIndexPath}
-        '
     }
 
     output {
