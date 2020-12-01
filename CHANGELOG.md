@@ -12,13 +12,16 @@ version 5.0.0-dev
 ---------------------------
 + mergePacBio: Rename `mergedReport` to `outputPathMergedReport`.
 + Lima: Fix copy commands & return to `fl` naming.
++ Fixed the `size` call in the default for gffread's timeMinutes, to retrieve
+  GBs instead of bytes.
++ Update stringtie to version 1.3.6.
 + Update Lima to version 2.0.0.
 + Update IsoSeq3 to version 3.4.0.
 + Update samtools to version 1.11.
 + Update Picard to version 2.23.8.
 + Update NanoPlot to version 1.32.1.
 + Update MultiQC to version 1.9.
-+ Update StringTie to version 2.1.4.
++ ~Update StringTie to version 2.1.4.~
 + Complete `parameter_meta` for tasks missing the outputs.
 + DeepVariant: Add an optional input for the gvcf index.
 + Samtools: `Sort` task now has `threads` in runtime instead of `1`.
