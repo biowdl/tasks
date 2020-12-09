@@ -43,6 +43,7 @@ task Call {
         --fasta ~{referenceFasta} \
         --removepr \
         --genotype \
+        --duphold \
         ~{bamFile}
     }
 
