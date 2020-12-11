@@ -35,11 +35,9 @@ task Duphold {
         String dockerImage = "quay.io/biocontainers/duphold:0.2.1--h516909a_1"
     }
 
-    String outputVCF = outputDir + basename(inputVcf, ".vcf") + "-duphold.vcf"
-
     command {
         set -e
-        mkdir -p ~{outputDir}
+        mkdir -p "$(dirname ~{outputPath})"
         export DUPHOLD_SAMPLE_NAME=~{sample}
         duphold \
         -v ~{inputVcf} \
@@ -66,7 +64,7 @@ task Duphold {
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
         sample: {description: "The name of the sample.", category: "required"}
-        outputDir: {description: "The location the output VCF file should be written.", category: "common"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum duration (in minutes) the tool is allowed to run.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
