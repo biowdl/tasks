@@ -32,7 +32,7 @@ task Duphold {
 
         String memory = "15G"
         Int timeMinutes = 1440
-        String dockerImage = "quay.io/biocontainers/smoove:0.2.5--0"
+        String dockerImage = "quay.io/biocontainers/duphold:0.2.1--h516909a_1"
     }
 
     String outputVCF = outputDir + basename(inputVcf, ".vcf") + "-duphold.vcf"
@@ -60,6 +60,7 @@ task Duphold {
 
     parameter_meta {
         # inputs
+        inputVcf: {description: "The VCF file to process.", category: "required"}
         bamFile: {description: "The bam file to process.", category: "required"}
         bamIndex: {description: "The index of the bam file.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
@@ -71,6 +72,6 @@ task Duphold {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        smooveVcf: {description: "Calls of structural variants in VCF file."}
+        outputVcf: {description: "Duphold annotated VCF file."}
     }
 }
