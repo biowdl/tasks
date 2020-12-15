@@ -315,6 +315,70 @@ task CollectTargetedPcrMetrics {
     }
 }
 
+task CollectWgsMetrics {
+    input {
+        File inputBam
+        File inputBamIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        String outputPath = "./wgs_metrics.txt"
+        
+        Int? minimumMappingQuality
+        Int? minimumBaseQuality
+        Int? coverageCap
+
+        String memory = "25G"
+        String javaXmx = "24G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        CollectWgsMetrics \
+        REFERENCE_SEQUENCE=~{referenceFasta} \
+        INPUT=~{inputBam} \
+        OUTPUT=~{outputPath} \ 
+        ~{"MINIMUM_MAPPING_QUALITY=" + minimumMappingQuality} \
+        ~{"MINIMUM_BASE_QUALITY=" + minimumBaseQuality} \
+        ~{"OVERAGE_CAP=" + coverageCap}
+    }
+
+    output {
+        File metrics = outputPath
+    }
+
+    runtime {
+        docker: dockerImage
+        time_minutes: timeMinutes
+        memory: memory
+    }
+    
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        outputPath: {description: "The path picard CollectWgsMetrics' output should be written to.", category: "common"}
+        minimumMappingQuality: {description: "Equivalent to picard CollectWgsMetrics' MINIMUM_MAPPING_QUALITY option.", category: "advanced"}
+        minimumBaseQuality: {description: "Equivalent to picard CollectWgsMetrics' MINIMUM_BASE_QUALITY option.", category: "advanced"}
+        coverageCap: {description: "Equivalent to picard CollectWgsMetrics' OVERAGE_CAP option.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task CreateSequenceDictionary {
     input {
         File inputFile

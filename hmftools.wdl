@@ -269,6 +269,53 @@ task GripssHardFilterApplicationKt {
     }
 }
 
+task HealthChecker {
+    input {
+        String normalName
+        String tumorName
+
+        String javaXmx = "10G"
+    }
+
+    command {
+        java -Xmx10G \
+        -jar /opt/tools/health-checker/3.1/health-checker.jar \
+        -reference ~{normalName} \
+        -tumor ~{tumorName} \
+        -metrics_dir ~{metricsPath} \
+        -amber_dir ~{sub(amberOutput[0], basename(amberOutput[0]), "")} \
+        -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
+        -output_dir ~{outputDir}
+    }
+
+    #    super("health-checker",
+    #             Versions.HEALTH_CHECKER,
+    #             "health-checker.jar",
+    #             "10G",
+    #             Lists.newArrayList("-reference",
+    #                     referenceSampleName,
+    #                     "-tumor",
+    #                     tumorSampleName,
+    #                     "-ref_wgs_metrics_file",
+    #                     referenceMetricsPath,
+    #                     "-tum_wgs_metrics_file",
+    #                     tumorMetricsPath,
+    #                     "-ref_flagstat_file",
+    #                     referenceFlagstatPath,
+    #                     "-tum_flagstat_file",
+    #                     tumorFlagstatPath,
+    #                     "-purple_dir",
+    #                     purplePath,
+    #                     "-output_dir",
+    #                     outputPath));    
+
+    output {
+
+    }
+
+
+}
+
 task Purple {
     input {
         String normalName
