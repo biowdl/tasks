@@ -37,7 +37,7 @@ task Amber {
         Int threads = 2
         String memory = "33G"
         String javaXmx = "32G"
-        Int timeMinutes = 60
+        Int timeMinutes = 1200
         String dockerImage = "quay.io/biocontainers/hmftools-amber:3.5--0"
     }
 
@@ -114,7 +114,7 @@ task Cobalt {
         Int threads = 1
         String memory = "9G"
         String javaXmx = "8G"
-        Int timeMinutes = 60
+        Int timeMinutes = 1200
         String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.10--0"
     }
 
@@ -312,8 +312,6 @@ task HealthChecker {
     output {
 
     }
-
-
 }
 
 task Purple {
@@ -327,6 +325,7 @@ task Purple {
         File somaticVcf
         File filteredSvVcf
         File fullSvVcf
+        File fullSvVcfIndex
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -365,7 +364,37 @@ task Purple {
     }
 
     output {
-        #TODO
+        File driverCatalogTsv = "~{outputDir}/~{tumorName}.driver.catalog.tsv"
+        File purpleCnvGeneTsv = "~{outputDir}/~{tumorName}.purple.cnv.gene.tsv"
+        File purpleCnvGermlineTsv = "~{outputDir}/~{tumorName}.purple.cnv.germline.tsv"
+        File purpleCnvSomaticTsv = "~{outputDir}/~{tumorName}.purple.cnv.somatic.tsv"
+        File purplePurityRangeTsv = "~{outputDir}/~{tumorName}.purple.purity.range.tsv"
+        File purplePurityTsv = "~{outputDir}/~{tumorName}.purple.purity.tsv"
+        File purpleQc = "~{outputDir}/~{tumorName}.purple.qc"
+        File purpleSegmentTsv = "~{outputDir}/~{tumorName}.purple.segment.tsv"
+        File purpleSomaticClonalityTsv = "~{outputDir}/~{tumorName}.purple.somatic.clonality.tsv"
+        File purpleSomaticHistTsv = "~{outputDir}/~{tumorName}.purple.somatic.hist.tsv"
+        File purpleSomaticVcf = "~{outputDir}/~{tumorName}.purple.somatic.vcf.gz"
+        File purpleSomaticVcfIndex = "~{outputDir}/~{tumorName}.purple.somatic.vcf.gz.tbi"
+        File purpleSvVcf = "~{outputDir}/~{tumorName}.purple.sv.vcf.gz"
+        File purpleSvVcfIndex = "~{outputDir}/~{tumorName}.purple.sv.vcf.gz.tbi"
+        File circosPlot = "~{outputDir}/plot/~{tumorName}.circos.png"
+        File copynumberPlot = "~{outputDir}/plot/~{tumorName}.copynumber.png"
+        File inputPlot = "~{outputDir}/plot/~{tumorName}.input.png"
+        File mapPlot = "~{outputDir}/plot/~{tumorName}.map.png"
+        File purityRangePlot = "~{outputDir}/plot/~{tumorName}.purity.range.png"
+        File segmentPlot = "~{outputDir}/plot/~{tumorName}.segment.png"
+        File somaticClonalityPlot = "~{outputDir}/plot/~{tumorName}.somatic.clonality.png"
+        File somaticPlot = "~{outputDir}/plot/~{tumorName}.somatic.png"
+        File somaticRainfallPlot = "~{outputDir}/plot/~{tumorName}.somatic.rainfall.png"
+        File purpleVersion = "~{outputDir}/purple.version"
+        Array[File] outputs = [driverCatalogTsv, purpleCnvGeneTsv, purpleCnvGermlineTsv,
+            purpleCnvSomaticTsv, purplePurityRangeTsv, purplePurityTsv, purpleQc, 
+            purpleSegmentTsv, purpleSomaticClonalityTsv, purpleSomaticHistTsv, 
+            purpleSomaticVcf, purpleSomaticVcfIndex, purpleSvVcf, purpleSvVcfIndex,
+            purpleVersion]
+        Array[File] plots = [circosPlot, copynumberPlot, inputPlot, mapPlot, purityRangePlot,
+            segmentPlot, somaticClonalityPlot, somaticPlot, somaticRainfallPlot]
     }
 
     runtime {

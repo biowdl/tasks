@@ -50,7 +50,7 @@ task Annotate {
         
         Int threads = 0
         String memory = "256M"
-        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        Int timeMinutes = 10 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 

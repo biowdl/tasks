@@ -41,7 +41,7 @@ task Markdup {
         Int memoryMb = 1024 + sortBufferSize + 2 * ioBufferSize
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
         # Time minute calculation does not work well for higher number of threads.
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8) / threads
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 16) / threads
     }
     String bamIndexPath = sub(outputPath, "\.bam$", ".bai")
 
