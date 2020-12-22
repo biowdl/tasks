@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Add new wdl file prepareShiny.wdl for creating input files for shiny app.
 + mergePacBio: Rename `mergedReport` to `outputPathMergedReport`.
 + Lima: Fix copy commands.
 + Fixed the `size` call in the default for gffread's timeMinutes, to retrieve
