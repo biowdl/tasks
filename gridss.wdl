@@ -27,11 +27,12 @@ task GRIDSS {
         File tumorBam
         File tumorBai
         String tumorLabel
+        BwaIndex reference
+        String outputPrefix = "gridss"
+
         File? normalBam
         File? normalBai
         String? normalLabel
-        BwaIndex reference
-        String outputPrefix = "gridss"
 
         Int jvmHeapSizeGb = 30
         Int threads = 1
@@ -68,17 +69,23 @@ task GRIDSS {
     }
 
     parameter_meta {
+        # inputs
         tumorBam: {description: "The input BAM file. This should be the tumor/case sample in case of a paired analysis.", category: "required"}
         tumorBai: {description: "The index for tumorBam.", category: "required"}
         tumorLabel: {description: "The name of the (tumor) sample.", category: "required"}
+        reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
+        outputPrefix: {description: "The prefix for the output files. This may include parent directories.", category: "common"}
         normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
         normalBai: {description: "The index for normalBam.", category: "advanced"}
         normalLabel: {description: "The name of the normal sample.", category: "advanced"}
-        reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
-        outputPrefix: {description: "The prefix for the output files. This may include parent directories.", category: "common"}
-
+        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling.",category: "advanced"}
         threads: {description: "The number of the threads to use.", category: "advanced"}
-        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        vcf: {description: "VCF file including variant allele fractions."}
+        vcfIndex: {description: "Index of output VCF."}
+        assembly: {description: "The GRIDSS assembly BAM."}
+        assemblyIndex: {description: "Index of output BAM file."}
     }
 }

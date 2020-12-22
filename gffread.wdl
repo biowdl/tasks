@@ -24,19 +24,21 @@ task GffRead {
     input {
         File inputGff
         File genomicSequence
+        Boolean outputGtfFormat = false
+
         File? genomicIndex  # Optional. GFFRead can create this by itself.
         String? exonsFastaPath
         String? CDSFastaPath
         String? proteinFastaPath
         String? filteredGffPath
-        Boolean outputGtfFormat = false
-        Int timeMinutes = 1 + ceil(size(inputGff) * 10)
+
+        Int timeMinutes = 1 + ceil(size(inputGff, "G") * 10)
         String dockerImage = "quay.io/biocontainers/gffread:0.9.12--0"
     }
 
     # The mkdirs below are hackish. It should be
-    # ~{"mkir -p $(dirname " + somePath + ")"}
-    # but this goes wrong. Cromwell will always use ')' even if somepath is not defined.
+    # ~{"mkir -p $(dirname " + somePath + ")"} but this goes wrong.
+    # Cromwell will always use ')' even if somepath is not defined.
     # Which leads to crashing.
     command {
         set -e
@@ -62,21 +64,27 @@ task GffRead {
     }
 
     runtime {
-        docker: dockerImage
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         inputGff: {description: "The input GFF file.", category: "required"}
         genomicSequence: {description: "The genome.", category: "required"}
+        outputGtfFormat: {description: "Equivalent to gffread's `-T` flag.", category: "advanced"}
         genomicIndex: {description: "The genome's index.", category: "advanced"}
         exonsFastaPath: {description: "The location the exons fasta should be written to.", category: "advanced"}
         CDSFastaPath: {description: "The location the CDS fasta should be written to.", category: "advanced"}
         proteinFastaPath: {description: "The location the protein fasta should be written to.", category: "advanced"}
         filteredGffPath: {description: "The location the filtered GFF should be written to.", category: "advanced"}
-        outputGtfFormat: {description: "Equivalent to gffread's `-T` flag.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        exonsFasta: {description: "Fasta file containing exons."}
+        CDSFasta: {description: "Fasta file containing CDS's."}
+        proteinFasta: {description: "Fasta file containing proteins."}
+        filteredGff: {description: "Filtered GFF file."}
     }
 }

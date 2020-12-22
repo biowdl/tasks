@@ -22,13 +22,15 @@ version 1.0
 
 task Count {
     input {
-        Int? binSize
-        File reference
-        File referenceIndex
-        File? binFile
         File inputBam
         File inputBamIndex
+        File reference
+        File referenceIndex
         String outputBed = "output.bed"
+
+        Int? binSize
+        File? binFile
+
         String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
@@ -54,15 +56,17 @@ task Count {
 
 task GcCorrect {
     input {
-        Int? binSize
         File reference
         File referenceIndex
-        File? binFile
         File inputBed
         String outputBed = "output.bed"
+
+        Int? binSize
+        File? binFile
         Float? fracN
         Int? iter
         Float? fracLowess
+
         String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
@@ -91,13 +95,16 @@ task GcCorrect {
 
 task Newref {
     input {
-        Int? binSize
         File reference
         File referenceIndex
-        File? binFile
         Array[File]+ inputBeds
         String outputBed = "output.bed"
+
+        Int? binSize
+        File? binFile
         Int? nBins
+
+        Int memory = 2 + ceil(length(inputBeds) * 0.15)
         String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
@@ -106,36 +113,36 @@ task Newref {
         mkdir -p $(dirname ~{outputBed})
         wisestork newref \
         ~{"--binsize " + binSize} \
-       --reference ~{reference} \
-       ~{"--bin-file " + binFile} \
-       --output ~{outputBed} \
-       -I ~{sep=" -I " inputBeds} \
-       ~{"--n-bins " + nBins}
+        --reference ~{reference} \
+        ~{"--bin-file " + binFile} \
+        --output ~{outputBed} \
+        -I ~{sep=" -I " inputBeds} \
+        ~{"--n-bins " + nBins}
     }
 
     output {
         File bedFile = outputBed
     }
 
-    Int memory = 2 + ceil(length(inputBeds) * 0.15)
-
     runtime {
-        docker: dockerImage
         memory: "~{memory}G"
+        docker: dockerImage
     }
 }
 
 task Zscore {
     input {
-        Int? binSize
         File reference
         File referenceIndex
-        File? binFile
         File inputBed
         File inputBedIndex
         File dictionaryFile
         File dictionaryFileIndex
         String outputBed = "output.bed"
+
+        Int? binSize
+        File? binFile
+
         String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
@@ -159,4 +166,3 @@ task Zscore {
         docker: dockerImage
     }
 }
-

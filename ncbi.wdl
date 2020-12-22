@@ -23,6 +23,10 @@ version 1.0
 task GenomeDownload {
     input {
         String outputPath
+        Boolean verbose = true
+        Boolean debug = false
+        String executable = "ncbi-genome-download"
+
         String? section = "refseq"
         String? format = "all"
         String? assemblyLevel = "all"
@@ -32,11 +36,7 @@ task GenomeDownload {
         String? ncbiBaseUri
         Int? parallel
         Int? retries
-        Boolean verbose = true
-        Boolean debug = false
         String? domain = "all"
-
-        String executable = "ncbi-genome-download"
         String? preCommand
     }
 
@@ -58,22 +58,22 @@ task GenomeDownload {
         ~{true="--debug" false ="" debug } \
         ~{domain}
 
-        # Check md5sums for all downloaded files
+        # Check md5sums for all downloaded files.
         for folder in $(realpath ~{outputPath})/*/*/*
-            do
-                (
-                md5sums="$(
-                    cd $folder
-                    for file in *
-                    do
-                        if [[ ! $file == "MD5SUMS" ]]
-                        then
-                            grep $file MD5SUMS
-                        fi
-                    done
-                    )"
-                cd $folder; echo $md5sums | md5sum -c)
-            done
+        do
+            (
+            md5sums="$(
+                cd $folder
+                for file in *
+                do
+                    if [[ ! $file == "MD5SUMS" ]]
+                    then
+                        grep $file MD5SUMS
+                    fi
+                done
+                )"
+            cd $folder; echo $md5sums | md5sum -c)
+        done
     }
 
     output {
@@ -106,7 +106,7 @@ task DownloadNtFasta{
         mkdir -p ~{ntDir}
         rsync -av --partial rsync://ftp.ncbi.nih.gov/blast/db/FASTA/nt.gz* ~{ntDir}
         (cd ~{ntDir} && md5sum -c nt.gz.md5)
-        # Only unzip when necessary
+        # Only unzip when necessary.
         if ~{true='true' false='false' unzip}
         then
             zcat ~{ntDir}/nt.gz > ~{ntFilePath}
@@ -132,15 +132,16 @@ task DownloadAccessionToTaxId {
     command {
         set -e -o pipefail
         mkdir -p ~{downloadDir}
-        rsync -av \
-          --partial \
-          rsync://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_*.accession2taxid.gz* \
-          ~{downloadDir}
+        rsync \
+            -av \
+            --partial \
+            rsync://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/nucl_*.accession2taxid.gz* \
+            ~{downloadDir}
         (cd ~{downloadDir} && md5sum -c *.md5)
         for file in ~{downloadDir}/nucl_*.accession2taxid.gz
         do
             zcat $file | tail -n +2 | cut -f 2,3 ~{true="| gzip" false='' gzip} > \
-              $file.seqtaxmap~{true='.gz' false='' gzip}
+                $file.seqtaxmap~{true='.gz' false='' gzip}
         done
     }
 

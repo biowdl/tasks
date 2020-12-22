@@ -1,7 +1,5 @@
 version 1.0
 
-# MIT License
-#
 # Copyright (c) 2018 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -74,14 +72,17 @@ task Mateclever {
         indexedFiteredBam: {description: "The index of the filtered bam file.", category: "required"}
         bwaIndex: {description: "The BWA index files.", category: "required"}
         predictions: {description: "The predicted deletions (VCF) from clever.", category: "required"}
-        maxOffset: {description: "The maximum center distance between split-read and read-pair deletion to be considered identical.", category: "advanced"}
-        maxLengthDiff: {description: "The maximum length difference between split-read and read-pair deletion to be considered identical.", category: "advanced"}
-        cleverMaxDelLength: {description: "The maximum deletion length to look for in Clever predictions.", category: "advanced"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        threads: {description: "The the number of threads required to run a program", category: "advanced"}
-        memory: {description: "The memory required to run the programs", category: "advanced"}
+        cleverMaxDelLength: {description: "The maximum deletion length to look for in Clever predictions.", category: "advanced"}
+        maxLengthDiff: {description: "The maximum length difference between split-read and read-pair deletion to be considered identical.", category: "advanced"}
+        maxOffset: {description: "The maximum center distance between split-read and read-pair deletion to be considered identical.", category: "advanced"}
+        threads: {description: "The the number of threads required to run a program.", category: "advanced"}
+        memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        matecleverVcf: {description: "VCF with additional mateclever results."}
     }
 }
 
@@ -128,12 +129,12 @@ task Prediction {
         bamIndex: {description: "The index bam file.", category: "required"}
         bwaIndex: {description: "The BWA index files.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        threads: {description: "The the number of threads required to run a program", category: "advanced"}
-        memory: {description: "The memory required to run the programs", category: "advanced"}
+        threads: {description: "The the number of threads required to run a program.", category: "advanced"}
+        memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        predictions: {description: "The predicted deletions (VCF) from clever.", category: "advanced"}
+        predictions: {description: "The predicted deletions (VCF) from clever."}
     }
 }

@@ -27,9 +27,10 @@ task Germline {
         File referenceFasta
         File referenceFastaFai
         String runDir = "./manta_run"
+        Boolean exome = false
+
         File? callRegions
         File? callRegionsIndex
-        Boolean exome = false
 
         Int cores = 1
         Int memoryGb = 4
@@ -71,13 +72,17 @@ task Germline {
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference", category: "required" }
         runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
-        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         cores: {description: "The the number of cores required to run a program", category: "required"}
         memoryGb: {description: "The memory required to run the manta", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        mantaVCF: {description: "SVs and indels scored and genotyped under a diploid model for the set of samples in a joint diploid sample analysis or for the normal sample in a tumor/normal subtraction analysis."}
+        mantaVCFindex: {description: "Index of output mantaVCF."}
     }
 }
 
@@ -85,14 +90,15 @@ task Somatic {
     input {
         File tumorBam
         File tumorBamIndex
-        File? normalBam
-        File? normalBamIndex
         File referenceFasta
         File referenceFastaFai
         String runDir = "./manta_run"
+        Boolean exome = false
+
+        File? normalBam
+        File? normalBamIndex
         File? callRegions
         File? callRegionsIndex
-        Boolean exome = false
 
         Int cores = 1
         Int memoryGb = 4
@@ -138,19 +144,30 @@ task Somatic {
     }
 
     parameter_meta {
+        # inputs
         tumorBam: {description: "The tumor/case sample's BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
-        normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
-        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "common"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         runDir: {description: "The directory to use as run/output directory.", category: "common"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
+        normalBam: {description: "The normal/control sample's BAM file.", category: "common"}
+        normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "common"}
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
-        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        candidateSmallIndelsVcf: {description: "Subset of the candidateSV.vcf.gz file containing only simple insertion and deletion variants less than the minimum scored variant size."}
+        candidateSmallIndelsVcfIndex: {description: "Index of output VCF file candidateSmallIndelsVcf."}
+        candidateSVVcf: {description: "Unscored SV and indel candidates."}
+        candidatSVVcfIndex: {description: "Index of output VCF file candidateSVVcf."}
+        tumorSVVcf: {description: "Subset of the candidateSV.vcf.gz file after removing redundant candidates and small indels less than the minimum scored variant size."}
+        tumorSVVcfIndex: {description: "Index of output VCF file tumorSVVcf."}
+        diploidSV: {description: "SVs and indels scored and genotyped under a diploid model for the set of samples in a joint diploid sample analysis or for the normal sample in a tumor/normal subtraction analysis."}
+        diploidSVindex: {description: "Index of output VCF file diploidSV."}
     }
 }

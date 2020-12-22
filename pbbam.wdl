@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2018 Leiden University Medical Center
+# Copyright (c) 2017 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,36 +20,35 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task InputConverter {
+task Index {
     input {
-        File samplesheet
-        String outputFile = "samplesheet.json"
-        # File checking only works when:
-        # 1. Paths are absolute
-        # 2. When containers have the directory with the files mounted.
-        # Therefore this functionality does not work well with cromwell.
-        Boolean skipFileCheck=true
-        Boolean checkFileMd5sums=false
-        Boolean old=false
+        File bamFile
 
-        String memory = "128M"
-        Int timeMinutes = 1
-        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
+        String? outputBamPath
+
+        String memory = "2G"
+        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 4)
+        String dockerImage = "quay.io/biocontainers/pbbam:1.6.0--h5b7e6e0_0"
     }
 
-    command <<<
+    # Select_first is needed, otherwise womtool validate fails.
+    String outputPath = select_first([outputBamPath, basename(bamFile)])
+    String bamIndexPath = outputPath + ".pbi"
+
+    command {
         set -e
-        mkdir -p "$(dirname ~{outputFile})"
-        biowdl-input-converter \
-        -o ~{outputFile} \
-        ~{true="--skip-file-check" false="" skipFileCheck} \
-        ~{true="--check-file-md5sums" false="" checkFileMd5sums} \
-        ~{true="--old" false="" old} \
-        ~{samplesheet}
-    >>>
+        # Make sure outputBamPath does not exist.
+        if [ ! -f ~{outputPath} ]
+        then
+            mkdir -p "$(dirname ~{outputPath})"
+            ln ~{bamFile} ~{outputPath}
+        fi
+        pbindex ~{outputPath} ~{bamIndexPath}
+    }
 
     output {
-        File json = outputFile
+        File indexedBam = outputPath
+        File index =  bamIndexPath
     }
 
     runtime {
@@ -60,16 +59,14 @@ task InputConverter {
 
     parameter_meta {
         # inputs
-        samplesheet: {description: "The samplesheet to be processed.", category: "required"}
-        outputFile: {description: "The location the JSON representation of the samplesheet should be written to.", category: "advanced"}
-        skipFileCheck: {description: "Whether or not the existance of the files mentioned in the samplesheet should be checked.", category: "advanced"}
-        checkFileMd5sums: {description: "Whether or not the MD5 sums of the files mentioned in the samplesheet should be checked.", category: "advanced"}
-        old: {description: "Whether or not the old samplesheet format should be used.", category: "advanced"}
+        bamFile: {description: "The BAM file for which an index should be made.", category: "required"}
+        outputBamPath: {description: "The location where the BAM file should be written to. The index will appear alongside this link to the BAM file.", category: "common"}
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        json: {description: "JSON file version of the input sample sheet."}
+        indexedBam: {description: "The original input BAM file."}
+        index: {description: "The index of the input BAM file."}
     }
 }

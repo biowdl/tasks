@@ -20,29 +20,31 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 task Markdup {
     input {
         Array[File] inputBams
         String outputPath
-        # Sambamba scales like this: 1 thread is fully utilized (1). 2 threads 1.8 utilized. 3 -> 2.4, 4-> 2.7.
-        # 2 threads reduces wall clock time by more than 40%.
-        Int threads = 2
         Int compressionLevel = 1
-        Int? hashTableSize
-        Int? overFlowListSize
-        # sortBufferSize and ioBufferSize taken from markdup defaults as of sambamba 0.7.1
+        # sortBufferSize and ioBufferSize taken from markdup defaults as of sambamba 0.7.1.
         Int sortBufferSize = 2048
         Int ioBufferSize = 128
-        Boolean removeDuplicates = false 
+        Boolean removeDuplicates = false
 
+        Int? hashTableSize
+        Int? overFlowListSize
+
+        # Sambamba scales like this: 1 thread is fully utilized (1).
+        # 2 threads 1.8 utilized. 3 -> 2.4, 4-> 2.7.
+        # 2 threads reduces wall clock time by more than 40%.
+        Int threads = 2
         # According to the manual sambamba markdup uses the sortbufferSize + 2 times the ioBuffer size.
         # Added 1024 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
         Int memoryMb = 1024 + sortBufferSize + 2 * ioBufferSize
-        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
         # Time minute calculation does not work well for higher number of threads.
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8) / threads
+        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
     }
+
     String bamIndexPath = sub(outputPath, "\.bam$", ".bai")
 
     command {
@@ -57,7 +59,7 @@ task Markdup {
         ~{"--sort-buffer-size " + sortBufferSize} \
         ~{"--io-buffer-size " + ioBufferSize} \
         ~{sep=' ' inputBams} ~{outputPath}
-        # sambamba creates an index for us 
+        # sambamba creates an index for us.
         mv ~{outputPath}.bai ~{bamIndexPath}
     }
 
@@ -67,8 +69,8 @@ task Markdup {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
         cpu: threads
+        memory: "~{memoryMb}M"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -78,17 +80,19 @@ task Markdup {
         inputBams: {description: "The input BAM files.", category: "required"}
         outputPath: {description: "Output directory path + output file.", category: "required"}
         compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
-        memoryMb: {description: "The amount of memory available to the job in megabytes.", category: "advanced"}
-        removeDuplicates: {description: "Whether to remove the duplicates (instead of only marking them).", category: "advanced"}
-        hashTableSize: {description: "Sets sambamba's hash table size", category: "advanced"}
-        overFlowListSize: {description: "Sets sambamba's overflow list size", category: "advanced"}
-        sortBufferSize: {description: "The amount of mb allocated to the sort buffer", category: "advanced"}
+        sortBufferSize: {description: "The amount of mb allocated to the sort buffer.", category: "advanced"}
         ioBufferSize: {description: "The amount of mb allocated to each IO buffer. Sambamba uses two IO buffers.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        removeDuplicates: {description: "Whether to remove the duplicates (instead of only marking them).", category: "advanced"}
+        hashTableSize: {description: "Sets sambamba's hash table size.", category: "advanced"}
+        overFlowListSize: {description: "Sets sambamba's overflow list size.", category: "advanced"}
         threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
+        memoryMb: {description: "The amount of memory available to the job in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
         # outputs
         outputBam: {description: "Sorted BAM file."}
+        outputBamIndex: {description: "Sorted BAM file index."}
     }
 }
 
@@ -98,14 +102,15 @@ task Sort {
         String outputPath = basename(inputBam, "\.bam") + ".sorted.bam"
         Boolean sortByName = false
         Int compressionLevel = 1
-        Int threads = 1
+
         Int memoryPerThreadGb = 4
+        Int threads = 1
         Int memoryGb = 1 + threads * memoryPerThreadGb
-        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
+        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
     }
 
-    # Select first needed as outputPath is optional input. (bug in cromwell)
+    # Select first needed as outputPath is optional input (bug in cromwell).
     String bamIndexPath = sub(select_first([outputPath]), "\.bam$", ".bai")
 
     command {
@@ -118,7 +123,7 @@ task Sort {
         -m ~{memoryPerThreadGb}G \
         -o ~{outputPath} \
         ~{inputBam}
-        # sambamba creates an index for us 
+        # sambamba creates an index for us.
         mv ~{outputPath}.bai ~{bamIndexPath}
     }
 
@@ -140,12 +145,14 @@ task Sort {
         outputPath: {description: "Output directory path + output file.", category: "required"}
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
         compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
-        memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
-        memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes.", category: "advanced"}
         threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
+        memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
         # outputs
         outputBam: {description: "Sorted BAM file."}
+        outputBamIndex: {description: "Sorted BAM file index."}
     }
 }
