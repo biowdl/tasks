@@ -33,10 +33,10 @@ task CreateDesignMatrix {
 
     command {
         set -e
-        mkdir -p ${shinyDir}
+        mkdir -p ~{shinyDir}
         predex design \
-            -i ${countTable} \
-            -o ${shinyDir}
+        -i ~{countTable} \
+        -o ~{shinyDir}
     }
 
     output {
@@ -51,14 +51,16 @@ task CreateDesignMatrix {
     }
 
     parameter_meta {
+        # inputs
         countTable: {description: "The created count table from HTseq.", category: "required"}
-        shinyDir: {description: "The directory to write the output to.", category: "required"}
-        
+        shinyDir: {description: "The directory to write the output to.", category: "required"}        
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        
+        # outputs
+        dgeDesign: {description: "Design matrix template to add sample information for DGE analysis."}
     }
 }
 
@@ -76,11 +78,11 @@ task CreateAnnotation {
 
     command {
         set -e
-        mkdir -p ${shinyDir}
+        mkdir -p ~{shinyDir}
         predex annotation \
-            -f ${referenceFasta} \
-            -g ${referenceGtfFile} \
-            -o ${shinyDir}
+        -f ~{referenceFasta} \
+        -g ~{referenceGtfFile} \
+        -o ~{shinyDir}
     }
 
     output {        
@@ -95,14 +97,16 @@ task CreateAnnotation {
     }
 
     parameter_meta {
+        # inputs
         referenceFasta: {description: "The reference Fasta file.", category: "required"}
         referenceGtfFile: {description: "The reference GTF file.", category: "required"}
-        shinyDir: {description: "The directory to write the output to.", category: "required"}
-        
+        shinyDir: {description: "The directory to write the output to.", category: "required"}        
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        dgeAnnotation: {description: "Annotation file for DGE analysis."}
     }
 }
