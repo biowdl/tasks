@@ -28,15 +28,15 @@ task CreateDesignMatrix {
         Int threads = 1
         String memory = "5G"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/predex:0.9.1--pyh3252c3a_0"
+        String dockerImage = "quay.io/biocontainers/predex:0.9.2--pyh3252c3a_0"
     }
 
     command {
         set -e
         mkdir -p ~{shinyDir}
         predex design \
-        -i ~{countTable} \
-        -o ~{shinyDir}
+        --input ~{countTable} \
+        --output ~{shinyDir}
     }
 
     output {
@@ -70,19 +70,19 @@ task CreateAnnotation {
         File referenceGtfFile
         String shinyDir = "."
 
-        Int threads = 1
-        String memory = "10G"
-        Int timeMinutes = 90
-        String dockerImage = "quay.io/biocontainers/predex:0.9.1--pyh3252c3a_0"
+        Int threads = 2
+        String memory = "5G"
+        Int timeMinutes = 30
+        String dockerImage = "quay.io/biocontainers/predex:0.9.2--pyh3252c3a_0"
     }
 
     command {
         set -e
         mkdir -p ~{shinyDir}
         predex annotation \
-        -f ~{referenceFasta} \
-        -g ~{referenceGtfFile} \
-        -o ~{shinyDir}
+        --fasta ~{referenceFasta} \
+        --gtf ~{referenceGtfFile} \
+        --output ~{shinyDir}
     }
 
     output {        
