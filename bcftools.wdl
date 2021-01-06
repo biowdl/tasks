@@ -44,9 +44,7 @@ task Annotate {
         String? regions
         File? regionsFile
         File? renameChrs
-        File? samplesFile
-        Boolean singleOverlaps = false
-        
+        File? samplesFile        
         
         Int threads = 0
         String memory = "256M"
