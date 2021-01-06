@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2020 Sequencing Analysis Support Core - Leiden University Medical Center
+# Copyright (c) 2020 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,15 +48,15 @@ task Lima {
         File barcodeFile
         String outputPrefix
         
-        Int cores = 2
+        Int threads = 2
         String memory = "2G"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/lima:1.11.0--0"
+        String dockerImage = "quay.io/biocontainers/lima:2.0.0--0"
     }
 
     Map[String, String] libraryDesignOptions = {"same": "--same", "different": "--different", "neighbors": "--neighbors"}
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         lima \
@@ -82,37 +82,31 @@ task Lima {
         --guess-min-count ~{guessMinCount} \
         ~{true="--peek-guess" false="" peekGuess} \
         --log-level ~{logLevel} \
-        --num-threads ~{cores} \
-        ~{"--log-file " + outputPrefix + ".fl.stderr.log"} \
+        --num-threads ~{threads} \
+        ~{"--log-file " + outputPrefix + ".lima.stderr.log"} \
         ~{inputBamFile} \
         ~{barcodeFile} \
-        ~{basename(outputPrefix) + ".fl.bam"}
+        ~{outputPrefix + ".bam"}
 
-        # copy commands below are needed because glob command does not find
-        # multiple bam/bam.pbi/subreadset.xml files when not located in working
-        # directory.
-        cp "~{basename(outputPrefix)}.fl.json" "~{outputPrefix}.fl.json"
-        cp "~{basename(outputPrefix)}.fl.lima.counts" "~{outputPrefix}.fl.lima.counts"
-        cp "~{basename(outputPrefix)}.fl.lima.report" "~{outputPrefix}.fl.lima.report"
-        cp "~{basename(outputPrefix)}.fl.lima.summary" "~{outputPrefix}.fl.lima.summary"
-        find . -path "*.bam" > bamFiles.txt
-        find . -path "*.bam.pbi" > bamIndexes.txt
-        find . -path "*.subreadset.xml" > subreadsets.txt
-    }
+        dirName="$(dirname ~{outputPrefix})"
+        find "$(cd ${dirName}; pwd)" -name "*.bam" > bamFiles.txt
+        find "$(cd ${dirName}; pwd)" -name "*.bam.pbi" > bamIndexes.txt
+        find "$(cd ${dirName}; pwd)" -name "*.subreadset.xml" > subreadsets.txt
+    >>>
 
     output {
         Array[File] limaBam = read_lines("bamFiles.txt")
         Array[File] limaBamIndex = read_lines("bamIndexes.txt")
         Array[File] limaXml = read_lines("subreadsets.txt")
-        File limaStderr = outputPrefix + ".fl.stderr.log"
-        File limaJson = outputPrefix + ".fl.json"
-        File limaCounts = outputPrefix + ".fl.lima.counts"
-        File limaReport = outputPrefix + ".fl.lima.report"
-        File limaSummary = outputPrefix + ".fl.lima.summary"
+        File limaStderr = outputPrefix + ".lima.stderr.log"
+        File limaJson = outputPrefix + ".json"
+        File limaCounts = outputPrefix + ".lima.counts"
+        File limaReport = outputPrefix + ".lima.report"
+        File limaSummary = outputPrefix + ".lima.summary"
     }
 
     runtime {
-        cpu: cores
+        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -145,7 +139,7 @@ task Lima {
         inputBamFile: {description: "Bam input file.", category: "required"}
         barcodeFile: {description: "Barcode/primer fasta file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
-        cores: {description: "The number of cores to be used.", category: "advanced"}
+        threads: {description: "The number of threads to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}

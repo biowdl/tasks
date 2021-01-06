@@ -22,16 +22,11 @@ version 1.0
 
 task GffCompare {
     input {
-        File? inputGtfList
         Array[File] inputGtfFiles
         File referenceAnnotation
-        String? outputDir
-        String outPrefix = "gffcmp" # gffcmp is the default used by the program as well. This
-        # needs to be defined in order for the output values to be consistent and correct.
-        File? genomeSequences
-        Int? maxDistanceFreeEndsTerminalExons
-        Int? maxDistanceGroupingTranscriptStartSites
-        String? namePrefix
+        # gffcmp is the default used by the program as well. This needs to be
+        # defined in order for the output values to be consistent and correct.
+        String outPrefix = "gffcmp"
         Boolean C = false
         Boolean A = false
         Boolean X = false
@@ -44,15 +39,22 @@ task GffCompare {
         Boolean verbose = false
         Boolean debugMode = false
 
+        File? inputGtfList
+        String? outputDir
+        File? genomeSequences
+        Int? maxDistanceFreeEndsTerminalExons
+        Int? maxDistanceGroupingTranscriptStartSites
+        String? namePrefix
+
         Int timeMinutes = 1 + ceil(size(inputGtfFiles, "G") * 30)
         String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
 
         # This workaround only works in the input section.
-        # Issue addressed at https://github.com/openwdl/wdl/pull/263
+        # Issue addressed at https://github.com/openwdl/wdl/pull/263.
         File? noneFile # This is a wdl workaround. Please do not assign!
     }
 
-    # This allows for the creation of output directories
+    # This allows for the creation of output directories.
     String dirPrefix = if defined(outputDir)
         then select_first([outputDir]) + "/"
         else ""
@@ -93,22 +95,22 @@ task GffCompare {
         then "annotated"
         else "combined"
 
-    # Check if a redundant .gtf will be created
+    # Check if a redundant .gtf will be created.
     Boolean createRedundant = C || A || X
 
     output {
+        # noneFile is not stable. Please replace this as soon as wdl spec allows.
         File annotated = totalPrefix + "." + annotatedName + ".gtf"
         File loci = totalPrefix + ".loci"
         File stats = totalPrefix + ".stats"
         File tracking = totalPrefix + ".tracking"
-        # noneFile is not stable. Please replace this as soon as wdl spec allows
+        Array[File] allFiles = select_all([annotated, loci, stats, tracking, redundant, missedIntrons])
         File? redundant = if createRedundant
             then totalPrefix + ".redundant.gtf"
             else noneFile
         File? missedIntrons = if debugMode
             then totalPrefix + ".missed_introns.gtf"
             else noneFile
-        Array[File] allFiles = select_all([annotated, loci, stats, tracking, redundant, missedIntrons])
     }
 
     runtime {
@@ -117,15 +119,10 @@ task GffCompare {
     }
 
     parameter_meta {
-        inputGtfList: {description: "Equivalent to gffcompare's `-i` option.", category: "advanced"}
+        # inputs
         inputGtfFiles: {description: "The input GTF files.", category: "required"}
         referenceAnnotation: {description: "The GTF file to compare with.", category: "required"}
-        outputDir: {description: "The location the output should be written.", category: "common"}
         outPrefix: {description: "The prefix for the output.", category: "advanced"}
-        genomeSequences: {description: "Equivalent to gffcompare's `-s` option.", category: "advanced"}
-        maxDistanceFreeEndsTerminalExons: {description: "Equivalent to gffcompare's `-e` option.", category: "advanced"}
-        maxDistanceGroupingTranscriptStartSites: {description: "Equivalent to gffcompare's `-d` option.", category: "advanced"}
-        namePrefix: {description: "Equivalent to gffcompare's `-p` option.", category: "advanced"}
         C: {description: "Equivalent to gffcompare's `-C` flag.", category: "advanced"}
         A: {description: "Equivalent to gffcompare's `-A` flag.", category: "advanced"}
         X: {description: "Equivalent to gffcompare's `-X` flag.", category: "advanced"}
@@ -137,9 +134,23 @@ task GffCompare {
         noTmap: {description: "Equivalent to gffcompare's `-T` flag.", category: "advanced"}
         verbose: {description: "Equivalent to gffcompare's `-V` flag.", category: "advanced"}
         debugMode: {description: "Equivalent to gffcompare's `-D` flag.", category: "advanced"}
+        inputGtfList: {description: "Equivalent to gffcompare's `-i` option.", category: "advanced"}
+        outputDir: {description: "The location the output should be written.", category: "common"}
+        genomeSequences: {description: "Equivalent to gffcompare's `-s` option.", category: "advanced"}
+        maxDistanceFreeEndsTerminalExons: {description: "Equivalent to gffcompare's `-e` option.", category: "advanced"}
+        maxDistanceGroupingTranscriptStartSites: {description: "Equivalent to gffcompare's `-d` option.", category: "advanced"}
+        namePrefix: {description: "Equivalent to gffcompare's `-p` option.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        annotated: {description: "Annotated GTF file."}
+        loci: {description: "File describing the processed loci."}
+        stats: {description: "Various statistics related to the “accuracy” (or a measure of agreement) of the input transcripts when compared to reference annotation data."}
+        tracking: {description: "File matching up transcripts between samples."}
+        allFiles: {description: "A collection of all output files."}
+        redundant: {description: "File containing duplicate/redundant transcripts."}
+        missedIntrons: {description: "File denoting missed introns."}
     }
 
     meta {

@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,7 +30,7 @@ task Mapping {
 
         Int cores = 4
         String memory = "30G"
-        Int timeMinutes = 1 + ceil(size(queryFile, "G") * 200 / cores)
+        Int timeMinutes = 1 + ceil(size(queryFile, "G") * 2000 / cores)
         String dockerImage = "quay.io/biocontainers/pbmm2:1.3.0--h56fc30b_1"
     }
 
@@ -41,6 +41,7 @@ task Mapping {
         -j ~{cores} \
         ~{referenceMMI} \
         ~{queryFile} \
+        --sample ~{sample} \
         ~{sample}.align.bam
     }
 
@@ -57,9 +58,10 @@ task Mapping {
     }
 
     parameter_meta {
+        # inputs
         presetOption: {description: "This option applies multiple options at the same time.", category: "required"}
         sort: {description: "Sort the output bam file.", category: "advanced"}
-        sample: {description: "Name of the sample"}
+        sample: {description: "Name of the sample.", category: "required"}
         referenceMMI: {description: "MMI file for the reference.", category: "required"}
         queryFile: {description: "BAM file with reads to align against the reference.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
@@ -67,7 +69,7 @@ task Mapping {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
-        # output
+        # outputs
         outputAlignmentFile: {description: "Mapped bam file."}
         outputIndexFile: {description: "Bam index file."}
     }

@@ -1,4 +1,4 @@
-
 ### Checklist
-- [ ] Pull request details were added to CHANGELOG.md
-- [ ] `parameter_meta` for each task is up to date.
+- [ ] Pull request details were added to CHANGELOG.md.
+- [ ] Documentation was updated (if required).
+- [ ] `parameter_meta` was added/updated (if required).

@@ -24,6 +24,8 @@ task ChunkedScatter {
     input {
         File inputFile
         String prefix = "./scatter"
+        Boolean splitContigs = false
+
         Int? chunkSize
         Int? overlap
         Int? minimumBasesPerFile
@@ -40,6 +42,7 @@ task ChunkedScatter {
         ~{"-c " + chunkSize} \
         ~{"-o " + overlap} \
         ~{"-m " + minimumBasesPerFile} \
+        ~{true="--split-contigs " false="" splitContigs} \
         ~{inputFile}
     }
 
@@ -55,15 +58,19 @@ task ChunkedScatter {
     }
 
     parameter_meta {
+        # inputs
         inputFile: {description: "Either a bed file describing regiosn of intrest or a sequence dictionary.", category: "required"}
         prefix: {description: "The prefix for the output files.", category: "advanced"}
+        splitContigs: {description: "If set, contigs are allowed to be split up over multiple files.", category: "advanced"}
         chunkSize: {description: "Equivalent to chunked-scatter's `-c` option.", category: "advanced"}
         overlap: {description: "Equivalent to chunked-scatter's `-o` option.", category: "advanced"}
         minimumBasesPerFile: {description: "Equivalent to chunked-scatter's `-m` option.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        scatters: {description: "Overlapping chunks of a given size in new bed files."}
     }
 }
 
@@ -74,9 +81,11 @@ task ScatterRegions {
         String prefix = "scatters/scatter-" 
         Boolean splitContigs = false
         Int scatterSizeMillions = 1000
+
         Int? scatterSize
-        Int timeMinutes = 2
+
         String memory = "256M"
+        Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/chunked-scatter:0.2.0--py_0"
     }
 
@@ -103,15 +112,17 @@ task ScatterRegions {
     }
 
     parameter_meta {
+        # inputs
         inputFile: {description: "The input file, either a bed file or a sequence dict. Which format is used is detected by the extension: '.bed', '.fai' or '.dict'.", category: "required"}
         prefix: {description: "The prefix of the ouput files. Output will be named like: <PREFIX><N>.bed, in which N is an incrementing number. Default 'scatter-'.", category: "advanced"}
         splitContigs: {description: "If set, contigs are allowed to be split up over multiple files.", category: "advanced"}
         scatterSizeMillions: {description: "Over how many million base pairs should be scattered.", category: "common"}
         scatterSize: {description: "Overrides scatterSizeMillions with a smaller value if set.", category: "advanced"}
-
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        scatters: {description: "Bed file where the contigs add up approximately to the given scatter size."}
     }
 }

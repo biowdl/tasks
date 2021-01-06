@@ -24,9 +24,10 @@ task Stringtie {
     input {
         File bam
         File bamIndex
-        File? referenceGtf
         Boolean skipNovelTranscripts = false
         String assembledTranscriptsFile
+
+        File? referenceGtf
         Boolean? firstStranded
         Boolean? secondStranded
         String? geneAbundanceFile
@@ -34,7 +35,7 @@ task Stringtie {
         Int threads = 1
         String memory = "2G"
         Int timeMinutes = 1 + ceil(size(bam, "G") * 60 / threads)
-        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:1.3.6--h92e31bf_0"
     }
 
     command {
@@ -64,19 +65,23 @@ task Stringtie {
     }
 
     parameter_meta {
+        # inputs
         bam: {description: "The input BAM file.", category: "required"}
         bamIndex: {description: "The input BAM file's index.", category: "required"}
-        referenceGtf: {description: "A reference GTF file to be used as guide.", category: "common"}
         skipNovelTranscripts: {description: "Whether new transcripts should be assembled or not.", category: "common"}
         assembledTranscriptsFile: {description: "Where the output of the assembly should be written.", category: "required"}
+        referenceGtf: {description: "A reference GTF file to be used as guide.", category: "common"}
         firstStranded: {description: "Equivalent to the --rf flag of stringtie.", category: "required"}
         secondStranded: {description: "Equivalent to the --fr flag of stringtie.", category: "required"}
         geneAbundanceFile: {description: "Where the abundance file should be written.", category: "common"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory needed for this task in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        assembledTranscripts: {description: "GTF file containing the assembled transcripts."}
+        geneAbundance: {description: "Gene abundances in tab-delimited format."}
     }
 }
 
@@ -84,18 +89,19 @@ task Merge {
     input {
         Array[File]+ gtfFiles
         String outputGtfPath
+        Boolean keepMergedTranscriptsWithRetainedIntrons = false
+
         File? guideGtf
         Int? minimumLength
         Float? minimumCoverage
         Float? minimumFPKM
         Float? minimumTPM
         Float? minimumIsoformFraction
-        Boolean keepMergedTranscriptsWithRetainedIntrons = false
         String? label
 
         String memory = "10G"
         Int timeMinutes = 1 + ceil(size(gtfFiles, "G") * 20)
-        String dockerImage = "quay.io/biocontainers/stringtie:1.3.4--py35_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:2.1.4--h7e0af3c_0"
     }
 
     command {
@@ -125,19 +131,22 @@ task Merge {
     }
 
     parameter_meta {
+        # inputs
         gtfFiles: {description: "The GTF files produced by stringtie.", category: "required"}
         outputGtfPath: {description: "Where the output should be written.", category: "required"}
+        keepMergedTranscriptsWithRetainedIntrons: {description: "Equivalent to the -i flag of 'stringtie --merge'.", category: "advanced"}
         guideGtf: {description: "Equivalent to the -G option of 'stringtie --merge'.", category: "advanced"}
         minimumLength: {description: "Equivalent to the -m option of 'stringtie --merge'.", category: "advanced"}
         minimumCoverage: {description: "Equivalent to the -c option of 'stringtie --merge'.", category: "advanced"}
         minimumFPKM: {description: "Equivalent to the -F option of 'stringtie --merge'.", category: "advanced"}
         minimumTPM: {description: "Equivalent to the -T option of 'stringtie --merge'.", category: "advanced"}
         minimumIsoformFraction: {description: "Equivalent to the -f option of 'stringtie --merge'.", category: "advanced"}
-        keepMergedTranscriptsWithRetainedIntrons: {description: "Equivalent to the -i flag of 'stringtie --merge'.", category: "advanced"}
         label: {description: "Equivalent to the -l option of 'stringtie --merge'.", category: "advanced"}
         memory: {description: "The amount of memory needed for this task in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        mergedGtfFile: {description: "A merged GTF file from a set of GTF files."}
     }
 }

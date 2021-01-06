@@ -32,6 +32,14 @@ task Cutadapt {
         Array[String] adapterRead2 = []
         Array[String] frontRead2 = []
         Array[String] anywhereRead2 = []
+        String reportPath = "cutadapt_report.txt"
+        # Cutadapt compresses the zipped output files with a ridiculously
+        # high compression level (5 or 6).
+        # This is not the fast compression preset. It takes up to 400% more
+        # CPU time for a 20% reduction in file size.
+        # Hence we use compression level 1 here.
+        Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
+
         Boolean? interleaved
         String? pairFilter
         Float? errorRate
@@ -52,7 +60,7 @@ task Cutadapt {
         String? stripSuffix
         String? prefix
         String? suffix
-        Int? minimumLength = 2  # Necessary to prevent creation of empty reads or 1 base reads.
+        Int? minimumLength = 2 # Necessary to prevent creation of empty reads or 1 base reads.
         Int? maximumLength
         Int? maxN
         Boolean? discardTrimmed
@@ -73,11 +81,7 @@ task Cutadapt {
         Boolean? bwa
         Boolean? zeroCap
         Boolean? noZeroCap
-        String reportPath = "cutadapt_report.txt"
-        # Cutadapt compresses the zipped output files with a ridiculously high compression level (5 or 6).
-        # This is not the fast compression preset. It takes up to 400% more CPU time for a 20% reduction in file size.
-        # Hence we use compression level 1 here.
-        Int compressionLevel = 1  # This only affects outputs with the .gz suffix.
+
         Int cores = 4
         String memory = "~{300 + 100 * cores}M"
         Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
@@ -152,8 +156,8 @@ task Cutadapt {
 
     output{
         File cutRead1 = read1output
-        File? cutRead2 = read2output
         File report = reportPath
+        File? cutRead2 = read2output
         File? tooLongOutput=tooLongOutputPath
         File? tooShortOutput=tooShortOutputPath
         File? untrimmedOutput=untrimmedOutputPath
@@ -173,22 +177,19 @@ task Cutadapt {
     }
 
     parameter_meta {
+        # inputs
         read1: {description: "The first or single end fastq file to be run through cutadapt.", category: "required"}
         read2: {description: "An optional second end fastq file to be run through cutadapt.", category: "common"}
         read1output: {description: "The name of the resulting first or single end fastq file.", category: "common"}
         read2output: {description: "The name of the resulting second end fastq file.", category: "common"}
-        adapter: {description: "A list of 3' ligated adapter sequences to be cut from the given first or single end fastq file.",
-                  category: "common"}
-        front: {description: "A list of 5' ligated adapter sequences to be cut from the given first or single end fastq file.",
-                category: "advanced"}
-        anywhere: {description: "A list of 3' or 5' ligated adapter sequences to be cut from the given first or single end fastq file.",
-                   category: "advanced"}
-        adapterRead2: {description: "A list of 3' ligated adapter sequences to be cut from the given second end fastq file.",
-                       category: "common"}
-        frontRead2: {description: "A list of 5' ligated adapter sequences to be cut from the given second end fastq file.",
-                     category: "advanced"}
-        anywhereRead2: {description: "A list of 3' or 5' ligated adapter sequences to be cut from the given second end fastq file.",
-                        category: "advanced"}
+        adapter: {description: "A list of 3' ligated adapter sequences to be cut from the given first or single end fastq file.", category: "common"}
+        front: {description: "A list of 5' ligated adapter sequences to be cut from the given first or single end fastq file.", category: "advanced"}
+        anywhere: {description: "A list of 3' or 5' ligated adapter sequences to be cut from the given first or single end fastq file.", category: "advanced"}
+        adapterRead2: {description: "A list of 3' ligated adapter sequences to be cut from the given second end fastq file.", category: "common"}
+        frontRead2: {description: "A list of 5' ligated adapter sequences to be cut from the given second end fastq file.", category: "advanced"}
+        anywhereRead2: {description: "A list of 3' or 5' ligated adapter sequences to be cut from the given second end fastq file.", category: "advanced"}
+        reportPath: {description: "The name of the file to write cutadapts's stdout to, this contains some metrics.", category: "common"}
+        compressionLevel: {description: "The compression level if gzipped output is used.", category: "advanced"}
         interleaved: {description: "Equivalent to cutadapt's --interleaved flag.", category: "advanced"}
         pairFilter: {description: "Equivalent to cutadapt's --pair-filter option.", category: "advanced"}
         errorRate: {description: "Equivalent to cutadapt's --error-rate option.", category: "advanced"}
@@ -230,13 +231,23 @@ task Cutadapt {
         bwa: {description: "Equivalent to cutadapt's --bwa flag.", category: "advanced"}
         zeroCap: {description: "Equivalent to cutadapt's --zero-cap flag.", category: "advanced"}
         noZeroCap: {description: "Equivalent to cutadapt's --no-zero-cap flag.", category: "advanced"}
-        reportPath: {description: "The name of the file to write cutadapts's stdout to, this contains some metrics.",
-                     category: "common"}
-        compressionLevel: {description: "The compression level if gzipped output is used.", category: "advanced"}
         cores: {description: "The number of cores to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        cutRead1: {description: "Trimmed read one."}
+        report: {description: "Per-adapter statistics file."}
+        cutRead2: {description: "Trimmed read two in pair."}
+        tooLongOutput: {description: "Reads that are too long according to -M."}
+        tooShortOutput: {description: "Reads that are too short according to -m."}
+        untrimmedOutput: {description: "All reads without adapters (instead of the regular output file)."}
+        tooLongPairedOutput: {description: "Second reads in a pair."}
+        tooShortPairedOutput: {description: "Second reads in a pair."}
+        untrimmedPairedOutput: {description: "The second reads in a pair that were not trimmed."}
+        infoFile: {description: "Detailed information about where adapters were found in each read."}
+        restFile: {description: "The rest file."}
+        wildcardFile: {description: "The wildcard file."}
     }
 }

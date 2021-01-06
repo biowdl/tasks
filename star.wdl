@@ -24,6 +24,7 @@ task GenomeGenerate {
     input {
         String genomeDir = "STAR_index"
         File referenceFasta
+
         File? referenceGtf
         Int? sjdbOverhang
 
@@ -61,8 +62,10 @@ task GenomeGenerate {
         File? sjdbListFromGtfOut = "~{genomeDir}/sjdbList.fromGTF.out.tab"
         File? sjdbListOut = "~{genomeDir}/sjdbList.out.tab"
         File? transcriptInfo = "~{genomeDir}/transcriptInfo.tab"
-        Array[File] starIndex = select_all([chrLength, chrNameLength, chrName, chrStart, genome, genomeParameters,
-                                            sa, saIndex, exonGeTrInfo, exonInfo, geneInfo, sjdbInfo, sjdbListFromGtfOut,
+        Array[File] starIndex = select_all([chrLength, chrNameLength, chrName,
+                                            chrStart, genome, genomeParameters,
+                                            sa, saIndex, exonGeTrInfo, exonInfo,
+                                            geneInfo, sjdbInfo, sjdbListFromGtfOut,
                                             sjdbListOut, transcriptInfo])
     }
 
@@ -74,16 +77,33 @@ task GenomeGenerate {
     }
 
     parameter_meta {
+        # inputs
         genomeDir: {description:"The directory the STAR index should be written to.", categroy: "common"}
         referenceFasta: {description: "The reference Fasta file.", category: "required"}
         referenceGtf: {description: "The reference GTF file.", category: "common"}
         sjdbOverhang: {description: "Equivalent to STAR's `--sjdbOverhang` option.", category: "advanced"}
-
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        chrLength: {description: "Text chromosome lengths file."}
+        chrNameLength: {description: "Text chromosome name lengths file."}
+        chrName: {description: "Text chromosome names file."}
+        chrStart: {description: "Chromosome start sites file."}
+        genome: {description: "Binary genome sequence file."}
+        genomeParameters: {description: "Genome parameters file."}
+        sa: {description: "Suffix arrays file."}
+        saIndex: {description: "Index file of suffix arrays."}
+        exonGeTrInfo: {description: "Exon, gene and transcript information file."}
+        exonInfo: {description: "Exon information file."}
+        geneInfo: {description: "Gene information file."}
+        sjdbInfo: {description: "Splice junctions coordinates file."}
+        sjdbListFromGtfOut: {description: "Splice junctions from input GTF file."}
+        sjdbListOut: {description: "Splice junction list file."}
+        transcriptInfo: {description: "Transcripts information file."}
+        starIndex: {description: "A collection of all STAR index files."}
     }
 }
 
@@ -95,6 +115,8 @@ task Star {
         String outFileNamePrefix
         String outSAMtype = "BAM SortedByCoordinate"
         String readFilesCommand = "zcat"
+        Int outBAMcompression = 1
+
         Int? outFilterScoreMin
         Float? outFilterScoreMinOverLread
         Int? outFilterMatchNmin
@@ -103,7 +125,6 @@ task Star {
         String? twopassMode = "Basic"
         Array[String]? outSAMattrRGline
         String? outSAMunmapped = "Within KeepPairs"
-        Int outBAMcompression = 1
         Int? limitBAMsortRAM
 
         Int runThreadN = 4
@@ -119,7 +140,7 @@ task Star {
     # So we solve it with an optional memory string and using select_first
     # in the runtime section.
 
-    #TODO Could be extended for all possible output extensions
+    #TODO: Could be extended for all possible output extensions.
     Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
 
     command {
@@ -157,12 +178,14 @@ task Star {
     }
 
     parameter_meta {
+        # inputs
         inputR1: {description: "The first-/single-end FastQ files.", category: "required"}
         inputR2: {description: "The second-end FastQ files (in the same order as the first-end files).", category: "common"}
         indexFiles: {description: "The star index files.", category: "required"}
         outFileNamePrefix: {description: "The prefix for the output files. May include directories.", category: "required"}
         outSAMtype: {description: "The type of alignment file to be produced. Currently only `BAM SortedByCoordinate` is supported.", category: "advanced"}
         readFilesCommand: {description: "Equivalent to star's `--readFilesCommand` option.", category: "advanced"}
+        outBAMcompression: {description: "The compression level of the output BAM.", category: "advanced"}
         outFilterScoreMin: {description: "Equivalent to star's `--outFilterScoreMin` option.", category: "advanced"}
         outFilterScoreMinOverLread: {description: "Equivalent to star's `--outFilterScoreMinOverLread` option.", category: "advanced"}
         outFilterMatchNmin: {description: "Equivalent to star's `--outFilterMatchNmin` option.", category: "advanced"}
@@ -174,9 +197,12 @@ task Star {
         limitBAMsortRAM: {description: "Equivalent to star's `--limitBAMsortRAM` option.", category: "advanced"}
         runThreadN: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        outBAMcompression: {description: "The compression level of the output BAM.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        bamFile: {description: "Alignment file."}
+        logFinalOut: {description: "Log information file."}
     }
 }
 

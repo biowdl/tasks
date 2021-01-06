@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2020 Sequencing Analysis Support Core - Leiden University Medical Center
+# Copyright (c) 2020 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@ task NanoPlot {
         Int threads = 2
         String memory = "2G"
         Int timeMinutes = 15
-        String dockerImage = "quay.io/biocontainers/nanoplot:1.32.0--py_0"
+        String dockerImage = "quay.io/biocontainers/nanoplot:1.32.1--py_0"
     }
 
     Map[String, String] fileTypeOptions = {"fastq": "--fastq ", "fasta": "--fasta ", "fastq_rich": "--fastq_rich ", "fastq_minimal": "--fastq_minimal ", "summary": "--summary ", "bam": "--bam ", "ubam": "--ubam ", "cram": "--cram ", "pickle": "--pickle ", "feather": "--feather "}
@@ -92,6 +92,7 @@ task NanoPlot {
         inputFileType: {description: "The format of the read file.", category: "required"}
         outputDir: {description: "Output directory path.", category: "required"}
         outputPrefix: {description: "Output file prefix.", category: "required"}
+        outputPath: {description: "Combination of the outputDir & outputPrefix strings.", category: "advanced"}
         outputTsvStats: {description: "Output the stats file as a properly formatted TSV.", category: "common"}
         dropOutliers: {description: "Drop outlier reads with extreme long length.", category: "advanced"}
         logLengths: {description: "Additionally show logarithmic scaling of lengths in plots.", category: "advanced"}

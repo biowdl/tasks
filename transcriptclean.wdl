@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2019 Sequencing Analysis Support Core - Leiden University Medical Center
+# Copyright (c) 2019 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,10 +8,10 @@ version 1.0
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -54,10 +54,10 @@ task GetSJsFromGtf {
 
     parameter_meta {
         # inputs
-        gtfFile: {description: "Input gtf file", category: "required"}
-        genomeFile: {description: "Reference genome", category: "required"}
-        minIntronSize: {description: "Minimum size of intron to consider a junction.", category: "advanced"}
+        gtfFile: {description: "Input gtf file.", category: "required"}
+        genomeFile: {description: "Reference genome.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        minIntronSize: {description: "Minimum size of intron to consider a junction.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -97,7 +97,7 @@ task GetTranscriptCleanStats {
 
     parameter_meta {
         # inputs
-        inputSam: {description: "Output sam file from transcriptclean", category: "required"}
+        inputSam: {description: "Output sam file from transcriptclean.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -189,8 +189,7 @@ task TranscriptClean {
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         
         # outputs
         fastaFile: {description: "Fasta file containing corrected reads."}

@@ -26,10 +26,10 @@ task BedToIntervalList {
         File dict
         String outputPath = "regions.interval_list"
 
-        String memory = "4G"
         String javaXmx = "3G"
+        String memory = "4G"
         Int timeMinutes = 5
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -47,9 +47,9 @@ task BedToIntervalList {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -57,12 +57,82 @@ task BedToIntervalList {
         bedFile: {description: "A bed file.", category: "required"}
         dict: {description: "A sequence dict file.", category: "required"}
         outputPath: {description: "The location the output interval list should be written to.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        intervalList: {description: "Picard Interval List from a BED file."}
+    }
+}
+
+task CollectHsMetrics {
+    input {
+        File inputBam
+        File inputBamIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        File targets
+        String basename
+
+        File? baits
+
+        # Use the targets file as baits as a fallback, since often the baits
+        # for a certain capture kit are not available.
+        File baitsFile = select_first([baits, targets])
+        File targetsFile = targets
+
+        Int javaXmxMb = 3072
+        Int memoryMb = javaXmxMb + 512
+        # Additional * 2 because picard multiple metrics reads the
+        # reference fasta twice.
+        Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{basename})"
+        picard -Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1 \
+        CollectHsMetrics \
+        I=~{inputBam} \
+        R=~{referenceFasta} \
+        BAIT_INTERVALS=~{baitsFile} \
+        TARGET_INTERVALS=~{targetsFile} \
+        O="~{basename}.hs_metrics.txt"
+    }
+
+    output {
+        File HsMetrics = basename + ".hs_metrics.txt"
+    }
+
+    runtime {
+        memory: "~{memoryMb}M"
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        targets: {description: "Picard interval file of the capture targets.", category: "required"}
+        targetsFile: {description: "Picard interval file of the capture targets, the same as targets.", category: "advanced"}
+        basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
+        baits: {description: "Picard interval file of the capture bait set.", category: "advanced"}
+        baitsFile: {description: "Picard interval file of the bait set. Uses targets as a fallback when baits is not set.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.", category: "advanced"}
+        memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        HsMetrics: {description: "Hybrid-selection (HS) metrics for the input BAM file."}
     }
 }
 
@@ -74,7 +144,6 @@ task CollectMultipleMetrics {
         File referenceFastaDict
         File referenceFastaFai
         String basename
-
         Boolean collectAlignmentSummaryMetrics = true
         Boolean collectInsertSizeMetrics = true
         Boolean qualityScoreDistribution = true
@@ -85,13 +154,12 @@ task CollectMultipleMetrics {
         Boolean collectSequencingArtifactMetrics = true
         Boolean collectQualityYieldMetrics = true
 
-        Int memoryMb = javaXmxMb + 512
         Int javaXmxMb = 3072
+        Int memoryMb = javaXmxMb + 512
         # Additional * 2 because picard multiple metrics reads the reference fasta twice.
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
-
 
     command {
         set -e
@@ -108,8 +176,7 @@ task CollectMultipleMetrics {
         ~{true="PROGRAM=MeanQualityByCycle" false="" meanQualityByCycle} \
         ~{true="PROGRAM=CollectBaseDistributionByCycle" false="" collectBaseDistributionByCycle} \
         ~{true="PROGRAM=CollectGcBiasMetrics" false="" collectGcBiasMetrics} \
-        ~{true="PROGRAM=CollectSequencingArtifactMetrics" false=""
-            collectSequencingArtifactMetrics} \
+        ~{true="PROGRAM=CollectSequencingArtifactMetrics" false="" collectSequencingArtifactMetrics} \
         ~{true="PROGRAM=CollectQualityYieldMetrics" false="" collectQualityYieldMetrics}
     }
 
@@ -156,9 +223,9 @@ task CollectMultipleMetrics {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: "~{memoryMb}M"
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -166,30 +233,42 @@ task CollectMultipleMetrics {
         inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
-                             category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
-        collectAlignmentSummaryMetrics: {description: "Equivalent to the `PROGRAM=CollectAlignmentSummaryMetrics` argument.",
-                                         category: "advanced"}
-        collectInsertSizeMetrics: {description: "Equivalent to the `PROGRAM=CollectInsertSizeMetrics` argument.",
-                                   category: "advanced"}
-        qualityScoreDistribution: {description: "Equivalent to the `PROGRAM=QualityScoreDistribution` argument.",
-                                   category: "advanced"}
+        collectAlignmentSummaryMetrics: {description: "Equivalent to the `PROGRAM=CollectAlignmentSummaryMetrics` argument.", category: "advanced"}
+        collectInsertSizeMetrics: {description: "Equivalent to the `PROGRAM=CollectInsertSizeMetrics` argument.", category: "advanced"}
+        qualityScoreDistribution: {description: "Equivalent to the `PROGRAM=QualityScoreDistribution` argument.", category: "advanced"}
         meanQualityByCycle: {description: "Equivalent to the `PROGRAM=MeanQualityByCycle` argument.", category: "advanced"}
-        collectBaseDistributionByCycle: {description: "Equivalent to the `PROGRAM=CollectBaseDistributionByCycle` argument.",
-                                         category: "advanced"}
+        collectBaseDistributionByCycle: {description: "Equivalent to the `PROGRAM=CollectBaseDistributionByCycle` argument.", category: "advanced"}
         collectGcBiasMetrics: {description: "Equivalent to the `PROGRAM=CollectGcBiasMetrics` argument.", category: "advanced"}
-        collectSequencingArtifactMetrics: {description: "Equivalent to the `PROGRAM=CollectSequencingArtifactMetrics` argument.",
-                                           category: "advanced"}
-        collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.",
-                                     category: "advanced"}
+        collectSequencingArtifactMetrics: {description: "Equivalent to the `PROGRAM=CollectSequencingArtifactMetrics` argument.", category: "advanced"}
+        collectQualityYieldMetrics: {description: "Equivalent to the `PROGRAM=CollectQualityYieldMetrics` argument.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
-        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        alignmentSummary: {description: ""}
+        baitBiasDetail: {description: ""}
+        baitBiasSummary: {description: ""}
+        baseDistributionByCycle: {description: ""}
+        baseDistributionByCyclePdf: {description: ""}
+        errorSummary: {description: ""}
+        gcBiasDetail: {description: ""}
+        gcBiasPdf: {description: ""}
+        gcBiasSummary: {description: ""}
+        insertSizeHistogramPdf: {description: ""}
+        insertSize: {description: ""}
+        preAdapterDetail: {description: ""}
+        preAdapterSummary: {description: ""}
+        qualityByCycle: {description: ""}
+        qualityByCyclePdf: {description: ""}
+        qualityDistribution: {description: ""}
+        qualityDistributionPdf: {description: ""}
+        qualityYield: {description: ""}
+        allStats: {description: ""}
     }
 }
 
@@ -201,11 +280,11 @@ task CollectRnaSeqMetrics {
         String basename
         String strandSpecificity = "NONE"
 
-        String memory = "9G"
         String javaXmx =  "8G"
-        # With 6 minutes per G there were several timeouts. 
+        String memory = "9G"
+        # With 6 minutes per G there were several timeouts.
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 12)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -221,14 +300,14 @@ task CollectRnaSeqMetrics {
     }
 
     output {
-        File? chart = basename + ".RNA_Metrics.pdf"
         File metrics = basename + ".RNA_Metrics"
+        File? chart = basename + ".RNA_Metrics.pdf"
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -237,15 +316,15 @@ task CollectRnaSeqMetrics {
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
         refRefflat: {description: "A refflat file containing gene annotations.", catehory: "required"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
-        strandSpecificity: {description: "Equivalent to the `STRAND_SPECIFICITY` option of picard's CollectRnaSeqMetrics.",
-                            category: "common"}
-
+        strandSpecificity: {description: "Equivalent to the `STRAND_SPECIFICITY` option of picard's CollectRnaSeqMetrics.", category: "common"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        metrics: {description: "Metrics describing the distribution of bases within the transcripts."}
+        chart: {description: "Plot of normalized position vs. coverage."}
     }
 }
 
@@ -260,10 +339,10 @@ task CollectTargetedPcrMetrics {
         Array[File]+ targetIntervals
         String basename
 
-        String memory = "4G"
         String javaXmx = "3G"
+        String memory = "4G"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -287,9 +366,9 @@ task CollectTargetedPcrMetrics {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -297,21 +376,73 @@ task CollectTargetedPcrMetrics {
         inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
         inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
-                             category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        ampliconIntervals: {description: "An interval list describinig the coordinates of the amplicons sequenced.",
-                           category: "required"}
-        targetIntervals: {description: "An interval list describing the coordinates of the targets sequenced.",
-                          category: "required"}
+        ampliconIntervals: {description: "An interval list describinig the coordinates of the amplicons sequenced.", category: "required"}
+        targetIntervals: {description: "An interval list describing the coordinates of the targets sequenced.", category: "required"}
         basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
-
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        perTargetCoverage: {description: "Per target coverage information."}
+        perBaseCoverage: {description: "Per base coverage information to."}
+        metrics: {description: "File containing metrics."}
+    }
+}
+
+task CollectVariantCallingMetrics {
+    input {
+        File dbsnp
+        File dbsnpIndex
+        File inputVCF
+        File inputVCFIndex
+        String basename
+
+        String javaXmx =  "8G"
+        String memory = "9G"
+        Int timeMinutes = 1440
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{basename})"
+        picard -Xmx~{javaXmx} \
+        CollectVariantCallingMetrics -XX:ParallelGCThreads=1 \
+        DBSNP=~{dbsnp} \
+        INPUT=~{inputVCF} \
+        OUTPUT=~{basename}
+    }
+
+    output {
+        File details = basename + ".variant_calling_detail_metrics"
+        File summary = basename + ".variant_calling_summary_metrics"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        dbsnp: {description: "DBSNP vcf file to use with CollectVariantCallingMetrics.", category: "required"}
+        dbsnpIndex: {description: "Index file for the DBSNP VCF.", category: "required"}
+        inputVCF: {description: "Input VCF file.", category: "required"}
+        inputVCFIndex: {description: "Index file for the input VCF.", category: "required"}
+        basename: {description: "The basename/prefix of the output files (may include directories).", category: "required"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        details: {description: ""}
+        summary: {description: ""}
     }
 }
 
@@ -384,9 +515,9 @@ task CreateSequenceDictionary {
         File inputFile
         String outputDir
 
-        String memory = "3G"
         String javaXmx = "2G"
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String memory = "3G"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -412,8 +543,8 @@ task CreateSequenceDictionary {
         # inputs
         inputFile: {description: "The input fasta file.", category: "required"}
         outputDir: {description: "Output directory path.", category: "required"}
-        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -421,20 +552,22 @@ task CreateSequenceDictionary {
     }
 }
 
-# Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
+# Combine multiple recalibrated BAM files from scattered
+# ApplyRecalibration runs.
 task GatherBamFiles {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
         String outputBamPath
-
-        Int memoryMb = javaXmxMb + 512
-        Int javaXmxMb = 1024
-        Int? compressionLevel
         Boolean createMd5File = false
+
+        Int? compressionLevel
+
+        Int javaXmxMb = 1024
+        Int memoryMb = javaXmxMb + 512
         # One minute per input gigabyte.
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 1)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -456,9 +589,9 @@ task GatherBamFiles {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: "~{memoryMb}M"
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -466,14 +599,17 @@ task GatherBamFiles {
         inputBams: {description: "The BAM files to be merged together.", category: "required"}
         inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
         outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
-        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
         createMd5File: {decription: "Whether to create an md5 file of the output BAM.", category: "advanced"}
+        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
-        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: "Concatenated BAM files."}
+        outputBamIndex: {description: "Index of the output `outputBam`."}
+        outputBamMd5: {description: "MD5 of the output `outputBam`."}
     }
 }
 
@@ -483,10 +619,10 @@ task GatherVcfs {
         Array[File]+ inputVcfIndexes
         String outputVcfPath = "out.vcf.gz"
 
-        String memory = "5G"
         String javaXmx = "4G"
+        String memory = "5G"
         Int timeMinutes = 1 + ceil(size(inputVcfs, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -503,9 +639,9 @@ task GatherVcfs {
     }
 
     runtime {
-        docker: dockerImage
         memory: memory
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -513,17 +649,17 @@ task GatherVcfs {
         inputVcfs: {description: "The VCF files to be merged together.", category: "required"}
         inputVcfIndexes: {description: "The indexes of the input VCF files.", category: "required"}
         outputVcfPath: {description: "The path where the merged VCF file will be written.", caregory: "required"}
-
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Multiple VCF files gathered into one file."}
     }
 }
 
-# Mark duplicate reads to avoid counting non-independent observations
+# Mark duplicate reads to avoid counting non-independent observations.
 task MarkDuplicates {
     input {
         Array[File]+ inputBams
@@ -531,31 +667,32 @@ task MarkDuplicates {
         String metricsPath
         Int compressionLevel = 1
         Boolean createMd5File = false
-        Boolean useJdkInflater = true  # Slightly faster than the intel one. 
-        # Better results for compression level 1 (much smaller). Higher compression levels similar to intel deflater.
-        # NOTE: this might change in the future when the intel deflater is updated!
+        Boolean useJdkInflater = true  # Slightly faster than the intel one.
+        # Better results for compression level 1 (much smaller).
+        # Higher compression levels similar to intel deflater.
+        # NOTE: this might change in the future when the intel
+        # deflater is updated!
         Boolean useJdkDeflater = true
 
-        # In GATK Best practices pipeline MarkDuplicates is given a 7G VM. 
+        # The program default for READ_NAME_REGEX is appropriate in nearly every case.
+        # Sometimes we wish to supply "null" in order to turn off optical duplicate detection.
+        # This can be desirable if you don't mind the estimated library size
+        # being wrong and optical duplicate detection is taking >7 days and failing.
+        String? read_name_regex
+
+        # In GATK Best practices pipeline MarkDuplicates is given a 7G VM.
         # https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L1040
         Int javaXmxMb =  6656  # 6.5G
         String memoryMb = javaXmxMb + 512
 
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
-
-        # The program default for READ_NAME_REGEX is appropriate in nearly every case.
-        # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
-        # This can be desirable if you don't mind the estimated library size being wrong and
-        # optical duplicate detection is taking >7 days and failing
-        String? read_name_regex
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     # Task is assuming query-sorted input so that the Secondary and Supplementary reads get
     # marked correctly. This works because the output of BWA is query-grouped and therefore,
     # so is the output of MergeBamAlignment. While query-grouped isn't actually query-sorted,
-    # it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
-
+    # it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname".
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
@@ -573,7 +710,7 @@ task MarkDuplicates {
         ADD_PG_TAG_TO_READS=false \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File} \
         USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
-        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}   
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}
     }
 
     output {
@@ -584,9 +721,9 @@ task MarkDuplicates {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: "~{memoryMb}M"
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -594,42 +731,45 @@ task MarkDuplicates {
         inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
         outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
         metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
-        read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
         createMd5File: {description: "Whether to create a md5 file for the created BAM file.", category: "advanced"}
         useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
         useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
-        compressionLevel: {description: "The compression level at which the BAM files are written", category: "advanced"}
+        read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
+        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
-        javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: ""}
+        outputBamIndex: {description: ""}
+        outputBamMd5: {description: ""}
+        metricsFile: {description: ""}
     }
 }
 
-# Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
+# Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs.
 task MergeVCFs {
     input {
         Array[File]+ inputVCFs
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
-
-        String memory = "5G"
-        String javaXmx = "4G"
-        Int timeMinutes = 1 + ceil(size(inputVCFs, "G")) * 2
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
         Int compressionLevel = 1
-        Boolean useJdkInflater = true  # Slightly faster than the intel one. 
-        # Better results for compression level 1 (much smaller). Higher compression levels similar to intel deflater.
+        Boolean useJdkInflater = true # Slightly faster than the intel one.
+        # Better results for compression level 1 (much smaller).
+        # Higher compression levels similar to intel deflater.
         # NOTE: this might change in the future when the intel deflater is updated!
         Boolean useJdkDeflater = true
 
+        String javaXmx = "4G"
+        String memory = "5G"
+        Int timeMinutes = 1 + ceil(size(inputVCFs, "G")) * 2
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
-    # Using MergeVcfs instead of GatherVcfs so we can create indices
-    # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
-
+    # Using MergeVcfs instead of GatherVcfs so we can create indices.
+    # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket.
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcfPath})"
@@ -639,7 +779,7 @@ task MergeVCFs {
         OUTPUT=~{outputVcfPath} \
         COMPRESSION_LEVEL=~{compressionLevel} \
         USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
-        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}   
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}
     }
 
     output {
@@ -648,9 +788,9 @@ task MergeVCFs {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -658,16 +798,17 @@ task MergeVCFs {
         inputVCFs: {description: "The VCF files to be merged.", category: "required"}
         inputVCFsIndexes: {description: "The indexes of the VCF files.", category: "required"}
         outputVcfPath: {description: "The location the output VCF file should be written to.", category: "required"}
-
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
         useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
         useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
-        compressionLevel: {description: "The compression level at which the BAM files are written", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Multiple variant files combined into a single variant file."}
+        outputVcfIndex: {description: "Index of `outputVcf`."}
     }
 }
 
@@ -677,10 +818,12 @@ task SamToFastq {
         File inputBamIndex
         Boolean paired = true
 
-        String memory = "17G"
         String javaXmx = "16G" # High memory default to avoid crashes.
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
-        File? NONE
+        String memory = "17G"
+        Int timeMinutes = 30
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+
+        File? noneFile
     }
 
     String outputRead1 = basename(inputBam, "\.[bs]am") + "_R1.fastq.gz"
@@ -699,13 +842,36 @@ task SamToFastq {
 
     output {
         File read1 = outputRead1
-        File? read2 = if paired then outputRead2 else NONE
-        File? unpairedRead = if paired then outputUnpaired else NONE
+        File? read2 = if paired then outputRead2 else noneFile
+        File? unpairedRead = if paired then outputUnpaired else noneFile
     }
 
     runtime {
-        docker: dockerImage
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "Input BAM file to extract reads from.", category: "required"}
+        inputBamIndex: {description: "Input BAM index file.", category: "required"}
+        paired: {description: "Set to false when input data is single-end.", category: "common"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        read1: {description: "Fastq file containing reads from the first pair."}
+        read2: {description: "Fastq file containing reads from the second pair."}
+        unpairedRead: {description: "Fastq file containing unpaired reads."}
+    }
+
+    meta {
+        WDL_AID: {
+            exclude: ["noneFile"]
+        }
     }
 }
 
@@ -714,9 +880,9 @@ task ScatterIntervalList {
         File interval_list
         Int scatter_count
 
-        String memory = "4G"
         String javaXmx = "3G"
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String memory = "4G"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -738,8 +904,8 @@ task ScatterIntervalList {
     }
 
     runtime {
-        docker: dockerImage
         memory: memory
+        docker: dockerImage
     }
 }
 
@@ -752,12 +918,12 @@ task SortSam {
         Int maxRecordsInRam = 500000
         Int compressionLevel = 1
 
-        # Default ram of 4 GB. Using 125001.0  to prevent an answer of 
+        # Default ram of 4 GB. Using 125001.0  to prevent an answer of
         # 4.000000001 which gets rounded to 5.
         # GATK Best practices uses 75000 here: https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L778
         Int XmxGb = ceil(maxRecordsInRam / 125001.0)
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -788,13 +954,20 @@ task SortSam {
     }
 
     parameter_meta {
-        inputBam: {description: "The unsorted input BAM file", category: "required"}
+        # inputs
+        inputBam: {description: "The unsorted input BAM file.", category: "required"}
         outputPath: {description: "The location the output BAM file should be written to.", category: "required"}
-        XmxGb: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.",
-                  category: "advanced"}
+        sortByName: {description: "Sort the output file by name, default is position.", category: "advanced"}
+        createMd5File: {description: "Whether to create an MD5 digest for any BAM or FASTQ files created.", category: "advanced"}
+        maxRecordsInRam: {description: "This will specify the number of records stored in RAM before spilling to disk.", category: "advanced"}
+        compressionLevel: {description: "Compression level for all compressed files created.", category: "advanced"}
+        XmxGb: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: "Sorted BAM file."}
+        outputBamIndex: {description: "Index of sorted BAM file."}
     }
 }
 
@@ -802,12 +975,13 @@ task SortVcf {
     input {
         Array[File]+ vcfFiles
         String outputVcfPath
+
         File? dict
 
-        String memory = "9G"
         String javaXmx = "8G"
+        String memory = "9G"
         Int timeMinutes = 1 + ceil(size(vcfFiles, "G") * 5)
-        String dockerImage = "quay.io/biocontainers/picard:2.20.5--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
 
@@ -827,9 +1001,9 @@ task SortVcf {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -837,13 +1011,14 @@ task SortVcf {
         vcfFiles: {description: "The VCF files to merge and sort.", category: "required"}
         outputVcfPath: {description: "The location the sorted VCF files should be written to.", category: "required"}
         dict: {description: "A sequence dictionary matching the VCF files.", category: "advanced"}
-
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Sorted VCF file(s)."}
+        outputVcfIndex: {description: "Index(es) of sort(ed) VCF file(s)."}
     }
 }
 
@@ -852,10 +1027,11 @@ task RenameSample {
         File inputVcf
         String outputPath = "./picard/renamed.vcf"
         String newSampleName
-        String memory = "9G"
+
         String javaXmx = "8G"
+        String memory = "9G"
         Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/picard:2.19.0--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
     }
 
     command {
@@ -873,9 +1049,9 @@ task RenameSample {
     }
 
     runtime {
-        docker: dockerImage
-        time_minutes: timeMinutes
         memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -883,9 +1059,12 @@ task RenameSample {
         inputVcf: {description: "The VCF file to process.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         newSampleName: {description: "A string to replace the old sample name.", category: "required"}
-        memory: {description: "The memory required to run the programs", category: "advanced"}
-        javaXmx: {description: "The max. memory allocated for JAVA", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        renamedVcf: {description: "New VCF with renamed sample."}
     }
 }

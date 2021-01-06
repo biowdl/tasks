@@ -29,10 +29,11 @@ task Germline {
         Array[File]+ indexes
         File referenceFasta
         File referenceFastaFai
-        File? callRegions
-        File? callRegionsIndex
         Boolean exome = false
         Boolean rna = false
+
+        File? callRegions
+        File? callRegionsIndex
 
         Int cores = 1
         Int memoryGb = 4
@@ -61,28 +62,31 @@ task Germline {
     }
 
     runtime {
-        docker: dockerImage
         cpu: cores
-        time_minutes: timeMinutes
         memory: "~{memoryGb}G"
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         runDir: {description: "The directory to use as run/output directory.", category: "common"}
         bams: {description: "The input BAM files.", category: "required"}
         indexes: {description: "The indexes for the input BAM files.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
-        callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
         exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         rna: {description: "Whether or not the data is from RNA sequencing.", category: "common"}
-
+        callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
+        callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        variants: {description: "Output VCF file."}
+        variantsIndex: {description: "Index of output VCF file."}
     }
 }
 
@@ -95,11 +99,12 @@ task Somatic {
         File tumorBamIndex
         File referenceFasta
         File referenceFastaFai
+        Boolean exome = false
+
         File? callRegions
         File? callRegionsIndex
         File? indelCandidatesVcf
         File? indelCandidatesVcfIndex
-        Boolean exome = false
 
         Int cores = 1
         Int memoryGb = 4
@@ -133,13 +138,14 @@ task Somatic {
     }
 
     runtime {
-        docker: dockerImage
         cpu: cores
-        time_minutes: timeMinutes
         memory: "~{memoryGb}G"
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
+        # inputs
         runDir: {description: "The directory to use as run/output directory.", category: "common"}
         normalBam: {description: "The normal/control sample's BAM file.", category: "required"}
         normalBamIndex: {description: "The index for the normal/control sample's BAM file.", category: "required"}
@@ -147,17 +153,21 @@ task Somatic {
         tumorBamIndex: {description: "The index for the tumor/case sample's BAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file which was also used for mapping.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
         callRegions: {description: "The bed file which indicates the regions to operate on.", category: "common"}
         callRegionsIndex: {description: "The index of the bed file which indicates the regions to operate on.", category: "common"}
         indelCandidatesVcf: {description: "An indel candidates VCF file from manta.", category: "advanced"}
         indelCandidatesVcfIndex: {description: "The index for the indel candidates VCF file.", category: "advanced"}
-        exome: {description: "Whether or not the data is from exome sequencing.", category: "common"}
-
         cores: {description: "The number of cores to use.", category: "advanced"}
         memoryGb: {description: "The amount of memory this job will use in Gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        indelsVcf: {description: "VCF containing INDELS."}
+        indelsIndex: {description: "Index of output `indelsVcf`."}
+        variants: {description: "VCF containing variants."}
+        variantsIndex: {description: "Index of output `variants`."}
     }
 
     meta {

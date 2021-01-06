@@ -1,7 +1,5 @@
 version 1.0
 
-# MIT License
-#
 # Copyright (c) 2018 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,6 +30,7 @@ task Merge {
         Boolean distanceBySvSize = false
         Int minSize = 30
         String outputPath = "./survivor/merged.vcf"
+
         String memory = "24G"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
@@ -64,16 +63,19 @@ task Merge {
 
     parameter_meta {
         # inputs
-        filePaths: {description: "An array of VCF files (predictions) to be merged by SURVIVOR", category: "required"}
-        breakpointDistance: {description: "The distance between pairwise breakpoints between SVs", category: "advanced"}
-        suppVecs: {description: "The minimum number of SV callers to support the merging", category: "advanced"}
-        svType: {description: "A boolean to include the type SV to be merged", category: "advanced"}
-        strandType: {description: "A boolean to include strand type of an SV to be merged", category: "advanced"}
-        distanceBySvSize: {description: "A boolean to predict the pairwise distance between the SVs based on their size", category: "advanced"}
-        minSize: {description: "The mimimum size of SV to be merged", category: "advanced"}
+        filePaths: {description: "An array of VCF files (predictions) to be merged by SURVIVOR.", category: "required"}
+        breakpointDistance: {description: "The distance between pairwise breakpoints between SVs.", category: "advanced"}
+        suppVecs: {description: "The minimum number of SV callers to support the merging.", category: "advanced"}
+        svType: {description: "A boolean to include the type SV to be merged.", category: "advanced"}
+        strandType: {description: "A boolean to include strand type of an SV to be merged.", category: "advanced"}
+        distanceBySvSize: {description: "A boolean to predict the pairwise distance between the SVs based on their size.", category: "advanced"}
+        minSize: {description: "The mimimum size of SV to be merged.", category: "advanced"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        memory: {description: "The memory required to run the programs", category: "advanced"}
+        memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        mergedVcf: {description: "All the vcf files specified in fileList merged."}
     }
 }
