@@ -315,6 +315,110 @@ task GripssHardFilterApplicationKt {
 #     }
 # }
 
+task Linx {
+    input {
+        String sampleName
+        File svVcf
+        File svVcfIndex
+        Array[File]+ purpleOutput
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        String refGenomeVersion
+        String outputDir = "./linx"
+        File fragileSiteCsv
+        File lineElementCsv
+        File replicationOriginsBed
+        File viralHostsCsv
+        File knownFusionCsv
+        File driverGenePanel
+        #The following should be in the same directory.
+        File geneDataCsv
+        File proteinFeaturesCsv
+        File transExonDataCsv
+        File transSpliceDataCsv
+
+        String memory = "9G"
+        String javaXmx = "8G"
+        Int timeMinutes = 30
+        String dockerImage = "docker://quay.io/biocontainers/hmftools-linx:1.12--0"
+    }
+
+    command {
+        linx -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -sample ~{sampleName} \
+        -sv_vcf ~{svVcf} \
+        -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
+        -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{refGenomeVersion} \
+        -output_dir ~{outputDir} \
+        -fragile_site_file ~{fragileSiteCsv} \
+        -line_element_file ~{lineElementCsv} \
+        -replication_origins_file ~{replicationOriginsBed} \
+        -viral_hosts_file ~{viralHostsCsv} \
+        -gene_transcripts_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -check_fusions \
+        -known_fusion_file ~{knownFusionCsv} \
+        -check_drivers \
+        -driver_gene_panel ~{driverGenePanel} \
+        -chaining_sv_limit 0 \
+        -write_vis_data
+    }
+
+    output {
+        File driverCatalog = "~{outputDir}/~{sampleName}.driver.catalog.tsv"
+        File linxBreakend = "~{outputDir}/~{sampleName}.linx.breakend.tsv"
+        File linxClusters = "~{outputDir}/~{sampleName}.linx.clusters.tsv"
+        File linxDrivers = "~{outputDir}/~{sampleName}.linx.drivers.tsv"
+        File linxFusion = "~{outputDir}/~{sampleName}.linx.fusion.tsv"
+        File linxLinks = "~{outputDir}/~{sampleName}.linx.links.tsv"
+        File linxSvs = "~{outputDir}/~{sampleName}.linx.svs.tsv"
+        File linxViralInserts = "~{outputDir}/~{sampleName}.linx.viral_inserts.tsv"
+        File linxVisCopyNumber = "~{outputDir}/~{sampleName}.linx.vis_copy_number.tsv"
+        File linxVisFusion = "~{outputDir}/~{sampleName}.linx.vis_fusion.tsv"
+        File linxVisGeneExon = "~{outputDir}/~{sampleName}.linx.vis_gene_exon.tsv"
+        File linxVisProteinDomain = "~{outputDir}/~{sampleName}.linx.vis_protein_domain.tsv"
+        File linxVisSegments = "~{outputDir}/~{sampleName}.linx.vis_segments.tsv"
+        File linxVisSvData = "~{outputDir}/~{sampleName}.linx.vis_sv_data.tsv"
+        File linxVersion = "~{outputDir}/linx.version"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        sampleName: {description: "The name of the sample.", category: "required"}
+        svVcf: {description: "A VCF file containing structural variants, produced using GRIDSS, annotated for viral insertions and postprocessed with GRIPSS.", category: "required"}
+        svVcfIndex: {description: "Index for the structural variants VCf file.", category: "required"}
+        purpleOutput: {description: "The files produced by PURPLE.", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"HG19\" or \"HG38\".", category: "required"}
+        outputDir: {description: "The directory the outputs will be written to.", category: "required"}
+        fragileSiteCsv: {description: "A list of known fragile sites.", category: "required"}
+        lineElementCsv: {description: "A list of known LINE source regions.", category: "required"}
+        replicationOriginsBed: {description: "Replication timing input in BED format with replication timing as the 4th column.", category: "required"}
+        viralHostsCsv: {description: "A list of the viruses which were used for annotation of the GRIDSS results.", category: "required"}
+        knownFusionCsv: {description: "A CSV file describing known fusions.", category: "required"}
+        driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
+        geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
+        transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Purple {
     input {
         String normalName
@@ -419,7 +523,7 @@ task Purple {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        driverGenePanel: {description: "A bed file describing the driver gene panel.", category: "required"}
+        driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
         hotspots: {description: "A vcf file with hotspot variant sites.", category: "required"}
 
         threads: {description: "The number of threads the program will use.", category: "advanced"}
@@ -444,11 +548,20 @@ task Sage {
         File panelBed
         File highConfidenceBed
         Boolean hg38 = false
+        Boolean panelOnly = false
         String outputPath = "./sage.vcf.gz"
 
         String? normalName
         File? normalBam
         File? normalBamIndex
+        Int? hotspotMinTumorQual
+        Int? panelMinTumorQual
+        Int? hotspotMaxGermlineVaf
+        Int? hotspotMaxGermlineRelRawBaseQual
+        Int? panelMaxGermlineVaf
+        Int? panelMaxGermlineRelRawBaseQual
+        String? mnvFilterEnabled
+        File? coverageBed
 
         Int threads = 2
         String javaXmx = "32G"
@@ -470,6 +583,15 @@ task Sage {
         -panel_bed ~{panelBed} \
         -high_confidence_bed ~{highConfidenceBed} \
         -assembly ~{true="hg38" false="hg19" hg38} \
+        ~{"-hotspot_min_tumor_qual " + hotspotMinTumorQual} \
+        ~{"-panel_min_tumor_qual " + panelMinTumorQual} \
+        ~{"-hotspot_max_germline_vaf " + hotspotMaxGermlineVaf} \
+        ~{"-hotspot_max_germline_rel_raw_base_qual " + hotspotMaxGermlineRelRawBaseQual} \
+        ~{"-panel_max_germline_vaf " + panelMaxGermlineVaf} \
+        ~{"-panel_max_germline_rel_raw_base_qual " + panelMaxGermlineRelRawBaseQual} \
+        ~{"-mnv_filter_enabled " + mnvFilterEnabled} \
+        ~{"-coverage_bed " + coverage_bed} \
+        ~{true="-panel_only" false="" panelOnly} \
         -threads ~{threads} \
         -out ~{outputPath}
     }
@@ -502,6 +624,13 @@ task Sage {
         hotspots: {description: "A vcf file with hotspot variant sites.", category: "required"}
         panelBed: {description: "A bed file describing coding regions to search for in frame indels.", category: "required"}
         highConfidenceBed: {description: "A bed files describing high confidence mapping regions.", category: "required"}
+        hotspotMinTumorQual: {description: "Equivalent to sage's `hotspot_min_tumor_qual` option.", category: "advanced"}
+        panelMinTumorQual: {description: "Equivalent to sage's `panel_min_tumor_qual` option.", category: "advanced"}
+        hotspotMaxGermlineVaf: {description: "Equivalent to sage's `hotspot_max_germline_vaf` option.", category: "advanced"}
+        hotspotMaxGermlineRelRawBaseQual: {description: "Equivalent to sage's `hotspot_max_germline_rel_raw_base_qual` option.", category: "advanced"}
+        panelMaxGermlineVaf: {description: "Equivalent to sage's `panel_max_germline_vaf` option.", category: "advanced"}
+        panelMaxGermlineRelRawBaseQual: {description: "Equivalent to sage's `panel_max_germline_vaf` option.", category: "advanced"}
+        mnvFilterEnabled: {description: "Equivalent to sage's `mnv_filter_enabled` option.", category: "advanced"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
