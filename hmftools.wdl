@@ -590,7 +590,7 @@ task Sage {
         ~{"-panel_max_germline_vaf " + panelMaxGermlineVaf} \
         ~{"-panel_max_germline_rel_raw_base_qual " + panelMaxGermlineRelRawBaseQual} \
         ~{"-mnv_filter_enabled " + mnvFilterEnabled} \
-        ~{"-coverage_bed " + coverage_bed} \
+        ~{"-coverage_bed " + coverageBed} \
         ~{true="-panel_only" false="" panelOnly} \
         -threads ~{threads} \
         -out ~{outputPath}
