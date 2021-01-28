@@ -106,7 +106,6 @@ task Annotate {
         inputFile: {description: "A vcf or bcf file.", category: "required"}
         inputFileIndex: {description: "The index for the input vcf or bcf.", category: "common"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        outputType: {description: "Output type: v=vcf, z=vcf.gz, b=bcf, u=uncompressed bcf", category: "advanced"}
         annsFile: {description: "Bgzip-compressed and tabix-indexed file with annotations (see man page for details).", category: "common"}
         annsFileIndex: {description: "The index for annsFile.", category: "common"}
         collapse: {description: "Treat as identical records with <snps|indels|both|all|some|none>, see man page for details.", category: "advanced"}

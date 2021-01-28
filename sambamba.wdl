@@ -20,6 +20,49 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+task Flagstat {
+    input {
+        File inputBam
+        File inputBamIndex
+        String outputPath = "./flagstat.txt"
+
+        Int threads = 2
+        String memory = "8G"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
+    }
+
+    command {
+        sambamba flagstat \
+	    -t ~{threads} \
+	    ~{inputBam} \
+        > ~{outputPath}
+    }
+
+    output {
+        File stats = outputPath
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file.", category: "required"}
+        inputBamIndex: {description: "The index for the BAM file.", category: "required"}
+        outputPath: {description: "The path to write the ouput to.", category: "required"}
+
+        threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
+}
+
+
 task Markdup {
     input {
         Array[File] inputBams

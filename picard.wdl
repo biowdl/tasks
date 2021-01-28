@@ -473,10 +473,10 @@ task CollectWgsMetrics {
         CollectWgsMetrics \
         REFERENCE_SEQUENCE=~{referenceFasta} \
         INPUT=~{inputBam} \
-        OUTPUT=~{outputPath} \ 
+        OUTPUT=~{outputPath} \
         ~{"MINIMUM_MAPPING_QUALITY=" + minimumMappingQuality} \
         ~{"MINIMUM_BASE_QUALITY=" + minimumBaseQuality} \
-        ~{"OVERAGE_CAP=" + coverageCap}
+        ~{"COVERAGE_CAP=" + coverageCap}
     }
 
     output {

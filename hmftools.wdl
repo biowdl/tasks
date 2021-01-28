@@ -341,7 +341,7 @@ task Linx {
         String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 30
-        String dockerImage = "docker://quay.io/biocontainers/hmftools-linx:1.12--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.12--0"
     }
 
     command {
@@ -381,6 +381,10 @@ task Linx {
         File linxVisSegments = "~{outputDir}/~{sampleName}.linx.vis_segments.tsv"
         File linxVisSvData = "~{outputDir}/~{sampleName}.linx.vis_sv_data.tsv"
         File linxVersion = "~{outputDir}/linx.version"
+        Array[File] outputs = [driverCatalog, linxBreakend, linxClusters, linxDrivers, linxFusion,
+                               linxLinks, linxSvs, linxViralInserts, linxVisCopyNumber,
+                               linxVisFusion, linxVisGeneExon, linxVisProteinDomain,
+                               linxVisSegments, linxVisSvData, linxVersion]
     }
 
     runtime {
