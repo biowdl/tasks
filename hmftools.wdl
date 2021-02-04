@@ -269,51 +269,67 @@ task GripssHardFilterApplicationKt {
     }
 }
 
-# task HealthChecker {
-#     # WIP
-#     input {
-#         String normalName
-#         String tumorName
-#
-#         String javaXmx = "10G"
-#     }
-#
-#     command {
-#         java -Xmx10G \
-#         -jar /opt/tools/health-checker/3.1/health-checker.jar \
-#         -reference ~{normalName} \
-#         -tumor ~{tumorName} \
-#         -metrics_dir ~{metricsPath} \
-#         -amber_dir ~{sub(amberOutput[0], basename(amberOutput[0]), "")} \
-#         -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
-#         -output_dir ~{outputDir}
-#     }
-#
-#     #    super("health-checker",
-#     #             Versions.HEALTH_CHECKER,
-#     #             "health-checker.jar",
-#     #             "10G",
-#     #             Lists.newArrayList("-reference",
-#     #                     referenceSampleName,
-#     #                     "-tumor",
-#     #                     tumorSampleName,
-#     #                     "-ref_wgs_metrics_file",
-#     #                     referenceMetricsPath,
-#     #                     "-tum_wgs_metrics_file",
-#     #                     tumorMetricsPath,
-#     #                     "-ref_flagstat_file",
-#     #                     referenceFlagstatPath,
-#     #                     "-tum_flagstat_file",
-#     #                     tumorFlagstatPath,
-#     #                     "-purple_dir",
-#     #                     purplePath,
-#     #                     "-output_dir",
-#     #                     outputPath));    
-#
-#     output {
-#
-#     }
-# }
+task HealthChecker {
+    # WIP
+    input {
+        String outputDir = "."
+        String normalName
+        File normalFlagstats
+        File normalMetrics
+        String tumorName
+        File tumorFlagstats
+        File tumorMetrics
+        Array[File]+ purpleOutput
+
+        String javaXmx = "10G"
+        String memory = "11G"
+        Int timeMinutes = 10
+        String dockerImage = "quay.io/biowdl/health-checker:3.2"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        health-checker -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -reference ~{normalName} \
+        -ref_flagstat_file ~{normalFlagstats} \
+        -ref_wgs_metrics_file ~{normalMetrics} \
+        -tumor ~{tumorName} \
+        -tum_flagstat_file ~{tumorFlagstats} \
+        -tum_wgs_metrics_file ~{tumorMetrics} \
+        -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
+        -output_dir ~{outputDir}   
+    }
+ 
+
+    output {
+        File? healthCheckSucceeded = "~{outputDir}/~{tumorName}.HealthCheckSucceeded"
+        File? healthCheckFailed = "~{outputDir}/~{tumorName}.HealthCheckFailed"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        outputDir: {description: "The path the output will be written to.", category:"required"}
+        normalName: {description: "The name of the normal sample.", category: "required"}
+        normalFlagstats: {description: "The flagstats for the normal sample.", category: "required"}
+        normalMetrics: {description: "The picard WGS metrics for the normal sample.", category: "required"}
+        tumorName: {description: "The name of the tumor sample.", category: "required"}
+        tumorFlagstats: {description: "The flagstats for the tumor sample.", category: "required"}
+        tumorMetrics: {description: "The picard WGS metrics for the tumor sample.", category: "required"}
+        purpleOutput: {description: "The files from purple's output directory.", category: "required"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
 
 task Linx {
     input {
