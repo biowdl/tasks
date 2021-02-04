@@ -25,7 +25,6 @@ task CreateDesignMatrix {
         File countTable
         String shinyDir = "."
 
-        Int threads = 1
         String memory = "5G"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/predex:0.9.2--pyh3252c3a_0"
@@ -44,7 +43,6 @@ task CreateDesignMatrix {
     }
 
     runtime {
-        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -53,8 +51,7 @@ task CreateDesignMatrix {
     parameter_meta {
         # inputs
         countTable: {description: "The created count table from HTseq.", category: "required"}
-        shinyDir: {description: "The directory to write the output to.", category: "required"}        
-        threads: {description: "The number of threads to use.", category: "advanced"}
+        shinyDir: {description: "The directory to write the output to.", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -70,7 +67,6 @@ task CreateAnnotation {
         File referenceGtfFile
         String shinyDir = "."
 
-        Int threads = 2
         String memory = "5G"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/predex:0.9.2--pyh3252c3a_0"
@@ -90,7 +86,6 @@ task CreateAnnotation {
     }
 
     runtime {
-        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -100,8 +95,7 @@ task CreateAnnotation {
         # inputs
         referenceFasta: {description: "The reference Fasta file.", category: "required"}
         referenceGtfFile: {description: "The reference GTF file.", category: "required"}
-        shinyDir: {description: "The directory to write the output to.", category: "required"}        
-        threads: {description: "The number of threads to use.", category: "advanced"}
+        shinyDir: {description: "The directory to write the output to.", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
