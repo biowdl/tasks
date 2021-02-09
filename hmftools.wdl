@@ -181,13 +181,13 @@ task GripssApplicationKt {
 
         String memory = "25G"
         String javaXmx = "24G"
-        Int timeMinutes = 60
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.8--0"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.7--0"
     }
 
     command {
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.8-0/gripss.jar \
+        -cp /usr/local/share/hmftools-gripss-1.7-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssApplicationKt \
         -ref_genome ~{referenceFasta} \
         -breakpoint_hotspot ~{breakpointHotspot} \
@@ -234,13 +234,13 @@ task GripssHardFilterApplicationKt {
 
         String memory = "25G"
         String javaXmx = "24G"
-        Int timeMinutes = 60
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.8--0"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.7--0"
     }
 
     command {
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.8-0/gripss.jar \
+        -cp /usr/local/share/hmftools-gripss-1.7-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssHardFilterApplicationKt \
         -input_vcf ~{inputVcf} \
         -output_vcf ~{outputPath} 

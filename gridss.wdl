@@ -35,9 +35,9 @@ task GRIDSS {
         String? normalLabel
 
         Int jvmHeapSizeGb = 30
-        Int threads = 2
-        Int timeMinutes = ceil(2880 / threads) + 10
-        String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
+        Int threads = 4
+        Int timeMinutes = ceil(5760 / threads) + 10
+        String dockerImage = "quay.io/biocontainers/gridss:2.9.3--0"
     }
 
     command {
