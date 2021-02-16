@@ -115,7 +115,7 @@ task Cobalt {
         String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 1200
-        String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.10--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.11--0"
     }
 
     command {
@@ -172,6 +172,8 @@ task GripssApplicationKt {
     input {
         File inputVcf
         String outputPath = "gripss.vcf.gz"
+        String tumorName
+        String normalName
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -182,13 +184,15 @@ task GripssApplicationKt {
         String memory = "25G"
         String javaXmx = "24G"
         Int timeMinutes = 120
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.7--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.9--0"
     }
 
     command {
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.7-0/gripss.jar \
+        -cp /usr/local/share/hmftools-gripss-1.9-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssApplicationKt \
+        -tumor ~{tumorName} \
+        ~reference ~{normalName} \
         -ref_genome ~{referenceFasta} \
         -breakpoint_hotspot ~{breakpointHotspot} \
         -breakend_pon ~{breakendPon} \
@@ -235,12 +239,12 @@ task GripssHardFilterApplicationKt {
         String memory = "25G"
         String javaXmx = "24G"
         Int timeMinutes = 120
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.7--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.9--0"
     }
 
     command {
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.7-0/gripss.jar \
+        -cp /usr/local/share/hmftools-gripss-1.9-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssHardFilterApplicationKt \
         -input_vcf ~{inputVcf} \
         -output_vcf ~{outputPath} 
@@ -357,7 +361,7 @@ task Linx {
         String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.12--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.13--0"
     }
 
     command {
@@ -455,13 +459,13 @@ task Purple {
         File referenceFastaFai
         File referenceFastaDict
         File driverGenePanel
-        File hotspots
+        File somaticHotspots
         
         Int threads = 1
         Int timeMinutes = 60
         String memory = "13G"
         String javaXmx = "12G"
-        String dockerImage = "quay.io/biocontainers/hmftools-purple:2.51--1"
+        String dockerImage = "quay.io/biocontainers/hmftools-purple:2.52--0"
     }
 
     command {
@@ -479,13 +483,8 @@ task Purple {
         -ref_genome ~{referenceFasta} \
         -driver_catalog \
         -driver_gene_panel ~{driverGenePanel} \
-        -hotspots ~{hotspots} \
+        -somatic_hotspots ~{somaticHotspots} \
         -threads ~{threads}
-
-        # TODO if shallow also the following:
-        #-highly_diploid_percentage 0.88 \
-        #-somatic_min_total 100 \
-        #-somatic_min_purity_spread 0.1
     }
 
     output {
@@ -587,7 +586,7 @@ task Sage {
         String javaXmx = "32G"
         String memory = "33G"
         Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 10 / threads) #FIXME make sure this is enough
-        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.2--2"
+        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.6--0"
     }
 
     command {

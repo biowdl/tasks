@@ -33,23 +33,28 @@ task GRIDSS {
         File? normalBam
         File? normalBai
         String? normalLabel
+        File? blacklistBed
+        File? repeatmaskerBed
 
         Int jvmHeapSizeGb = 30
         Int threads = 4
         Int timeMinutes = ceil(5760 / threads) + 10
-        String dockerImage = "quay.io/biocontainers/gridss:2.9.3--0"
+        String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         gridss \
+        -w . \
         --reference ~{reference.fastaFile} \
         --output ~{outputPrefix}.vcf.gz \
         --assembly ~{outputPrefix}_assembly.bam \
         ~{"-t " + threads} \
         ~{"--jvmheap " + jvmHeapSizeGb + "G"} \
         --label ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
+        ~{"--blacklist " + blacklistBed} \
+        ~{"--repeatmaskerbed " + repeatmaskerBed}
         ~{normalBam} \
         ~{tumorBam}
         tabix -p vcf ~{outputPrefix}.vcf.gz
@@ -80,6 +85,8 @@ task GRIDSS {
         normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
         normalBai: {description: "The index for normalBam.", category: "advanced"}
         normalLabel: {description: "The name of the normal sample.", category: "advanced"}
+        blacklistBed: {description: "A bed file with blaclisted regins.", category: "advanced"}
+        repeatmaskerBed: {description: "A bed file containing the repeatmasker database.", category: "advanced"}
 
         threads: {description: "The number of the threads to use.", category: "advanced"}
         jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}

@@ -28,6 +28,7 @@ task ExtractSigPredictHRD {
         File snvIndelVcfIndex
         File svVcf
         File svVcfIndex
+        Boolean hg38 = false
 
         String memory = "8G"
         Int timeMinutes = 15
@@ -40,6 +41,7 @@ task ExtractSigPredictHRD {
         ~{sampleName} \
         ~{snvIndelVcf} \
         ~{svVcf} \
+        ~{if hg38 then "RG_38" else "RG_37"}
     }
 
     output {
