@@ -543,7 +543,7 @@ task Purple {
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
-        hotspots: {description: "A vcf file with hotspot variant sites.", category: "required"}
+        somaticHotspots: {description: "A vcf file with hotspot variant sites.", category: "required"}
 
         threads: {description: "The number of threads the program will use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
