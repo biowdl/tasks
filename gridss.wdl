@@ -54,7 +54,7 @@ task GRIDSS {
         ~{"--jvmheap " + jvmHeapSizeGb + "G"} \
         --label ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
         ~{"--blacklist " + blacklistBed} \
-        ~{"--repeatmaskerbed " + repeatmaskerBed}
+        ~{"--repeatmaskerbed " + repeatmaskerBed} \
         ~{normalBam} \
         ~{tumorBam}
         tabix -p vcf ~{outputPrefix}.vcf.gz
