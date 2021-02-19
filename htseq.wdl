@@ -23,6 +23,7 @@ version 1.0
 task HTSeqCount {
     input {
         Array[File]+ inputBams
+        Array[File]+ inputBamIndexes
         File gtfFile
         String outputTable = "output.tsv"
         String order = "pos"
@@ -34,7 +35,7 @@ task HTSeqCount {
 
         Int nprocesses = 1
         String memory = "8G"
-        Int timeMinutes = 10 + ceil(size(inputBams, "G") * 60)
+        Int timeMinutes = 1440 #10 + ceil(size(inputBams, "G") * 60) FIXME
         String dockerImage = "quay.io/biocontainers/htseq:0.12.4--py37hb3f55d8_0"
     }
 
