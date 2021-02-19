@@ -590,9 +590,7 @@ task Sage {
     }
 
     command {
-        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-sage-2.2-2/sage.jar \
-        com.hartwig.hmftools.sage.SageApplication \
+        SAGE -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
         ~{"-reference " + normalName} \
