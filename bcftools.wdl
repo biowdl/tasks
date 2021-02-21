@@ -290,10 +290,9 @@ task View {
     input {
         File inputFile
         String outputPath = "output.vcf"
-		
         String? exclude
         String? include
-		Boolean excludeUncalled = false
+        Boolean excludeUncalled = false
         String memory = "256M"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
@@ -305,7 +304,9 @@ task View {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
         bcftools view \
-		~{true="--exclude-uncalled" false="" firstAlleleOnly} \
+        ~{"--exclude " + exclude} \
+        ~{"--include " + include} \
+        ~{true="--exclude-uncalled" false="" excludeUncalled} \
         -o ~{outputPath} \
         -O ~{true="z" false="v" compressed} \
         ~{inputFile}
@@ -330,6 +331,7 @@ task View {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
+		excludeUncalled: {description: "exclude sites without a called genotype (see man page for details).", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
