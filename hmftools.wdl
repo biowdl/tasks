@@ -488,7 +488,7 @@ task Purple {
     }
 
     output {
-        File driverCatalogTsv = "~{outputDir}/~{tumorName}.driver.catalog.tsv"
+        File driverCatalogSomaticTsv = "~{outputDir}/~{tumorName}.driver.catalog.somatic.tsv"
         File purpleCnvGeneTsv = "~{outputDir}/~{tumorName}.purple.cnv.gene.tsv"
         File purpleCnvGermlineTsv = "~{outputDir}/~{tumorName}.purple.cnv.germline.tsv"
         File purpleCnvSomaticTsv = "~{outputDir}/~{tumorName}.purple.cnv.somatic.tsv"
@@ -512,7 +512,7 @@ task Purple {
         File somaticPlot = "~{outputDir}/plot/~{tumorName}.somatic.png"
         File somaticRainfallPlot = "~{outputDir}/plot/~{tumorName}.somatic.rainfall.png"
         File purpleVersion = "~{outputDir}/purple.version"
-        Array[File] outputs = [driverCatalogTsv, purpleCnvGeneTsv, purpleCnvGermlineTsv,
+        Array[File] outputs = [driverCatalogSomaticTsv, purpleCnvGeneTsv, purpleCnvGermlineTsv,
             purpleCnvSomaticTsv, purplePurityRangeTsv, purplePurityTsv, purpleQc, 
             purpleSegmentTsv, purpleSomaticClonalityTsv, purpleSomaticHistTsv, 
             purpleSomaticVcf, purpleSomaticVcfIndex, purpleSvVcf, purpleSvVcfIndex,
