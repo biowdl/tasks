@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Update BCFTOOLS view: add options for filtering (include, exclude, excludeUncalled).
++ Duphold: add duphold.wdl.
 + Add new wdl file prepareShiny.wdl for creating input files for shiny app.
 + mergePacBio: Rename `mergedReport` to `outputPathMergedReport`.
 + Lima: Fix copy commands.
