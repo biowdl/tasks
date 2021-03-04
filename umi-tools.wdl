@@ -78,10 +78,13 @@ task Dedup {
         File inputBam
         File inputBamIndex
         String outputBamPath
+        String tmpDir
+
         Boolean paired = true
 
         String? umiSeparator
         String? statsPrefix
+        
 
         String memory = "25G"
         Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
@@ -93,13 +96,14 @@ task Dedup {
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputBamPath})"
+        mkdir -p "$(dirname ~{outputBamPath})" "~{tmpDir}"
         umi_tools dedup \
-        --stdin ~{inputBam} \
-        --stdout ~{outputBamPath} \
+        --stdin=~{inputBam} \
+        --stdout=~{outputBamPath} \
         ~{"--output-stats " + statsPrefix} \
         ~{"--umi-separator=" + umiSeparator} \
-        ~{true="--paired" false="" paired}
+        ~{true="--paired" false="" paired} \
+        --temp-dir=~{tmpDir} \
         samtools index ~{outputBamPath} ~{outputBamIndex}
     }
 
@@ -122,6 +126,7 @@ task Dedup {
         inputBam: {description: "The input BAM file.", categrory: "required"}
         inputBamIndex: {description: "The index for the ipnut BAM file.", cateogry: "required"}
         outputBamPath: {description: "The location to write the output BAM file to.", category: "required"}
+        outputBamPath: {description: "Temporary directory.", category: "advanced"}
         paired: {description: "Whether or not the data is paired.", category: "common"}
         umiSeparator: {description: "Seperator used for UMIs in the read names.", category: "advanced"}
         statsPrefix: {description: "The prefix for the stats files.", category: "advanced"}
