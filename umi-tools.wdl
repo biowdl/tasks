@@ -126,7 +126,7 @@ task Dedup {
         inputBam: {description: "The input BAM file.", categrory: "required"}
         inputBamIndex: {description: "The index for the ipnut BAM file.", cateogry: "required"}
         outputBamPath: {description: "The location to write the output BAM file to.", category: "required"}
-        outputBamPath: {description: "Temporary directory.", category: "advanced"}
+        tmpDir: {description: "Temporary directory.", category: "advanced"}
         paired: {description: "Whether or not the data is paired.", category: "common"}
         umiSeparator: {description: "Seperator used for UMIs in the read names.", category: "advanced"}
         statsPrefix: {description: "The prefix for the stats files.", category: "advanced"}
