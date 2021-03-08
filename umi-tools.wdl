@@ -84,7 +84,6 @@ task Dedup {
 
         String? umiSeparator
         String? statsPrefix
-        
 
         String memory = "25G"
         Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
