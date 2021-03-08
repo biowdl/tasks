@@ -78,7 +78,7 @@ task Dedup {
         File inputBam
         File inputBamIndex
         String outputBamPath
-        String tmpDir
+        String tmpDir = "./umiToolsDedupTmpDir"
 
         Boolean paired = true
 
