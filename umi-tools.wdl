@@ -103,13 +103,11 @@ task Dedup {
         ~{"--output-stats " + statsPrefix} \
         ~{"--umi-separator=" + umiSeparator} \
         ~{true="--paired" false="" paired} \
-        --temp-dir=~{tmpDir} \
-        samtools index ~{outputBamPath} ~{outputBamIndex}
+        --temp-dir=~{tmpDir}
     }
 
     output {
         File deduppedBam = outputBamPath
-        File deduppedBamIndex = outputBamIndex
         File? editDistance = "~{statsPrefix}_edit_distance.tsv"
         File? umiStats = "~{statsPrefix}_per_umi.tsv"
         File? positionStats =  "~{statsPrefix}_per_umi_per_position.tsv"
@@ -136,7 +134,6 @@ task Dedup {
 
         # outputs
         deduppedBam: {description: "Deduplicated BAM file."}
-        deduppedBamIndex: {description: "Index of the deduplicated BAM file."}
         editDistance: {description: "Report of the (binned) average edit distance between the UMIs at each position."}
         umiStats: {description: "UMI-level summary statistics."}
         positionStats: {description: "The counts for unique combinations of UMI and position."}
