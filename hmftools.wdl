@@ -512,6 +512,17 @@ task Purple {
         File somaticPlot = "~{outputDir}/plot/~{tumorName}.somatic.png"
         File somaticRainfallPlot = "~{outputDir}/plot/~{tumorName}.somatic.rainfall.png"
         File purpleVersion = "~{outputDir}/purple.version"
+        File circosNormalRatio = "~{outputDir}/circos/~{normalName}.ratio.circos"
+        File circosCond = "~{outputDir}/circos/~{tumorName}.circos.conf"
+        File circosIndel = "~{outputDir}/circos/~{tumorName}.indel.circos"
+        File circosLink = "~{outputDir}/circos/~{tumorName}.link.circos"
+        File circosTumorRatio = "~{outputDir}/circos/~{tumorName}.ratio.circos"
+        File circosGaps = "~{outputDir}/circos/gaps.txt"
+        File circosBaf = "~{outputDir}/circos/~{tumorName}.baf.circos"
+        File circosCnv = "~{outputDir}/circos/~{tumorName}.cnv.circos"
+        File circosInputConf = "~{outputDir}/circos/~{tumorName}.input.conf"
+        File circosMap = "~{outputDir}/circos/~{tumorName}.map.circos"
+        File circosSnp = "~{outputDir}/circos/~{tumorName}.snp.circos"
         Array[File] outputs = [driverCatalogSomaticTsv, purpleCnvGeneTsv, purpleCnvGermlineTsv,
             purpleCnvSomaticTsv, purplePurityRangeTsv, purplePurityTsv, purpleQc, 
             purpleSegmentTsv, purpleSomaticClonalityTsv, purpleSomaticHistTsv, 
@@ -519,6 +530,7 @@ task Purple {
             purpleVersion]
         Array[File] plots = [circosPlot, copynumberPlot, inputPlot, mapPlot, purityRangePlot,
             segmentPlot, somaticClonalityPlot, somaticPlot, somaticRainfallPlot]
+        Array[File] circos = []
     }
 
     runtime {
