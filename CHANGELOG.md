@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ UMI-tools: re-introduce samtools indexing
++ UMI-tools: update default dockerImage
 + UMI-tools (dedup): Add tempdir
 + Update BCFTOOLS view: add options for filtering (include, exclude, excludeUncalled).
 + Duphold: add duphold.wdl.
