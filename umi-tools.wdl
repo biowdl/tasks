@@ -31,7 +31,7 @@ task Extract {
         Boolean threePrime = false
 
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 2)
-        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
+        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:f9d5e41daab14b273ff04f257621890af6f82b93-0"
     }
 
     command {
@@ -87,7 +87,7 @@ task Dedup {
 
         String memory = "25G"
         Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
-        String dockerImage = "quay.io/biocontainers/umi_tools:1.1.1--py38h0213d0e_1"
+        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:f9d5e41daab14b273ff04f257621890af6f82b93-0"
     }
 
     String outputBamIndex = sub(outputBamPath, "\.bam$", ".bai")
@@ -102,10 +102,12 @@ task Dedup {
         ~{"--umi-separator=" + umiSeparator} \
         ~{true="--paired" false="" paired} \
         --temp-dir=~{tmpDir}
+        samtools index ~{outputBamPath} ~{outputBamIndex}
     }
 
     output {
         File deduppedBam = outputBamPath
+        File deduppedBamIndex = outputBamIndex
         File? editDistance = "~{statsPrefix}_edit_distance.tsv"
         File? umiStats = "~{statsPrefix}_per_umi.tsv"
         File? positionStats =  "~{statsPrefix}_per_umi_per_position.tsv"
@@ -132,6 +134,7 @@ task Dedup {
 
         # outputs
         deduppedBam: {description: "Deduplicated BAM file."}
+        deduppedBamIndex: {description: "Index of the deduplicated BAM file."}
         editDistance: {description: "Report of the (binned) average edit distance between the UMIs at each position."}
         umiStats: {description: "UMI-level summary statistics."}
         positionStats: {description: "The counts for unique combinations of UMI and position."}
