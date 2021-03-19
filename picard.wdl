@@ -459,9 +459,9 @@ task CollectWgsMetrics {
         Int? minimumBaseQuality
         Int? coverageCap
 
-        String memory = "25G"
-        String javaXmx = "24G"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
+        String memory = "33G"
+        String javaXmx = "32G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 12)
         String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
