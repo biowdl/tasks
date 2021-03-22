@@ -31,7 +31,7 @@ task Extract {
         Boolean threePrime = false
 
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 2)
-        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:f9d5e41daab14b273ff04f257621890af6f82b93-0"
+        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:3067b520386698317fd507c413baf7f901666fd4-0"
     }
 
     command {
@@ -87,7 +87,7 @@ task Dedup {
 
         String memory = "25G"
         Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
-        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:f9d5e41daab14b273ff04f257621890af6f82b93-0"
+        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:3067b520386698317fd507c413baf7f901666fd4-0"
     }
 
     String outputBamIndex = sub(outputBamPath, "\.bam$", ".bai")
