@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ UMI-tools: update default dockerImage to use umitools v1.1.1 with correct samtools version (1.10)
 + UMI-tools: re-introduce samtools indexing
 + UMI-tools: update default dockerImage to use umitools v1.1.1
 + UMI-tools dedup: Add tempdir
