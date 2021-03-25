@@ -84,7 +84,7 @@ task Cutadapt {
 
         Int cores = 4
         String memory = "~{300 + 100 * cores}M"
-        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
+        Int timeMinutes = 10 + ceil(size([read1, read2], "G")  * 12.0 / cores)
         String dockerImage = "quay.io/biocontainers/cutadapt:2.10--py37hf01694f_1"
     }
 
