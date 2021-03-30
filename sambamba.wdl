@@ -81,8 +81,8 @@ task Markdup {
         # 2 threads reduces wall clock time by more than 40%.
         Int threads = 2
         # According to the manual sambamba markdup uses the sortbufferSize + 2 times the ioBuffer size.
-        # Added 1024 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
-        Int memoryMb = 1024 + sortBufferSize + 2 * ioBufferSize
+        # Added 2024 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
+        Int memoryMb = 2048 + sortBufferSize + 2 * ioBufferSize
         # Time minute calculation does not work well for higher number of threads.
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 40) / threads
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
