@@ -36,7 +36,7 @@ task GRIDSS {
         File? blacklistBed
         File? repeatmaskerBed
 
-        Int jvmHeapSizeGb = 30
+        Int jvmHeapSizeGb = 64
         Int threads = 4
         Int timeMinutes = ceil(5760 / threads) + 10
         String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
@@ -70,7 +70,7 @@ task GRIDSS {
 
     runtime {
         cpu: threads
-        memory: "~{jvmHeapSizeGb + 1}G"
+        memory: "~{jvmHeapSizeGb + 25}G"
         time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }

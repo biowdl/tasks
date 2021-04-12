@@ -35,8 +35,8 @@ task Amber {
         File referenceFastaDict
 
         Int threads = 2
-        String memory = "33G"
-        String javaXmx = "32G"
+        String memory = "52G"
+        String javaXmx = "50G"
         Int timeMinutes = 1200
         String dockerImage = "quay.io/biocontainers/hmftools-amber:3.5--0"
     }
@@ -341,7 +341,7 @@ task Linx {
         File svVcf
         File svVcfIndex
         Array[File]+ purpleOutput
-        File referenceFasta
+        File referenceFasta #FIXME Not used in pipeline5?
         File referenceFastaFai
         File referenceFastaDict
         String refGenomeVersion
@@ -597,8 +597,8 @@ task Sage {
         File? coverageBed
 
         Int threads = 2
-        String javaXmx = "32G"
-        String memory = "33G"
+        String javaXmx = "50G"
+        String memory = "75G"
         Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 10 / threads) #FIXME make sure this is enough
         String dockerImage = "quay.io/biocontainers/hmftools-sage:2.6--0"
     }
