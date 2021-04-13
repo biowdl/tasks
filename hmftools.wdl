@@ -341,9 +341,6 @@ task Linx {
         File svVcf
         File svVcfIndex
         Array[File]+ purpleOutput
-        File referenceFasta #FIXME Not used in pipeline5?
-        File referenceFastaFai
-        File referenceFastaDict
         String refGenomeVersion
         String outputDir = "./linx"
         File fragileSiteCsv
@@ -369,7 +366,6 @@ task Linx {
         -sample ~{sampleName} \
         -sv_vcf ~{svVcf} \
         -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
-        -ref_genome ~{referenceFasta} \
         -ref_genome_version ~{refGenomeVersion} \
         -output_dir ~{outputDir} \
         -fragile_site_file ~{fragileSiteCsv} \
