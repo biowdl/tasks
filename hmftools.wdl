@@ -414,9 +414,6 @@ task Linx {
         svVcf: {description: "A VCF file containing structural variants, produced using GRIDSS, annotated for viral insertions and postprocessed with GRIPSS.", category: "required"}
         svVcfIndex: {description: "Index for the structural variants VCf file.", category: "required"}
         purpleOutput: {description: "The files produced by PURPLE.", category: "required"}
-        referenceFasta: {description: "The reference fasta file.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
-        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"HG19\" or \"HG38\".", category: "required"}
         outputDir: {description: "The directory the outputs will be written to.", category: "required"}
         fragileSiteCsv: {description: "A list of known fragile sites.", category: "required"}
