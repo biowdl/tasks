@@ -452,6 +452,7 @@ task Purple {
         Array[File]+ cobaltOutput
         File gcProfile
         File somaticVcf
+        File germlineVcf
         File filteredSvVcf
         File fullSvVcf
         File fullSvVcfIndex
@@ -460,6 +461,7 @@ task Purple {
         File referenceFastaDict
         File driverGenePanel
         File somaticHotspots
+        File germlineHotspots
         
         Int threads = 1
         Int timeMinutes = 60
@@ -477,6 +479,7 @@ task Purple {
         -cobalt ~{sub(cobaltOutput[0], basename(cobaltOutput[0]), "")} \
         -gc_profile ~{gcProfile} \
         -somatic_vcf ~{somaticVcf} \
+        -germline_vcf ~{germlineVcf} \
         -structural_vcf ~{filteredSvVcf} \
         -sv_recovery_vcf ~{fullSvVcf} \
         -circos /usr/local/bin/circos \
@@ -484,6 +487,7 @@ task Purple {
         -driver_catalog \
         -driver_gene_panel ~{driverGenePanel} \
         -somatic_hotspots ~{somaticHotspots} \
+        -germline_hotspots ~{germlineHotspots} \
         -threads ~{threads}
     }
 
@@ -550,6 +554,7 @@ task Purple {
         cobaltOutput: {description: "The output files of hmftools cobalt", category: "required"}
         gcProfile: {description: "A file describing the GC profile of the reference genome.", category: "required"}
         somaticVcf: {description: "The somatic variant calling results.", category: "required"}
+        germlineVcf: {description: "The germline variant calling results.", category: "required"}
         filteredSvVcf: {description: "The filtered structural variant calling results.", category: "required"}
         fullSvVcf: {description: "The unfiltered structural variant calling results.", category: "required"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
@@ -557,7 +562,8 @@ task Purple {
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
-        somaticHotspots: {description: "A vcf file with hotspot variant sites.", category: "required"}
+        somaticHotspots: {description: "A vcf file with hotspot somatic variant sites.", category: "required"}
+        germlineHotspots: {description: "A vcf file with hotspot germline variant sites.", category: "required"}
 
         threads: {description: "The number of threads the program will use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
