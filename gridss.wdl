@@ -35,6 +35,7 @@ task GRIDSS {
         String? normalLabel
         File? blacklistBed
         File? repeatmaskerBed
+        File? gridssProperties
 
         Int jvmHeapSizeGb = 64
         Int threads = 4
@@ -50,9 +51,10 @@ task GRIDSS {
         --reference ~{reference.fastaFile} \
         --output ~{outputPrefix}.vcf.gz \
         --assembly ~{outputPrefix}_assembly.bam \
+        ~{"-c " + gridssProperties} \
         ~{"-t " + threads} \
         ~{"--jvmheap " + jvmHeapSizeGb + "G"} \
-        --label ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
+        --labels ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
         ~{"--blacklist " + blacklistBed} \
         ~{"--repeatmaskerbed " + repeatmaskerBed} \
         ~{normalBam} \
@@ -87,6 +89,7 @@ task GRIDSS {
         normalLabel: {description: "The name of the normal sample.", category: "advanced"}
         blacklistBed: {description: "A bed file with blaclisted regins.", category: "advanced"}
         repeatmaskerBed: {description: "A bed file containing the repeatmasker database.", category: "advanced"}
+        gridssProperties: {description: "A properties file for gridss.", category: "advanced"}
 
         threads: {description: "The number of the threads to use.", category: "advanced"}
         jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}
