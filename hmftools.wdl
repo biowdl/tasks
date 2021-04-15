@@ -599,7 +599,7 @@ task Sage {
         String javaXmx = "50G"
         String memory = "75G"
         Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 10 / threads) #FIXME make sure this is enough
-        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.6--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.7--0"
     }
 
     command {
