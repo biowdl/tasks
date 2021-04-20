@@ -192,13 +192,13 @@ task GripssApplicationKt {
         -cp /usr/local/share/hmftools-gripss-1.9-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssApplicationKt \
         -tumor ~{tumorName} \
-        ~reference ~{normalName} \
+        -reference ~{normalName} \
         -ref_genome ~{referenceFasta} \
         -breakpoint_hotspot ~{breakpointHotspot} \
         -breakend_pon ~{breakendPon} \
         -breakpoint_pon ~{breakpointPon} \
         -input_vcf ~{inputVcf} \
-        -output_vcf ~{outputPath} 
+        -output_vcf ~{outputPath}
     }
 
     output {
@@ -486,6 +486,7 @@ task Purple {
 
     output {
         File driverCatalogSomaticTsv = "~{outputDir}/~{tumorName}.driver.catalog.somatic.tsv"
+        File driverCatalogGermlineTsv = "~{outputDir}/~{tumorName}.driver.catalog.germline.tsv"
         File purpleCnvGeneTsv = "~{outputDir}/~{tumorName}.purple.cnv.gene.tsv"
         File purpleCnvGermlineTsv = "~{outputDir}/~{tumorName}.purple.cnv.germline.tsv"
         File purpleCnvSomaticTsv = "~{outputDir}/~{tumorName}.purple.cnv.somatic.tsv"
@@ -497,6 +498,8 @@ task Purple {
         File purpleSomaticHistTsv = "~{outputDir}/~{tumorName}.purple.somatic.hist.tsv"
         File purpleSomaticVcf = "~{outputDir}/~{tumorName}.purple.somatic.vcf.gz"
         File purpleSomaticVcfIndex = "~{outputDir}/~{tumorName}.purple.somatic.vcf.gz.tbi"
+        File purpleGermlineVcf = "~{outputDir}/~{tumorName}.purple.germline.vcf.gz"
+        File purpleGermlineVcfIndex = "~{outputDir}/~{tumorName}.purple.germline.vcf.gz.tbi"
         File purpleSvVcf = "~{outputDir}/~{tumorName}.purple.sv.vcf.gz"
         File purpleSvVcfIndex = "~{outputDir}/~{tumorName}.purple.sv.vcf.gz.tbi"
         File circosPlot = "~{outputDir}/plot/~{tumorName}.circos.png"
@@ -524,7 +527,7 @@ task Purple {
             purpleCnvSomaticTsv, purplePurityRangeTsv, purplePurityTsv, purpleQc, 
             purpleSegmentTsv, purpleSomaticClonalityTsv, purpleSomaticHistTsv, 
             purpleSomaticVcf, purpleSomaticVcfIndex, purpleSvVcf, purpleSvVcfIndex,
-            purpleVersion]
+            purpleVersion, purpleGermlineVcf, purpleGermlineVcfIndex, driverCatalogGermlineTsv]
         Array[File] plots = [circosPlot, copynumberPlot, inputPlot, mapPlot, purityRangePlot,
             segmentPlot, somaticClonalityPlot, somaticPlot, somaticRainfallPlot]
         Array[File] circos = [circosNormalRatio, circosConf, circosIndel, circosLink,
