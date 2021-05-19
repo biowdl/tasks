@@ -37,7 +37,7 @@ task Amber {
         Int threads = 2
         String memory = "52G"
         String javaXmx = "50G"
-        Int timeMinutes = 1200
+        Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/hmftools-amber:3.5--0"
     }
 
@@ -112,9 +112,9 @@ task Cobalt {
         File gcProfile
         
         Int threads = 1
-        String memory = "9G"
-        String javaXmx = "8G"
-        Int timeMinutes = 1200
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.11--0"
     }
 
@@ -181,9 +181,9 @@ task GripssApplicationKt {
         File breakendPon
         File breakpointPon
 
-        String memory = "25G"
-        String javaXmx = "24G"
-        Int timeMinutes = 120
+        String memory = "33G"
+        String javaXmx = "32G"
+        Int timeMinutes = 45
         String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.9--0"
     }
 
@@ -236,9 +236,9 @@ task GripssHardFilterApplicationKt {
         File inputVcf
         String outputPath = "gripss_hard_filter.vcf.gz"
 
-        String memory = "25G"
-        String javaXmx = "24G"
-        Int timeMinutes = 120
+        String memory = "3G"
+        String javaXmx = "2G"
+        Int timeMinutes = 15
         String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.9--0"
     }
 
@@ -274,7 +274,6 @@ task GripssHardFilterApplicationKt {
 }
 
 task HealthChecker {
-    # WIP
     input {
         String outputDir = "."
         String normalName
@@ -285,9 +284,9 @@ task HealthChecker {
         File tumorMetrics
         Array[File]+ purpleOutput
 
-        String javaXmx = "10G"
-        String memory = "11G"
-        Int timeMinutes = 10
+        String javaXmx = "2G"
+        String memory = "1G"
+        Int timeMinutes = 1
         String dockerImage = "quay.io/biowdl/health-checker:3.2"
     }
 
@@ -355,9 +354,9 @@ task Linx {
         File transExonDataCsv
         File transSpliceDataCsv
 
-        String memory = "9G"
-        String javaXmx = "8G"
-        Int timeMinutes = 30
+        String memory = "5G"
+        String javaXmx = "4G"
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/hmftools-linx:1.13--0"
     }
 
@@ -457,9 +456,9 @@ task Purple {
         File germlineHotspots
         
         Int threads = 1
-        Int timeMinutes = 60
-        String memory = "13G"
-        String javaXmx = "12G"
+        Int timeMinutes = 30
+        String memory = "9G"
+        String javaXmx = "8G"
         String dockerImage = "quay.io/biocontainers/hmftools-purple:2.52--0"
     }
 
@@ -600,8 +599,8 @@ task Sage {
 
         Int threads = 2
         String javaXmx = "50G"
-        String memory = "75G"
-        Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 10 / threads) #FIXME make sure this is enough
+        String memory = "60G"
+        Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 8 / threads)
         String dockerImage = "quay.io/biocontainers/hmftools-sage:2.7--0"
     }
 

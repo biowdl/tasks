@@ -39,7 +39,7 @@ task GRIDSS {
 
         Int jvmHeapSizeGb = 64
         Int threads = 4
-        Int timeMinutes = ceil(5760 / threads) + 10
+        Int timeMinutes = ceil(4320 / threads) + 10
         String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
     }
 
@@ -72,7 +72,7 @@ task GRIDSS {
 
     runtime {
         cpu: threads
-        memory: "~{jvmHeapSizeGb + 25}G"
+        memory: "~{jvmHeapSizeGb + 15}G"
         time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }
@@ -117,7 +117,7 @@ task AnnotateInsertedSequence {
         String javaXmx = "8G"
         String memory = "9G"
         String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
-        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 2 / threads)
+        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 3 / threads)
     }
 
     command {

@@ -36,9 +36,9 @@ task SnpEff {
         Boolean noShiftHgvs = false
         Int? upDownStreamLen
 
-        String memory = "50G"
-        String javaXmx = "49G"
-        Int timeMinutes = 60 #FIXME
+        String memory = "9G"
+        String javaXmx = "8G"
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/snpeff:5.0--0"
     }
 

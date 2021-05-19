@@ -30,8 +30,8 @@ task ExtractSigPredictHRD {
         File svVcfIndex
         Boolean hg38 = false
 
-        String memory = "8G"
-        Int timeMinutes = 15
+        String memory = "3G"
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biowdl/chord-mutsigextractor:2.00_1.14"
     }
 
