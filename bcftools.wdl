@@ -47,7 +47,7 @@ task Annotate {
         File? samplesFile        
         
         Int threads = 0
-        String memory = "2G"
+        String memory = "4G"
         Int timeMinutes = 60 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
