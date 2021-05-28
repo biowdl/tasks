@@ -23,7 +23,6 @@ version 1.0
 task GffCompare {
     input {
         Array[File] inputGtfFiles
-        File referenceAnnotation
         # gffcmp is the default used by the program as well. This needs to be
         # defined in order for the output values to be consistent and correct.
         String outPrefix = "gffcmp"
@@ -40,6 +39,7 @@ task GffCompare {
         Boolean debugMode = false
 
         File? inputGtfList
+        File? referenceAnnotation
         String? outputDir
         File? genomeSequences
         Int? maxDistanceFreeEndsTerminalExons
@@ -64,7 +64,7 @@ task GffCompare {
         set -e
         ~{"mkdir -p " + outputDir}
         gffcompare \
-        -r ~{referenceAnnotation} \
+        ~{"-r " + referenceAnnotation} \
         ~{"-o '" + totalPrefix + "'"} \
         ~{"-s " + genomeSequences} \
         ~{"-e " + maxDistanceFreeEndsTerminalExons} \
