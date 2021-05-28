@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ GffCompare: Make the `referenceAnnotation` input optional.
++ Stringtie: Add the `minimumCoverage` input.
 + mergePacBio: Rename `mergedReport` to `outputPathMergedReport`.
 + Lima: Fix copy commands.
 + Fixed the `size` call in the default for gffread's timeMinutes, to retrieve

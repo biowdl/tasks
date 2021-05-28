@@ -23,7 +23,6 @@ version 1.0
 task HTSeqCount {
     input {
         Array[File]+ inputBams
-        Array[File]+ inputBamIndexes
         File gtfFile
         String outputTable = "output.tsv"
         String order = "pos"
