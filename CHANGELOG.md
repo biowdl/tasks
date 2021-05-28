@@ -12,6 +12,13 @@ version 5.0.0-dev
 ---------------------------
 + GffCompare: Make the `referenceAnnotation` input optional.
 + Stringtie: Add the `minimumCoverage` input.
++ UMI-tools: update default dockerImage to use umitools v1.1.1 with correct samtools version (1.10)
++ UMI-tools: re-introduce samtools indexing
++ UMI-tools: update default dockerImage to use umitools v1.1.1
++ UMI-tools dedup: Add tempdir
++ Update BCFTOOLS view: add options for filtering (include, exclude, excludeUncalled).
++ Duphold: add duphold.wdl.
++ Add new wdl file prepareShiny.wdl for creating input files for shiny app.
 + mergePacBio: Rename `mergedReport` to `outputPathMergedReport`.
 + Lima: Fix copy commands.
 + Fixed the `size` call in the default for gffread's timeMinutes, to retrieve

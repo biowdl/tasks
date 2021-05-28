@@ -31,7 +31,7 @@ task Extract {
         Boolean threePrime = false
 
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 2)
-        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
+        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:3067b520386698317fd507c413baf7f901666fd4-0"
     }
 
     command {
@@ -78,6 +78,8 @@ task Dedup {
         File inputBam
         File inputBamIndex
         String outputBamPath
+        String tmpDir = "./umiToolsDedupTmpDir"
+
         Boolean paired = true
 
         String? umiSeparator
@@ -85,21 +87,21 @@ task Dedup {
 
         String memory = "25G"
         Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
-        # Use a multi-package-container which includes umi_tools (0.5.5) and samtools (1.9).
-        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:6089936aca6219b5bb5f54210ac5eb456c7503f2-0"
+        String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:3067b520386698317fd507c413baf7f901666fd4-0"
     }
 
     String outputBamIndex = sub(outputBamPath, "\.bam$", ".bai")
 
     command {
         set -e
-        mkdir -p "$(dirname ~{outputBamPath})"
+        mkdir -p "$(dirname ~{outputBamPath})" "~{tmpDir}"
         umi_tools dedup \
-        --stdin ~{inputBam} \
-        --stdout ~{outputBamPath} \
+        --stdin=~{inputBam} \
+        --stdout=~{outputBamPath} \
         ~{"--output-stats " + statsPrefix} \
         ~{"--umi-separator=" + umiSeparator} \
-        ~{true="--paired" false="" paired}
+        ~{true="--paired" false="" paired} \
+        --temp-dir=~{tmpDir}
         samtools index ~{outputBamPath} ~{outputBamIndex}
     }
 
@@ -122,6 +124,7 @@ task Dedup {
         inputBam: {description: "The input BAM file.", categrory: "required"}
         inputBamIndex: {description: "The index for the ipnut BAM file.", cateogry: "required"}
         outputBamPath: {description: "The location to write the output BAM file to.", category: "required"}
+        tmpDir: {description: "Temporary directory.", category: "advanced"}
         paired: {description: "Whether or not the data is paired.", category: "common"}
         umiSeparator: {description: "Seperator used for UMIs in the read names.", category: "advanced"}
         statsPrefix: {description: "The prefix for the stats files.", category: "advanced"}
