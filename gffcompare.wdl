@@ -91,7 +91,7 @@ task GffCompare {
         else 0
     Int noInputFiles = length(inputGtfFiles)
     Boolean oneFile = (noFilesGtfList + noInputFiles) == 1
-    String annotatedName = if oneFile
+    String annotatedName = if oneFile && defined(referenceAnnotation)
         then "annotated"
         else "combined"
 
