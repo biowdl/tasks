@@ -32,6 +32,7 @@ task GffRead {
         String? proteinFastaPath
         String? filteredGffPath
 
+        String memory = "4G"
         Int timeMinutes = 1 + ceil(size(inputGff, "G") * 10)
         String dockerImage = "quay.io/biocontainers/gffread:0.9.12--0"
     }
@@ -64,6 +65,7 @@ task GffRead {
     }
 
     runtime {
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -78,6 +80,7 @@ task GffRead {
         CDSFastaPath: {description: "The location the CDS fasta should be written to.", category: "advanced"}
         proteinFastaPath: {description: "The location the protein fasta should be written to.", category: "advanced"}
         filteredGffPath: {description: "The location the filtered GFF should be written to.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
