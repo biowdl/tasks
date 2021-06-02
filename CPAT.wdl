@@ -34,6 +34,7 @@ task CPAT {
         Array[String]? startCodons
         Array[String]? stopCodons
 
+        String memory = "4G"
         Int timeMinutes = 10 + ceil(size(gene, "G") * 30)
         String dockerImage = "biocontainers/cpat:v1.2.4_cv1"
     }
@@ -60,8 +61,9 @@ task CPAT {
     }
 
     runtime {
-        docker: dockerImage
+        memory: memory
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
@@ -74,6 +76,7 @@ task CPAT {
         referenceGenomeIndex: {description: "The index of the reference. Should be added as input if CPAT should not index the reference genome.", category: "advanced"}
         startCodons: {description: "Equivalent to CPAT's `--start` option.", category: "advanced"}
         stopCodons: {description: "Equivalent to CPAT's `--stop` option.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
