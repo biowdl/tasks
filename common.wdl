@@ -221,7 +221,7 @@ task YamlToJson {
         String  memory = "128M"
         Int timeMinutes = 1
         # biowdl-input-converter has python and pyyaml.
-        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.2.1--py_0"
+        String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.3.0--pyhdfd78af_0"
     }
 
     command {
