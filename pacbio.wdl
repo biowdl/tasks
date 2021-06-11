@@ -26,7 +26,7 @@ task mergePacBio {
         String outputPathMergedReport
 
         String memory = "4G"
-        String dockerImage = "lumc/pacbio-merge:0.2"
+        String dockerImage = "quay.io/redmar_van_den_berg/pacbio-merge:0.2"
     }
 
     command {
