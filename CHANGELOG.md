@@ -10,7 +10,6 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
-<<<<<<< HEAD
 + Fix output files in ccs.wdl.
 + Update biowdl-input-converter to version 0.3.
 + Update minimap2 to version 2.20.
