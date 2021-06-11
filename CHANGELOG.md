@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Fix output files in ccs.wdl.
 + Add memory values to GffCompare, GffRead and CPAT.
 + GffCompare: Make the `referenceAnnotation` input optional.
 + Stringtie: Add the `minimumCoverage` input.
