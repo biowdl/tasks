@@ -42,7 +42,7 @@ task NanoPlot {
         Int threads = 2
         String memory = "2G"
         Int timeMinutes = 15
-        String dockerImage = "quay.io/biocontainers/nanoplot:1.32.1--py_0"
+        String dockerImage = "quay.io/biocontainers/nanoplot:1.38.0--pyhdfd78af_0"
     }
 
     Map[String, String] fileTypeOptions = {"fastq": "--fastq ", "fasta": "--fasta ", "fastq_rich": "--fastq_rich ", "fastq_minimal": "--fastq_minimal ", "summary": "--summary ", "bam": "--bam ", "ubam": "--ubam ", "cram": "--cram ", "pickle": "--pickle ", "feather": "--feather "}

@@ -37,7 +37,7 @@ task CCS {
         Int threads = 2
         String memory = "4G"
         Int timeMinutes = 1440
-        String dockerImage = "quay.io/biocontainers/pbccs:5.0.0--0"
+        String dockerImage = "quay.io/biocontainers/pbccs:6.0.0--h9ee0642_2"
     }
 
     command {

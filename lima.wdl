@@ -51,7 +51,7 @@ task Lima {
         Int threads = 2
         String memory = "2G"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/lima:2.0.0--0"
+        String dockerImage = "quay.io/biocontainers/lima:2.2.0--h9ee0642_0"
     }
 
     Map[String, String] libraryDesignOptions = {"same": "--same", "different": "--different", "neighbors": "--neighbors"}
@@ -91,13 +91,13 @@ task Lima {
         dirName="$(dirname ~{outputPrefix})"
         find "$(cd ${dirName}; pwd)" -name "*.bam" > bamFiles.txt
         find "$(cd ${dirName}; pwd)" -name "*.bam.pbi" > bamIndexes.txt
-        find "$(cd ${dirName}; pwd)" -name "*.subreadset.xml" > subreadsets.txt
+        find "$(cd ${dirName}; pwd)" -name "*.consensusreadset.xml" > consensusreadset.txt
     >>>
 
     output {
         Array[File] limaBam = read_lines("bamFiles.txt")
         Array[File] limaBamIndex = read_lines("bamIndexes.txt")
-        Array[File] limaXml = read_lines("subreadsets.txt")
+        Array[File] limaXml = read_lines("consensusreadset.txt")
         File limaStderr = outputPrefix + ".lima.stderr.log"
         File limaJson = outputPrefix + ".json"
         File limaCounts = outputPrefix + ".lima.counts"
