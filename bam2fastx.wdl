@@ -103,16 +103,26 @@ task Bam2Fastq {
         String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.1--hf05d43a_1"
     }
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
+
+        # Localise the bam and pbi files so they are next to each other in the
+        # current folder.
+        bamFiles=""
+        for bamFile in ~{sep=" " bam}
+        do
+            fullPathBam=$(readlink -f ${bamFile})
+            bamFiles=${bamFiles}" ${fullPathBam}"
+        done
+
         bam2fastq \
         --output ~{outputPrefix} \
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{sep=" " bam}
-    }
+        ${bamFiles}
+    >>>
 
     output {
         File fastqFile = outputPrefix + ".fastq.gz"
