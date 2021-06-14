@@ -111,7 +111,7 @@ task Bam2Fastq {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        ~{bam}
+        ~{sep=" " bam}
     }
 
     output {
