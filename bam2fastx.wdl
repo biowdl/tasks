@@ -35,7 +35,7 @@ task Bam2Fasta {
         String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.1--hf05d43a_1"
     }
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
 
@@ -44,13 +44,13 @@ task Bam2Fasta {
         bamFiles=""
         for bamFile in ~{sep=" " bam}
         do
-            cp $bamFile ./
-            bamFiles=$bamFiles" ./$(basename $bamFile)"
+            ln -s ${bamFile} ./
+            bamFiles=${bamFiles}" ./$(basename ${bamFile})"
         done
 
-        for index in ~{sep=" " bamIndex}
+        for indexFile in ~{sep=" " bamIndex}
         do
-            cp $index ./
+            ln -s ${indexFile} ./
         done
 
         bam2fasta \
@@ -58,8 +58,8 @@ task Bam2Fasta {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        $bamFiles
-    }
+        ${bamFiles}
+    >>>
 
     output {
         File fastaFile = outputPrefix + ".fasta.gz"
@@ -103,7 +103,7 @@ task Bam2Fastq {
         String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.1--hf05d43a_1"
     }
 
-    command {
+    command <<<
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
 
@@ -112,13 +112,13 @@ task Bam2Fastq {
         bamFiles=""
         for bamFile in ~{sep=" " bam}
         do
-            cp $bamFile ./
-            bamFiles=$bamFiles" ./$(basename $bamFile)"
+            ln -s ${bamFile} ./
+            bamFiles=${bamFiles}" ./$(basename ${bamFile})"
         done
 
-        for index in ~{sep=" " bamIndex}
+        for indexFile in ~{sep=" " bamIndex}
         do
-            cp $index ./
+            ln -s ${indexFile} ./
         done
 
         bam2fastq \
@@ -126,8 +126,8 @@ task Bam2Fastq {
         -c ~{compressionLevel} \
         ~{true="--split-barcodes" false="" splitByBarcode} \
         ~{"--seqid-prefix " + seqIdPrefix} \
-        $bamFiles
-    }
+        ${bamFiles}
+    >>>
 
     output {
         File fastqFile = outputPrefix + ".fastq.gz"
