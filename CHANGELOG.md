@@ -10,7 +10,11 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
-+ Fix output files in ccs.wdl.
++ Samtools: Add mkdir line to `Fastq` task.
++ Add new parameters from CCS version 6.0.0 and add two new outputs:
+  `ccs_report.txt` & `zmw_metrics.json.gz`.
++ Change CutAdapt memory to `5G`.
++ Increase multiqc base time from 5 to 10.
 + Update biowdl-input-converter to version 0.3.
 + Update minimap2 to version 2.20.
 + Update lima to version 2.2.0.
