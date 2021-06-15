@@ -10,8 +10,7 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
-+ Change the way localization of the input bam files and index are handled
-  in the bam2fastx tasks.
++ Samtools: Add mkdir line to `Fastq` task.
 + Add new parameters from CCS version 6.0.0 and add two new outputs:
   `ccs_report.txt` & `zmw_metrics.json.gz`.
 + Change CutAdapt memory to `5G`.
