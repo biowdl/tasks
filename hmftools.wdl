@@ -168,6 +168,112 @@ task Cobalt {
     }
 }
 
+task Cuppa {
+    input {
+        Array[File]+ linxOutput
+        Array[File]+ purpleOutput
+        String sampleName
+        Array[String]+ categories = ["DNA"]
+        Array[File]+ referenceData 
+        File purpleSvVcf
+        File purpleSvVcfIndex
+        File purpleSomaticVcf
+        File purpleSomaticVcfIndex
+        String outputDir = "./cuppa"
+
+        String javaXmx = "4G"
+        String memory = "5G"
+        Int time_minutes = 10
+        String dockerImage = "quay.io/biowdl/cuppa:1.4"
+    }
+
+    command {
+        set -e
+        mkdir -p sampleData ~{outputDir}
+        ln -s -t sampleData ~{sep=" " linxOutput} ~{sep=" " purpleOutput}
+        cuppa -Xmx~{javaXmx} \
+        -output_dir ~{outputDir} \
+        -output_id ~{sampleName} \
+        -categories '~{sep="," categories}' \
+        -ref_data_dir ~{sub(referenceData[0], basename(referenceData[0]), "")} \
+        -sample_data_dir sampleData \
+        -sample_data ~{sampleName} \
+        -sample_sv_file ~{purpleSvVcf} \
+        -sample_somatic_vcf ~{purpleSomaticVcf}
+    }
+
+    output {
+        File cupData = "~{outputDir}/~{sampleName}.cup.data.csv"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        linxOutput: {description: "The files produced by linx.", category: "required"}
+        purpleOutput: {description: "The files produced by purple.", category: "required"}
+        sampleName: {description: "The name of the sample.", category: "required"}
+        categories: {description: "The classifiers to use.", category: "advanced"}
+        referenceData : {description: "The reference data.", category: "required"}
+        purpleSvVcf: {description: "The VCF file produced by purple which contains structural variants.", category: "required"}
+        purpleSvVcfIndex: {description: "The index of the structural variants VCF file produced by purple.", category: "required"}
+        purpleSomaticVcf: {description: "The VCF file produced by purple which contains somatic variants.", category: "required"}
+        purpleSomaticVcfIndex: {description: "The index of the somatic VCF file produced by purple.", category: "required"}
+        outputDir: {description: "The directory the ouput will be placed in.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task CuppaChart {
+    input {
+        String sampleName
+        File cupData
+        String outputDir = "./cuppa"
+
+        String memory = "4G"
+        Int time_minutes = 5
+        String dockerImage = "quay.io/biowdl/cuppa:1.4"
+    }
+
+    command {
+        set -e 
+        mkdir -p ~{outputDir}
+        cuppa-chart \
+        -sample ~{sampleName}
+        -sample_data ~{cupData}
+        -output_dir ~{outputDir}
+    }
+
+    output {
+        File cuppaChart = "~{outputDir}/~{sampleName}.cuppa.chart.png"
+        File cuppaConclusion = "~{outputDir}/~{sampleName}.cuppa.conclusion.txt"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        sampleName: {description: "The name of the sample.", category:"common"}
+        cupData: {description: "The cuppa output.", category: "required"}
+        outputDir: {description: "The directory the output will be written to.", category:"common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task GripssApplicationKt {
     input {
         File inputVcf
