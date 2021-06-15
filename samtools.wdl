@@ -124,6 +124,8 @@ task Fastq {
     }
 
     command {
+        set -e
+        mkdir -p "$(dirname ~{outputRead1})"
         samtools fastq \
         ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
         ~{"-2 " + outputRead2} \
