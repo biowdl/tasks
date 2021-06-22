@@ -247,8 +247,8 @@ task CuppaChart {
         set -e 
         mkdir -p ~{outputDir}
         cuppa-chart \
-        -sample ~{sampleName}
-        -sample_data ~{cupData}
+        -sample ~{sampleName} \
+        -sample_data ~{cupData} \
         -output_dir ~{outputDir}
     }
 
