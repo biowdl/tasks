@@ -615,7 +615,6 @@ task Purple {
         File segmentPlot = "~{outputDir}/plot/~{tumorName}.segment.png"
         File somaticClonalityPlot = "~{outputDir}/plot/~{tumorName}.somatic.clonality.png"
         File somaticPlot = "~{outputDir}/plot/~{tumorName}.somatic.png"
-        File somaticRainfallPlot = "~{outputDir}/plot/~{tumorName}.somatic.rainfall.png"
         File purpleVersion = "~{outputDir}/purple.version"
         File circosNormalRatio = "~{outputDir}/circos/~{normalName}.ratio.circos"
         File circosConf = "~{outputDir}/circos/~{tumorName}.circos.conf"
@@ -634,7 +633,7 @@ task Purple {
             purpleSomaticVcf, purpleSomaticVcfIndex, purpleSvVcf, purpleSvVcfIndex,
             purpleVersion, purpleGermlineVcf, purpleGermlineVcfIndex, driverCatalogGermlineTsv]
         Array[File] plots = [circosPlot, copynumberPlot, inputPlot, mapPlot, purityRangePlot,
-            segmentPlot, somaticClonalityPlot, somaticPlot, somaticRainfallPlot]
+            segmentPlot, somaticClonalityPlot, somaticPlot]
         Array[File] circos = [circosNormalRatio, circosConf, circosIndel, circosLink,
             circosTumorRatio, circosGaps, circosBaf, circosCnv, circosInputConf, circosMap,
             circosSnp]
