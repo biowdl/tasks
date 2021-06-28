@@ -164,7 +164,7 @@ task GridssAnnotateVcfRepeatmasker {
 
         String memory = "4G"
         String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
-        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 3)
+        Int timeMinutes = 1 + ceil(size(gridssVcf, "G") * 3)
     }
 
     command {
@@ -181,10 +181,69 @@ task GridssAnnotateVcfRepeatmasker {
     }
 
     runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
         gridssVcf: {description: "The GRIDSS output.", category: "required"}
         gridssVcfIndex: {description: "The index for the GRIDSS output.", category: "required"}
         outputPath: {description: "The path the output should be written to.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task Virusbreakend {
+    input {
+        File bam
+        File bamIndex
+        File referenceFasta
+        File virusbreakendDB
+        String outputPath = "./virusbreakend.vcf"
+
+        String memory = "75G"
+        Int threads = 8
+        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
+        Int timeMinutes = 180
+    }
+
+    command {
+        mkdir virusbreakenddb
+        tar -xzvf ~{virusbreakendDB} -C virusbreakenddb --strip-components 1
+        virusbreakend \
+        --output ~{outputPath} \
+        --workingdir . \
+        --reference ~{referenceFasta} \
+        --db virusbreakenddb \
+        --jar /usr/local/share/gridss-2.12.0-1/gridss.jar \
+        -t ~{threads} \
+        ~{bam}
+    }
+
+    output {
+        File vcf = outputPath
+        File summary = "~{outputPath}.summary.tsv"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        bam: {description: "A BAM file.", category: "required"}
+        bamIndex: {description: "The index for the BAM file.", category: "required"}
+        referenceFasta: {description: "The fasta of the reference genome.", category: "required"}
+        virusbreakendDB: {description: "A .tar.gz containing the virusbreakend database.", category: "required"}
+        outputPath: {description: "The path the output should be written to.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        threads: {description: "The number of the threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
