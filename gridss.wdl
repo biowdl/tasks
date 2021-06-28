@@ -22,88 +22,6 @@ version 1.0
 
 import "bwa.wdl" as bwa
 
-task GRIDSS {
-    input {
-        File tumorBam
-        File tumorBai
-        String tumorLabel
-        BwaIndex reference
-        String outputPrefix = "gridss"
-
-        File? normalBam
-        File? normalBai
-        String? normalLabel
-        File? blacklistBed
-        File? repeatmaskerBed
-        File? gridssProperties
-
-        Int jvmHeapSizeGb = 64
-        Int threads = 4
-        Int timeMinutes = ceil(4320 / threads) + 10
-        String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
-    }
-
-    command {
-        set -e
-        mkdir -p "$(dirname ~{outputPrefix})"
-        gridss \
-        -w . \
-        --reference ~{reference.fastaFile} \
-        --output ~{outputPrefix}.vcf.gz \
-        --assembly ~{outputPrefix}_assembly.bam \
-        ~{"-c " + gridssProperties} \
-        ~{"-t " + threads} \
-        ~{"--jvmheap " + jvmHeapSizeGb + "G"} \
-        --labels ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
-        ~{"--blacklist " + blacklistBed} \
-        ~{"--repeatmaskerbed " + repeatmaskerBed} \
-        ~{normalBam} \
-        ~{tumorBam}
-        tabix -p vcf ~{outputPrefix}.vcf.gz
-        samtools index ~{outputPrefix}_assembly.bam ~{outputPrefix}_assembly.bai
-    }
-
-    output {
-        File vcf = outputPrefix + ".vcf.gz"
-        File vcfIndex = outputPrefix + ".vcf.gz.tbi"
-        File assembly = outputPrefix + "_assembly.bam"
-        File assemblyIndex = outputPrefix + "_assembly.bai"
-    }
-
-    runtime {
-        cpu: threads
-        memory: "~{jvmHeapSizeGb + 15}G"
-        time_minutes: timeMinutes # !UnknownRuntimeKey
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        # inputs
-        tumorBam: {description: "The input BAM file. This should be the tumor/case sample in case of a paired analysis.", category: "required"}
-        tumorBai: {description: "The index for tumorBam.", category: "required"}
-        tumorLabel: {description: "The name of the (tumor) sample.", category: "required"}
-        reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
-        outputPrefix: {description: "The prefix for the output files. This may include parent directories.", category: "common"}
-        normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
-        normalBai: {description: "The index for normalBam.", category: "advanced"}
-        normalLabel: {description: "The name of the normal sample.", category: "advanced"}
-        blacklistBed: {description: "A bed file with blaclisted regins.", category: "advanced"}
-        repeatmaskerBed: {description: "A bed file containing the repeatmasker database.", category: "advanced"}
-        gridssProperties: {description: "A properties file for gridss.", category: "advanced"}
-
-        threads: {description: "The number of the threads to use.", category: "advanced"}
-        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-
-        # outputs
-        vcf: {description: "VCF file including variant allele fractions."}
-        vcfIndex: {description: "Index of output VCF."}
-        assembly: {description: "The GRIDSS assembly BAM."}
-        assemblyIndex: {description: "Index of output BAM file."}
-    }
-}
-
 task AnnotateInsertedSequence {
     input {
         File inputVcf
@@ -116,19 +34,12 @@ task AnnotateInsertedSequence {
         Int threads = 8
         String javaXmx = "8G"
         String memory = "9G"
-        String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
+        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
         Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 3 / threads)
     }
 
     command {
-        java -Xmx~{javaXmx} \
-        -Dsamjdk.create_index=true \
-        -Dsamjdk.use_async_io_read_samtools=true \
-        -Dsamjdk.use_async_io_write_samtools=true \
-        -Dsamjdk.use_async_io_write_tribble=true \
-        -Dsamjdk.buffer_size=4194304 \
-        -cp /usr/local/share/gridss-2.9.4-0/gridss.jar \
-        gridss.AnnotateInsertedSequence \
+        AnnotateInsertedSequence -Xmx~{javaXmx} \
         REFERENCE_SEQUENCE=~{viralReference} \
         INPUT=~{inputVcf} \
         OUTPUT=~{outputPath} \
@@ -160,6 +71,120 @@ task AnnotateInsertedSequence {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task GRIDSS {
+    input {
+        File tumorBam
+        File tumorBai
+        String tumorLabel
+        BwaIndex reference
+        String outputPrefix = "gridss"
+
+        File? normalBam
+        File? normalBai
+        String? normalLabel
+        File? blacklistBed
+        File? gridssProperties
+
+        Int jvmHeapSizeGb = 64
+        Int threads = 4
+        Int timeMinutes = ceil(4320 / threads) + 10
+        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPrefix})"
+        gridss \
+        -w . \
+        --reference ~{reference.fastaFile} \
+        --output ~{outputPrefix}.vcf.gz \
+        --assembly ~{outputPrefix}_assembly.bam \
+        ~{"-c " + gridssProperties} \
+        ~{"-t " + threads} \
+        ~{"--jvmheap " + jvmHeapSizeGb + "G"} \
+        --labels ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
+        ~{"--blacklist " + blacklistBed} \
+        ~{normalBam} \
+        ~{tumorBam}
+        tabix -p vcf ~{outputPrefix}.vcf.gz
+        samtools index ~{outputPrefix}_assembly.bam ~{outputPrefix}_assembly.bai
+    }
+
+    output {
+        File vcf = outputPrefix + ".vcf.gz"
+        File vcfIndex = outputPrefix + ".vcf.gz.tbi"
+        File assembly = outputPrefix + "_assembly.bam"
+        File assemblyIndex = outputPrefix + "_assembly.bai"
+    }
+
+    runtime {
+        cpu: threads
+        memory: "~{jvmHeapSizeGb + 15}G"
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        tumorBam: {description: "The input BAM file. This should be the tumor/case sample in case of a paired analysis.", category: "required"}
+        tumorBai: {description: "The index for tumorBam.", category: "required"}
+        tumorLabel: {description: "The name of the (tumor) sample.", category: "required"}
+        reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
+        outputPrefix: {description: "The prefix for the output files. This may include parent directories.", category: "common"}
+        normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
+        normalBai: {description: "The index for normalBam.", category: "advanced"}
+        normalLabel: {description: "The name of the normal sample.", category: "advanced"}
+        blacklistBed: {description: "A bed file with blaclisted regins.", category: "advanced"}
+        gridssProperties: {description: "A properties file for gridss.", category: "advanced"}
+
+        threads: {description: "The number of the threads to use.", category: "advanced"}
+        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling",category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        vcf: {description: "VCF file including variant allele fractions."}
+        vcfIndex: {description: "Index of output VCF."}
+        assembly: {description: "The GRIDSS assembly BAM."}
+        assemblyIndex: {description: "Index of output BAM file."}
+    }
+}
+
+task GridssAnnotateVcfRepeatmasker {
+    input {
+        File gridssVcf
+        File gridssVcfIndex
+        String outputPath = "./gridss.repeatmasker_annotated.vcf.gz"
+
+        String memory = "4G"
+        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
+        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 3)
+    }
+
+    command {
+        gridss_annotate_vcf_repeatmasker
+        --output ~{outputPath} \
+        --jar /usr/local/share/gridss-2.12.0-1/gridss.jar \
+        -w . \
+        ~{gridssVcf}
+    }
+
+    output {
+        File annotatedVcf = outputPath
+        File annotatedVcfIndex = "~{outputPath}.tbi"
+    }
+
+    runtime {
+        gridssVcf: {description: "The GRIDSS output.", category: "required"}
+        gridssVcfIndex: {description: "The index for the GRIDSS output.", category: "required"}
+        outputPath: {description: "The path the output should be written to.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}

@@ -304,7 +304,8 @@ task GripssApplicationKt {
         -breakend_pon ~{breakendPon} \
         -breakpoint_pon ~{breakpointPon} \
         -input_vcf ~{inputVcf} \
-        -output_vcf ~{outputPath}
+        -output_vcf ~{outputPath} \
+        -paired_normal_tumor_ordinals
     }
 
     output {
@@ -463,7 +464,7 @@ task Linx {
         String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.13--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.15--hdfd78af_0"
     }
 
     command {
@@ -565,7 +566,7 @@ task Purple {
         Int timeMinutes = 30
         String memory = "9G"
         String javaXmx = "8G"
-        String dockerImage = "quay.io/biocontainers/hmftools-purple:2.52--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-purple:2.54--hdfd78af_0"
     }
 
     command {
@@ -706,7 +707,7 @@ task Sage {
         String javaXmx = "50G"
         String memory = "60G"
         Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 8 / threads)
-        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.7--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_0"
     }
 
     command {
