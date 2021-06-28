@@ -44,9 +44,9 @@ task Merge {
         fileList \
         ~{breakpointDistance} \
         ~{suppVecs} \
-        ~{true=1 false=0 svType} \
-        ~{true=1 false=0 strandType} \
-        ~{true=1 false=0 distanceBySvSize} \
+        ~{true='1' false='0' svType} \
+        ~{true='1' false='0' strandType} \
+        ~{true='1' false='0' distanceBySvSize} \
         ~{minSize} \
         ~{outputPath}
     }
