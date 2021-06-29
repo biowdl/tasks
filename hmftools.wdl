@@ -778,3 +778,54 @@ task Sage {
                       category: "advanced"}
     }
 }
+
+task VirusInterpreter {
+    input {
+        String sampleId
+        File virusBreakendTsv
+        File taxonomyDbTsv
+        File virusInterpretationTsv
+        File virusBlacklistTsv
+        String outputDir = "."
+
+        String memory = "3G"
+        String javaXmx = "2G"
+        Int timeMinutes = 15
+        String dockerImage = "quay.io/biowdl/virus-interpreter:1.0"
+    }
+
+    command {
+        virus-interpreter -Xmx~{javaXmx} \
+        -sample_id ~{sampleId} \
+        -virus_breakend_tsv ~{virusBreakendTsv} \
+        -taxonomy_db_tsv ~{taxonomyDbTsv} \
+        -virus_interpretation_tsv ~{virusInterpretationTsv} \
+        -virus_blacklist_tsv ~{virusBlacklistTsv} \
+        -output_dir ~{outputDir}
+    }
+
+    output {
+        File virusAnnotatedTsv = "~{outputDir}/~{sampleId}.virus.annotated.tsv"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        sampleId: {description: "The name of the sample.", category: "required"}
+        virusBreakendTsv: {description: "The TSV output from virusbreakend.", category: "required"}
+        taxonomyDbTsv: {description: "A taxonomy database tsv.", category: "required"}
+        virusInterpretationTsv: {description: "A virus interpretation tsv.", category: "required"}
+        virusBlacklistTsv: {description: "A virus blacklist tsv.", category: "required"}
+        outputDir: {description: "The directory the output will be written to.", category: "required"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
