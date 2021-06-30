@@ -46,6 +46,7 @@ task GffCompare {
         Int? maxDistanceGroupingTranscriptStartSites
         String? namePrefix
 
+        String memory = "4G"
         Int timeMinutes = 1 + ceil(size(inputGtfFiles, "G") * 30)
         String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
 
@@ -114,6 +115,7 @@ task GffCompare {
     }
 
     runtime {
+        memory: memory
        time_minutes: timeMinutes
        docker: dockerImage
     }
@@ -140,6 +142,7 @@ task GffCompare {
         maxDistanceFreeEndsTerminalExons: {description: "Equivalent to gffcompare's `-e` option.", category: "advanced"}
         maxDistanceGroupingTranscriptStartSites: {description: "Equivalent to gffcompare's `-d` option.", category: "advanced"}
         namePrefix: {description: "Equivalent to gffcompare's `-p` option.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
