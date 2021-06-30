@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Update CPAT to version 3.0.4.
+  + Changed the `outFilePath` input to `outputPrefix`.
 + GffCompare: Make the `referenceAnnotation` input optional.
 + Stringtie: Add the `minimumCoverage` input.
 + UMI-tools: update default dockerImage to use umitools v1.1.1 with correct samtools version (1.10)
