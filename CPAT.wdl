@@ -36,7 +36,7 @@ task CPAT {
 
         String memory = "4G"
         Int timeMinutes = 10 + ceil(size(gene, "G") * 30)
-        String dockerImage = "biocontainers/cpat:3.0.4--py39hcbe4a3b_0"
+        String dockerImage = "quay.io/biocontainers/cpat:3.0.4--py39hcbe4a3b_0"
     }
 
     # Some WDL magic in the command section to properly output the start and
