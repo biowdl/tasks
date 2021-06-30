@@ -45,7 +45,7 @@ task CPAT {
     # to non-optionals.
     command {
         set -e
-        mkdir -p "$(dirname ~{outFilePath})"
+        mkdir -p "$(dirname ~{outputPrefix})"
         cpat.py \
         --gene ~{gene} \
         --outfile ~{outputPrefix} \
