@@ -112,7 +112,6 @@ task GRIDSS {
         ~{"--blacklist " + blacklistBed} \
         ~{normalBam} \
         ~{tumorBam}
-        tabix -p vcf ~{outputPrefix}.vcf.gz
         samtools index ~{outputPrefix}_assembly.bam ~{outputPrefix}_assembly.bai
     }
 
