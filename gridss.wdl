@@ -163,7 +163,7 @@ task GridssAnnotateVcfRepeatmasker {
 
         String memory = "4G"
         String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
-        Int timeMinutes = 120
+        Int timeMinutes = 1440
     }
 
     command {
