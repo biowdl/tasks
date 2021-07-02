@@ -46,6 +46,7 @@ task BgzipAndIndex {
     }
 
     runtime {
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
