@@ -167,7 +167,7 @@ task GridssAnnotateVcfRepeatmasker {
     }
 
     command {
-        gridss_annotate_vcf_repeatmasker
+        gridss_annotate_vcf_repeatmasker \
         --output ~{outputPath} \
         --jar /usr/local/share/gridss-2.12.0-1/gridss.jar \
         -w . \
