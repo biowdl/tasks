@@ -10,6 +10,9 @@ that users understand how the changes affect the new version.
 
 version 5.0.0-dev
 ---------------------------
++ Update CPAT to version 3.0.4.
+  + Changed the `outFilePath` input to `outputPrefix`.
++ Survivor: Change integer to string literal in boolean parameters.
 + Samtools: Add mkdir line to `Fastq` task.
 + Add new parameters from CCS version 6.0.0 and add two new outputs:
   `ccs_report.txt` & `zmw_metrics.json.gz`.
