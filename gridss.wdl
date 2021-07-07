@@ -161,7 +161,7 @@ task GridssAnnotateVcfRepeatmasker {
         File gridssVcfIndex
         String outputPath = "./gridss.repeatmasker_annotated.vcf.gz"
 
-        String memory = "4G"
+        String memory = "50G"
         String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
         Int timeMinutes = 2880
     }
