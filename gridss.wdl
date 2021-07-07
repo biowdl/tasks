@@ -162,6 +162,7 @@ task GridssAnnotateVcfRepeatmasker {
         String outputPath = "./gridss.repeatmasker_annotated.vcf.gz"
 
         String memory = "50G"
+        Int threads = 4
         String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
         Int timeMinutes = 2880
     }
@@ -171,6 +172,7 @@ task GridssAnnotateVcfRepeatmasker {
         --output ~{outputPath} \
         --jar /usr/local/share/gridss-2.12.0-1/gridss.jar \
         -w . \
+        -t ~{threads} \
         ~{gridssVcf}
     }
 
@@ -180,6 +182,7 @@ task GridssAnnotateVcfRepeatmasker {
     }
 
     runtime {
+        cpu: threads
         memory: memory
         time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
@@ -189,6 +192,7 @@ task GridssAnnotateVcfRepeatmasker {
         gridssVcf: {description: "The GRIDSS output.", category: "required"}
         gridssVcfIndex: {description: "The index for the GRIDSS output.", category: "required"}
         outputPath: {description: "The path the output should be written to.", category: "common"}
+        threads: {description: "The number of the threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
