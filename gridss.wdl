@@ -39,7 +39,9 @@ task AnnotateInsertedSequence {
     }
 
     command {
-        AnnotateInsertedSequence -Xmx~{javaXmx} \
+        set -e
+        _JAVA_OPTIONS="${_JAVA_OPTIONS}:-Xmx~{javaXmx}"
+        AnnotateInsertedSequence \
         REFERENCE_SEQUENCE=~{viralReference} \
         INPUT=~{inputVcf} \
         OUTPUT=~{outputPath} \
@@ -215,6 +217,7 @@ task Virusbreakend {
     }
 
     command {
+        set -e
         mkdir virusbreakenddb
         tar -xzvf ~{virusbreakendDB} -C virusbreakenddb --strip-components 1
         virusbreakend \
