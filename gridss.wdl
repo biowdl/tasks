@@ -35,12 +35,12 @@ task AnnotateInsertedSequence {
         String javaXmx = "8G"
         String memory = "9G"
         String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
-        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 3 / threads)
+        Int timeMinutes = 120
     }
 
     command {
         set -e
-        _JAVA_OPTIONS="$_JAVA_OPTIONS:-Xmx~{javaXmx}"
+        _JAVA_OPTIONS="$_JAVA_OPTIONS -Xmx~{javaXmx}"
         AnnotateInsertedSequence \
         REFERENCE_SEQUENCE=~{viralReference} \
         INPUT=~{inputVcf} \
