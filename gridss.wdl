@@ -40,7 +40,7 @@ task AnnotateInsertedSequence {
 
     command {
         set -e
-        _JAVA_OPTIONS="${_JAVA_OPTIONS}:-Xmx~{javaXmx}"
+        _JAVA_OPTIONS="$_JAVA_OPTIONS:-Xmx~{javaXmx}"
         AnnotateInsertedSequence \
         REFERENCE_SEQUENCE=~{viralReference} \
         INPUT=~{inputVcf} \
