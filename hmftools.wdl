@@ -295,7 +295,7 @@ task GripssApplicationKt {
 
     command {
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.9-0/gripss.jar \
+        -cp /usr/local/share/hmftools-gripss-1.11-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssApplicationKt \
         -tumor ~{tumorName} \
         -reference ~{normalName} \
@@ -351,7 +351,7 @@ task GripssHardFilterApplicationKt {
 
     command {
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.9-0/gripss.jar \
+        -cp /usr/local/share/hmftools-gripss-1.11-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssHardFilterApplicationKt \
         -input_vcf ~{inputVcf} \
         -output_vcf ~{outputPath} 
