@@ -661,7 +661,8 @@ task Purple {
         Int timeMinutes = 30
         String memory = "9G"
         String javaXmx = "8G"
-        String dockerImage = "quay.io/biocontainers/hmftools-purple:3.1--hdfd78af_0"
+        # clone of quay.io/biocontainers/hmftools-purple:3.1--hdfd78af_0 with 'ln -s /usr/local/lib/libwebp.so.7 /usr/local/lib/libwebp.so.6'
+        String dockerImage = "quay.io/biowdl/hmftools-purple:3.1" 
     }
 
     command {
