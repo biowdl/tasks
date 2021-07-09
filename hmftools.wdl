@@ -290,7 +290,7 @@ task GripssApplicationKt {
         String memory = "33G"
         String javaXmx = "32G"
         Int timeMinutes = 45
-        String dockerImage = "umccr/gripss:1.11" #FIXME quay doesn't have the latest version "quay.io/biocontainers/hmftools-gripss:1.9--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.11--hdfd78af_0"
     }
 
     command {
@@ -346,7 +346,7 @@ task GripssHardFilterApplicationKt {
         String memory = "3G"
         String javaXmx = "2G"
         Int timeMinutes = 15
-        String dockerImage = "umccr/gripss:1.11" #FIXME quay doesn't have the latest version "quay.io/biocontainers/hmftools-gripss:1.9--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.11--hdfd78af_0"
     }
 
     command {
@@ -661,7 +661,7 @@ task Purple {
         Int timeMinutes = 30
         String memory = "9G"
         String javaXmx = "8G"
-        String dockerImage = "quay.io/biocontainers/hmftools-purple:2.54--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-purple:3.1--hdfd78af_0"
     }
 
     command {
