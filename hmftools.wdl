@@ -488,7 +488,7 @@ task Linx {
     }
 
     output {
-        File driverCatalog = "~{outputDir}/~{sampleName}.driver.catalog.tsv"
+        File driverCatalog = "~{outputDir}/~{sampleName}.linx.driver.catalog.tsv"
         File linxBreakend = "~{outputDir}/~{sampleName}.linx.breakend.tsv"
         File linxClusters = "~{outputDir}/~{sampleName}.linx.clusters.tsv"
         File linxDrivers = "~{outputDir}/~{sampleName}.linx.drivers.tsv"
