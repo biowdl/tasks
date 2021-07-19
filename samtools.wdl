@@ -25,7 +25,7 @@ task BgzipAndIndex {
         File inputFile
         String outputDir
         String type = "vcf"
-
+        String memory = "2G"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
@@ -47,6 +47,7 @@ task BgzipAndIndex {
     runtime {
         time_minutes: timeMinutes
         docker: dockerImage
+        memory: memory
     }
 
     parameter_meta {

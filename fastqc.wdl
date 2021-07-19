@@ -143,6 +143,7 @@ task Fastqc {
 
 task GetConfiguration {
     input {
+        String memory = "2G" # Needs more than 1 to pull the docker image.
         Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.7--4"
     }
@@ -165,7 +166,7 @@ task GetConfiguration {
     }
 
     runtime {
-        memory: "2G" # Needs more than 1 to pull the docker image.
+        memory: memory 
         time_minute: timeMinutes
         docker: dockerImage
     }
@@ -173,6 +174,7 @@ task GetConfiguration {
     parameter_meta {
         # inputs
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
