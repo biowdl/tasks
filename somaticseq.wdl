@@ -47,6 +47,7 @@ task ParallelPaired {
         File? strelkaSNV
         File? strelkaIndel
 
+        String memory = "2G"
         Int threads = 1
         Int timeMinutes = 60
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -91,6 +92,7 @@ task ParallelPaired {
 
     runtime {
         cpu: threads
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -121,6 +123,7 @@ task ParallelPaired {
         strelkaSNV: {description: "An SNV VCF as produced by strelka.", category: "advanced"}
         strelkaIndel: {description: "An indel VCF as produced by somaticsniper.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
+        ParallelPaired
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
@@ -159,6 +162,7 @@ task ParallelPairedTrain {
         File? strelkaSNV
         File? strelkaIndel
 
+        String memory = "2G"
         Int threads = 1
         Int timeMinutes = 240
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -202,6 +206,7 @@ task ParallelPairedTrain {
 
     runtime {
         cpu: threads
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -232,6 +237,7 @@ task ParallelPairedTrain {
         strelkaSNV: {description: "An SNV VCF as produced by strelka.", category: "advanced"}
         strelkaIndel: {description: "An indel VCF as produced by somaticsniper.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
@@ -264,6 +270,7 @@ task ParallelSingle {
         File? scalpelVCF
         File? strelkaVCF
 
+        String memory = "2G"
         Int threads = 1
         Int timeMinutes = 60
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -301,6 +308,7 @@ task ParallelSingle {
 
     runtime {
         cpu: threads
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -323,6 +331,7 @@ task ParallelSingle {
         scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
         strelkaVCF: {description: "A VCF as produced by strelka.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
@@ -353,6 +362,7 @@ task ParallelSingleTrain {
         File? scalpelVCF
         File? strelkaVCF
 
+        String memory = "2G"
         Int threads = 1
         Int timeMinutes = 240
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -389,6 +399,7 @@ task ParallelSingleTrain {
 
     runtime {
         cpu: threads
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -411,6 +422,7 @@ task ParallelSingleTrain {
         scalpelVCF: {description: "A VCF as produced by scalpel.", category: "advanced"}
         strelkaVCF: {description: "A VCF as produced by strelka.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
@@ -429,6 +441,7 @@ task ModifyStrelka {
         File strelkaVCF
         String outputVCFName = basename(strelkaVCF, ".gz")
 
+        String memory = "2G"
         Int timeMinutes = 20
         String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
@@ -447,6 +460,7 @@ task ModifyStrelka {
     }
 
     runtime {
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -455,6 +469,7 @@ task ModifyStrelka {
         # inputs
         strelkaVCF: {description: "A vcf file as produced by strelka.", category: "required"}
         outputVCFName: {description: "The location the output VCF file should be written to.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
