@@ -24,6 +24,8 @@ task AppendToStringArray {
     input {
         Array[String] array
         String string
+        
+        String memory = "1G"
     }
 
     command {
@@ -36,7 +38,7 @@ task AppendToStringArray {
     }
 
     runtime {
-        memory: "1G"
+        memory: memory
     }
 }
 
@@ -45,9 +47,11 @@ task CheckFileMD5 {
     input {
         File file
         String md5
+
         # By default cromwell expects /bin/bash to be present in the container.
         # The 'bash' container does not fill this requirement. (It is in /usr/local/bin/bash)
         # Use a stable version of debian:stretch-slim for this. (Smaller than ubuntu)
+        String memory = "1G"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -60,6 +64,7 @@ task CheckFileMD5 {
 
     runtime {
         docker: dockerImage
+        memory: memory
     }
 }
 
@@ -69,6 +74,8 @@ task ConcatenateTextFiles {
         String combinedFilePath
         Boolean unzip = false
         Boolean zip = false
+
+        String memory = "1G"
     }
 
     # When input and output is both compressed decompression is not needed.
@@ -86,7 +93,7 @@ task ConcatenateTextFiles {
     }
 
     runtime {
-        memory: "1G"
+        memory: memory
     }
 }
 
@@ -97,6 +104,7 @@ task Copy {
         Boolean recursive = false
 
         # Version not that important as long as it is stable.
+        String memory = "1G"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -112,6 +120,7 @@ task Copy {
 
     runtime {
         docker: dockerImage
+        memory: memory
     }
 }
 
@@ -122,6 +131,8 @@ task CreateLink {
     input {
         String inputFile
         String outputPath
+
+        String memory = "1G"
     }
 
     command {
@@ -131,12 +142,17 @@ task CreateLink {
     output {
         File link = outputPath
     }
+
+    runtime {
+        memory: memory
+    }
 }
 
 task MapMd5 {
     input {
         Map[String,String] map
 
+        String memory = "1G"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -150,7 +166,7 @@ task MapMd5 {
     }
 
     runtime {
-        memory: "1G"
+        memory: memory
         docker: dockerImage
     }
 }
@@ -160,6 +176,7 @@ task StringArrayMd5 {
     input {
         Array[String] stringArray
 
+        String memory = "1G"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -173,7 +190,7 @@ task StringArrayMd5 {
     }
 
     runtime {
-        memory: "1G"
+        memory: memory
         docker: dockerImage
     }
 }
@@ -183,6 +200,7 @@ task TextToFile {
         String text
         String outputFile = "out.txt"
 
+        String memory = "1G"
         Int timeMinutes = 1
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
@@ -196,7 +214,7 @@ task TextToFile {
     }
 
     runtime {
-        memory: "1G"
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
