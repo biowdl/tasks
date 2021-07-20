@@ -123,7 +123,7 @@ task ParallelPaired {
         strelkaSNV: {description: "An SNV VCF as produced by strelka.", category: "advanced"}
         strelkaIndel: {description: "An indel VCF as produced by somaticsniper.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
-        ParallelPaired
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
