@@ -94,7 +94,6 @@ task ParallelPaired {
         cpu: threads
         memory: memory
         time_minutes: timeMinutes
-        memory: memory
         docker: dockerImage
     }
 
@@ -209,7 +208,6 @@ task ParallelPairedTrain {
         cpu: threads
         memory: memory
         time_minutes: timeMinutes
-        memory: memory
         docker: dockerImage
     }
 
@@ -312,7 +310,6 @@ task ParallelSingle {
         cpu: threads
         memory: memory
         time_minutes: timeMinutes
-        memory: memory
         docker: dockerImage
     }
 
@@ -404,7 +401,6 @@ task ParallelSingleTrain {
         cpu: threads
         memory: memory
         time_minutes: timeMinutes
-        memory: memory
         docker: dockerImage
     }
 
@@ -466,7 +462,6 @@ task ModifyStrelka {
     runtime {
         memory: memory
         time_minutes: timeMinutes
-        memory: memory
         docker: dockerImage
     }
 

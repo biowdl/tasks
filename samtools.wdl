@@ -49,7 +49,6 @@ task BgzipAndIndex {
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
-        memory: memory
     }
 
     parameter_meta {
