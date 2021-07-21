@@ -50,7 +50,6 @@ task ParallelPaired {
         String memory = "2G"
         Int threads = 1
         Int timeMinutes = 60
-        String memory = "2G"
         String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
@@ -167,7 +166,6 @@ task ParallelPairedTrain {
         String memory = "2G"
         Int threads = 1
         Int timeMinutes = 240
-        String memory = "2G"
         String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
@@ -277,7 +275,6 @@ task ParallelSingle {
         String memory = "2G"
         Int threads = 1
         Int timeMinutes = 60
-        String memory = "2G"
         String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
@@ -371,7 +368,6 @@ task ParallelSingleTrain {
         String memory = "2G"
         Int threads = 1
         Int timeMinutes = 240
-        String memory = "2G"
         String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
@@ -451,7 +447,6 @@ task ModifyStrelka {
 
         String memory = "2G"
         Int timeMinutes = 20
-        String memory = "2G"
         String dockerImage = "lethalfang/somaticseq:3.1.0"
     }
 
