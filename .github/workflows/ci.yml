@@ -2,10 +2,8 @@ name: Continuous integration
 
 on: 
   pull_request:
-    paths:
-      - "**.wdl"  # Workflow files and task 
-      - "**.yml"  # Ci configuration, tests and docker images 
-      - "!docs/**"
+    paths_ignore:
+      - "docs/**"
 
 defaults:
   run:

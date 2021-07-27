@@ -116,8 +116,8 @@ task GffCompare {
 
     runtime {
         memory: memory
-       time_minutes: timeMinutes
-       docker: dockerImage
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
