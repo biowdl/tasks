@@ -28,7 +28,6 @@ task BgzipAndIndex {
 
         String memory = "2G"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
-        String memory = "1G"
         String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
 
@@ -59,7 +58,6 @@ task BgzipAndIndex {
         type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
