@@ -52,7 +52,7 @@ task Peach {
         File callsTsv = "~{outputDir}/~{tumorName}.peach.calls.tsv"
         File filteredVcf = "~{outputDir}/~{tumorName}.peach.filtered.vcf"
         File genotypeTsv = "~{outputDir}/~{tumorName}.peach.genotype.tsv"
-        Array[File] peachFiles = [callsTsv, filterVcf, genotypeTsv]
+        Array[File] outputs = [callsTsv, filterVcf, genotypeTsv]
     }
 
     runtime {
