@@ -464,7 +464,7 @@ task Linx {
         String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.15--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.16--hdfd78af_0"
     }
 
     command {
