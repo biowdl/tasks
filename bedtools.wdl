@@ -66,6 +66,55 @@ task Complement {
     }
 }
 
+task Coverage {
+    input {
+        File genomeFile
+        File a
+        File? aIndex
+        File b
+        File? bIndex
+        String outputPath = "./coverage.tsv"
+
+        String memory = "8G"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+    }
+
+    command {
+        bedtools coverage \
+        -sorted \
+        -g ~{genomeFile} \
+        -a ~{a} \
+        -b ~{b} \
+        -d \
+        > ~{outputPath}
+    }
+
+    output {
+        File coverageTsv = outputPath
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        genomeFile: {description: "A file listing the chromosomes and their lengths.", category: "required"}
+        a: {description: "The file containing the regions for which the coverage will be counted.", category: "required"}
+        aIndex: {description: "An index for the file given as `a`.", category: "common"}
+        b: {description: "The file in which the coverage will be counted. Likely a BAM file.", category: "required"}
+        bIndex: {description: "An index for the file given as `b`.", category: "common"}
+        outputPath: {description: "The path the ouptu will be written to.", category: "common"}
+
+        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+    }
+}
+
 task Merge {
     input {
         File inputBed
