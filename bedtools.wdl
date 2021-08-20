@@ -77,7 +77,7 @@ task Coverage {
 
         String memory = "8G"
         Int timeMinutes = 120
-        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.30.0--h7d7f7ad_2"
     }
 
     command {
