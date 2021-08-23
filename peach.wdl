@@ -25,8 +25,8 @@ task Peach {
         File transcriptTsv
         File germlineVcf
         File germlineVcfIndex
-        File tumorName
-        File normalName
+        String tumorName
+        String normalName
         String outputDir = "./peach"
         File panelJson
 
