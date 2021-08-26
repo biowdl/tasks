@@ -7,6 +7,11 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
+
+In Development
+--------------
++ gatk.wdl: force co-localiztion (placement) of indexes next to their targets, as there is no guarentee that WDL engines will do so.
+
 version 5.0.1
 ---------------------------
 + Smoove: enable genotyping

@@ -42,9 +42,13 @@ task AnnotateIntervals {
     command {
         set -e
         mkdir -p "$(dirname ~{annotatedIntervalsPath})"
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         AnnotateIntervals \
-        -R ~{referenceFasta} \
+        -R reference_dir/~{basename (referenceFasta)} \
         -L ~{intervals} \
         ~{"--mappability-track  " + mappabilityTrack} \
         ~{"--segmental-duplication-track " + segmentalDuplicationTrack} \
@@ -107,12 +111,19 @@ task ApplyBQSR {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
+        mkdir bam_dir
+        ln -s ~{inputBam} bam_dir/~{basename(inputBam)}
+        ln -s ~{inputBamIndex} bam_dir/~{basename(inputBamIndex)}
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         ApplyBQSR \
         --create-output-bam-md5 \
         --add-output-sam-program-record \
-        -R ~{referenceFasta} \
-        -I ~{inputBam} \
+        -R reference_dir/~{basename(referenceFasta)} \
+        -I bam_dir/~{basename(inputBam)} \
         --use-original-qualities \
         -O ~{outputBamPath} \
         -bqsr ~{recalibrationReport} \
@@ -181,10 +192,17 @@ task BaseRecalibrator {
     command {
         set -e
         mkdir -p "$(dirname ~{recalibrationReportPath})"
+        mkdir bam_dir
+        ln -s ~{inputBam} bam_dir/~{basename(inputBam)}
+        ln -s ~{inputBamIndex} bam_dir/~{basename(inputBamIndex)}
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         BaseRecalibrator \
-        -R ~{referenceFasta} \
-        -I ~{inputBam} \
+        -R reference_dir/~{basename(referenceFasta)} \
+        -I bam_dir/~{basename(inputBam)} \
         --use-original-qualities \
         -O ~{recalibrationReportPath} \
         ~{true="--known-sites" false="" length(knownIndelsSitesVCFs) > 0} ~{sep=" --known-sites " knownIndelsSitesVCFs} \
@@ -340,11 +358,18 @@ task CollectAllelicCounts {
     command {
         set -e
         mkdir -p "$(dirname ~{allelicCountsPath})"
+        mkdir bam_dir
+        ln -s ~{inputBam} bam_dir/~{basename(inputBam)}
+        ln -s ~{inputBamIndex} bam_dir/~{basename(inputBamIndex)}
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CollectAllelicCounts \
         -L ~{commonVariantSites} \
-        -I ~{inputBam} \
-        -R ~{referenceFasta} \
+        -I bam_dir/~{basename(inputBam)} \
+        -R reference_dir/~{basename(referenceFasta)} \
         -O ~{allelicCountsPath}
     }
 
@@ -398,11 +423,18 @@ task CollectReadCounts {
     command {
         set -e
         mkdir -p "$(dirname ~{countsPath})"
+        mkdir bam_dir
+        ln -s ~{inputBam} bam_dir/~{basename(inputBam)}
+        ln -s ~{inputBamIndex} bam_dir/~{basename(inputBamIndex)}
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CollectReadCounts \
         -L ~{intervals} \
-        -I ~{inputBam} \
-        -R ~{referenceFasta} \
+        -I bam_dir/~{basename(inputBam)} \
+        -R reference_dir/~{basename(referenceFasta)} \
         --format HDF5 \
         --interval-merging-rule ~{intervalMergingRule} \
         -O ~{countsPath}
@@ -457,11 +489,18 @@ task CombineGVCFs {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
+        mkdir wd
+        for FILE in ${sep(" ", gvcfFiles)}; do ln -s $FILE wd/$(basename $FILE) ; done
+        for FILE in ${sep(" ", gvcfFilesIndex)}; do ln -s $FILE wd/$(basename $FILE) ; done
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         CombineGVCFs \
-        -R ~{referenceFasta} \
+        -R reference_dir/~{basename(referenceFasta)} \
         -O ~{outputPath} \
-        -V ~{sep=' -V ' gvcfFiles} \
+        (for FILE in ${sep(" ", gvcfFiles)}; do echo -- "-V wd/"$(basename $FILE); done) \
         ~{true='-L' false='' length(intervals) > 0} ~{sep=' -L ' intervals}
     }
 
@@ -516,6 +555,13 @@ task CombineVariants {
 
     command <<<
         set -e
+        mkdir wd
+        for FILE in ${sep(" ", variantVcfs)}; do ln -s $FILE wd/$(basename $FILE) ; done
+        for FILE in ${sep(" ", variantIndexes)}; do ln -s $FILE wd/$(basename $FILE) ; done
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         mkdir -p "$(dirname ~{outputPath})"
         # Build "-V:<ID> <file.vcf>" arguments according to IDs
         # and VCFs to merge.
@@ -523,7 +569,7 @@ task CombineVariants {
         V_args=$(bash -c '
         set -eu
         ids=(~{sep=" " identifiers})
-        vars=(~{sep=" " variantVcfs})
+        vars=($(for file in ${sep(" ", variantVcfs); do echo wd/$(basename $file) ; done))
         for (( i = 0; i < ${#ids[@]}; ++i ))
         do
             printf -- "-V:%s %s " "${ids[i]}" "${vars[i]}"
@@ -531,7 +577,7 @@ task CombineVariants {
         ')
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 -jar /usr/GenomeAnalysisTK.jar \
         -T CombineVariants \
-        -R ~{referenceFasta} \
+        -R reference_dir/~{basename(referenceFasta)} \
         --genotypemergeoption ~{genotypeMergeOption} \
         --filteredrecordsmergetype ~{filteredRecordsMergeType} \
         --out ~{outputPath} \
@@ -698,10 +744,17 @@ task FilterMutectCalls {
     command {
         set -e
         mkdir -p "$(dirname ~{outputVcf})"
+        mkdird unfiltered_vcf_dir
+        ln -s ~{unfilteredVcf} unfiltered_vcf_dir/~{basename(unfilteredVcf)}
+        ln -s ~{unfilteredVcfIndex} unfiltered_vcf_dir/~{basename(unfilteredVcfIndex)}
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         FilterMutectCalls \
-        -R ~{referenceFasta} \
-        -V ~{unfilteredVcf} \
+        -R reference_dir/~{basename(referenceFasta)} \
+        -V unfiltered_vcf_dir/~{basename(unfilteredVcf)} \
         -O ~{outputVcf} \
         ~{"--contamination-table " + contaminationTable} \
         ~{"--tumor-segmentation " + mafTumorSegments} \
@@ -874,14 +927,21 @@ task GenotypeGVCFs {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
+        mkdir wd
+        ln -s ~{gvcfFile} wd/~{basename(gvcfFile)}
+        ln -s ~{gvcfFileIndex} wd/~{basename(gvcfFileIndex)}
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GenotypeGVCFs \
-        -R ~{referenceFasta} \
+        -R reference_dir/~{basename(referenceFasta)} \
         -O ~{outputPath} \
         ~{"-D " + dbsnpVCF} \
         ~{"--pedigree " + pedigree} \
         ~{true="-G" false="" length(annotationGroups) > 0} ~{sep=" -G " annotationGroups} \
-        -V ~{gvcfFile} \
+        -V wd/~{basename(gvcfFile)} \
         ~{true="--only-output-calls-starting-in-intervals" false="" defined(intervals)} \
         ~{true="-L" false="" defined(intervals)} ~{sep=' -L ' intervals}
     }
@@ -939,11 +999,20 @@ task GetPileupSummaries {
 
     command {
         set -e
+        mkdir bam_dir
+        ln -s ~{sampleBam} bam_dir/~{basename(sampleBam)}
+        ln -s ~{sampleBamIndex} bam_dir/~{basename(sampleBamIndex)}
+        mkdir variants_dir
+        ln -s ~{variantsForContamination} variants_dir/~{basename(variantsForContamination)}
+        ln -s ~{variantsForContamination} variants_dir/~{basename(variantsForContaminationIndex)}
+        mkdir sites_dir
+        ln -s ~{sitesForContamination} sites_dir/~{basename(sitesForContamination)}
+        ln -s ~{sitesForContaminationIndex} sites_dir/~{basename(sitesForContaminationIndex)}
         gatk --java-options '-Xmx~{javaXmx} -XX:ParallelGCThreads=1' \
         GetPileupSummaries \
-        -I ~{sampleBam} \
-        -V ~{variantsForContamination} \
-        -L ~{sitesForContamination} \
+        -I bam_dir/~{basename(sampleBam)} \
+        -V variants_dir/~{basename(variantsForContamination)} \
+        -L sites_dir/~{basename(sitesForContamination)} \
         -O ~{outputPrefix + "-pileups.table"}
     }
 
@@ -1009,11 +1078,18 @@ task HaplotypeCaller {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
+        mkdir wd
+        for FILE in ${sep(" ", inputBams)}; do ln -s $FILE wd/$(inputBams $FILE) ; done
+        for FILE in ${sep(" ", inputBamsIndex)}; do ln -s $FILE wd/$(inputBamsIndex $FILE) ; done
+        mkdir reference_dir
+        ln -s ~{referenceFasta} reference_dir/~{basename(referenceFasta)}
+        ln -s ~{referenceFastaDict} reference_dir/~{basename(referenceFastaDict)}
+        ln -s ~{referenceFastaFai} reference_dir/~{basename(referenceFastaFai)}
         gatk --java-options '-Xmx~{javaXmxMb}M -XX:ParallelGCThreads=1' \
         HaplotypeCaller \
-        -R ~{referenceFasta} \
+        -R reference_dir/~{basename(referenceFasta)} \
         -O ~{outputPath} \
-        -I ~{sep=" -I " inputBams} \
+        (for FILE in ${sep(" ", inputBams)}; do echo -- "-I wd/"$(basename $FILE); done) \
         ~{"--sample-ploidy " + ploidy} \
         ~{true="-L" false="" defined(intervalList)} ~{sep=' -L ' intervalList} \
         ~{true="-XL" false="" defined(excludeIntervalList)} ~{sep=' -XL ' excludeIntervalList} \
