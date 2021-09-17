@@ -511,6 +511,7 @@ task Tabix {
 task View {
     input {
         File inFile
+        File? inFileIndex
         String outputFileName = "view.bam"
         Boolean uncompressedBamOutput = false
 
@@ -526,7 +527,8 @@ task View {
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
-    String outputIndexPath = basename(outputFileName) + ".bai"
+    String outputIndexPath = sub(outputFileName, "\.bam$", ".bai")
+    
 
     # Always output to bam and output header.
     command {
@@ -542,7 +544,8 @@ task View {
         ~{"-q " + MAPQthreshold} \
         ~{"--threads " + (threads - 1)} \
         ~{inFile}
-        samtools index ~{outputFileName} ~{outputIndexPath}
+        samtools index ~{outputFileName}
+        mv ~{outputFileName}.bai ~{outputIndexPath}
     }
 
     output {
