@@ -577,7 +577,7 @@ task Protect {
         -ref_genome_version ~{refGenomeVersion} \
         -tumor_sample_id ~{tumorName} \
         -reference_sample_id ~{normalName} \
-        -primary_tumor_doids ~{sep=";" sampleDoids} \
+        -primary_tumor_doids '~{sep=";" sampleDoids}' \
         -output_dir ~{outputDir} \
         -serve_actionability_dir ~{sub(serveActionability[0], basename(serveActionability[0]), "")} \
         -doid_json ~{doidsJson} \
