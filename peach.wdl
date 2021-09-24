@@ -30,9 +30,9 @@ task Peach {
         String outputDir = "./peach"
         File panelJson
 
-        String memory = "8G"
+        String memory = "2G"
         String dockerImage = "quay.io/biowdl/peach:v1.0"
-        Int timeMinutes = 20
+        Int timeMinutes = 5
     }
 
     command {

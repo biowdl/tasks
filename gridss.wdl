@@ -94,7 +94,7 @@ task GRIDSS {
         File? gridssProperties
 
         Int jvmHeapSizeGb = 64
-        Int threads = 4
+        Int threads = 8
         Int timeMinutes = ceil(4320 / threads) + 10
         String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
     }
@@ -163,10 +163,10 @@ task GridssAnnotateVcfRepeatmasker {
         File gridssVcfIndex
         String outputPath = "./gridss.repeatmasker_annotated.vcf.gz"
 
-        String memory = "50G"
-        Int threads = 4
+        String memory = "25G"
+        Int threads = 8
         String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
-        Int timeMinutes = 2880
+        Int timeMinutes = 1440
     }
 
     command {

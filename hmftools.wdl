@@ -799,10 +799,10 @@ task Sage {
         String? mnvFilterEnabled
         File? coverageBed
 
-        Int threads = 2
+        Int threads = 4
         String javaXmx = "50G"
         String memory = "60G"
-        Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 8 / threads)
+        Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 9 / threads)
         String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_0"
     }
 
