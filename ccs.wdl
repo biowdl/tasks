@@ -24,12 +24,19 @@ task CCS {
     input {
         File subreadsFile
         String outputPrefix
+        String logLevel = "WARN"
         Int minPasses = 3
+        Int topPasses = 60
         Int minLength = 10
         Int maxLength = 50000
         Boolean byStrand = false
+        Boolean skipPolish = false
+        Boolean all = false
+        Boolean subreadFallback = false
+        Boolean allKinetics = false
+        Boolean hifiKinetics = false
+        Float minSnr = 2.5
         Float minReadQuality = 0.99
-        String logLevel = "WARN"
 
         File? subreadsIndexFile
         String? chunkString
@@ -37,7 +44,7 @@ task CCS {
         Int threads = 2
         String memory = "4G"
         Int timeMinutes = 1440
-        String dockerImage = "quay.io/biocontainers/pbccs:5.0.0--0"
+        String dockerImage = "quay.io/biocontainers/pbccs:6.0.0--h9ee0642_2"
     }
 
     command {
@@ -45,15 +52,24 @@ task CCS {
         mkdir -p "$(dirname ~{outputPrefix})"
         ccs \
         --min-passes ~{minPasses} \
+        --min-snr ~{minSnr} \
+        --top-passes ~{topPasses} \
         --min-length ~{minLength} \
         --max-length ~{maxLength} \
         ~{true="--by-strand" false="" byStrand} \
+        ~{true="--skip-polish" false="" skipPolish} \
+        ~{true="--all" false="" all} \
+        ~{true="--subread-fallback" false="" subreadFallback} \
+        ~{true="--all-kinetics" false="" allKinetics} \
+        ~{true="--hifi-kinetics" false="" hifiKinetics} \
         --min-rq ~{minReadQuality} \
         --log-level ~{logLevel} \
         --num-threads ~{threads} \
         ~{"--chunk " + chunkString} \
+        ~{"--report-file " + outputPrefix + ".ccs_report.txt"} \
         ~{"--report-json " + outputPrefix + ".ccs.report.json"} \
         ~{"--log-file " + outputPrefix + ".ccs.stderr.log"} \
+        ~{"--metrics-json " + outputPrefix + ".zmw_metrics.json.gz"} \
         ~{subreadsFile} \
         ~{outputPrefix + ".ccs.bam"}
     }
@@ -61,8 +77,10 @@ task CCS {
     output {
         File ccsBam = outputPrefix + ".ccs.bam"
         File ccsBamIndex = outputPrefix + ".ccs.bam.pbi"
-        File ccsReport = outputPrefix + ".ccs.report.json"
+        File ccsReport = outputPrefix + ".ccs_report.txt"
+        File ccsJsonReport = outputPrefix + ".ccs.report.json"
         File ccsStderr = outputPrefix + ".ccs.stderr.log"
+        File zmwMetrics = outputPrefix + ".zmw_metrics.json.gz"
     }
 
     runtime {
@@ -76,12 +94,19 @@ task CCS {
         # inputs
         subreadsFile: {description: "Subreads input file.", category: "required"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
+        logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
         minPasses: {description: "Minimum number of full-length subreads required to generate ccs for a ZMW.", category: "advanced"}
+        topPasses: {description: "Pick at maximum the top N passes for each ZMW.", category: "advanced"}
         minLength: {description: "Minimum draft length before polishing.", category: "advanced"}
         maxLength: {description: "Maximum draft length before polishing.", category: "advanced"}
         byStrand: {description: "Generate a consensus for each strand.", category: "advanced"}
+        skipPolish: {description: "Only output the initial draft template (faster, less accurate).", category: "advanced"}
+        all: {description: "Emit all ZMWs.", category: "advanced"}
+        subreadFallback: {description: "Emit a representative subread, instead of the draft consensus, if polishing failed.", category: "advanced"}
+        allKinetics: {description: "Calculate mean pulse widths (PW) and interpulse durations (IPD) for every ZMW.", category: "advanced"}
+        hifiKinetics: {description: "Calculate mean pulse widths (PW) and interpulse durations (IPD) for every HiFi read.", category: "advanced"}
+        minSnr: {description: "Minimum SNR of subreads to use for generating CCS.", category: "advanced"}
         minReadQuality: {description: "Minimum predicted accuracy in [0, 1].", category: "common"}
-        logLevel: {description: "Set log level. Valid choices: (TRACE, DEBUG, INFO, WARN, FATAL).", category: "advanced"}
         subreadsIndexFile: {description: "Index for the subreads input file, required when using chunkString.", category: "advanced"}
         chunkString: {descpription: "Chunk string (e.g. 1/4, 5/5) for CCS.", category: "advanced"}
         threads: {description: "The number of threads to be used.", category: "advanced"}
@@ -92,7 +117,9 @@ task CCS {
         # outputs
         ccsBam: {description: "Consensus reads output file."}
         ccsBamIndex: {description: "Index of consensus reads output file."}
-        ccsReport: {description: "Ccs results report file."}
+        ccsReport: {description: "Ccs report file."}
+        ccsJsonReport: {description: "Ccs results json report file."}
         ccsStderr: {description: "Ccs STDERR log file."}
+        zmwMetrics: {description: "ZMW metrics json file."}
     }
 }

@@ -291,8 +291,10 @@ task View {
         File inputFile
         String outputPath = "output.vcf"
         Boolean excludeUncalled = false
+
         String? exclude
         String? include
+
         String memory = "256M"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"

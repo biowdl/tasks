@@ -34,16 +34,16 @@ task Spades {
         File? tslrContigs
         File? trustedContigs
         File? untrustedContigs
-        Boolean? singleCell
-        Boolean? metagenomic
-        Boolean? rna
-        Boolean? plasmid
-        Boolean? ionTorrent
-        Boolean? onlyErrorCorrection
-        Boolean? onlyAssembler
-        Boolean? careful
-        Boolean? disableGzipOutput
-        Boolean? disableRepeatResolution
+        Boolean singleCell = false
+        Boolean metagenomic = false
+        Boolean rna = false
+        Boolean plasmid = false
+        Boolean ionTorrent = false
+        Boolean onlyErrorCorrection = false
+        Boolean onlyAssembler = false
+        Boolean careful = false
+        Boolean disableGzipOutput = false
+        Boolean disableRepeatResolution = false
         File? dataset
         File? tmpDir
         String? k

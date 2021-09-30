@@ -31,11 +31,12 @@ task Stringtie {
         Boolean? firstStranded
         Boolean? secondStranded
         String? geneAbundanceFile
+        Float? minimumCoverage
 
         Int threads = 1
         String memory = "2G"
         Int timeMinutes = 1 + ceil(size(bam, "G") * 60 / threads)
-        String dockerImage = "quay.io/biocontainers/stringtie:2.1.4--h7e0af3c_0"
+        String dockerImage = "quay.io/biocontainers/stringtie:1.3.6--h92e31bf_0"
     }
 
     command {
@@ -47,6 +48,7 @@ task Stringtie {
         ~{true="-e" false="" skipNovelTranscripts} \
         ~{true="--rf" false="" firstStranded} \
         ~{true="--fr" false="" secondStranded} \
+        ~{"-c " + minimumCoverage} \
         -o ~{assembledTranscriptsFile} \
         ~{"-A " + geneAbundanceFile} \
         ~{bam}
@@ -74,6 +76,7 @@ task Stringtie {
         firstStranded: {description: "Equivalent to the --rf flag of stringtie.", category: "required"}
         secondStranded: {description: "Equivalent to the --fr flag of stringtie.", category: "required"}
         geneAbundanceFile: {description: "Where the abundance file should be written.", category: "common"}
+        minimumCoverage: {description: "The minimum coverage for a transcript to be shown in the output.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory needed for this task in GB.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}

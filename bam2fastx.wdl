@@ -32,7 +32,7 @@ task Bam2Fasta {
 
         String memory = "2G"
         Int timeMinutes = 15
-        String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.0--he1c1bb9_8"
+        String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.1--hf05d43a_1"
     }
 
     command {
@@ -100,7 +100,7 @@ task Bam2Fastq {
 
         String memory = "2G"
         Int timeMinutes = 15
-        String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.0--he1c1bb9_8"
+        String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.1--hf05d43a_1"
     }
 
     command {

@@ -23,7 +23,7 @@ version 1.0
 task CPAT {
     input {
         File gene
-        String outFilePath
+        String outputPrefix
         File hex
         File logitModel
 
@@ -34,8 +34,9 @@ task CPAT {
         Array[String]? startCodons
         Array[String]? stopCodons
 
+        String memory = "4G"
         Int timeMinutes = 10 + ceil(size(gene, "G") * 30)
-        String dockerImage = "biocontainers/cpat:v1.2.4_cv1"
+        String dockerImage = "quay.io/biocontainers/cpat:3.0.4--py39hcbe4a3b_0"
     }
 
     # Some WDL magic in the command section to properly output the start and
@@ -44,10 +45,10 @@ task CPAT {
     # to non-optionals.
     command {
         set -e
-        mkdir -p "$(dirname ~{outFilePath})"
+        mkdir -p "$(dirname ~{outputPrefix})"
         cpat.py \
         --gene ~{gene} \
-        --outfile ~{outFilePath} \
+        --outfile ~{outputPrefix} \
         --hex ~{hex} \
         --logitModel ~{logitModel} \
         ~{"--ref " + referenceGenome} \
@@ -56,29 +57,32 @@ task CPAT {
     }
 
     output {
-        File outFile = outFilePath
+        File orfSeqs = "~{outputPrefix}.ORF_seqs.fa"
+        File orfProb = "~{outputPrefix}.ORF_prob.tsv"
+        File orfProbBest = "~{outputPrefix}.ORF_prob.best.tsv"
+        File noOrf = "~{outputPrefix}.no_ORF.txt"
+        File rScript = "~{outputPrefix}.r"
     }
 
     runtime {
-        docker: dockerImage
+        memory: memory
         time_minutes: timeMinutes
+        docker: dockerImage
     }
 
     parameter_meta {
         # inputs
         gene: {description: "Equivalent to CPAT's `--gene` option.", category: "required"}
-        outFilePath: {description: "Equivalent to CPAT's `--outfile` option.", category: "required"}
+        outputPrefix: {description: "Equivalent to CPAT's `--outfile` option.", category: "required"}
         hex: {description: "Equivalent to CPAT's `--hex` option.", category: "required"}
         logitModel: {description: "Equivalent to CPAT's `--logitModel` option.", category: "required"}
         referenceGenome: {description: "Equivalent to CPAT's `--ref` option.", category: "advanced"}
         referenceGenomeIndex: {description: "The index of the reference. Should be added as input if CPAT should not index the reference genome.", category: "advanced"}
         startCodons: {description: "Equivalent to CPAT's `--start` option.", category: "advanced"}
         stopCodons: {description: "Equivalent to CPAT's `--stop` option.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-
-        # outputs
-        outFile: {description: "CPAT logistic regression model."}
     }
 }
 
