@@ -9,6 +9,7 @@ that users understand how the changes affect the new version.
 -->
 version 5.0.1
 ---------------------------
++ Smoove: enable genotyping
 + add runtime memory to number of tasks.
 
 version 5.0.0
