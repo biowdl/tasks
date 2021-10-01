@@ -10,7 +10,6 @@ that users understand how the changes affect the new version.
 version 5.0.1
 ---------------------------
 + Smoove: enable genotyping
-+ Bcftools: add boolean option to remove uncalled genotypes.
 + add runtime memory to number of tasks.
 
 version 5.0.0
