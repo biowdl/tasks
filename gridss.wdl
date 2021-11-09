@@ -34,7 +34,7 @@ task AnnotateInsertedSequence {
         Int threads = 8
         String javaXmx = "8G"
         String memory = "9G"
-        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
+        String dockerImage = "quay.io/biocontainers/gridss:2.11.1--hdfd78af_1"
         Int timeMinutes = 120
     }
 
@@ -96,7 +96,7 @@ task GRIDSS {
         Int jvmHeapSizeGb = 64
         Int threads = 8
         Int timeMinutes = ceil(4320 / threads) + 10
-        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
+        String dockerImage = "quay.io/biocontainers/gridss:2.11.1--hdfd78af_1"
     }
 
     command {
@@ -165,7 +165,7 @@ task GridssAnnotateVcfRepeatmasker {
 
         String memory = "25G"
         Int threads = 8
-        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
+        String dockerImage = "quay.io/biocontainers/gridss:2.11.1--hdfd78af_1"
         Int timeMinutes = 1440
     }
 
@@ -213,7 +213,7 @@ task Virusbreakend {
 
         String memory = "75G"
         Int threads = 8
-        String dockerImage = "quay.io/biocontainers/gridss:2.12.0--h270b39a_1"
+        String dockerImage = "quay.io/biocontainers/gridss:2.11.1--hdfd78af_1"
         Int timeMinutes = 180
     }
 
