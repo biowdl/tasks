@@ -213,7 +213,7 @@ task Virusbreakend {
 
         String memory = "75G"
         Int threads = 8
-        String dockerImage = "quay.io/biocontainers/gridss:2.12.2--h270b39a_0"
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
         Int timeMinutes = 180
     }
 
