@@ -648,8 +648,8 @@ task Purple {
         File somaticVcf
         File germlineVcf
         File filteredSvVcf
-        File fullSvVcf
-        File fullSvVcfIndex
+        File? fullSvVcf
+        File? fullSvVcfIndex
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -676,7 +676,7 @@ task Purple {
         -somatic_vcf ~{somaticVcf} \
         -germline_vcf ~{germlineVcf} \
         -structural_vcf ~{filteredSvVcf} \
-        -sv_recovery_vcf ~{fullSvVcf} \
+        ~{"-sv_recovery_vcf " + fullSvVcf} \
         -circos /usr/local/bin/circos \
         -ref_genome ~{referenceFasta} \
         -driver_catalog \
