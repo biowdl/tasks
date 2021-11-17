@@ -30,6 +30,7 @@ task Extract {
         String? read2Output = "umi_extracted_R2.fastq.gz"
         Boolean threePrime = false
 
+        String memory = "20G"
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 2)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:3067b520386698317fd507c413baf7f901666fd4-0"
     }
@@ -51,6 +52,7 @@ task Extract {
     }
 
     runtime {
+        memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
