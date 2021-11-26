@@ -208,6 +208,8 @@ task Virusbreakend {
         File bam
         File bamIndex
         File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
         File referenceImg
         File virusbreakendDB
         String outputPath = "./virusbreakend.vcf"
