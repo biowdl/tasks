@@ -172,6 +172,7 @@ task GetSamplePositionInArray {
         # 4 gigs of memory to be able to build the docker image in singularity.
         memory: "4G"
         docker: dockerImage
+        timeMinutes: 5
     }
 
     parameter_meta {
