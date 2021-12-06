@@ -148,6 +148,43 @@ task CreateLink {
     }
 }
 
+task GetSamplePositionInArray {
+    input {
+        Array[String] sampleIds
+        String sample
+
+        # python:3.7-slim's sha256 digest. This image is based on debian buster.
+        String dockerImage = "python@sha256:e0f6a4df17d5707637fa3557ab266f44dddc46ebfc82b0f1dbe725103961da4e"
+    }
+
+    command <<<
+        python <<CODE
+        samples = ['~{sep="','" sampleIds}']
+        print(samples.index('~{sample}'))
+        CODE
+    >>>
+
+    output {
+        Int position = read_int(stdout())
+    }
+
+    runtime {
+        # 4 gigs of memory to be able to build the docker image in singularity.
+        memory: "4G"
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        sampleIds: {description: "A list of sample ids.", category: "required"}
+        sample: {description: "The sample for which the position is wanted.", category: "required"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        position: {description: ""}
+    }
+}
+
 task MapMd5 {
     input {
         Map[String,String] map
