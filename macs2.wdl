@@ -24,8 +24,8 @@ task PeakCalling {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
-        Array[File]+? controlBams
-        Array[File]+? controlBamsIndex
+        Array[File] controlBams
+        Array[File] controlBamsIndex
         String outDir = "macs2"
         String sampleName
         Boolean nomodel = false
@@ -38,7 +38,7 @@ task PeakCalling {
         set -e
         macs2 callpeak \
         --treatment ~{sep = ' ' inputBams} \
-        ~{true="--control" false="" defined(controlBams)} ~{sep = ' ' controlBams} \
+        ~{true="--control" false="" length(controlBams) > 0} ~{sep = ' ' controlBams} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
         ~{true='--nomodel' false='' nomodel}
@@ -57,8 +57,8 @@ task PeakCalling {
     parameter_meta {
         inputBams: {description: "The BAM files on which to perform peak calling.", category: "required"}
         inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
-        controlBams: {description: "Control BAM files for the input bam files.", category: "required"}
-        controlBamsIndex: {description: "The indexes for the control BAM files.", category: "required"}
+        controlBams: {description: "Control BAM files for the input bam files.", category: "common"}
+        controlBamsIndex: {description: "The indexes for the control BAM files.", category: "common"}
         sampleName: {description: "Name of the sample to be analysed", category: "required"}
         outDir: {description: "All output files will be written in this directory.", category: "advanced"}
         nomodel: {description: "Whether or not to build the shifting model.", category: "advanced"}
