@@ -29,7 +29,7 @@ task PeakCalling {
         String outDir = "macs2"
         String sampleName
         Boolean nomodel = false
-
+        Int timeMinutes = 600  # Default to 10 hours
         String memory = "8G"
         String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
     }
@@ -52,6 +52,7 @@ task PeakCalling {
         cpu: 1
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
     }
     parameter_meta {
         inputBams: {description: "The BAM files on which to perform peak calling.", category: "required"}
