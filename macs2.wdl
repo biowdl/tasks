@@ -24,13 +24,12 @@ task PeakCalling {
     input {
         Array[File]+ inputBams
         Array[File]+ inputBamsIndex
-        Array[File]+? controlBams
-        Array[File]+? controlBamsIndex
-        String outDir
+        Array[File] controlBams
+        Array[File] controlBamsIndex
+        String outDir = "macs2"
         String sampleName
         Boolean nomodel = false
-
-        Int threads = 1
+        Int timeMinutes = 600  # Default to 10 hours
         String memory = "8G"
         String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
     }
@@ -39,7 +38,7 @@ task PeakCalling {
         set -e
         macs2 callpeak \
         --treatment ~{sep = ' ' inputBams} \
-        ~{true="--control" false="" defined(controlBams)} ~{sep = ' ' controlBams} \
+        ~{true="--control" false="" length(controlBams) > 0} ~{sep = ' ' controlBams} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
         ~{true='--nomodel' false='' nomodel}
@@ -50,8 +49,22 @@ task PeakCalling {
     }
 
     runtime {
-        cpu: threads
+        cpu: 1
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
+    }
+    parameter_meta {
+        inputBams: {description: "The BAM files on which to perform peak calling.", category: "required"}
+        inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
+        controlBams: {description: "Control BAM files for the input bam files.", category: "common"}
+        controlBamsIndex: {description: "The indexes for the control BAM files.", category: "common"}
+        sampleName: {description: "Name of the sample to be analysed", category: "required"}
+        outDir: {description: "All output files will be written in this directory.", category: "advanced"}
+        nomodel: {description: "Whether or not to build the shifting model.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
     }
 }
