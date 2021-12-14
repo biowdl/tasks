@@ -26,11 +26,10 @@ task PeakCalling {
         Array[File]+ inputBamsIndex
         Array[File]+? controlBams
         Array[File]+? controlBamsIndex
-        String outDir
+        String outDir = "macs2"
         String sampleName
         Boolean nomodel = false
 
-        Int threads = 1
         String memory = "8G"
         String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
     }
@@ -50,8 +49,21 @@ task PeakCalling {
     }
 
     runtime {
-        cpu: threads
+        cpu: 1
         memory: memory
         docker: dockerImage
+    }
+    parameter_meta {
+        inputBams: {description: "The BAM files on which to perform peak calling.", category: "required"}
+        inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
+        controlBams: {description: "Control BAM files for the input bam files.", category: "required"}
+        controlBamsIndex: {description: "The indexes for the control BAM files.", category: "required"}
+        sampleName: {description: "Name of the sample to be analysed", category: "required"}
+        outDir: {description: "All output files will be written in this directory.", category: "advanced"}
+        nomodel: {description: "Whether or not to build the shifting model.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
     }
 }
