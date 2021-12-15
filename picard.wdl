@@ -1004,3 +1004,57 @@ task RenameSample {
         renamedVcf: {description: "New VCF with renamed sample."}
     }
 }
+
+task UmiAwareMarkDuplicatesWithMateCigar {
+    input {
+        File inputBam
+        String outputPathBam
+        String outputPathMetrics
+        String outputPathUmiMetrics 
+        String tempdir
+        Boolean dedup = true
+
+        String memory = "10G"
+        Int timeMinutes = 360
+        String dockerImage = "quay.io/biocontainers/picard:2.25.7--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})" ~{tempdir}
+        picard UmiAwareMarkDuplicatesWithMateCigar \
+        I=~{inputBam} \
+        O=~{outputPathBam} \
+        M=~{outputPathMetrics} \
+        UMI_METRICS_FILE=~{outputPathUmiMetrics} \
+        TMP_DIR=~{tempdir} \
+        REMOVE_DUPLICATES=~{dedup} \
+        CREATE_INDEX=true \
+    }
+
+    output {
+        File outputBam = outputPathBam
+        File outputBamIndex = sub(outputPathBam, "\.bam$", ".bai")
+        File outputMetrics = outputPathMetrics
+        File outputUmiMetrics = outputPathUmiMetrics
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The unsorted input BAM file.", category: "required"}
+        outputPathBam: {description: "The location the output BAM file should be written to.", category: "required"}
+        outputPathMetrics: {description: "The location the output metrics file should be written to.", category: "required"}
+        outputPathUmiMetrics: {description: "The location the output UMI metrics file should be written to.", category: "required"}
+        tmpDir: {description: "Temporary directory.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        
+    }
+}
