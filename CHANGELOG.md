@@ -7,6 +7,11 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
+version 5.1.0-dev
+---------------------------
++ Update parameter_meta for macs2
++ Add sample position in array task.
+
 version 5.0.2
 ---------------------------
 + bumped ScatterRegions container to 1.0.0
