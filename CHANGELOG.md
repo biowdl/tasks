@@ -9,6 +9,7 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Option to provide index file when using samtools view.
 + Update parameter_meta for macs2
 + Add sample position in array task.
 
