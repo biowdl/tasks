@@ -1007,7 +1007,7 @@ task RenameSample {
 
 task UmiAwareMarkDuplicatesWithMateCigar {
     input {
-        File inputBam
+        Array[File] inputBams
         String outputPath
         String outputPathMetrics = outputPath + ".metrics"
         String outputPathUmiMetrics = outputPath + ".umi-metrics"
@@ -1023,7 +1023,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         set -e
         mkdir -p "$(dirname ~{outputPath})" ~{tempdir}
         picard UmiAwareMarkDuplicatesWithMateCigar \
-        I=~{inputBam} \
+        INPUT=~{sep=' INPUT=' inputBams} \
         O=~{outputPath} \
         M=~{outputPathMetrics} \
         UMI_METRICS_FILE=~{outputPathUmiMetrics} \
@@ -1047,7 +1047,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
 
     parameter_meta {
         # inputs
-        inputBam: {description: "The unsorted input BAM file.", category: "required"}
+        inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
         outputPath: {description: "The location the output BAM file should be written to.", category: "required"}
         outputPathMetrics: {description: "The location the output metrics file should be written to.", category: "required"}
         outputPathUmiMetrics: {description: "The location the output UMI metrics file should be written to.", category: "required"}
