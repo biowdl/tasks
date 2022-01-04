@@ -1008,11 +1008,11 @@ task RenameSample {
 task UmiAwareMarkDuplicatesWithMateCigar {
     input {
         File inputBam
-        String outputPathBam
-        String outputPathMetrics
-        String outputPathUmiMetrics 
-        String tempdir
-        Boolean dedup = true
+        String outputPath
+        String outputPathMetrics = outputPath + ".metrics"
+        String outputPathUmiMetrics = outputPath + ".umi-metrics"
+        String tempdir = "temp"
+        Boolean removeDuplicates = true
 
         String memory = "10G"
         Int timeMinutes = 360
@@ -1024,17 +1024,17 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         mkdir -p "$(dirname ~{outputPath})" ~{tempdir}
         picard UmiAwareMarkDuplicatesWithMateCigar \
         I=~{inputBam} \
-        O=~{outputPathBam} \
+        O=~{outputPath} \
         M=~{outputPathMetrics} \
         UMI_METRICS_FILE=~{outputPathUmiMetrics} \
         TMP_DIR=~{tempdir} \
-        REMOVE_DUPLICATES=~{dedup} \
+        REMOVE_DUPLICATES=~{removeDuplicates} \
         CREATE_INDEX=true \
     }
 
     output {
-        File outputBam = outputPathBam
-        File outputBamIndex = sub(outputPathBam, "\.bam$", ".bai")
+        File outputBam = outputPath
+        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
         File outputMetrics = outputPathMetrics
         File outputUmiMetrics = outputPathUmiMetrics
     }
@@ -1048,10 +1048,11 @@ task UmiAwareMarkDuplicatesWithMateCigar {
     parameter_meta {
         # inputs
         inputBam: {description: "The unsorted input BAM file.", category: "required"}
-        outputPathBam: {description: "The location the output BAM file should be written to.", category: "required"}
+        outputPath: {description: "The location the output BAM file should be written to.", category: "required"}
         outputPathMetrics: {description: "The location the output metrics file should be written to.", category: "required"}
         outputPathUmiMetrics: {description: "The location the output UMI metrics file should be written to.", category: "required"}
-        tmpDir: {description: "Temporary directory.", category: "advanced"}
+        removeDuplicates: {description: "Whether the duplicate reads should be removed instead of marked.", category: "common"}
+        tempdir: {description: "Temporary directory.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
