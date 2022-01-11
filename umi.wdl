@@ -75,8 +75,8 @@ task BamReadNameToUmiTag {
     >>>
 
     output {
-        File outputBam = outputBam
-        File outputBamIndex = outputBamIndex
+        File outputBam = outputPath
+        File outputBamIndex = bamIndexPath
     }
 
     runtime {
