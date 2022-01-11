@@ -37,38 +37,38 @@ task BamReadNameToUmiTag {
     String bamIndexPath = sub(select_first([outputPath]), "\.bam$", ".bai")
     command <<<
         python <<CODE
-            import pysam
-            import sys
+        import pysam
+        import sys
 
-            from typing import Tuple
+        from typing import Tuple
 
-            def split_umi_from_name(name) -> Tuple[str, str]:
-                id_and_rest = name.split(maxsplit=1)
-                if len(id_and_rest) == 1:
-                    id, = id_and_rest
-                    other_parts = ""
-                else:
-                    id, other_parts = id_and_rest
-                underscore_index = id.rfind("_")
-                umi = id[underscore_index + 1:]
-                new_id = id[:underscore_index]
-                if other_parts:
-                    return " ".join([new_id, other_parts]), umi
-                return new_id, umi
+        def split_umi_from_name(name) -> Tuple[str, str]:
+            id_and_rest = name.split(maxsplit=1)
+            if len(id_and_rest) == 1:
+                id, = id_and_rest
+                other_parts = ""
+            else:
+                id, other_parts = id_and_rest
+            underscore_index = id.rfind("_")
+            umi = id[underscore_index + 1:]
+            new_id = id[:underscore_index]
+            if other_parts:
+                return " ".join([new_id, other_parts]), umi
+            return new_id, umi
 
-            def annotate_umis(in_file, out_file, bam_tag = "RX"):
-                in_bam = pysam.AlignmentFile(in_file, "rb")
-                out_bam = pysam.AlignmentFile(out_file, "wb", template=in_bam)
-                for segment in in_bam:  # type: pysam.AlignedSegment
-                    new_name, umi = split_umi_from_name(segment.query_name)
-                    segment.query_name = new_name
-                    # append does not work. (Pysam is not Pythonic.)
-                    segment.tags = segment.tags + [(bam_tag, umi)]
-                    out_bam.write(segment)
+        def annotate_umis(in_file, out_file, bam_tag = "RX"):
+            in_bam = pysam.AlignmentFile(in_file, "rb")
+            out_bam = pysam.AlignmentFile(out_file, "wb", template=in_bam)
+            for segment in in_bam:  # type: pysam.AlignedSegment
+                new_name, umi = split_umi_from_name(segment.query_name)
+                segment.query_name = new_name
+                # append does not work. (Pysam is not Pythonic.)
+                segment.tags = segment.tags + [(bam_tag, umi)]
+                out_bam.write(segment)
 
-            if __name__ == "__main__":
-                annotate_umis("~{inputBam}", "~{outputPath}", "~{umiTag}")
-                pysam.index("~{outputPath}", "~{bamIndexPath}", b=True)
+        if __name__ == "__main__":
+            annotate_umis("~{inputBam}", "~{outputPath}", "~{umiTag}")
+            pysam.index("~{outputPath}", "~{bamIndexPath}", b=True)
         CODE
     >>>
 
