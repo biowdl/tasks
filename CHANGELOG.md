@@ -9,7 +9,11 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
-+ Update parameter_meta for macs2
++ Add a script to subtract UMI's from the read name and add them as 
+  a BAM tag for each BAM record. The script is in umi.BamReadNameToUmiTag.
++ Add fgbio.AnnotateBamWithUmis.
++ Add picard.UmiAwareMarkDuplicatesWithMateCigar.
++ Update parameter_meta for macs2.
 + Add sample position in array task.
 
 version 5.0.2
