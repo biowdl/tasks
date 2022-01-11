@@ -37,8 +37,9 @@ task BamReadNameToUmiTag {
     String bamIndexPath = sub(select_first([outputPath]), "\.bam$", ".bai")
     command <<<
         python <<CODE
-        import pysam
+        import pysam 
         import sys
+        import os
 
         from typing import Tuple
 
@@ -56,8 +57,9 @@ task BamReadNameToUmiTag {
                 return " ".join([new_id, other_parts]), umi
             return new_id, umi
 
-        def annotate_umis(in_file, out_file, bam_tag = "RX"):
+        def annotate_umis(in_file, out_file, bam_tag="RX"):
             in_bam = pysam.AlignmentFile(in_file, "rb")
+            os.makedirs(os.path.dirname(out_file), exist_ok=True)
             out_bam = pysam.AlignmentFile(out_file, "wb", template=in_bam)
             for segment in in_bam:  # type: pysam.AlignedSegment
                 new_name, umi = split_umi_from_name(segment.query_name)
