@@ -1013,6 +1013,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         String outputPathUmiMetrics = outputPath + ".umi-metrics"
         String tempdir = "temp"
         Boolean removeDuplicates = true
+        String umiTagName = "RX"
 
         String memory = "10G"
         Int timeMinutes = 360
@@ -1026,6 +1027,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         INPUT=~{sep=' INPUT=' inputBams} \
         O=~{outputPath} \
         M=~{outputPathMetrics} \
+        UMI_TAG_NAME=~{umiTagName} \
         UMI_METRICS_FILE=~{outputPathUmiMetrics} \
         TMP_DIR=~{tempdir} \
         REMOVE_DUPLICATES=~{removeDuplicates} \
@@ -1052,6 +1054,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         outputPathMetrics: {description: "The location the output metrics file should be written to.", category: "required"}
         outputPathUmiMetrics: {description: "The location the output UMI metrics file should be written to.", category: "required"}
         removeDuplicates: {description: "Whether the duplicate reads should be removed instead of marked.", category: "common"}
+        umiTagName: {description: "Which tag in the BAM file holds the UMI.", category: "common"}
         tempdir: {description: "Temporary directory.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
