@@ -45,11 +45,9 @@ task BamReadNameToUmiTag {
 
         def split_umi_from_name(name) -> Tuple[str, str]:
             id_and_rest = name.split(maxsplit=1)
-            if len(id_and_rest) == 1:
-                id, = id_and_rest
-                other_parts = ""
-            else:
-                id, other_parts = id_and_rest
+            id = id_and_rest[0]
+            # If there was no whitespace id_and_rest will have length 1
+            other_parts = id_and_rest[1] if len(id_and_rest) == 2 else ""
             underscore_index = id.rfind("_")
             umi = id[underscore_index + 1:]
             new_id = id[:underscore_index]
