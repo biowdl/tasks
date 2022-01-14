@@ -28,6 +28,7 @@ task PeakCalling {
         Array[File] controlBamsIndex
         String outDir = "macs2"
         String sampleName
+        String format = "AUTO"
         Boolean nomodel = false
         Int timeMinutes = 600  # Default to 10 hours
         String memory = "8G"
@@ -41,6 +42,7 @@ task PeakCalling {
         ~{true="--control" false="" length(controlBams) > 0} ~{sep = ' ' controlBams} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
+        -f ~{format} \
         ~{true='--nomodel' false='' nomodel}
     }
 
