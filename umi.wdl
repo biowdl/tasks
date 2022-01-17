@@ -62,8 +62,7 @@ task BamReadNameToUmiTag {
             for segment in in_bam:  # type: pysam.AlignedSegment
                 new_name, umi = split_umi_from_name(segment.query_name)
                 segment.query_name = new_name
-                # append does not work. (Pysam is not Pythonic.)
-                segment.tags = segment.tags + [(bam_tag, umi)]
+                segment.set_tag("RX", umi, value_type="Z")
                 out_bam.write(segment)
 
         if __name__ == "__main__":
