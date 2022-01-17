@@ -59,10 +59,14 @@ task BamReadNameToUmiTag {
             in_bam = pysam.AlignmentFile(in_file, "rb")
             os.makedirs(os.path.dirname(out_file), exist_ok=True)
             out_bam = pysam.AlignmentFile(out_file, "wb", template=in_bam)
+            # Encode bam_tag as bytes. Otherwise pysam converts it to bytes anyway.
+            encoded_bam_tag = bam_tag.encode('ascii')
             for segment in in_bam:  # type: pysam.AlignedSegment
                 new_name, umi = split_umi_from_name(segment.query_name)
                 segment.query_name = new_name
-                segment.set_tag("RX", umi, value_type="Z")
+                # Encode umi as ascii. Otherwise pysam encodes it to bytes anyway.
+                # Value type has to be a string though, otherwise pysam crashes.
+                segment.set_tag(encoded_bam_tag, umi.encode('ascii'), value_type="Z")
                 out_bam.write(segment)
 
         if __name__ == "__main__":
