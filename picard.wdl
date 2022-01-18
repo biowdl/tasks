@@ -1015,7 +1015,8 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         Boolean removeDuplicates = true
         String umiTagName = "RX"
 
-        String memory = "10G"
+        String javaXmx = "8G"
+        String memory = "9G"
         Int timeMinutes = 360
         String dockerImage = "quay.io/biocontainers/picard:2.25.7--hdfd78af_0"
     }
@@ -1023,7 +1024,8 @@ task UmiAwareMarkDuplicatesWithMateCigar {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})" ~{tempdir}
-        picard UmiAwareMarkDuplicatesWithMateCigar \
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        UmiAwareMarkDuplicatesWithMateCigar \
         INPUT=~{sep=' INPUT=' inputBams} \
         O=~{outputPath} \
         M=~{outputPathMetrics} \
