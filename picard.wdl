@@ -1038,6 +1038,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         String outputPath
         String outputPathMetrics = outputPath + ".metrics"
         String outputPathUmiMetrics = outputPath + ".umi-metrics"
+        String? assumeSortOrder
         String tempdir = "temp"
         Boolean removeDuplicates = true
         String umiTagName = "RX"
@@ -1065,7 +1066,8 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         CREATE_INDEX=true \
         COMPRESSION_LEVEL=~{compressionLevel} \
         USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
-        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater} \
+        ~{"ASSUME_SORT_ORDER=" + assumeSortOrder}
     }
 
     output {
@@ -1089,6 +1091,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         outputPathUmiMetrics: {description: "The location the output UMI metrics file should be written to.", category: "required"}
         removeDuplicates: {description: "Whether the duplicate reads should be removed instead of marked.", category: "common"}
         umiTagName: {description: "Which tag in the BAM file holds the UMI.", category: "common"}
+        assumeSortOrder: {description: "Assume a certain sort order even though the header might say otherwise.", category: "common"}
         tempdir: {description: "Temporary directory.", category: "advanced"}
         compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
         useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
