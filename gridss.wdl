@@ -93,10 +93,10 @@ task GRIDSS {
         File? blacklistBed
         File? gridssProperties
 
-        Int jvmHeapSizeGb = 200
+        Int jvmHeapSizeGb = 300
         Int nonJvmMemoryGb = 50
         Int threads = 4
-        Int timeMinutes = ceil(7200 / threads) + 180
+        Int timeMinutes = ceil(7200 / threads) + 1800
         String dockerImage = "quay.io/biowdl/gridss:2.12.2"
     }
 
