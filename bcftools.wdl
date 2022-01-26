@@ -44,8 +44,8 @@ task Annotate {
         String? regions
         File? regionsFile
         File? renameChrs
-        File? samplesFile        
-        
+        File? samplesFile
+
         Int threads = 0
         String memory = "4G"
         Int timeMinutes = 60 + ceil(size(inputFile, "G"))
