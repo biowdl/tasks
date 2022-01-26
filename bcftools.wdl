@@ -55,7 +55,7 @@ task Annotate {
     Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
 
     command {
-        set -e 
+        set -e
         mkdir -p "$(dirname ~{outputPath})"
         bcftools annotate \
         -o ~{outputPath} \
@@ -209,7 +209,7 @@ task Sort {
         File outputVcf = outputPath
         File? outputVcfIndex = outputPath + ".tbi"
     }
-    
+
     runtime {
         memory: memory
         time_minutes: timeMinutes
