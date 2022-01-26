@@ -22,9 +22,9 @@ version 1.0
 
 task Amber {
     input {
-        String normalName
-        File normalBam
-        File normalBamIndex
+        String referenceName
+        File referenceBam
+        File referenceBamIndex
         String tumorName
         File tumorBam
         File tumorBamIndex
@@ -43,8 +43,8 @@ task Amber {
 
     command {
         AMBER -Xmx~{javaXmx} \
-        -reference ~{normalName} \
-        -reference_bam ~{normalBam} \
+        -reference ~{referenceName} \
+        -reference_bam ~{referenceBam} \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
         -output_dir ~{outputDir} \
@@ -63,8 +63,8 @@ task Amber {
         File tumorContaminationVcfIndex = "~{outputDir}/~{tumorName}.amber.contamination.vcf.gz.tbi"
         File tumorContaminationTsv = "~{outputDir}/~{tumorName}.amber.contamination.tsv"
         File tumorQc = "~{outputDir}/~{tumorName}.amber.qc"
-        File normalSnpVcf = "~{outputDir}/~{normalName}.amber.snp.vcf.gz"
-        File normalSnpVcfIndex = "~{outputDir}/~{normalName}.amber.snp.vcf.gz.tbi"
+        File normalSnpVcf = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz"
+        File normalSnpVcfIndex = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz.tbi"
         Array[File] outputs = [version, tumorBafPcf, tumorBafTsv, tumorBafVcf, tumorBafVcfIndex, 
             tumorContaminationVcf, tumorContaminationVcfIndex, tumorContaminationTsv, tumorQc, 
             normalSnpVcf, normalSnpVcfIndex]
@@ -78,9 +78,9 @@ task Amber {
     }
 
     parameter_meta {
-        normalName: {description: "the name of the normal sample.", category: "required"}
-        normalBam: {description: "The normal BAM file.", category: "required"}
-        normalBamIndex: {description: "The index for the normal BAM file.", category: "required"}
+        referenceName: {description: "the name of the normal sample.", category: "required"}
+        referenceBam: {description: "The normal BAM file.", category: "required"}
+        referenceBamIndex: {description: "The index for the normal BAM file.", category: "required"}
         tumorName: {description: "The name of the tumor sample.", category: "required"}
         tumorBam: {description: "The tumor BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor BAM file.", category: "required"}
@@ -102,9 +102,9 @@ task Amber {
 
 task Cobalt {
     input {
-        String normalName
-        File normalBam
-        File normalBamIndex
+        String referenceName
+        File referenceBam
+        File referenceBamIndex
         String tumorName
         File tumorBam
         File tumorBamIndex
@@ -120,8 +120,8 @@ task Cobalt {
 
     command {
         COBALT -Xmx~{javaXmx} \
-        -reference ~{normalName} \
-        -reference_bam ~{normalBam} \
+        -reference ~{referenceName} \
+        -reference_bam ~{referenceBam} \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
         -output_dir ~{outputDir} \
@@ -131,9 +131,9 @@ task Cobalt {
 
     output {
         File version = "~{outputDir}/cobalt.version"
-        File normalGcMedianTsv = "~{outputDir}/~{normalName}.cobalt.gc.median.tsv"
-        File normalRationMedianTsv = "~{outputDir}/~{normalName}.cobalt.ratio.median.tsv"
-        File normalRationPcf = "~{outputDir}/~{normalName}.cobalt.ratio.pcf"
+        File normalGcMedianTsv = "~{outputDir}/~{referenceName}.cobalt.gc.median.tsv"
+        File normalRationMedianTsv = "~{outputDir}/~{referenceName}.cobalt.ratio.median.tsv"
+        File normalRationPcf = "~{outputDir}/~{referenceName}.cobalt.ratio.pcf"
         File tumorGcMedianTsv = "~{outputDir}/~{tumorName}.cobalt.gc.median.tsv"
         File tumorRatioPcf = "~{outputDir}/~{tumorName}.cobalt.ratio.pcf"
         File tumorRatioTsv = "~{outputDir}/~{tumorName}.cobalt.ratio.tsv"
@@ -150,9 +150,9 @@ task Cobalt {
     }
 
     parameter_meta {
-        normalName: {description: "the name of the normal sample.", category: "required"}
-        normalBam: {description: "The normal BAM file.", category: "required"}
-        normalBamIndex: {description: "The index for the normal BAM file.", category: "required"}
+        referenceName: {description: "the name of the normal sample.", category: "required"}
+        referenceBam: {description: "The normal BAM file.", category: "required"}
+        referenceBamIndex: {description: "The index for the normal BAM file.", category: "required"}
         tumorName: {description: "The name of the tumor sample.", category: "required"}
         tumorBam: {description: "The tumor BAM file.", category: "required"}
         tumorBamIndex: {description: "The index for the tumor BAM file.", category: "required"}
@@ -279,7 +279,7 @@ task GripssApplicationKt {
         File inputVcf
         String outputPath = "gripss.vcf.gz"
         String tumorName
-        String normalName
+        String referenceName
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -287,8 +287,8 @@ task GripssApplicationKt {
         File breakendPon
         File breakpointPon
 
-        String memory = "33G"
-        String javaXmx = "32G"
+        String memory = "32G"
+        String javaXmx = "31G"
         Int timeMinutes = 45
         String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.11--hdfd78af_0"
     }
@@ -298,7 +298,7 @@ task GripssApplicationKt {
         -cp /usr/local/share/hmftools-gripss-1.11-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssApplicationKt \
         -tumor ~{tumorName} \
-        -reference ~{normalName} \
+        -reference ~{referenceName} \
         -ref_genome ~{referenceFasta} \
         -breakpoint_hotspot ~{breakpointHotspot} \
         -breakend_pon ~{breakendPon} \
@@ -383,9 +383,9 @@ task GripssHardFilterApplicationKt {
 task HealthChecker {
     input {
         String outputDir = "."
-        String normalName
-        File normalFlagstats
-        File normalMetrics
+        String referenceName
+        File referenceFlagstats
+        File referenceMetrics
         String tumorName
         File tumorFlagstats
         File tumorMetrics
@@ -401,9 +401,9 @@ task HealthChecker {
         set -e
         mkdir -p ~{outputDir}
         health-checker -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -reference ~{normalName} \
-        -ref_flagstat_file ~{normalFlagstats} \
-        -ref_wgs_metrics_file ~{normalMetrics} \
+        -reference ~{referenceName} \
+        -ref_flagstat_file ~{referenceFlagstats} \
+        -ref_wgs_metrics_file ~{referenceMetrics} \
         -tumor ~{tumorName} \
         -tum_flagstat_file ~{tumorFlagstats} \
         -tum_wgs_metrics_file ~{tumorMetrics} \
@@ -425,9 +425,9 @@ task HealthChecker {
 
     parameter_meta {
         outputDir: {description: "The path the output will be written to.", category:"required"}
-        normalName: {description: "The name of the normal sample.", category: "required"}
-        normalFlagstats: {description: "The flagstats for the normal sample.", category: "required"}
-        normalMetrics: {description: "The picard WGS metrics for the normal sample.", category: "required"}
+        referenceName: {description: "The name of the normal sample.", category: "required"}
+        referenceFlagstats: {description: "The flagstats for the normal sample.", category: "required"}
+        referenceMetrics: {description: "The picard WGS metrics for the normal sample.", category: "required"}
         tumorName: {description: "The name of the tumor sample.", category: "required"}
         tumorFlagstats: {description: "The flagstats for the tumor sample.", category: "required"}
         tumorMetrics: {description: "The picard WGS metrics for the tumor sample.", category: "required"}
@@ -546,11 +546,11 @@ task Protect {
     input {
         String refGenomeVersion
         String tumorName
-        String normalName
+        String referenceName
         Array[String]+ sampleDoids
         String outputDir = "."
         Array[File]+ serveActionability
-        File doidsJson
+        File doidJson
         File purplePurity
         File purpleQc
         File purpleDriverCatalogSomatic
@@ -576,11 +576,11 @@ task Protect {
         protect -Xmx~{javaXmx} \
         -ref_genome_version ~{refGenomeVersion} \
         -tumor_sample_id ~{tumorName} \
-        -reference_sample_id ~{normalName} \
+        -reference_sample_id ~{referenceName} \
         -primary_tumor_doids '~{sep=";" sampleDoids}' \
         -output_dir ~{outputDir} \
         -serve_actionability_dir ~{sub(serveActionability[0], basename(serveActionability[0]), "")} \
-        -doid_json ~{doidsJson} \
+        -doid_json ~{doidJson} \
         -purple_purity_tsv ~{purplePurity} \
         -purple_qc_file ~{purpleQc} \
         -purple_somatic_driver_catalog_tsv ~{purpleDriverCatalogSomatic} \
@@ -608,11 +608,11 @@ task Protect {
     parameter_meta {
         refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"} 
         tumorName: {description: "The name of the tumor sample.", category: "required"}
-        normalName: {description: "The name of the normal sample.", category: "required"}
+        referenceName: {description: "The name of the normal sample.", category: "required"}
         sampleDoids: {description: "The DOIDs (Human Disease Ontology) for the primary tumor.", category: "required"}
         outputDir: {description: "The directory the outputs will be written to.", category: "required"}
         serveActionability: {description: "The actionability files generated by hmftools' serve.", category: "required"}
-        doidsJson: {description: "A json with the DOID (Human Disease Ontology) tree.", category: "required"}
+        doidJson: {description: "A json with the DOID (Human Disease Ontology) tree.", category: "required"}
         purplePurity: {description: "The purity file generated by purple.", category: "required"}
         purpleQc: {description: "The QC file generated by purple.", category: "required"}
         purpleDriverCatalogSomatic: {description: "The somatic driver catalog generated by purple.", category: "required"}
@@ -639,7 +639,7 @@ task Protect {
 
 task Purple {
     input {
-        String normalName
+        String referenceName
         String tumorName
         String outputDir = "./purple"
         Array[File]+ amberOutput
@@ -667,7 +667,7 @@ task Purple {
 
     command {
         PURPLE -Xmx~{javaXmx} \
-        -reference ~{normalName} \
+        -reference ~{referenceName} \
         -tumor ~{tumorName} \
         -output_dir ~{outputDir} \
         -amber ~{sub(amberOutput[0], basename(amberOutput[0]), "")} \
@@ -713,7 +713,7 @@ task Purple {
         File somaticClonalityPlot = "~{outputDir}/plot/~{tumorName}.somatic.clonality.png"
         File somaticPlot = "~{outputDir}/plot/~{tumorName}.somatic.png"
         File purpleVersion = "~{outputDir}/purple.version"
-        File circosNormalRatio = "~{outputDir}/circos/~{normalName}.ratio.circos"
+        File circosNormalRatio = "~{outputDir}/circos/~{referenceName}.ratio.circos"
         File circosConf = "~{outputDir}/circos/~{tumorName}.circos.conf"
         File circosIndel = "~{outputDir}/circos/~{tumorName}.indel.circos"
         File circosLink = "~{outputDir}/circos/~{tumorName}.link.circos"
@@ -744,7 +744,7 @@ task Purple {
     }
 
     parameter_meta {
-        normalName: {description: "the name of the normal sample.", category: "required"}
+        referenceName: {description: "the name of the normal sample.", category: "required"}
         tumorName: {description: "The name of the tumor sample.", category: "required"}
         outputDir: {description: "The path to the output directory.", category: "common"}
         amberOutput: {description: "The output files of hmftools amber.", category: "required"}
@@ -787,9 +787,9 @@ task Sage {
         Boolean panelOnly = false
         String outputPath = "./sage.vcf.gz"
 
-        String? normalName
-        File? normalBam
-        File? normalBamIndex
+        String? referenceName
+        File? referenceBam
+        File? referenceBamIndex
         Int? hotspotMinTumorQual
         Int? panelMinTumorQual
         Int? hotspotMaxGermlineVaf
@@ -801,8 +801,8 @@ task Sage {
 
         Int threads = 4
         String javaXmx = "50G"
-        String memory = "60G"
-        Int timeMinutes = 1 + ceil(size(select_all([tumorBam, normalBam]), "G") * 9 / threads)
+        String memory = "51G"
+        Int timeMinutes = 1 + ceil(size(select_all([tumorBam, referenceBam]), "G") * 9 / threads)
         String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_0"
     }
 
@@ -810,8 +810,8 @@ task Sage {
         SAGE -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
-        ~{"-reference " + normalName} \
-        ~{"-reference_bam " + normalBam} \
+        ~{"-reference " + referenceName} \
+        ~{"-reference_bam " + referenceBam} \
         -ref_genome ~{referenceFasta} \
         -hotspots ~{hotspots} \
         -panel_bed ~{panelBed} \
@@ -848,9 +848,9 @@ task Sage {
         tumorName: {description: "The name of the tumor sample.", category: "required"}
         tumorBam: {description: "The BAM file for the tumor sample.", category: "required"}
         tumorBamIndex: {description: "The index of the BAM file for the tumor sample.", category: "required"}
-        normalName: {description: "The name of the normal/reference sample.", category: "common"}
-        normalBam: {description: "The BAM file for the normal sample.", category: "common"}
-        normalBamIndex: {description: "The index of the BAM file for the normal sample.", category: "common"}
+        referenceName: {description: "The name of the normal/reference sample.", category: "common"}
+        referenceBam: {description: "The BAM file for the normal sample.", category: "common"}
+        referenceBamIndex: {description: "The index of the BAM file for the normal sample.", category: "common"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
