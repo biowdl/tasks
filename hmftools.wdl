@@ -274,7 +274,79 @@ task CuppaChart {
     }
 }
 
+task Gripss {
+    input {
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        File knownFusionPairBedpe
+        File breakendPon
+        File breakpointPon
+        String referenceName
+        String tumorName
+        File vcf
+        File vcfIndex
+        String outputDir = "./"
+
+        String memory = "17G"
+        String javaXmx = "16G"
+        Int timeMinutes = 50
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:2.0--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        gripss -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -ref_genome ~{referenceFasta} \
+        -known_hotspot_file ~{knownFusionPairBedpe} \
+        -pon_sgl_file ~{breakendPon} \
+        -pon_sv_file ~{breakpointPon} \
+        -reference ~{referenceName} \
+        -sample ~{tumorName} \
+        -vcf ~{vcf} \
+        -output_dir ~{outputDir} \
+        -output_id somatic
+    }
+
+    output {
+        File fullVcf = "~{outputDir}/~{tumorName}.gripss.somatic.vcf.gz"
+        File fullVcfIndex = "~{outputDir}/~{tumorName}.gripss.somatic.vcf.gz.tbi"
+        File filteredVcf = "~{outputDir}/~{tumorName}.gripss.somatic.filtered.vcf.gz"
+        File filteredVcfIndex = "~{outputDir}/~{tumorName}.gripss.somatic.filtered.vcf.gz.tbi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
+                             category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        knownFusionPairBedpe: {description: "Equivalent to the `-known_hotspot_file` option.", category: "required"}
+        breakendPon: {description: "Equivalent to the `-pon_sgl_file` option.", category: "required"}
+        breakpointPon: {description: "Equivalent to the `-pon_sv_file` option.", category: "required"}
+        tumorName: {description: "The name of the tumor sample.", category: "required"}
+        referenceName: {description: "The name of the normal sample.", category: "required"}
+        vcf: {description: "The input VCF.", category: "required"}
+        vcfIndex: {description: "The index for the input VCF.", category: "required"}
+        outputDir: {description: "The path the output will be written to.", category:"required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task GripssApplicationKt {
+    # Obsolete
     input {
         File inputVcf
         String outputPath = "gripss.vcf.gz"
@@ -322,13 +394,15 @@ task GripssApplicationKt {
     parameter_meta {
         inputVcf: {description: "The input VCF.", category: "required"}
         outputPath: {description: "The path where th eoutput VCF will be written.", category: "common"}
+        referenceName: {description: "The name of the normal sample.", category: "required"}
+        tumorName: {description: "The name of the tumor sample.", category: "required"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         breakpointHotspot: {description: "Equivalent to the `-breakpoint_hotspot` option.", category: "required"}
         breakendPon: {description: "Equivalent to the `-breakend_pon` option.", category: "required"}
-        breakpointPon: {description: "Equivalent to the `breakpoint_pon` option.", category: "required"}
+        breakpointPon: {description: "Equivalent to the `-breakpoint_pon` option.", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -339,6 +413,7 @@ task GripssApplicationKt {
 }
 
 task GripssHardFilterApplicationKt {
+    # Obsolete
     input {
         File inputVcf
         String outputPath = "gripss_hard_filter.vcf.gz"
@@ -724,6 +799,7 @@ task Purple {
         File somaticVcf
         File germlineVcf
         File filteredSvVcf
+        File filteredSvVcfIndex
         File? fullSvVcf
         File? fullSvVcfIndex
         File referenceFasta
