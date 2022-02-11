@@ -65,25 +65,25 @@ jobs:
         # Only check files that have changed from the base reference.
         # Womtool validate checks very slowly, so this saves a lot of time.
         run: |
-          bash -c "
+          bash <<- SCRIPT
             set -x
             for WDL_FILE in $(git diff --name-only origin/${{github.base_ref}} | grep -E '*.wdl$'); do
               womtool validate $WDL_FILE
             done
-          "
+          SCRIPT
       - name: run miniwdl check
         run: bash -c 'miniwdl check $(git ls-files *.wdl)'
 
       - name: Check copyright headers
         run: | 
-          bash -c '
+          bash <<- SCRIPT
             for WDL_FILE in $(git diff --name-only origin/${{github.base_ref}} | grep -E '*.wdl$'); do
               grep Copyright $WDL_FILE || bash -c "echo No copyright header in $WDL_FILE && exit 1"
             done
-          '
+          SCRIPT
       - name: Check parameter_meta for inputs
         run: |
-          bash -c "
+          bash <<- SCRIPT
             for WDL_FILE in $(git diff --name-only origin/${{github.base_ref}} | grep -E '*.wdl$'); do
               wdl-aid --strict $WDL_FILE > /dev/null 2> wdl-aid_stderr || 
               if grep -z  'ValueError: Missing parameter_meta for inputs:' wdl-aid_stderr
@@ -91,4 +91,4 @@ jobs:
                  exit 1
               fi
             done
-          "
+          SCRIPT
