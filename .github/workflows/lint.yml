@@ -24,7 +24,8 @@ jobs:
         run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
 
       - name: Cache conda environment
-        uses: actions/cache@v2.1.7
+        # Use an always upload cache to prevent solving conda environment again and again on failing linting.
+        uses: pat-s/always-upload-cache@v2.1.5
         env:
           # Increase this value to manually invalidate the cache
           CACHE_NUMBER: 0
