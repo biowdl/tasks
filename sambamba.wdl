@@ -20,13 +20,56 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+task Flagstat {
+    input {
+        File inputBam
+        File inputBamIndex
+        String outputPath = "./flagstat.txt"
+
+        Int threads = 2
+        String memory = "8G"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
+    }
+
+    command {
+        sambamba flagstat \
+        -t ~{threads} \
+        ~{inputBam} \
+        > ~{outputPath}
+    }
+
+    output {
+        File stats = outputPath
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputBam: {description: "The input BAM file.", category: "required"}
+        inputBamIndex: {description: "The index for the BAM file.", category: "required"}
+        outputPath: {description: "The path to write the ouput to.", category: "required"}
+
+        threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
+}
+
+
 task Markdup {
     input {
         Array[File] inputBams
         String outputPath
         Int compressionLevel = 1
         # sortBufferSize and ioBufferSize taken from markdup defaults as of sambamba 0.7.1.
-        Int sortBufferSize = 2048
+        Int sortBufferSize = 4096
         Int ioBufferSize = 128
         Boolean removeDuplicates = false
 
@@ -38,10 +81,10 @@ task Markdup {
         # 2 threads reduces wall clock time by more than 40%.
         Int threads = 2
         # According to the manual sambamba markdup uses the sortbufferSize + 2 times the ioBuffer size.
-        # Added 1024 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
-        Int memoryMb = 1024 + sortBufferSize + 2 * ioBufferSize
+        # Added 8192 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
+        Int memoryMb = 8192 + sortBufferSize + 2 * ioBufferSize
         # Time minute calculation does not work well for higher number of threads.
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8) / threads
+        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 25) / threads
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
     }
 

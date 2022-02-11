@@ -1,0 +1,9 @@
+name: biowdl-lint
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - cromwell
+  - wdl-aid
+  - miniwdl
