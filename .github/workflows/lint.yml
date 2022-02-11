@@ -66,6 +66,7 @@ jobs:
         # Womtool validate checks very slowly, so this saves a lot of time.
         run: |
           bash -c "
+            set -x
             for WDL_FILE in $(git diff --name-only origin/${{github.base_ref}} | grep -E '*.wdl$'); do
               womtool validate $WDL_FILE
             done
