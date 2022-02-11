@@ -529,8 +529,6 @@ task Linx {
         String outputDir = "./linx"
         File fragileSiteCsv
         File lineElementCsv
-        File replicationOriginsBed
-        File viralHostsCsv
         File knownFusionCsv
         File driverGenePanel
         #The following should be in the same directory.
@@ -539,10 +537,10 @@ task Linx {
         File transExonDataCsv
         File transSpliceDataCsv
 
-        String memory = "5G"
-        String javaXmx = "4G"
+        String memory = "9G"
+        String javaXmx = "8G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.16--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.17--hdfd78af_0"
     }
 
     command {
@@ -554,9 +552,7 @@ task Linx {
         -output_dir ~{outputDir} \
         -fragile_site_file ~{fragileSiteCsv} \
         -line_element_file ~{lineElementCsv} \
-        -replication_origins_file ~{replicationOriginsBed} \
-        -viral_hosts_file ~{viralHostsCsv} \
-        -gene_transcripts_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -check_fusions \
         -known_fusion_file ~{knownFusionCsv} \
         -check_drivers \
@@ -598,12 +594,10 @@ task Linx {
         svVcf: {description: "A VCF file containing structural variants, produced using GRIDSS, annotated for viral insertions and postprocessed with GRIPSS.", category: "required"}
         svVcfIndex: {description: "Index for the structural variants VCf file.", category: "required"}
         purpleOutput: {description: "The files produced by PURPLE.", category: "required"}
-        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"HG19\" or \"HG38\".", category: "required"}
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
         outputDir: {description: "The directory the outputs will be written to.", category: "required"}
         fragileSiteCsv: {description: "A list of known fragile sites.", category: "required"}
         lineElementCsv: {description: "A list of known LINE source regions.", category: "required"}
-        replicationOriginsBed: {description: "Replication timing input in BED format with replication timing as the 4th column.", category: "required"}
-        viralHostsCsv: {description: "A list of the viruses which were used for annotation of the GRIDSS results.", category: "required"}
         knownFusionCsv: {description: "A CSV file describing known fusions.", category: "required"}
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
         geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
