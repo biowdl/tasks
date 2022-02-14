@@ -65,8 +65,8 @@ task Amber {
         File tumorQc = "~{outputDir}/~{tumorName}.amber.qc"
         File normalSnpVcf = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz"
         File normalSnpVcfIndex = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz.tbi"
-        Array[File] outputs = [version, tumorBafPcf, tumorBafTsv, tumorBafVcf, tumorBafVcfIndex, 
-            tumorContaminationVcf, tumorContaminationVcfIndex, tumorContaminationTsv, tumorQc, 
+        Array[File] outputs = [version, tumorBafPcf, tumorBafTsv, tumorBafVcf, tumorBafVcfIndex,
+            tumorContaminationVcf, tumorContaminationVcfIndex, tumorContaminationTsv, tumorQc,
             normalSnpVcf, normalSnpVcfIndex]
     }
 
@@ -110,7 +110,7 @@ task Cobalt {
         File tumorBamIndex
         String outputDir = "./cobalt"
         File gcProfile
-        
+
         Int threads = 1
         String memory = "5G"
         String javaXmx = "4G"
@@ -174,7 +174,7 @@ task Cuppa {
         Array[File]+ purpleOutput
         String sampleName
         Array[String]+ categories = ["DNA"]
-        Array[File]+ referenceData 
+        Array[File]+ referenceData
         File purpleSvVcf
         File purpleSvVcfIndex
         File purpleSomaticVcf
@@ -244,7 +244,7 @@ task CuppaChart {
     }
 
     command {
-        set -e 
+        set -e
         mkdir -p ~{outputDir}
         cuppa-chart \
         -sample ~{sampleName} \
@@ -429,7 +429,7 @@ task GripssHardFilterApplicationKt {
         -cp /usr/local/share/hmftools-gripss-1.11-0/gripss.jar \
         com.hartwig.hmftools.gripss.GripssHardFilterApplicationKt \
         -input_vcf ~{inputVcf} \
-        -output_vcf ~{outputPath} 
+        -output_vcf ~{outputPath}
     }
 
     output {
@@ -490,7 +490,7 @@ task HealthChecker {
 
     output {
         Boolean succeeded = read_boolean("result")
-        File outputFile = if succeeded 
+        File outputFile = if succeeded
                           then "~{outputDir}/~{tumorName}.HealthCheckSucceeded"
                           else "~{outputDir}/~{tumorName}.HealthCheckFailed"
     }
@@ -529,8 +529,6 @@ task Linx {
         String outputDir = "./linx"
         File fragileSiteCsv
         File lineElementCsv
-        File replicationOriginsBed
-        File viralHostsCsv
         File knownFusionCsv
         File driverGenePanel
         #The following should be in the same directory.
@@ -539,10 +537,10 @@ task Linx {
         File transExonDataCsv
         File transSpliceDataCsv
 
-        String memory = "5G"
-        String javaXmx = "4G"
+        String memory = "9G"
+        String javaXmx = "8G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.16--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.17--hdfd78af_0"
     }
 
     command {
@@ -554,9 +552,7 @@ task Linx {
         -output_dir ~{outputDir} \
         -fragile_site_file ~{fragileSiteCsv} \
         -line_element_file ~{lineElementCsv} \
-        -replication_origins_file ~{replicationOriginsBed} \
-        -viral_hosts_file ~{viralHostsCsv} \
-        -gene_transcripts_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -check_fusions \
         -known_fusion_file ~{knownFusionCsv} \
         -check_drivers \
@@ -598,12 +594,10 @@ task Linx {
         svVcf: {description: "A VCF file containing structural variants, produced using GRIDSS, annotated for viral insertions and postprocessed with GRIPSS.", category: "required"}
         svVcfIndex: {description: "Index for the structural variants VCf file.", category: "required"}
         purpleOutput: {description: "The files produced by PURPLE.", category: "required"}
-        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"HG19\" or \"HG38\".", category: "required"}
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
         outputDir: {description: "The directory the outputs will be written to.", category: "required"}
         fragileSiteCsv: {description: "A list of known fragile sites.", category: "required"}
         lineElementCsv: {description: "A list of known LINE source regions.", category: "required"}
-        replicationOriginsBed: {description: "Replication timing input in BED format with replication timing as the 4th column.", category: "required"}
-        viralHostsCsv: {description: "A list of the viruses which were used for annotation of the GRIDSS results.", category: "required"}
         knownFusionCsv: {description: "A CSV file describing known fusions.", category: "required"}
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
         geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
@@ -675,10 +669,9 @@ task Pave {
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
-        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}        
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"HG19\" or \"HG38\".", category: "required"}
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
-        #The following should be in the same directory.
         geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
@@ -757,7 +750,7 @@ task Protect {
     }
 
     parameter_meta {
-        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"} 
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
         tumorName: {description: "The name of the tumor sample.", category: "required"}
         referenceName: {description: "The name of the normal sample.", category: "required"}
         sampleDoids: {description: "The DOIDs (Human Disease Ontology) for the primary tumor.", category: "required"}
@@ -800,41 +793,47 @@ task Purple {
         File germlineVcf
         File filteredSvVcf
         File filteredSvVcfIndex
-        File? fullSvVcf
-        File? fullSvVcfIndex
+        File fullSvVcf
+        File fullSvVcfIndex
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
         File driverGenePanel
         File somaticHotspots
         File germlineHotspots
-        
+        #The following should be in the same directory.
+        File geneDataCsv
+        File proteinFeaturesCsv
+        File transExonDataCsv
+        File transSpliceDataCsv
+
         Int threads = 1
         Int timeMinutes = 30
         String memory = "9G"
         String javaXmx = "8G"
-        # clone of quay.io/biocontainers/hmftools-purple:3.1--hdfd78af_0 with 'ln -s /usr/local/lib/libwebp.so.7 /usr/local/lib/libwebp.so.6'
-        String dockerImage = "quay.io/biowdl/hmftools-purple:3.1" 
+        # clone of quay.io/biocontainers/hmftools-purple:3.2--hdfd78af_0 with 'ln -s /usr/local/lib/libwebp.so.7 /usr/local/lib/libwebp.so.6'
+        String dockerImage = "quay.io/biowdl/hmftools-purple:3.2"
     }
 
     command {
         PURPLE -Xmx~{javaXmx} \
         -reference ~{referenceName} \
+        -germline_vcf ~{germlineVcf} \
+        -germline_hotspots ~{germlineHotspots} \
         -tumor ~{tumorName} \
         -output_dir ~{outputDir} \
         -amber ~{sub(amberOutput[0], basename(amberOutput[0]), "")} \
         -cobalt ~{sub(cobaltOutput[0], basename(cobaltOutput[0]), "")} \
         -gc_profile ~{gcProfile} \
         -somatic_vcf ~{somaticVcf} \
-        -germline_vcf ~{germlineVcf} \
         -structural_vcf ~{filteredSvVcf} \
-        ~{"-sv_recovery_vcf " + fullSvVcf} \
+        -sv_recovery_vcf ~{fullSvVcf} \
         -circos /usr/local/bin/circos \
         -ref_genome ~{referenceFasta} \
-        -driver_catalog \
-        -driver_gene_panel ~{driverGenePanel} \
+        -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -run_drivers \
         -somatic_hotspots ~{somaticHotspots} \
-        -germline_hotspots ~{germlineHotspots} \
+        -driver_gene_panel ~{driverGenePanel} \
         -threads ~{threads}
     }
 
@@ -877,8 +876,8 @@ task Purple {
         File circosMap = "~{outputDir}/circos/~{tumorName}.map.circos"
         File circosSnp = "~{outputDir}/circos/~{tumorName}.snp.circos"
         Array[File] outputs = [driverCatalogSomaticTsv, purpleCnvGeneTsv, purpleCnvGermlineTsv,
-            purpleCnvSomaticTsv, purplePurityRangeTsv, purplePurityTsv, purpleQc, 
-            purpleSegmentTsv, purpleSomaticClonalityTsv, purpleSomaticHistTsv, 
+            purpleCnvSomaticTsv, purplePurityRangeTsv, purplePurityTsv, purpleQc,
+            purpleSegmentTsv, purpleSomaticClonalityTsv, purpleSomaticHistTsv,
             purpleSomaticVcf, purpleSomaticVcfIndex, purpleSvVcf, purpleSvVcfIndex,
             purpleVersion, purpleGermlineVcf, purpleGermlineVcfIndex, driverCatalogGermlineTsv]
         Array[File] plots = [circosPlot, copynumberPlot, inputPlot, mapPlot, purityRangePlot,
@@ -913,6 +912,11 @@ task Purple {
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
         somaticHotspots: {description: "A vcf file with hotspot somatic variant sites.", category: "required"}
         germlineHotspots: {description: "A vcf file with hotspot germline variant sites.", category: "required"}
+        geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
+        transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
+
 
         threads: {description: "The number of threads the program will use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
