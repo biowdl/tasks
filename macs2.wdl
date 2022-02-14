@@ -67,6 +67,6 @@ task PeakCalling {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-
+        format: {description: "Which format to use. Use BAMPE for paired-end reads.", category: "common"}
     }
 }
