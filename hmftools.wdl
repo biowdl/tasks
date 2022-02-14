@@ -312,8 +312,8 @@ task Gripss {
     output {
         File fullVcf = "~{outputDir}/~{tumorName}.gripss.somatic.vcf.gz"
         File fullVcfIndex = "~{outputDir}/~{tumorName}.gripss.somatic.vcf.gz.tbi"
-        File filteredVcf = "~{outputDir}/~{tumorName}.gripss.somatic.filtered.vcf.gz"
-        File filteredVcfIndex = "~{outputDir}/~{tumorName}.gripss.somatic.filtered.vcf.gz.tbi"
+        File filteredVcf = "~{outputDir}/~{tumorName}.gripss.filtered.somatic.vcf.gz"
+        File filteredVcfIndex = "~{outputDir}/~{tumorName}.gripss.filtered.somatic.vcf.gz.tbi"
     }
 
     runtime {
@@ -629,7 +629,7 @@ task Pave {
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
-        File refGenomeVersion
+        String refGenomeVersion
         File driverGenePanel
         #The following should be in the same directory.
         File geneDataCsv
