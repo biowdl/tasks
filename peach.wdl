@@ -38,11 +38,11 @@ task Peach {
         set -e
         mkdir -p ~{outputDir}
         peach \
-        -vcf ~{germlineVcf} \
+        --vcf ~{germlineVcf} \
         --sample_t_id ~{tumorName} \
         --sample_r_id ~{normalName} \
         --tool_version 1.5 \
-        --outputDir ~{outputDir} \
+        --outputdir ~{outputDir} \
         --panel ~{panelJson}
     }
 
