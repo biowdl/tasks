@@ -651,8 +651,8 @@ task Pave {
     }
 
     output {
-        File outputVcf = "~{outputDir}/~{sub(basename(geneDataCsv), 'vcf.gz$', 'pave.vcf.gz')}"
-        File outputVcfIndex = "~{outputDir}/~{sub(basename(geneDataCsv), 'vcf.gz$', 'pave.vcf.gz.tbi')}"
+        File outputVcf = "~{outputDir}/~{sub(basename(vcfFile), 'vcf.gz$', 'pave.vcf.gz')}"
+        File outputVcfIndex = "~{outputDir}/~{sub(basename(vcfFile), 'vcf.gz$', 'pave.vcf.gz.tbi')}"
     }
 
     runtime {
