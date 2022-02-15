@@ -43,7 +43,7 @@ task Peach {
         --sample_r_id ~{normalName} \
         --tool_version 1.5 \
         --outputDir ~{outputDir} \
-        --panel
+        --panel ~{panelJson}
     }
 
     output {
