@@ -484,8 +484,14 @@ task HealthChecker {
         -tum_wgs_metrics_file ~{tumorMetrics} \
         -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
         -output_dir ~{outputDir}
-        test -e '~{outputDir}/~{tumorName}.HealthCheckSucceeded' && echo 'true' > '~{outputDir}/succeeded'
-        test -e '~{outputDir}/~{tumorName}.HealthCheckFailed' && echo 'false' > '~{outputDir}/succeeded'
+        if [ -e '~{outputDir}/~{tumorName}.HealthCheckSucceeded' ]
+          then
+            echo 'true' > '~{outputDir}/succeeded'
+        fi
+        if [ -e '~{outputDir}/~{tumorName}.HealthCheckFailed' ]
+          then
+            echo 'false' > '~{outputDir}/succeeded'
+        fi
     }
 
     output {
@@ -531,6 +537,7 @@ task Linx {
         File lineElementCsv
         File knownFusionCsv
         File driverGenePanel
+        Boolean writeAllVisFusions = false
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
@@ -540,7 +547,7 @@ task Linx {
         String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.17--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
     }
 
     command {
@@ -558,7 +565,8 @@ task Linx {
         -check_drivers \
         -driver_gene_panel ~{driverGenePanel} \
         -chaining_sv_limit 0 \
-        -write_vis_data
+        -write_vis_data \
+        ~{if writeAllVisFusions then "-write_all_vis_fusions" else ""}
     }
 
     output {
@@ -569,7 +577,6 @@ task Linx {
         File linxFusion = "~{outputDir}/~{sampleName}.linx.fusion.tsv"
         File linxLinks = "~{outputDir}/~{sampleName}.linx.links.tsv"
         File linxSvs = "~{outputDir}/~{sampleName}.linx.svs.tsv"
-        File linxViralInserts = "~{outputDir}/~{sampleName}.linx.viral_inserts.tsv"
         File linxVisCopyNumber = "~{outputDir}/~{sampleName}.linx.vis_copy_number.tsv"
         File linxVisFusion = "~{outputDir}/~{sampleName}.linx.vis_fusion.tsv"
         File linxVisGeneExon = "~{outputDir}/~{sampleName}.linx.vis_gene_exon.tsv"
@@ -578,9 +585,9 @@ task Linx {
         File linxVisSvData = "~{outputDir}/~{sampleName}.linx.vis_sv_data.tsv"
         File linxVersion = "~{outputDir}/linx.version"
         Array[File] outputs = [driverCatalog, linxBreakend, linxClusters, linxDrivers, linxFusion,
-                               linxLinks, linxSvs, linxViralInserts, linxVisCopyNumber,
-                               linxVisFusion, linxVisGeneExon, linxVisProteinDomain,
-                               linxVisSegments, linxVisSvData, linxVersion]
+                               linxLinks, linxSvs, linxVisCopyNumber, linxVisFusion,
+                               linxVisGeneExon, linxVisProteinDomain, linxVisSegments, linxVisSvData,
+                               linxVersion]
     }
 
     runtime {
@@ -600,6 +607,7 @@ task Linx {
         lineElementCsv: {description: "A list of known LINE source regions.", category: "required"}
         knownFusionCsv: {description: "A CSV file describing known fusions.", category: "required"}
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
+        writeAllVisFusions: {description: "Equivalent to the -write_all_vis_fusions flag.", category: "advanced"}
         geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
