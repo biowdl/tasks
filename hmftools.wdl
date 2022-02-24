@@ -495,7 +495,7 @@ task HealthChecker {
     }
 
     output {
-        Boolean succeeded = read_boolean("result")
+        Boolean succeeded = read_boolean("succeeded")
         File outputFile = if succeeded
                           then "~{outputDir}/~{tumorName}.HealthCheckSucceeded"
                           else "~{outputDir}/~{tumorName}.HealthCheckFailed"
