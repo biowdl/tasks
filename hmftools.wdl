@@ -632,7 +632,7 @@ task LinxVisualisations {
 
         String memory = "9G"
         String javaXmx = "8G"
-        Int timeMinutes = 10
+        Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
     }
 
@@ -647,12 +647,13 @@ task LinxVisualisations {
         -circos /usr/local/bin/circos \
         -vis_file_dir ~{sub(linxOutput[0], basename(linxOutput[0]), "")} \
         -data_out ~{outputDir}/circos \
-        -plot_out ~{outputDir}/plot \
+        -plot_out ~{outputDir}/plots \
         ~{if plotReportable then "-plot_reportable" else ""}
     }
 
     output {
-
+        Array[File] circos = glob("~{outputDir}/circos/*")
+        Array[File] plots = glob("~{outputDir}/plots/*"
     }
 
     runtime {
