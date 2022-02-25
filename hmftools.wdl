@@ -653,7 +653,7 @@ task LinxVisualisations {
 
     output {
         Array[File] circos = glob("~{outputDir}/circos/*")
-        Array[File] plots = glob("~{outputDir}/plots/*"
+        Array[File] plots = glob("~{outputDir}/plots/*")
     }
 
     runtime {
