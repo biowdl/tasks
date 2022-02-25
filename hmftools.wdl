@@ -622,6 +622,61 @@ task Linx {
     }
 }
 
+task LinxVisualisations {
+    input {
+        String outputDir = "./linx_visualisation"
+        String sample
+        String refGenomeVersion
+        Array[File]+ linxOutput
+        Boolean plotReportable = true
+
+        String memory = "9G"
+        String javaXmx = "8G"
+        Int timeMinutes = 10
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -cp /usr/local/share/hmftools-linx-1.18-0/sv-linx.jar \
+        com.hartwig.hmftools.linx.visualiser.SvVisualiser \
+        -sample ~{sample} \
+        -ref_genome_version ~{refGenomeVersion} \
+        -circos /usr/local/bin/circos \
+        -vis_file_dir ~{sub(linxOutput[0], basename(linxOutput[0]), "")} \
+        -data_out ~{outputDir}/circos \
+        -plot_out ~{outputDir}/plot \
+        ~{if plotReportable then "-plot_reportable" else ""}
+    }
+
+    output {
+
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        outputDir: {description: "The directory the outputs will be written to.", category: "required"}
+        sample: {description: "The sample's name.", category: "required"}
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
+        linxOutput: {description: "The directory containing the linx output.", category: "required"}
+        plotReportable: {description: "Equivalent to the -plot_reportable flag.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Pave {
     input {
         String outputDir = "./"
