@@ -1099,25 +1099,29 @@ task Sage {
 task VirusInterpreter {
     input {
         String sampleId
+        File purplePurityTsv
+        File prupleQcFile
+        File tumorSampleWgsMetricsFile
         File virusBreakendTsv
         File taxonomyDbTsv
-        File virusInterpretationTsv
-        File virusBlacklistTsv
+        File virusReportingDbTsv
         String outputDir = "."
 
         String memory = "3G"
         String javaXmx = "2G"
         Int timeMinutes = 15
-        String dockerImage = "quay.io/biowdl/virus-interpreter:1.0"
+        String dockerImage = "quay.io/biowdl/virus-interpreter:1.2"
     }
 
     command {
-        virus-interpreter -Xmx~{javaXmx} \
+        virus-interpreter -Xmx~{javaXmx} -XX:ParallelGCThreads=1  \
         -sample_id ~{sampleId} \
+        -purple_purity_tsv ~{purplePurityTsv} \
+        -purple_qc_file ~{prupleQcFile} \
+        -tumor_sample_wgs_metrics_file ~{tumorSampleWgsMetricsFile} \
         -virus_breakend_tsv ~{virusBreakendTsv} \
         -taxonomy_db_tsv ~{taxonomyDbTsv} \
-        -virus_interpretation_tsv ~{virusInterpretationTsv} \
-        -virus_blacklist_tsv ~{virusBlacklistTsv} \
+        -virus_reporting_db_tsv ~{virusReportingDbTsv} \
         -output_dir ~{outputDir}
     }
 
@@ -1133,10 +1137,12 @@ task VirusInterpreter {
 
     parameter_meta {
         sampleId: {description: "The name of the sample.", category: "required"}
+        purplePurityTsv: {description: "The purity file produced by purple.", category: "required"}
+        prupleQcFile: {description: "The QC file produced by purple.", category: "required"}
+        tumorSampleWgsMetricsFile: {description: "The picard WGS metrics file for this sample.", category: "required"}
         virusBreakendTsv: {description: "The TSV output from virusbreakend.", category: "required"}
         taxonomyDbTsv: {description: "A taxonomy database tsv.", category: "required"}
-        virusInterpretationTsv: {description: "A virus interpretation tsv.", category: "required"}
-        virusBlacklistTsv: {description: "A virus blacklist tsv.", category: "required"}
+        virusReportingDbTsv: {description: "A virus reporting tsv.", category: "required"}
         outputDir: {description: "The directory the output will be written to.", category: "required"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
