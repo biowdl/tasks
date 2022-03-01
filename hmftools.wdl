@@ -632,7 +632,7 @@ task LinxVisualisations {
 
         String memory = "9G"
         String javaXmx = "8G"
-        Int timeMinutes = 60
+        Int timeMinutes = 1440 #FIXME
         String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
     }
 
@@ -777,7 +777,7 @@ task Protect {
         String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 60
-        String dockerImage = "quay.io/biowdl/protect:v1.4"
+        String dockerImage = "quay.io/biowdl/protect:v2.0"
     }
 
     command {
