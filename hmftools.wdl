@@ -184,7 +184,7 @@ task Cuppa {
         String javaXmx = "4G"
         String memory = "5G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biowdl/cuppa:1.4"
+        String dockerImage = "quay.io/biowdl/cuppa:1.6"
     }
 
     command {
@@ -240,7 +240,7 @@ task CuppaChart {
 
         String memory = "4G"
         Int timeMinutes = 5
-        String dockerImage = "quay.io/biowdl/cuppa:1.4"
+        String dockerImage = "quay.io/biowdl/cuppa:1.6"
     }
 
     command {
