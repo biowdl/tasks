@@ -409,13 +409,19 @@ task HealthChecker {
         -tum_wgs_metrics_file ~{tumorMetrics} \
         -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
         -output_dir ~{outputDir}
-        test -e '~{outputDir}/~{tumorName}.HealthCheckSucceeded' && echo 'true' > '~{outputDir}/succeeded'
-        test -e '~{outputDir}/~{tumorName}.HealthCheckFailed' && echo 'false' > '~{outputDir}/succeeded'
+        if [ -e '~{outputDir}/~{tumorName}.HealthCheckSucceeded' ]
+          then
+            echo 'true' > '~{outputDir}/succeeded'
+        fi
+        if [ -e '~{outputDir}/~{tumorName}.HealthCheckFailed' ]
+          then
+            echo 'false' > '~{outputDir}/succeeded'
+        fi
     }
 
     output {
-        Boolean succeeded = read_boolean("result")
-        File outputFile = if succeeded 
+        Boolean succeeded = read_boolean("succeeded")
+        File outputFile = if succeeded
                           then "~{outputDir}/~{tumorName}.HealthCheckSucceeded"
                           else "~{outputDir}/~{tumorName}.HealthCheckFailed"
     }
