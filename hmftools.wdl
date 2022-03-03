@@ -168,6 +168,62 @@ task Cobalt {
     }
 }
 
+task CupGenerateReport {
+    input {
+        String sampleName
+        File cupData
+        String outputDir = "./cuppa"
+
+        String memory = "5G"
+        Int timeMinutes = 10
+        String dockerImage = "quay.io/biowdl/cuppa:1.6"
+    }
+
+    # This script writes to the directory that the input is located in.
+    # Giving the input directly will cause the script to write in the
+    # locallized input dir, which may cause issues with write permissions
+    # in certain execution engines or backends. We, therefore, make links
+    # to a working directory, and give that directory as input instead.
+    # We can't just use the outputDir directly. This could be an
+    # absolute path in which case the linking might fail due to name
+    # collisions. Outputs are copied to the given output dir afterwards.
+    command {
+        set -e
+        mkdir -p ./workdir ~{outputDir}
+        ln -s -t workdir ~{sep=" " cupData}
+        CupGenerateReport \
+        ~{sampleName} \
+        workdir
+        mv -t ~{outputDir} \
+        ./workdir/~{sampleName}.cup.report.summry.png \
+        ./workdir/~{sampleName}.cup.report.features.png \
+        ./workdir/~{sampleName}_cup.report.pdf
+    }
+
+    output {
+        File summaryPng = "~{outputDir}/~{sampleName}.cup.report.summry.png"
+        File featuresPng = "~{outputDir}/~{sampleName}.cup.report.features.png"
+        File reportPdf = "~{outputDir}/~{sampleName}_cup.report.pdf"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        sampleName: {description: "The sample id.", category: "required"}
+        cupData: {description: "The output produced by cuppa.", category: "required"}
+        outputDir: {description: "The directory the ouput will be placed in.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Cuppa {
     input {
         Array[File]+ linxOutput
@@ -632,7 +688,7 @@ task LinxVisualisations {
 
         String memory = "9G"
         String javaXmx = "8G"
-        Int timeMinutes = 1440 #FIXME
+        Int timeMinutes = 1440
         String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
     }
 
@@ -668,6 +724,151 @@ task LinxVisualisations {
         refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
         linxOutput: {description: "The directory containing the linx output.", category: "required"}
         plotReportable: {description: "Equivalent to the -plot_reportable flag.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task Orange {
+    input {
+        String outputDir = "./orange"
+        File doidJson
+        Array[String] sampleDoids
+        String tumorName
+        String referenceName
+        File referenceMetrics
+        File tumorMetrics
+        File referenceFlagstats
+        File tumorFlagstats
+        File sageGermlineGeneCoverageTsv
+        File sageSomaticRefSampleBqrPlot
+        File sageSomaticTumorSampleBqrPlot
+        File purpleGeneCopyNumberTsv
+        File purpleGermlineDriverCatalogTsv
+        File purpleGermlineVariantVcf
+        File purpleGermlineVariantVcfIndex
+        Array[File]+ purplePlots
+        File purplePurityTsv
+        File purpleQcFile
+        File purpleSomaticDriverCatalogTsv
+        File purpleSomaticVariantVcf
+        File purpleSomaticVariantVcfIndex
+        File linxFusionTsv
+        File linxBreakendTsv
+        File linxDriverCatalogTsv
+        File linxDriverTsv
+        Array[File]+ linxPlots
+        File cuppaResultCsv
+        File cuppaSummaryPlot
+        File cuppaFeaturePlot
+        File chordPredictionTxt
+        File peachGenotypeTsv
+        File protectEvidenceTsv
+        File annotatedVirusTsv
+        #File pipelineVersionFile
+        File cohortMappingTsv
+        File cohortPercentilesTsv
+
+        String memory = "17G"
+        String javaXmx = "16G"
+        Int timeMinutes = 1440 #FIXME
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        orange -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -output_dir ~{outputDir} \
+        -doid_json ~{doidJson} \
+        -primary_tumor_doids '~{sep=";" sampleDoids}' \
+        -max_evidence_level C \
+        -tumor_sample_id ~{tumorName} \
+        -reference_sample_id ~{referenceName} \
+        -ref_sample_wgs_metrics_file ~{referenceMetrics} \
+        -tumor_sample_wgs_metrics_file ~{tumorMetrics} \
+        -ref_sample_flagstat_file ~{referenceFlagstats} \
+        -tumor_sample_flagstat_file ~{tumorFlagstats} \
+        -sage_germline_gene_coverage_tsv ~{sageGermlineGeneCoverageTsv} \
+        -sage_somatic_ref_sample_bqr_plot ~{sageSomaticRefSampleBqrPlot} \
+        -sage_somatic_tumor_sample_bqr_plot ~{sageSomaticTumorSampleBqrPlot} \
+        -purple_gene_copy_number_tsv ~{purpleGeneCopyNumberTsv} \
+        -purple_germline_driver_catalog_tsv ~{purpleGermlineDriverCatalogTsv} \
+        -purple_germline_variant_vcf ~{purpleGermlineVariantVcf} \
+        -purple_plot_directory ~{sub(purplePlots[0], basename(purplePlots[0]), "")} \
+        -purple_purity_tsv ~{purplePurityTsv} \
+        -purple_qc_file ~{purpleQcFile} \
+        -purple_somatic_driver_catalog_tsv ~{purpleSomaticDriverCatalogTsv} \
+        -purple_somatic_variant_vcf ~{purpleSomaticVariantVcf} \
+        -linx_fusion_tsv ~{linxFusionTsv} \
+        -linx_breakend_tsv ~{linxBreakendTsv} \
+        -linx_driver_catalog_tsv ~{linxDriverCatalogTsv} \
+        -linx_driver_tsv ~{linxDriverTsv} \
+        -linx_plot_directory ~{sub(linxPlots[0], basename(linxPlots[0]), "")} \
+        -cuppa_result_csv ~{cuppaResultCsv} \
+        -cuppa_summary_plot ~{cuppaSummaryPlot} \
+        -cuppa_feature_plot ~{cuppaFeaturePlot} \
+        -chord_prediction_txt ~{chordPredictionTxt} \
+        -peach_genotype_tsv ~{peachGenotypeTsv} \
+        -protect_evidence_tsv ~{protectEvidenceTsv} \
+        -annotated_virus_tsv ~{annotatedVirusTsv} \
+        -cohort_mapping_tsv ~{cohortMappingTsv} \
+        -cohort_percentiles_tsv ~{cohortPercentilesTsv}
+    }
+    #TODO may need to be added: -pipeline_version_file ~{pipelineVersionFile}
+
+    output {
+        File orangeJson = "~{outputDir}/~{tumorName}.orange.json"
+        File orangePdf = "~{outputDir}/~{tumorName}.orange.pdf"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        outputDir: {description: "The directory the outputs will be written to.", category: "common"}
+        doidJson: {description: "A json with the DOID (Human Disease Ontology) tree.", category: "required"}
+        sampleDoids: {description: "The DOIDs (Human Disease Ontology) for the primary tumor.", category: "required"}
+        tumorName: {description: "The name of the tumor sample.", category: "required"}
+        referenceName: {description: "The name of the normal sample.", category: "required"}
+        referenceMetrics: {description: "The picard WGS metrics for the normal sample.", category: "required"}
+        tumorMetrics: {description: "The picard WGS metrics for the tumor sample.", category: "required"}
+        referenceFlagstats: {description: "The flagstats for the normal sample.", category: "required"}
+        tumorFlagstats: {description: "The flagstats for the tumor sample.", category: "required"}
+        sageGermlineGeneCoverageTsv: {description: "Gene coverage file produced by the germline sage run.", category: "required"}
+        sageSomaticRefSampleBqrPlot: {description: "The reference bqr plot produced by the somatic sage run.", category: "required"}
+        sageSomaticTumorSampleBqrPlot: {description: "The reference bqr plot produced by the somatic sage run.", category: "required"}
+        purpleGeneCopyNumberTsv: {description: "Copy number tsv produced by purple.", category: "required"}
+        purpleGermlineDriverCatalogTsv: {description: "Germline driver catalog produced by purple.", category: "required"}
+        purpleGermlineVariantVcf: {description: "Germline variant vcf produced by purple.", category: "required"}
+        purplePlots: {description: "The plots generated by purple.", category: "required"}
+        purplePurityTsv: {description: "The purity file produced by purple.", category: "required"}
+        purpleQcFile: {description: "The qc file produced by purple.", category: "required"}
+        purpleSomaticDriverCatalogTsv: {description: "Somatic driver catalog produced by purple.", category: "required"}
+        purpleSomaticVariantVcf: {description: "Somatic variant vcf produced by purple.", category: "required"}
+        linxFusionTsv: {description: "The fusions tsv produced by linx.", category: "required"}
+        linxBreakendTsv: {description: "The breakend tsv produced by linx.", category: "required"}
+        linxDriverCatalogTsv: {description: "The driver catalog produced by linx.", category: "required"}
+        linxDriverTsv: {description: "The driver tsv produced by linx.", category: "required"}
+        linxPlots: {description: "The plots generated by linx.", category: "required"}
+        cuppaResultCsv: {description: "The cuppa results csv.", category: "required"}
+        cuppaSummaryPlot: {description: "The cuppa summary plot.", category: "required"}
+        cuppaFeaturePlot: {description: "The cuppa feature plot.", category: "required"}
+        chordPredictionTxt: {description: "Chord prediction results.", category: "required"}
+        peachGenotypeTsv: {description: "Genotype tsv produced by peach.", category: "required"}
+        protectEvidenceTsv: {description: "Evidence tsv produced by protect.", category: "required"}
+        annotatedVirusTsv: {description: "Annotated virus tsv produced by virus-interpreter.", category: "required"}
+        #pipelineVersionFile: {description: "", category: "required"}
+        cohortMappingTsv: {description: "Cohort mapping file from the HMFTools resources.", category: "required"}
+        cohortPercentilesTsv: {description: "Cohort percentile file from the HMFTools resources.", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
@@ -1024,7 +1225,7 @@ task Sage {
         String javaXmx = "50G"
         String memory = "51G"
         Int timeMinutes = 1 + ceil(size(select_all([tumorBam, referenceBam]), "G") * 9 / threads)
-        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_1"
     }
 
     command {
@@ -1054,8 +1255,11 @@ task Sage {
     output {
         File outputVcf = outputPath
         File outputVcfIndex = outputPath + ".tbi"
-        # There is some plots as well, but in the current container the labels in the plots are just series of `□`s.
-        # This seems to be a systemic issue with R generated plots in biocontainers...
+        File? referenceSageBqrPng = "~{referenceName}.sage.bqr.png"
+        File? referenceSageBqrTsv = "~{referenceName}.sage.bqr.tsv"
+        File tumorSageBqrPng = "~{tumorName}.sage.bqr.png"
+        File tumorSageBqrTsv = "~{tumorName}.sage.bqr.tsv"
+        File sageGeneCoverageTsv = "~{tumorName}.sage.gene.coverage.tsv"
     }
 
     runtime {
