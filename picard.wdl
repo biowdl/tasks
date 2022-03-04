@@ -1038,7 +1038,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         String outputPath
         String outputPathMetrics = outputPath + ".metrics"
         String outputPathUmiMetrics = outputPath + ".umi-metrics"
-        Int maxRecordsInRam = 3000000  # Default is 500_000 but that will lead to very small files on disk.
+        Int maxRecordsInRam = 1500000  # Default is 500_000 but that will lead to very small files on disk.
         String? assumeSortOrder
         String tempdir = "temp"
         Boolean removeDuplicates = true
