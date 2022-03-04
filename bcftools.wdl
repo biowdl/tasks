@@ -30,9 +30,11 @@ task Annotate {
         Boolean singleOverlaps = false
         Array[String] removeAnns = []
         File inputFile
+        File? inputFileIndex
         String outputPath = "output.vcf.gz"
 
         File? annsFile
+        File? annsFileIndex
         String? collapse
         String? exclude
         File? headerLines
@@ -45,8 +47,8 @@ task Annotate {
         File? samplesFile
 
         Int threads = 0
-        String memory = "256M"
-        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        String memory = "4G"
+        Int timeMinutes = 60 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
@@ -102,8 +104,10 @@ task Annotate {
         singleOverlaps: {description: "keep memory requirements low with very large annotation files.", category: "advanced"}
         removeAnns: {description: "List of annotations to remove (see man page for details).", category: "advanced"}
         inputFile: {description: "A vcf or bcf file.", category: "required"}
+        inputFileIndex: {description: "The index for the input vcf or bcf.", category: "common"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
-        annsFile: {description: "Bgzip-compressed and tabix-indexed file with annotations (see man page for details).", category: "advanced"}
+        annsFile: {description: "Bgzip-compressed and tabix-indexed file with annotations (see man page for details).", category: "common"}
+        annsFileIndex: {description: "The index for annsFile.", category: "common"}
         collapse: {description: "Treat as identical records with <snps|indels|both|all|some|none>, see man page for details.", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
         headerLines: {description: "Lines to append to the VCF header (see man page for details).", category: "advanced"}
@@ -122,6 +126,57 @@ task Annotate {
         # outputs
         outputVcf: {description: "Annotated VCF file."}
         outputVcfIndex: {description: "Index of the annotated VCF file."}
+    }
+}
+
+task Filter {
+    input {
+        File vcf
+        File vcfIndex
+        String? include
+        String? exclude
+        String? softFilter
+        String outputPath = "./filtered.vcf.gz"
+
+        String memory = "256M"
+        Int timeMinutes = 1 + ceil(size(vcf, "G"))
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+    }
+
+    command {
+        set -e 
+        mkdir -p "$(dirname ~{outputPath})"
+        bcftools \
+        filter \
+        ~{"-i " + include} \
+        ~{"-e " + exclude} \
+        ~{"-s " + softFilter} \
+        ~{vcf} \
+        -O z \
+        -o ~{outputPath}
+        bcftools index --tbi ~{outputPath}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        vcf: {description: "The VCF file to operate on.", category: "required"}
+        vcfIndex: {description: "The index for the VCF file.", category: "required"}
+        include: {description: "Equivalent to the `-i` option.", category: "common"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
     }
 }
 

@@ -13,7 +13,44 @@ version 5.1.0-dev
   a BAM tag for each BAM record. The script is in umi.BamReadNameToUmiTag.
 + Add fgbio.AnnotateBamWithUmis.
 + Add picard.UmiAwareMarkDuplicatesWithMateCigar.
-+ Update parameter_meta for macs2.
++ Added a task for SnpEff.
++ Adjusted runtime settings for sambamba Markdup.
++ Added a task for sambamba Flagstat.
++ Added a task for Picard CollectWgsMetrics.
++ Added a task for Peach.
++ Added tasks for HMFtools:
+  + Amber
+  + Cobalt
+  + Cuppa
+  + CuppaChart
+  + GripssApplicationKt
+  + GripssHardFilterApplicationKt
+  + HealthChecker
+  + Linx
+  + Protect
+  + Purple
+  + Sage
+  + VirusInterpreter
++ Added a task for VirusBreakend.
++ Added a task for GridssAnnotateVcfRepeatmasker. 
++ Bumped GRIDSS version to 2.12.2.
++ Adjusted GRIDSS runtime settings.
++ Added optional inputs to GRIDSS:
+  + blacklistBed
+  + gridssProperties
++ Added a task for GRIDSS AnnotateInsertedSequence.
++ Added a task for ExtractSigPredictHRD.
++ Added a task for DeconstructSigs.
++ Added option useSoftclippingForSupplementary (default false) to
+  BWA mem.
++ Adjusted BWA mem runtime settings.
++ Added a task for bedtools coverage.
++ Added a task for bcftools filter.
++ Adjusted runtime settings for bcftools annotate.
++ Added optional inputs to bcftools annotate:
+  + inputFileIndex
+  + annsFileIndex
++ Update parameter_meta for macs2
 + Add sample position in array task.
 
 version 5.0.2

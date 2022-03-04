@@ -1,6 +1,6 @@
 version 1.0
 
-# Copyright (c) 2017 Leiden University Medical Center
+# Copyright (c) 2020 Leiden University Medical Center
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,63 @@ version 1.0
 
 import "bwa.wdl" as bwa
 
+task AnnotateInsertedSequence {
+    input {
+        File inputVcf
+        String outputPath = "gridss.annotated.vcf.gz"
+        File viralReference
+        File viralReferenceFai
+        File viralReferenceDict
+        File viralReferenceImg
+
+        Int threads = 8
+        String javaXmx = "8G"
+        String memory = "9G"
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        Int timeMinutes = 120
+    }
+
+    command {
+        set -e
+        _JAVA_OPTIONS="$_JAVA_OPTIONS -Xmx~{javaXmx}"
+        AnnotateInsertedSequence \
+        REFERENCE_SEQUENCE=~{viralReference} \
+        INPUT=~{inputVcf} \
+        OUTPUT=~{outputPath} \
+        ALIGNMENT=APPEND \
+        WORKING_DIR='.' \
+        WORKER_THREADS=~{threads}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        inputVcf: {description: "The input VCF file.", category: "required"}
+        outputPath: {description: "The path the output will be written to.", category: "common"}
+        viralReference: {description: "A fasta file with viral sequences.", category: "required"}
+        viralReferenceFai: {description: "The index for the viral reference fasta.", category: "required"}
+        viralReferenceDict: {description: "The dict file for the viral reference.", category: "required"}
+        viralReferenceImg: {description: "The BWA index image (generated with GATK BwaMemIndexImageCreator) of the viral reference.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task GRIDSS {
     input {
         File tumorBam
@@ -33,25 +90,31 @@ task GRIDSS {
         File? normalBam
         File? normalBai
         String? normalLabel
+        File? blacklistBed
+        File? gridssProperties
 
-        Int jvmHeapSizeGb = 30
-        Int threads = 1
-        String dockerImage = "quay.io/biocontainers/gridss:2.9.4--0"
+        Int jvmHeapSizeGb = 300
+        Int nonJvmMemoryGb = 50
+        Int threads = 4
+        Int timeMinutes = ceil(7200 / threads) + 1800
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         gridss \
+        -w . \
         --reference ~{reference.fastaFile} \
         --output ~{outputPrefix}.vcf.gz \
         --assembly ~{outputPrefix}_assembly.bam \
+        ~{"-c " + gridssProperties} \
         ~{"-t " + threads} \
         ~{"--jvmheap " + jvmHeapSizeGb + "G"} \
-        --label ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
+        --labels ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
+        ~{"--blacklist " + blacklistBed} \
         ~{normalBam} \
         ~{tumorBam}
-        tabix -p vcf ~{outputPrefix}.vcf.gz
         samtools index ~{outputPrefix}_assembly.bam ~{outputPrefix}_assembly.bai
     }
 
@@ -64,7 +127,8 @@ task GRIDSS {
 
     runtime {
         cpu: threads
-        memory: "~{jvmHeapSizeGb + 1}G"
+        memory: "~{jvmHeapSizeGb + nonJvmMemoryGb}G"
+        time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }
 
@@ -78,8 +142,13 @@ task GRIDSS {
         normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
         normalBai: {description: "The index for normalBam.", category: "advanced"}
         normalLabel: {description: "The name of the normal sample.", category: "advanced"}
-        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling.",category: "advanced"}
+        blacklistBed: {description: "A bed file with blaclisted regins.", category: "advanced"}
+        gridssProperties: {description: "A properties file for gridss.", category: "advanced"}
+
         threads: {description: "The number of the threads to use.", category: "advanced"}
+        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling", category: "advanced"}
+        nonJvmMemoryGb: {description: "The amount of memory in Gb to be requested besides JVM memory.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -87,5 +156,108 @@ task GRIDSS {
         vcfIndex: {description: "Index of output VCF."}
         assembly: {description: "The GRIDSS assembly BAM."}
         assemblyIndex: {description: "Index of output BAM file."}
+    }
+}
+
+task GridssAnnotateVcfRepeatmasker {
+    input {
+        File gridssVcf
+        File gridssVcfIndex
+        String outputPath = "./gridss.repeatmasker_annotated.vcf.gz"
+
+        String memory = "25G"
+        Int threads = 8
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        Int timeMinutes = 1440
+    }
+
+    command {
+        gridss_annotate_vcf_repeatmasker \
+        --output ~{outputPath} \
+        --jar /usr/local/share/gridss-2.12.2-0/gridss.jar \
+        -w . \
+        -t ~{threads} \
+        ~{gridssVcf}
+    }
+
+    output {
+        File annotatedVcf = outputPath
+        File annotatedVcfIndex = "~{outputPath}.tbi"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        gridssVcf: {description: "The GRIDSS output.", category: "required"}
+        gridssVcfIndex: {description: "The index for the GRIDSS output.", category: "required"}
+        outputPath: {description: "The path the output should be written to.", category: "common"}
+        threads: {description: "The number of the threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task Virusbreakend {
+    input {
+        File bam
+        File bamIndex
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        File referenceImg
+        File virusbreakendDB
+        String outputPath = "./virusbreakend.vcf"
+
+        String memory = "75G"
+        Int threads = 8
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        Int timeMinutes = 180
+    }
+
+    command {
+        set -e
+        mkdir virusbreakenddb
+        tar -xzvf ~{virusbreakendDB} -C virusbreakenddb --strip-components 1
+        virusbreakend \
+        --output ~{outputPath} \
+        --workingdir . \
+        --reference ~{referenceFasta} \
+        --db virusbreakenddb \
+        --jar /usr/local/share/gridss-2.12.2-0/gridss.jar \
+        -t ~{threads} \
+        ~{bam}
+    }
+
+    output {
+        File vcf = outputPath
+        File summary = "~{outputPath}.summary.tsv"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        bam: {description: "A BAM file.", category: "required"}
+        bamIndex: {description: "The index for the BAM file.", category: "required"}
+        referenceFasta: {description: "The fasta of the reference genome.", category: "required"}
+        referenceImg: {description: "The BWA index image (generated with GATK BwaMemIndexImageCreator) of the reference.", category: "required"}
+        virusbreakendDB: {description: "A .tar.gz containing the virusbreakend database.", category: "required"}
+        outputPath: {description: "The path the output should be written to.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        threads: {description: "The number of the threads to use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
