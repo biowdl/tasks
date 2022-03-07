@@ -1160,8 +1160,10 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         assumeSortOrder: {description: "Assume a certain sort order even though the header might say otherwise.", category: "common"}
         tempdir: {description: "Temporary directory.", category: "advanced"}
         compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
+        maxRecordsInRam: {description: "This will specify the number of records stored in RAM before spilling to disk.", category: "advanced"}
         useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
         useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
