@@ -9,6 +9,10 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Add a script to subtract UMI's from the read name and add them as 
+  a BAM tag for each BAM record. The script is in umi.BamReadNameToUmiTag.
++ Add fgbio.AnnotateBamWithUmis.
++ Add picard.UmiAwareMarkDuplicatesWithMateCigar.
 + Added a task for SnpEff.
 + Adjusted runtime settings for sambamba Markdup.
 + Added a task for sambamba Flagstat.
