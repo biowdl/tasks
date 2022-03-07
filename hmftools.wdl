@@ -193,7 +193,7 @@ task CupGenerateReport {
         ln -s -t workdir ~{sep=" " cupData}
         CupGenerateReport \
         ~{sampleName} \
-        workdir
+        workdir/
         mv -t ~{outputDir} \
         ./workdir/~{sampleName}.cup.report.summry.png \
         ./workdir/~{sampleName}.cup.report.features.png \
