@@ -94,6 +94,7 @@ task Mem {
         outputPrefix: {description: "The prefix of the output files, including any parent directories.", category: "required"}
         sixtyFour: {description: "Whether or not the index uses the '.64' suffixes.", category: "common"}
         usePostalt: {description: "Whether to use the postalt script from bwa kit."}
+        useSoftclippingForSupplementary: {description: "Use soft-clipping for supplementary alignments instead of hard-clipping", category: "common"}
         sortMemoryPerThreadGb: {description: "The amount of memory for each sorting thread in gigabytes.", category: "advanced"}
         compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
         readgroup: {description: "A readgroup identifier.", category: "common"}
