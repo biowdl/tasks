@@ -781,7 +781,7 @@ task Orange {
         String memory = "17G"
         String javaXmx = "16G"
         Int timeMinutes = 1440 #FIXME
-        String dockerImage = "quay.io/quay.io/biowdl/orange:v1.6"
+        String dockerImage = "quay.io/biowdl/orange:v1.6"
     }
 
     command {
