@@ -726,8 +726,6 @@ task MarkDuplicates {
         CREATE_INDEX=true \
         ADD_PG_TAG_TO_READS=false \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File} \
-        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
-        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}
     }
 
     output {
