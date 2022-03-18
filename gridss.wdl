@@ -116,6 +116,12 @@ task GRIDSS {
         ~{normalBam} \
         ~{tumorBam}
         samtools index ~{outputPrefix}_assembly.bam ~{outputPrefix}_assembly.bai
+
+        # For some reason the VCF index is sometimes missing
+        if [ ! -e ~{outputPrefix}.vcf.gz.tbi ]
+          then
+            tabix ~{outputPrefix}.vcf.gz
+        fi
     }
 
     output {
