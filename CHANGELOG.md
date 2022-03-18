@@ -11,6 +11,10 @@ version 5.1.0-dev
 ---------------------------
 + The GRIDSS task will now run tabix separately if GRIDSS doesn't
   produce a vcf index.
++ Add a script to subtract UMI's from the read name and add them as
+  a BAM tag for each BAM record. The script is in umi.BamReadNameToUmiTag.
++ Add fgbio.AnnotateBamWithUmis.
++ Add picard.UmiAwareMarkDuplicatesWithMateCigar.
 + Added a task for SnpEff.
 + Adjusted runtime settings for sambamba Markdup.
 + Added a task for sambamba Flagstat.

@@ -20,53 +20,49 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-task PeakCalling {
+task AnnotateBamWithUmis {
     input {
-        Array[File]+ inputBams
-        Array[File]+ inputBamsIndex
-        Array[File] controlBams
-        Array[File] controlBamsIndex
-        String outDir = "macs2"
-        String sampleName
-        String format = "AUTO"
-        Boolean nomodel = false
-        Int timeMinutes = 600  # Default to 10 hours
-        String memory = "8G"
-        String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
+        File inputBam
+        File inputUmi
+        String outputPath
+
+        String memory = "120G"
+        Int timeMinutes = 360
+        String javaXmx="100G"
+        String dockerImage = "quay.io/biocontainers/fgbio:1.4.0--hdfd78af_0"
     }
 
     command {
-        set -e
-        macs2 callpeak \
-        --treatment ~{sep = ' ' inputBams} \
-        ~{true="--control" false="" length(controlBams) > 0} ~{sep = ' ' controlBams} \
-        --outdir ~{outDir} \
-        --name ~{sampleName} \
-        -f ~{format} \
-        ~{true='--nomodel' false='' nomodel}
+        set -e 
+        mkdir -p "$(dirname ~{outputPath})"
+        fgbio -Xmx~{javaXmx} \
+        AnnotateBamWithUmis \
+        -i ~{inputBam} \
+        -f ~{inputUmi} \
+        -o ~{outputPath} 
     }
 
     output {
-        File peakFile = outDir + "/" + sampleName + "_peaks.narrowPeak"
+        File outputBam = outputPath
     }
 
     runtime {
-        cpu: 1
         memory: memory
-        docker: dockerImage
         time_minutes: timeMinutes
+        docker: dockerImage
     }
+
     parameter_meta {
-        inputBams: {description: "The BAM files on which to perform peak calling.", category: "required"}
-        inputBamsIndex: {description: "The indexes for the input BAM files.", category: "required"}
-        controlBams: {description: "Control BAM files for the input bam files.", category: "common"}
-        controlBamsIndex: {description: "The indexes for the control BAM files.", category: "common"}
-        sampleName: {description: "Name of the sample to be analysed", category: "required"}
-        outDir: {description: "All output files will be written in this directory.", category: "advanced"}
-        nomodel: {description: "Whether or not to build the shifting model.", category: "advanced"}
+        # inputs
+        inputBam: {description: "The input BAM file.", category: "required"}
+        inputUmi: {description: "The input fastq file with UMIs.", category: "required"}
+        outputPath: {description: "Output directory path + output file.", category: "required"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-        format: {description: "Which format to use. Use BAMPE for paired-end reads.", category: "common"}
+
+        # outputs
+        outputBam: {description: "UMI-annotated output BAM file."}
     }
 }

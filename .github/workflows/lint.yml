@@ -1,0 +1,93 @@
+name: Linting
+
+on: 
+  pull_request:
+    paths_ignore:
+      - "docs/**"
+
+defaults:
+  run:
+    # This is needed for miniconda, see:
+    # https://github.com/marketplace/actions/setup-miniconda#important
+    shell: bash -l {0}  
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Linting checks
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive
+      
+      - name: Set cache date
+        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+      - name: Cache conda environment
+        # Use an always upload cache to prevent solving conda environment again and again on failing linting.
+        uses: pat-s/always-upload-cache@v2.1.5
+        env:
+          # Increase this value to manually invalidate the cache
+          CACHE_NUMBER: 0
+        with:
+          path: /usr/share/miniconda/envs/biowdl-lint
+          key:
+            ${{runner.os}}-biowdl-lint-${{ env.CACHE_NUMBER }}-${{env.DATE}}-${{ hashFiles('.github/lint-environment.yml') }}
+        id: env_cache
+      
+      # Use the builtin conda. This is the fastest installation. It may not be
+      # the fastest for resolving, but the package cache mitigates that problem.
+      # Since this installs fastest, it is fastest for all runs where a cache
+      # hit occurs.
+      - name: install miniconda
+        uses: conda-incubator/setup-miniconda@v2.1.1
+        with:
+          channels: conda-forge,bioconda,defaults
+          channel-priority: strict
+          auto-activate-base: false
+          use-only-tar-bz2: true  # Needed for proper caching according to the documentation.
+        # activate-environment is broken! This always seems to create a new environment.
+        # Activation is therefore done separately.
+      
+      - name: Create test environment if no cache is present
+        run: conda env create -n biowdl-lint -f .github/lint-environment.yml
+        if: steps.env_cache.outputs.cache-hit != 'true'
+      
+      - name: Activate test environment
+        # The new PATH should be passed to the environment, otherwise it won't register.
+        run: |
+          conda activate biowdl-lint
+          echo "PATH=$PATH" >> $GITHUB_ENV
+      
+      - name: Fetch develop branch for comparisons
+        run: git fetch --depth=1 origin develop
+
+      - name: run womtool validate
+        # Only check files that have changed from the base reference.
+        # Womtool validate checks very slowly, so this saves a lot of time.
+        run: |
+          set -x
+          for WDL_FILE in $(git diff --name-only origin/${{github.base_ref}} | grep -E '*.wdl$'); do
+            womtool validate $WDL_FILE
+          done
+      - name: run miniwdl check
+        run: |
+          set -x
+          bash -c 'miniwdl check $(git ls-files *.wdl)'
+
+      - name: Check copyright headers
+        run: | 
+          set -x
+          for WDL_FILE in $(git diff --name-only origin/${{github.base_ref}} | grep -E '*.wdl$'); do
+            grep Copyright $WDL_FILE || bash -c "echo No copyright header in $WDL_FILE && exit 1"
+          done
+      - name: Check parameter_meta for inputs
+        run: |
+          set -x
+          for WDL_FILE in $(git diff --name-only origin/${{github.base_ref}} | grep -E '*.wdl$'); do
+            wdl-aid --strict $WDL_FILE > /dev/null 2> wdl-aid_stderr || 
+            if grep -z  'ValueError: Missing parameter_meta for inputs:' wdl-aid_stderr
+            then
+                exit 1
+            fi
+          done

@@ -29,7 +29,7 @@ task BedToIntervalList {
         String javaXmx = "3G"
         String memory = "4G"
         Int timeMinutes = 5
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -89,7 +89,7 @@ task CollectHsMetrics {
         # Additional * 2 because picard multiple metrics reads the
         # reference fasta twice.
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -158,7 +158,7 @@ task CollectMultipleMetrics {
         Int memoryMb = javaXmxMb + 512
         # Additional * 2 because picard multiple metrics reads the reference fasta twice.
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -284,7 +284,7 @@ task CollectRnaSeqMetrics {
         String memory = "9G"
         # With 6 minutes per G there were several timeouts.
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 12)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -342,7 +342,7 @@ task CollectTargetedPcrMetrics {
         String javaXmx = "3G"
         String memory = "4G"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -404,7 +404,7 @@ task CollectVariantCallingMetrics {
         String javaXmx =  "8G"
         String memory = "9G"
         Int timeMinutes = 1440
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -517,7 +517,7 @@ task CreateSequenceDictionary {
 
         String javaXmx = "2G"
         String memory = "3G"
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -561,13 +561,15 @@ task GatherBamFiles {
         String outputBamPath
         Boolean createMd5File = false
 
-        Int? compressionLevel
+        Int compressionLevel = 1
+        Boolean useJdkInflater = false
+        Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
 
         Int javaXmxMb = 1024
         Int memoryMb = javaXmxMb + 512
         # One minute per input gigabyte.
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 1)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -577,7 +579,9 @@ task GatherBamFiles {
         GatherBamFiles \
         INPUT=~{sep=' INPUT=' inputBams} \
         OUTPUT=~{outputBamPath} \
-        ~{"COMPRESSION_LEVEL=" + compressionLevel} \
+        COMPRESSION_LEVEL=~{compressionLevel} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater} \
         CREATE_INDEX=true \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
     }
@@ -600,7 +604,9 @@ task GatherBamFiles {
         inputBamsIndex: {description: "The indexes of the input BAM files.", category: "required"}
         outputBamPath: {description: "The path where the merged BAM file will be written.", caregory: "required"}
         createMd5File: {decription: "Whether to create an md5 file of the output BAM.", category: "advanced"}
-        compressionLevel: {description: "The compression level of the output BAM.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
         javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -619,10 +625,14 @@ task GatherVcfs {
         Array[File]+ inputVcfIndexes
         String outputVcfPath = "out.vcf.gz"
 
+        Int compressionLevel = 1
+        Boolean useJdkInflater = false
+        Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
+
         String javaXmx = "4G"
         String memory = "5G"
         Int timeMinutes = 1 + ceil(size(inputVcfs, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -630,6 +640,10 @@ task GatherVcfs {
         mkdir -p "$(dirname ~{outputVcfPath})"
         picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         GatherVcfs \
+        COMPRESSION_LEVEL=~{compressionLevel} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater} \
+        CREATE_INDEX=true \
         INPUT=~{sep=' INPUT=' inputVcfs} \
         OUTPUT=~{outputVcfPath}
     }
@@ -654,6 +668,10 @@ task GatherVcfs {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
+        compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+
         # outputs
         outputVcf: {description: "Multiple VCF files gathered into one file."}
     }
@@ -665,14 +683,11 @@ task MarkDuplicates {
         Array[File]+ inputBams
         String outputBamPath
         String metricsPath
-        Int compressionLevel = 1
         Boolean createMd5File = false
-        Boolean useJdkInflater = true  # Slightly faster than the intel one.
-        # Better results for compression level 1 (much smaller).
-        # Higher compression levels similar to intel deflater.
-        # NOTE: this might change in the future when the intel
-        # deflater is updated!
-        Boolean useJdkDeflater = true
+        
+        Int compressionLevel = 1
+        Boolean useJdkInflater = false
+        Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
 
         # The program default for READ_NAME_REGEX is appropriate in nearly every case.
         # Sometimes we wish to supply "null" in order to turn off optical duplicate detection.
@@ -686,7 +701,7 @@ task MarkDuplicates {
         String memoryMb = javaXmxMb + 512
 
         Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     # Task is assuming query-sorted input so that the Secondary and Supplementary reads get
@@ -702,6 +717,8 @@ task MarkDuplicates {
         OUTPUT=~{outputBamPath} \
         METRICS_FILE=~{metricsPath} \
         COMPRESSION_LEVEL=~{compressionLevel} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater} \
         VALIDATION_STRINGENCY=SILENT \
         ~{"READ_NAME_REGEX=" + read_name_regex} \
         OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
@@ -709,8 +726,6 @@ task MarkDuplicates {
         CREATE_INDEX=true \
         ADD_PG_TAG_TO_READS=false \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File} \
-        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
-        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater}
     }
 
     output {
@@ -732,9 +747,9 @@ task MarkDuplicates {
         outputBamPath: {description: "The location where the ouptut BAM file should be written.", category: "required"}
         metricsPath: {description: "The location where the output metrics file should be written.", category: "required"}
         compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
-        createMd5File: {description: "Whether to create a md5 file for the created BAM file.", category: "advanced"}
         useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
         useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+        createMd5File: {description: "Whether to create a md5 file for the created BAM file.", category: "advanced"}
         read_name_regex: {description: "Equivalent to the `READ_NAME_REGEX` option of MarkDuplicates.", category: "advanced"}
         javaXmxMb: {description: "The maximum memory available to the program in megabytes. Should be lower than `memoryMb` to accommodate JVM overhead.", category: "advanced"}
         memoryMb: {description: "The amount of memory this job will use in megabytes.", category: "advanced"}
@@ -756,16 +771,20 @@ task MergeVCFs {
         Array[File]+ inputVCFsIndexes
         String outputVcfPath
         Int compressionLevel = 1
-        Boolean useJdkInflater = true # Slightly faster than the intel one.
+        Boolean useJdkInflater = false
         # Better results for compression level 1 (much smaller).
         # Higher compression levels similar to intel deflater.
         # NOTE: this might change in the future when the intel deflater is updated!
-        Boolean useJdkDeflater = true
+        # Second NOTE: No it did not change. Only the fastest algorithm with
+        # worse compression is wrapped in the intel GKL. Instead of using
+        # one of the slightly slower but better compressing alternatives from ISA-L. 
+        # (Which are also faster than zlib.)
+        Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
 
         String javaXmx = "4G"
         String memory = "5G"
         Int timeMinutes = 1 + ceil(size(inputVCFs, "G")) * 2
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     # Using MergeVcfs instead of GatherVcfs so we can create indices.
@@ -821,7 +840,7 @@ task SamToFastq {
         String javaXmx = "16G" # High memory default to avoid crashes.
         String memory = "17G"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
 
         File? noneFile
     }
@@ -882,7 +901,7 @@ task ScatterIntervalList {
 
         String javaXmx = "3G"
         String memory = "4G"
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -917,13 +936,15 @@ task SortSam {
         Boolean createMd5File = false
         Int maxRecordsInRam = 500000
         Int compressionLevel = 1
+        Boolean useJdkInflater = false
+        Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
 
         # Default ram of 4 GB. Using 125001.0  to prevent an answer of
         # 4.000000001 which gets rounded to 5.
         # GATK Best practices uses 75000 here: https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L778
         Int XmxGb = ceil(maxRecordsInRam / 125001.0)
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -936,6 +957,8 @@ task SortSam {
         SORT_ORDER=~{true="queryname" false="coordinate" sortByName} \
         CREATE_INDEX=true \
         COMPRESSION_LEVEL=~{compressionLevel} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater} \
         VALIDATION_STRINGENCY=SILENT \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File}
 
@@ -960,7 +983,9 @@ task SortSam {
         sortByName: {description: "Sort the output file by name, default is position.", category: "advanced"}
         createMd5File: {description: "Whether to create an MD5 digest for any BAM or FASTQ files created.", category: "advanced"}
         maxRecordsInRam: {description: "This will specify the number of records stored in RAM before spilling to disk.", category: "advanced"}
-        compressionLevel: {description: "Compression level for all compressed files created.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
         XmxGb: {description: "The maximum memory available to picard SortSam. Should be lower than `memory` to accommodate JVM overhead and BWA mem's memory usage.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -981,7 +1006,7 @@ task SortVcf {
         String javaXmx = "8G"
         String memory = "9G"
         Int timeMinutes = 1 + ceil(size(vcfFiles, "G") * 5)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
 
@@ -1031,7 +1056,7 @@ task RenameSample {
         String javaXmx = "8G"
         String memory = "9G"
         Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 2)
-        String dockerImage = "quay.io/biocontainers/picard:2.23.8--0"
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
     command {
@@ -1066,5 +1091,80 @@ task RenameSample {
 
         # outputs
         renamedVcf: {description: "New VCF with renamed sample."}
+    }
+}
+
+task UmiAwareMarkDuplicatesWithMateCigar {
+    input {
+        Array[File] inputBams
+        String outputPath
+        String outputPathMetrics = outputPath + ".metrics"
+        String outputPathUmiMetrics = outputPath + ".umi-metrics"
+        Int maxRecordsInRam = 1500000  # Default is 500_000 but that will lead to very small files on disk.
+        String? assumeSortOrder
+        String tempdir = "temp"
+        Boolean removeDuplicates = true
+        String umiTagName = "RX"
+        Int compressionLevel = 1
+        Boolean useJdkInflater = false
+        Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
+        String javaXmx = "8G"
+        String memory = "9G"
+        Int timeMinutes = 360
+        String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})" ~{tempdir}
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        UmiAwareMarkDuplicatesWithMateCigar \
+        INPUT=~{sep=' INPUT=' inputBams} \
+        O=~{outputPath} \
+        M=~{outputPathMetrics} \
+        UMI_TAG_NAME=~{umiTagName} \
+        UMI_METRICS_FILE=~{outputPathUmiMetrics} \
+        TMP_DIR=~{tempdir} \
+        REMOVE_DUPLICATES=~{removeDuplicates} \
+        MAX_RECORDS_IN_RAM=~{maxRecordsInRam} \
+        CREATE_INDEX=true \
+        COMPRESSION_LEVEL=~{compressionLevel} \
+        USE_JDK_INFLATER=~{true="true" false="false" useJdkInflater} \
+        USE_JDK_DEFLATER=~{true="true" false="false" useJdkDeflater} \
+        ~{"ASSUME_SORT_ORDER=" + assumeSortOrder}
+    }
+
+    output {
+        File outputBam = outputPath
+        File outputBamIndex = sub(outputPath, "\.bam$", ".bai")
+        File outputMetrics = outputPathMetrics
+        File outputUmiMetrics = outputPathUmiMetrics
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputBams: {description: "The BAM files for which the duplicate reads should be marked.", category: "required"}
+        outputPath: {description: "The location the output BAM file should be written to.", category: "required"}
+        outputPathMetrics: {description: "The location the output metrics file should be written to.", category: "required"}
+        outputPathUmiMetrics: {description: "The location the output UMI metrics file should be written to.", category: "required"}
+        removeDuplicates: {description: "Whether the duplicate reads should be removed instead of marked.", category: "common"}
+        umiTagName: {description: "Which tag in the BAM file holds the UMI.", category: "common"}
+        assumeSortOrder: {description: "Assume a certain sort order even though the header might say otherwise.", category: "common"}
+        tempdir: {description: "Temporary directory.", category: "advanced"}
+        compressionLevel: {description: "The compression level at which the BAM files are written.", category: "advanced"}
+        maxRecordsInRam: {description: "This will specify the number of records stored in RAM before spilling to disk.", category: "advanced"}
+        useJdkInflater: {description: "True, uses the java inflater. False, uses the optimized intel inflater.", category: "advanced"}
+        useJdkDeflater: {description: "True, uses the java deflator to compress the BAM files. False uses the optimized intel deflater.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        
     }
 }
