@@ -79,6 +79,69 @@ task AnnotateInsertedSequence {
     }
 }
 
+task AnnotateSvType {
+    input {
+        File gridssVcf
+        File gridssVcfIndex
+        String outputPath = "./gridss.svtyped.vcf"
+
+        String memory = "32G"
+        String dockerImage = "quay.io/biocontainers/bioconductor-structuralvariantannotation:1.10.0--r41hdfd78af_0"
+        Int timeMinutes = 240
+    }
+
+    # Based on https://github.com/PapenfussLab/gridss/issues/74
+    command <<<
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        R --vanilla << EOF
+        library(VariantAnnotation)
+        library(StructuralVariantAnnotation)
+
+        vcf_path <- "~{gridssVcf}"
+        out_path <- "~{outputPath}"
+
+        # Simple SV type classifier
+        simpleEventType <- function(gr) {
+          return(ifelse(seqnames(gr) != seqnames(partner(gr)), "BND", # inter-chromosomosal
+                  ifelse(gr$insLen >= abs(gr$svLen) * 0.7, "INS",
+                   ifelse(strand(gr) == strand(partner(gr)), "INV",
+                    ifelse(xor(start(gr) < start(partner(gr)), strand(gr) == "-"), "DEL",
+                     "DUP")))))
+        }
+
+        header <- scanVcfHeader(vcf_path)
+        vcf <- readVcf(vcf_path, seqinfo(header))
+        gr <- breakpointRanges(vcf)
+        svtype <- simpleEventType(gr)
+        info(vcf[gr$sourceId])$SVTYPE <- svtype
+        writeVcf(vcf, out_path)
+        EOF
+    >>>
+
+    output {
+        File vcf = outputPath
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        gridssVcf: {description: "The VCF produced by GRIDSS.", category: "required"}
+        gridssVcfIndex: {description: "The index for the VCF produced by GRIDSS.", category: "required"}
+        outputPath: {description: "The path the output should be written to.",  category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task GRIDSS {
     input {
         File tumorBam
