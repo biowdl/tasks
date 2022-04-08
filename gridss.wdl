@@ -79,7 +79,7 @@ task AnnotateInsertedSequence {
     }
 }
 
-task AnnotateSvType {
+task AnnotateSvTypes {
     input {
         File gridssVcf
         File gridssVcfIndex
