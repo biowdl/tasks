@@ -97,6 +97,7 @@ task Cutadapt {
     command {
         set -e
         ~{"mkdir -p $(dirname " + read1output + ")"}
+        mkdir -p $(dirname ~{reportPath})
         ~{read2outputArg}
         cutadapt \
         ~{"--cores=" + cores} \
