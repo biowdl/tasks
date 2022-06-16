@@ -95,7 +95,7 @@ task GRIDSS {
 
         Int jvmHeapSizeGb = 300
         Int nonJvmMemoryGb = 50
-        Int threads = 4
+        Int threads = 16
         Int timeMinutes = ceil(7200 / threads) + 1800
         String dockerImage = "quay.io/biowdl/gridss:2.12.2"
     }
