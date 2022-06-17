@@ -780,7 +780,7 @@ task Orange {
 
         String memory = "17G"
         String javaXmx = "16G"
-        Int timeMinutes = 1440 #FIXME
+        Int timeMinutes = 10
         String dockerImage = "quay.io/biowdl/orange:v1.6"
     }
 
@@ -1225,9 +1225,9 @@ task Sage {
         String? mnvFilterEnabled
         File? coverageBed
 
-        Int threads = 4
-        String javaXmx = "50G"
-        String memory = "51G"
+        Int threads = 32
+        String javaXmx = "120G"
+        String memory = "121G"
         Int timeMinutes = 1 + ceil(size(select_all([tumorBam, referenceBam]), "G") * 9 / threads)
         String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_1"
     }
