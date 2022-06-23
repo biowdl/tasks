@@ -1226,8 +1226,8 @@ task Sage {
         File? coverageBed
 
         Int threads = 32
-        String javaXmx = "8G"
-        String memory = "9G"
+        String javaXmx = "16G"
+        String memory = "20G"
         Int timeMinutes = 720
         String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_1"
     }
