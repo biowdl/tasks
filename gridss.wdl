@@ -90,6 +90,8 @@ task AnnotateSvTypes {
         Int timeMinutes = 240
     }
 
+    String index = if sub(outputPath, "\\.bgz", "") != outputPath then "T" else "F"
+
     # Based on https://github.com/PapenfussLab/gridss/issues/74
     command <<<
         set -e
@@ -115,7 +117,7 @@ task AnnotateSvTypes {
         gr <- breakpointRanges(vcf)
         svtype <- simpleEventType(gr)
         info(vcf[gr$sourceId])$SVTYPE <- svtype
-        writeVcf(vcf, out_path, index=T)
+        writeVcf(vcf, out_path, index=~{index})
         EOF
     >>>
 
