@@ -83,7 +83,7 @@ task AnnotateSvTypes {
     input {
         File gridssVcf
         File gridssVcfIndex
-        String outputPath = "./gridss.svtyped.vcf"
+        String outputPath = "./gridss.svtyped.vcf.bgz"
 
         String memory = "32G"
         String dockerImage = "quay.io/biocontainers/bioconductor-structuralvariantannotation:1.10.0--r41hdfd78af_0"
