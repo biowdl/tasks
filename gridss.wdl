@@ -90,7 +90,9 @@ task AnnotateSvTypes {
         Int timeMinutes = 240
     }
 
-    String index = if sub(outputPath, "\\.bgz", "") != outputPath then "T" else "F"
+    String effectiveOutputPath = sub(outputPath, "\\.bgz", "")
+    String index = if effectiveOutputPath != outputPath then "T" else "F"
+
 
     # Based on https://github.com/PapenfussLab/gridss/issues/74
     command <<<
@@ -101,7 +103,7 @@ task AnnotateSvTypes {
         library(StructuralVariantAnnotation)
 
         vcf_path <- "~{gridssVcf}"
-        out_path <- "~{outputPath}"
+        out_path <- "~{effectiveOutputPath}"
 
         # Simple SV type classifier
         simpleEventType <- function(gr) {
@@ -123,6 +125,7 @@ task AnnotateSvTypes {
 
     output {
         File vcf = outputPath
+        File? vcfIndex = outputPath + ".tbi"
     }
 
     runtime {
