@@ -94,7 +94,7 @@ task AnnotateSvTypes {
     command <<<
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        R --vanilla << EOF
+        R --vanilla << "EOF"
         library(VariantAnnotation)
         library(StructuralVariantAnnotation)
 
@@ -115,7 +115,7 @@ task AnnotateSvTypes {
         gr <- breakpointRanges(vcf)
         svtype <- simpleEventType(gr)
         info(vcf[gr$sourceId])$SVTYPE <- svtype
-        writeVcf(vcf, out_path)
+        writeVcf(vcf, out_path, index=T)
         EOF
     >>>
 
