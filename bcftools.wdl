@@ -187,7 +187,7 @@ task Sort {
         String tmpDir = "./sorting-tmp"
 
         String memory = "256M"
-        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        Int timeMinutes = 1 + ceil(size(inputFile, "G")) * 5
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
