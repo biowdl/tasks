@@ -186,7 +186,7 @@ task Sort {
         String outputPath = "output.vcf.gz"
         String tmpDir = "./sorting-tmp"
 
-        String memory = "256M"
+        String memory = "5G"
         Int timeMinutes = 1 + ceil(size(inputFile, "G")) * 5
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
