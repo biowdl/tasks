@@ -9,6 +9,8 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Added a task to add SVTYPE annotations to GRIDSS results
+  (`AnnotateSvTypes`).
 + The GRIDSS task will now run tabix separately if GRIDSS doesn't
   produce a vcf index.
 + Add a script to subtract UMI's from the read name and add them as
