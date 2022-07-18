@@ -9,6 +9,19 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Added a task for CupGenerateReport.
++ Updated Cuppa to version 1.6.
++ Added a task for Gripss.
++ Fixed the HealthChecker task's determination of the `succeeded` output
+  value.
++ Updated Linx to version 1.18.
++ Added a task for LinxVisualization.
++ Added a task for HMFtools Orange.
++ Added a task for HMFtools Pave.
++ Updated Purple to version 3.2.
++ Added plot and table outputs of Sage to task outputs.
++ Updated virus-interpreter to version 1.2.
++ Updated Peach to version 1.5.
 + Added a task to add SVTYPE annotations to GRIDSS results
   (`AnnotateSvTypes`).
 + The GRIDSS task will now run tabix separately if GRIDSS doesn't
