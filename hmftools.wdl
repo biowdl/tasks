@@ -38,7 +38,7 @@ task Amber {
         String memory = "70G"
         String javaXmx = "64G"
         Int timeMinutes = 240
-        String dockerImage = "quay.io/biocontainers/hmftools-amber:3.5--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-amber:3.9--hdfd78af_0"
     }
 
     command {
@@ -115,7 +115,7 @@ task Cobalt {
         String memory = "5G"
         String javaXmx = "4G"
         Int timeMinutes = 240
-        String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.11--0"
+        String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.13--hdfd78af_0"
     }
 
     command {
@@ -342,16 +342,17 @@ task Gripss {
         File knownFusionPairBedpe
         File breakendPon
         File breakpointPon
-        String referenceName
-        String tumorName
+        String? referenceName
+        String sampleName
         File vcf
         File vcfIndex
+        String outputId
         String outputDir = "./"
 
         String memory = "17G"
         String javaXmx = "16G"
         Int timeMinutes = 50
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:2.0--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:2.1--hdfd78af_0"
     }
 
     command {
@@ -362,11 +363,11 @@ task Gripss {
         -known_hotspot_file ~{knownFusionPairBedpe} \
         -pon_sgl_file ~{breakendPon} \
         -pon_sv_file ~{breakpointPon} \
-        -reference ~{referenceName} \
+        ~{"-reference " + referenceName} \
         -sample ~{tumorName} \
         -vcf ~{vcf} \
         -output_dir ~{outputDir} \
-        -output_id somatic
+        -output_id ~{outputId}
     }
 
     output {
@@ -396,116 +397,6 @@ task Gripss {
         vcfIndex: {description: "The index for the input VCF.", category: "required"}
         outputDir: {description: "The path the output will be written to.", category:"required"}
 
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task GripssApplicationKt {
-    # Obsolete
-    input {
-        File inputVcf
-        String outputPath = "gripss.vcf.gz"
-        String tumorName
-        String referenceName
-        File referenceFasta
-        File referenceFastaFai
-        File referenceFastaDict
-        File breakpointHotspot
-        File breakendPon
-        File breakpointPon
-
-        String memory = "32G"
-        String javaXmx = "31G"
-        Int timeMinutes = 45
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.11--hdfd78af_0"
-    }
-
-    command {
-        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.11-0/gripss.jar \
-        com.hartwig.hmftools.gripss.GripssApplicationKt \
-        -tumor ~{tumorName} \
-        -reference ~{referenceName} \
-        -ref_genome ~{referenceFasta} \
-        -breakpoint_hotspot ~{breakpointHotspot} \
-        -breakend_pon ~{breakendPon} \
-        -breakpoint_pon ~{breakpointPon} \
-        -input_vcf ~{inputVcf} \
-        -output_vcf ~{outputPath} \
-        -paired_normal_tumor_ordinals
-    }
-
-    output {
-        File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
-    }
-
-    runtime {
-        memory: memory
-        time_minutes: timeMinutes # !UnknownRuntimeKey
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        inputVcf: {description: "The input VCF.", category: "required"}
-        outputPath: {description: "The path where th eoutput VCF will be written.", category: "common"}
-        referenceName: {description: "The name of the normal sample.", category: "required"}
-        tumorName: {description: "The name of the tumor sample.", category: "required"}
-        referenceFasta: {description: "The reference fasta file.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
-                             category: "required"}
-        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        breakpointHotspot: {description: "Equivalent to the `-breakpoint_hotspot` option.", category: "required"}
-        breakendPon: {description: "Equivalent to the `-breakend_pon` option.", category: "required"}
-        breakpointPon: {description: "Equivalent to the `-breakpoint_pon` option.", category: "required"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
-                      category: "advanced"}
-    }
-}
-
-task GripssHardFilterApplicationKt {
-    # Obsolete
-    input {
-        File inputVcf
-        String outputPath = "gripss_hard_filter.vcf.gz"
-
-        String memory = "3G"
-        String javaXmx = "2G"
-        Int timeMinutes = 15
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:1.11--hdfd78af_0"
-    }
-
-    command {
-        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-gripss-1.11-0/gripss.jar \
-        com.hartwig.hmftools.gripss.GripssHardFilterApplicationKt \
-        -input_vcf ~{inputVcf} \
-        -output_vcf ~{outputPath}
-    }
-
-    output {
-        File outputVcf = outputPath
-        File outputVcfIndex = outputPath + ".tbi"
-    }
-
-    runtime {
-        memory: memory
-        time_minutes: timeMinutes # !UnknownRuntimeKey
-        docker: dockerImage
-    }
-
-    parameter_meta {
-        inputVcf: {description: "The input VCF.", category: "required"}
-        outputPath: {description: "The path where th eoutput VCF will be written.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
@@ -1212,6 +1103,11 @@ task Sage {
         Boolean hg38 = false
         Boolean panelOnly = false
         String outputPath = "./sage.vcf.gz"
+        #The following should be in the same directory.
+        File geneDataCsv
+        File proteinFeaturesCsv
+        File transExonDataCsv
+        File transSpliceDataCsv
 
         String? referenceName
         File? referenceBam
@@ -1229,7 +1125,7 @@ task Sage {
         String javaXmx = "50G"
         String memory = "51G"
         Int timeMinutes = 1 + ceil(size(select_all([tumorBam, referenceBam]), "G") * 9 / threads)
-        String dockerImage = "quay.io/biocontainers/hmftools-sage:2.8--hdfd78af_1"
+        String dockerImage = "quay.io/biocontainers/hmftools-sage:3.0.3--hdfd78af_0"
     }
 
     command {
@@ -1242,7 +1138,10 @@ task Sage {
         -hotspots ~{hotspots} \
         -panel_bed ~{panelBed} \
         -high_confidence_bed ~{highConfidenceBed} \
-        -assembly ~{true="hg38" false="hg19" hg38} \
+        -ref_genome_version ~{true="hg38" false="hg19" hg38} \
+        -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -write_bqr_data \
+        -write_bqr_plot \
         ~{"-hotspot_min_tumor_qual " + hotspotMinTumorQual} \
         ~{"-panel_min_tumor_qual " + panelMinTumorQual} \
         ~{"-hotspot_max_germline_vaf " + hotspotMaxGermlineVaf} \

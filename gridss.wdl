@@ -34,7 +34,7 @@ task AnnotateInsertedSequence {
         Int threads = 8
         String javaXmx = "8G"
         String memory = "9G"
-        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
         Int timeMinutes = 120
     }
 
@@ -165,7 +165,7 @@ task GRIDSS {
         Int nonJvmMemoryGb = 50
         Int threads = 4
         Int timeMinutes = ceil(7200 / threads) + 1800
-        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
     }
 
     command {
@@ -241,14 +241,14 @@ task GridssAnnotateVcfRepeatmasker {
 
         String memory = "25G"
         Int threads = 8
-        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
         Int timeMinutes = 1440
     }
 
     command {
         gridss_annotate_vcf_repeatmasker \
         --output ~{outputPath} \
-        --jar /usr/local/share/gridss-2.12.2-0/gridss.jar \
+        --jar /usr/local/share/gridss-2.13.2-1/gridss.jar \
         -w . \
         -t ~{threads} \
         ~{gridssVcf}
@@ -289,9 +289,10 @@ task Virusbreakend {
         File virusbreakendDB
         String outputPath = "./virusbreakend.vcf"
 
-        String memory = "75G"
+        String extraMemoryGB = 10
+        Int gridssMemoryGB = 60
         Int threads = 8
-        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
         Int timeMinutes = 180
     }
 
@@ -304,8 +305,9 @@ task Virusbreakend {
         --workingdir . \
         --reference ~{referenceFasta} \
         --db virusbreakenddb \
-        --jar /usr/local/share/gridss-2.12.2-0/gridss.jar \
+        --jar /usr/local/share/gridss-2.13.2-1/gridss.jar \
         -t ~{threads} \
+        --gridssargs '--jvmheap ~{gridssMemoryGB}G' \
         ~{bam}
     }
 
@@ -316,7 +318,7 @@ task Virusbreakend {
 
     runtime {
         cpu: threads
-        memory: memory
+        memory: "~{gridssMemoryGB + extraMemoryGB}G"
         time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }
@@ -328,7 +330,8 @@ task Virusbreakend {
         referenceImg: {description: "The BWA index image (generated with GATK BwaMemIndexImageCreator) of the reference.", category: "required"}
         virusbreakendDB: {description: "A .tar.gz containing the virusbreakend database.", category: "required"}
         outputPath: {description: "The path the output should be written to.", category: "common"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        extraMemoryGB: {description: "Extra memory needed for the job in GB.", category: "advanced"}
+        gridssMemoryGB: {description: "Memory assigned to GRIDSS in GB.", category: "advanced"}
         threads: {description: "The number of the threads to use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
