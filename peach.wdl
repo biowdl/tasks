@@ -22,7 +22,6 @@ version 1.0
 
 task Peach {
     input {
-        File transcriptTsv
         File germlineVcf
         File germlineVcfIndex
         String tumorName
@@ -31,28 +30,26 @@ task Peach {
         File panelJson
 
         String memory = "2G"
-        String dockerImage = "quay.io/biowdl/peach:v1.0"
+        String dockerImage = "quay.io/biowdl/peach:v1.5"
         Int timeMinutes = 5
     }
 
     command {
+        set -e
+        mkdir -p ~{outputDir}
         peach \
-        --recreate_bed \
-        --transcript_tsv ~{transcriptTsv} \
-        ~{germlineVcf} \
-        ~{tumorName} \
-        ~{normalName} \
-        1.0 \
-        ~{outputDir} \
-        ~{panelJson} \
-        vcftools
+        --vcf ~{germlineVcf} \
+        --sample_t_id ~{tumorName} \
+        --sample_r_id ~{normalName} \
+        --tool_version 1.5 \
+        --outputdir ~{outputDir} \
+        --panel ~{panelJson}
     }
 
     output {
         File callsTsv = "~{outputDir}/~{tumorName}.peach.calls.tsv"
-        File filteredVcf = "~{outputDir}/~{tumorName}.peach.filtered.vcf"
         File genotypeTsv = "~{outputDir}/~{tumorName}.peach.genotype.tsv"
-        Array[File] outputs = [callsTsv, filteredVcf, genotypeTsv]
+        Array[File] outputs = [callsTsv, genotypeTsv]
     }
 
     runtime {
@@ -62,7 +59,6 @@ task Peach {
     }
 
     parameter_meta {
-        transcriptTsv: {description: "A tsv file describing transcripts.", category: "required"}
         germlineVcf: {description: "The germline VCF file from hmftools' purple.", category: "required"}
         germlineVcfIndex: {description: "The germline VCF's index.", category: "required"}
         tumorName: {description: "The name of the tumor sample.", category: "required"}
