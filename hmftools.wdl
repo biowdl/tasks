@@ -790,11 +790,14 @@ task Pave {
         File proteinFeaturesCsv
         File transExonDataCsv
         File transSpliceDataCsv
+        File mappabilityBed
+        File? ponFile
+        File? ponArtefactFile
 
         Int timeMinutes = 50
         String javaXmx = "8G"
         String memory = "9G"
-        String dockerImage = "quay.io/biowdl/pave:v1.0"
+        String dockerImage = "quay.io/biowdl/pave:v1.2.2"
     }
 
     command {
@@ -807,7 +810,11 @@ task Pave {
         -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -ref_genome ~{referenceFasta} \
         -ref_genome_version ~{refGenomeVersion} \
-        -driver_gene_panel ~{driverGenePanel}
+        -driver_gene_panel ~{driverGenePanel} \
+        -read_pass_only \
+        -mappability_bed ~{mappabilityBed} \
+        ~{"-pon_file " + ponFile} \
+        ~{"-pon_artefact_file " + ponArtefactFile} \
     }
 
     output {
