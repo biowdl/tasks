@@ -794,7 +794,12 @@ task Pave {
         File? ponFile
         File? ponArtefactFile
         String? ponFilters
-        Array[File]+?
+        Array[File]+? gnomadFreqDir
+        File? clinvarVcf
+        File? clinvarVcfIndex
+        File? blacklistVcf
+        File? blacklistBed
+        File? blacklistVcfIndex
 
         Int timeMinutes = 50
         String javaXmx = "8G"
@@ -819,7 +824,10 @@ task Pave {
         ~{"-pon_artefact_file " + ponArtefactFile} \
         ~{if defined(ponFilters) then ("-pon_filters '" + ponFilters + "'") else ""} \
         ~{if defined(gnomadFreqDir) then "-gnomad_freq_dir " + sub(gnomadFreqDir[0], basename(gnomadFreqDir[0]), "") else ""} \
-        ~{if defined(gnomadFreqDir) then "-gnomad_load_chr_on_demand" else ""}
+        ~{if defined(gnomadFreqDir) then "-gnomad_load_chr_on_demand" else ""} \
+        ~{"-clinvar_vcf " + clinvarVcf} \
+        ~{"-blacklist_bed " + blacklistBed} \
+        ~{"-blacklist_vcf " + blacklistVcf}
     }
 
     output {
