@@ -978,9 +978,11 @@ task Purple {
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
+        String refGenomeVersion
         File driverGenePanel
         File somaticHotspots
         File germlineHotspots
+        File germlineDelFreqFile
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
@@ -1000,6 +1002,7 @@ task Purple {
         -reference ~{referenceName} \
         -germline_vcf ~{germlineVcf} \
         -germline_hotspots ~{germlineHotspots} \
+        -germline_del_freq_file ~{germlineDelFreqFile} \
         -tumor ~{tumorName} \
         -output_dir ~{outputDir} \
         -amber ~{sub(amberOutput[0], basename(amberOutput[0]), "")} \
@@ -1010,6 +1013,7 @@ task Purple {
         -sv_recovery_vcf ~{fullSvVcf} \
         -circos /usr/local/bin/circos \
         -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{refGenomeVersion} \
         -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -run_drivers \
         -somatic_hotspots ~{somaticHotspots} \
