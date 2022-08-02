@@ -9,6 +9,22 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Bedtools coverage's timeMinutes now defaults to `320`.
++ Gridss' runtime attribute defaults were changed to:
+  + jvmHeapSizeGb: `64`
+  + nonJvmMemoryGb: `10`
+  + threads: `12`
++ Virusbreakend's runtime attribute defaults were changed to:
+  + threads: `12`
+  + timeMinutes: `320`
++ Cobalt's timeMinutes now defaults to `480`.
++ Orange's timeMinutes now defaults to 10.
++ Sage's runtime attributes were changed to:
+  + threads: `32`
+  + javaXmx: `"16G"`
+  + memory: `"20G"`
+  + timeMinutes: `720`
++ Sambamba's runtimeMinutes nor defaults to `320`.
 + Added a task for CupGenerateReport.
 + Updated Cuppa to version 1.6.
 + Added a task for Gripss.
