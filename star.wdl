@@ -78,7 +78,7 @@ task GenomeGenerate {
 
     parameter_meta {
         # inputs
-        genomeDir: {description:"The directory the STAR index should be written to.", categroy: "common"}
+        genomeDir: {description:"The directory the STAR index should be written to.", category: "common"}
         referenceFasta: {description: "The reference Fasta file.", category: "required"}
         referenceGtf: {description: "The reference GTF file.", category: "common"}
         sjdbOverhang: {description: "Equivalent to STAR's `--sjdbOverhang` option.", category: "advanced"}

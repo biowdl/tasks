@@ -9,6 +9,27 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Added a task for CupGenerateReport.
++ Updated Cuppa to version 1.6.
++ Added a task for Gripss.
++ Fixed the HealthChecker task's determination of the `succeeded` output
+  value.
++ Updated Linx to version 1.18.
++ Added a task for LinxVisualization.
++ Added a task for HMFtools Orange.
++ Added a task for HMFtools Pave.
++ Updated Purple to version 3.2.
++ Added plot and table outputs of Sage to task outputs.
++ Updated virus-interpreter to version 1.2.
++ Updated Peach to version 1.5.
++ Added a task to add SVTYPE annotations to GRIDSS results
+  (`AnnotateSvTypes`).
++ The GRIDSS task will now run tabix separately if GRIDSS doesn't
+  produce a vcf index.
++ Add a script to subtract UMI's from the read name and add them as
+  a BAM tag for each BAM record. The script is in umi.BamReadNameToUmiTag.
++ Add fgbio.AnnotateBamWithUmis.
++ Add picard.UmiAwareMarkDuplicatesWithMateCigar.
 + Added a task for SnpEff.
 + Adjusted runtime settings for sambamba Markdup.
 + Added a task for sambamba Flagstat.
@@ -28,7 +49,7 @@ version 5.1.0-dev
   + Sage
   + VirusInterpreter
 + Added a task for VirusBreakend.
-+ Added a task for GridssAnnotateVcfRepeatmasker. 
++ Added a task for GridssAnnotateVcfRepeatmasker.
 + Bumped GRIDSS version to 2.12.2.
 + Adjusted GRIDSS runtime settings.
 + Added optional inputs to GRIDSS:
@@ -147,7 +168,7 @@ version 4.0.0
 + Picard MergeVcf now uses compression level 1 by default.
 + bwa mem, bwa mem+kit and hisat2 have their samtools sort threads tweaked. The
   number of threads is now related to the number of threads on the aligner.
-  Using more threads reduces the chance of the samtools sort pipe getting 
+  Using more threads reduces the chance of the samtools sort pipe getting
   blocked if it's full.
 + Renamed a few inputs in centrifuge.wdl, isoseq3.wdl, talon.wdl,
   transcriptclean.wdl to be more descriptive.

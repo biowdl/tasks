@@ -190,7 +190,7 @@ task CupGenerateReport {
     command {
         set -e
         mkdir -p ./workdir ~{outputDir}
-        ln -s -t workdir ~{sep=" " cupData}
+        ln -s -t workdir ~{cupData}
         CupGenerateReport \
         ~{sampleName} \
         workdir/
