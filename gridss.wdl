@@ -161,9 +161,9 @@ task GRIDSS {
         File? blacklistBed
         File? gridssProperties
 
-        Int jvmHeapSizeGb = 300
-        Int nonJvmMemoryGb = 50
-        Int threads = 4
+        Int jvmHeapSizeGb = 64
+        Int nonJvmMemoryGb = 10
+        Int threads = 12
         Int timeMinutes = ceil(7200 / threads) + 1800
         String dockerImage = "quay.io/biowdl/gridss:2.12.2"
     }
@@ -290,9 +290,9 @@ task Virusbreakend {
         String outputPath = "./virusbreakend.vcf"
 
         String memory = "75G"
-        Int threads = 8
+        Int threads = 12
         String dockerImage = "quay.io/biowdl/gridss:2.12.2"
-        Int timeMinutes = 180
+        Int timeMinutes = 320
     }
 
     command {
