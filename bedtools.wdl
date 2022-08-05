@@ -76,7 +76,7 @@ task Coverage {
         String outputPath = "./coverage.tsv"
 
         String memory = "8G"
-        Int timeMinutes = 120
+        Int timeMinutes = 320
         String dockerImage = "quay.io/biocontainers/bedtools:2.30.0--h7d7f7ad_2"
     }
 

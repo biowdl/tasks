@@ -161,9 +161,9 @@ task GRIDSS {
         File? blacklistBed
         File? gridssProperties
 
-        Int jvmHeapSizeGb = 300
-        Int nonJvmMemoryGb = 50
-        Int threads = 4
+        Int jvmHeapSizeGb = 64
+        Int nonJvmMemoryGb = 10
+        Int threads = 12
         Int timeMinutes = ceil(7200 / threads) + 1800
         String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
     }
@@ -291,9 +291,9 @@ task Virusbreakend {
 
         String extraMemoryGB = 10
         Int gridssMemoryGB = 60
-        Int threads = 8
+        Int threads = 12
         String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
-        Int timeMinutes = 180
+        Int timeMinutes = 320
     }
 
     command {
