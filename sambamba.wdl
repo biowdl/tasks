@@ -139,6 +139,51 @@ task Markdup {
     }
 }
 
+task Slice {
+    input {
+        File bamFile
+        File bamIndex
+        String outputPath = "./sliced.bam"
+        File regions
+
+        String memory = "8G"
+        Int timeMinutes = 720
+        String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+
+        sambamba slice \
+        -L ~{regions} \
+        -o ~{outputPath} \
+        ~{bamFile}
+    }
+
+    output {
+        File slicedBam = outputPath
+        File slicedBamIndex = sub(outputPath, "\.bam$", ".bai")
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        bamIndex: {description: "The input BAM files.", category: "required"}
+        outputPath: {description: "Output directory path + output file.", category: "required"}
+        regions: {description: "Regiosn to get sliced.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Sort {
     input {
         File inputBam

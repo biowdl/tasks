@@ -364,17 +364,17 @@ task Gripss {
         -pon_sgl_file ~{breakendPon} \
         -pon_sv_file ~{breakpointPon} \
         ~{"-reference " + referenceName} \
-        -sample ~{tumorName} \
+        -sample ~{sampleName} \
         -vcf ~{vcf} \
         -output_dir ~{outputDir} \
         -output_id ~{outputId}
     }
 
     output {
-        File fullVcf = "~{outputDir}/~{tumorName}.gripss.somatic.vcf.gz"
-        File fullVcfIndex = "~{outputDir}/~{tumorName}.gripss.somatic.vcf.gz.tbi"
-        File filteredVcf = "~{outputDir}/~{tumorName}.gripss.filtered.somatic.vcf.gz"
-        File filteredVcfIndex = "~{outputDir}/~{tumorName}.gripss.filtered.somatic.vcf.gz.tbi"
+        File fullVcf = "~{outputDir}/~{sampleName}.gripss.somatic.vcf.gz"
+        File fullVcfIndex = "~{outputDir}/~{sampleName}.gripss.somatic.vcf.gz.tbi"
+        File filteredVcf = "~{outputDir}/~{sampleName}.gripss.filtered.somatic.vcf.gz"
+        File filteredVcfIndex = "~{outputDir}/~{sampleName}.gripss.filtered.somatic.vcf.gz.tbi"
     }
 
     runtime {
@@ -391,7 +391,7 @@ task Gripss {
         knownFusionPairBedpe: {description: "Equivalent to the `-known_hotspot_file` option.", category: "required"}
         breakendPon: {description: "Equivalent to the `-pon_sgl_file` option.", category: "required"}
         breakpointPon: {description: "Equivalent to the `-pon_sv_file` option.", category: "required"}
-        tumorName: {description: "The name of the tumor sample.", category: "required"}
+        sampleName: {description: "The name of the tumor sample.", category: "required"}
         referenceName: {description: "The name of the normal sample.", category: "required"}
         vcf: {description: "The input VCF.", category: "required"}
         vcfIndex: {description: "The index for the input VCF.", category: "required"}
@@ -420,7 +420,7 @@ task HealthChecker {
         String javaXmx = "2G"
         String memory = "1G"
         Int timeMinutes = 1
-        String dockerImage = "quay.io/biowdl/health-checker:3.2"
+        String dockerImage = "quay.io/biowdl/health-checker:3.4"
     }
 
     command {
@@ -481,14 +481,20 @@ task Linx {
         String sampleName
         File svVcf
         File svVcfIndex
-        Array[File]+ purpleOutput
+        Array[File] purpleOutput = []
         String refGenomeVersion
         String outputDir = "./linx"
-        File fragileSiteCsv
+        File? fragileSiteCsv
         File lineElementCsv
-        File knownFusionCsv
+        File? knownFusionCsv
         File driverGenePanel
         Boolean writeAllVisFusions = false
+        Boolean germline = false
+        Boolean checkFusions = true
+        Boolean checkDrivers = true
+        Boolean writeVisData = true
+        File? germlinePonSvFile
+        File? germlinePonSglFile
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
@@ -498,26 +504,34 @@ task Linx {
         String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
+        String dockerImage = "quay.io/biowdl/linx:1.19.1" #patched version of biocontainer
+
+        String? DONOTDEFINE
     }
+
+    String? purpleDir = if length(purpleOutput) > 0
+        then sub(purpleOutput[0], basename(purpleOutput[0]), "")
+        else DONOTDEFINE
 
     command {
         linx -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -sample ~{sampleName} \
         -sv_vcf ~{svVcf} \
-        -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
+        ~{"-purple_dir " + purpleDir} \
         -ref_genome_version ~{refGenomeVersion} \
         -output_dir ~{outputDir} \
-        -fragile_site_file ~{fragileSiteCsv} \
+        ~{"-fragile_site_file " + fragileSiteCsv} \
         -line_element_file ~{lineElementCsv} \
         -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
-        -check_fusions \
-        -known_fusion_file ~{knownFusionCsv} \
-        -check_drivers \
+        ~{if checkFusions then "-check_fusions" else ""} \
+        ~{"-known_fusion_file " + knownFusionCsv} \
+        ~{if checkDrivers then "-check_drivers" else ""} \
         -driver_gene_panel ~{driverGenePanel} \
-        -chaining_sv_limit 0 \
-        -write_vis_data \
-        ~{if writeAllVisFusions then "-write_all_vis_fusions" else ""}
+        ~{if writeVisData then "-write_vis_data" else ""} \
+        ~{if writeAllVisFusions then "-write_all_vis_fusions" else ""} \
+        ~{if germline then "-germline" else ""} \
+        ~{"-germline_pon_sv_file " + germlinePonSvFile} \
+        ~{"-germline_pon_sgl_file " + germlinePonSglFile}
     }
 
     output {
@@ -584,14 +598,14 @@ task LinxVisualisations {
         String memory = "9G"
         String javaXmx = "8G"
         Int timeMinutes = 1440
-        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
+        String dockerImage = "quay.io/biowdl/linx:1.19.1" #patched version of biocontainer
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-linx-1.18-0/sv-linx.jar \
+        -cp /usr/local/share/hmftools-linx-1.19-0/linx.jar \
         com.hartwig.hmftools.linx.visualiser.SvVisualiser \
         -sample ~{sample} \
         -ref_genome_version ~{refGenomeVersion} \
@@ -786,6 +800,7 @@ task Pave {
         String refGenomeVersion
         File driverGenePanel
         File mappabilityBed
+        Array[File] gnomadFreqFiles = []
 
         #The following should be in the same directory.
         File geneDataCsv
@@ -796,7 +811,6 @@ task Pave {
         File? ponFile
         File? ponArtefactFile
         String? ponFilters
-        Array[File]+? gnomadFreqDir
         File? clinvarVcf
         File? clinvarVcfIndex
         File? blacklistVcf
@@ -807,7 +821,13 @@ task Pave {
         String javaXmx = "8G"
         String memory = "9G"
         String dockerImage = "quay.io/biowdl/pave:v1.2.2"
+
+        String? DONOTDEFINE
     }
+
+    String? gnomadFreqDir = if length(gnomadFreqFiles) > 0
+        then sub(gnomadFreqFiles[0], basename(gnomadFreqFiles[0]), "")
+        else DONOTDEFINE
 
     command {
         set -e
@@ -825,7 +845,7 @@ task Pave {
         ~{"-pon_file " + ponFile} \
         ~{"-pon_artefact_file " + ponArtefactFile} \
         ~{if defined(ponFilters) then ("-pon_filters '" + ponFilters + "'") else ""} \
-        ~{if defined(gnomadFreqDir) then "-gnomad_freq_dir " + sub(gnomadFreqDir[0], basename(gnomadFreqDir[0]), "") else ""} \
+        ~{"-gnomad_freq_dir " + gnomadFreqDir} \
         ~{if defined(gnomadFreqDir) then "-gnomad_load_chr_on_demand" else ""} \
         ~{"-clinvar_vcf " + clinvarVcf} \
         ~{"-blacklist_bed " + blacklistBed} \
@@ -862,7 +882,7 @@ task Pave {
         ponFile: {description: "A panel of normals files.", category: "common"}
         ponArtefactFile: {description: "A panel of normals artefact file.", category: "common"}
         ponFilters: {description: "Filters to be applied based on the panel of normals.", category: "common"}
-        gnomadFreqDir: {description: "A directory with gnomad frequency information.", category: "common"}
+        gnomadFreqFiles: {description: "A directory with gnomad frequency information.", category: "common"}
         clinvarVcf: {description: "A clinvar VCF file.", category: "common"}
         clinvarVcfIndex: {description: "The index for the clinvar VCF file.", category: "common"}
         blacklistVcf: {description: "A blacklist VCF file.", category: "common"}
@@ -1005,7 +1025,8 @@ task Purple {
         String memory = "9G"
         String javaXmx = "8G"
         # clone of quay.io/biocontainers/hmftools-purple:3.2--hdfd78af_0 with 'ln -s /usr/local/lib/libwebp.so.7 /usr/local/lib/libwebp.so.6'
-        String dockerImage = "quay.io/biowdl/hmftools-purple:3.2"
+        #String dockerImage = "quay.io/biowdl/hmftools-purple:3.2" FIXME see if biocontainer works
+        String dockerImage = "quay.io/biocontainers/hmftools-purple:3.5--hdfd78af_0"
     }
 
     command {
