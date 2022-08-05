@@ -785,12 +785,14 @@ task Pave {
         File referenceFastaDict
         String refGenomeVersion
         File driverGenePanel
+        File mappabilityBed
+
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
         File transExonDataCsv
         File transSpliceDataCsv
-        File mappabilityBed
+
         File? ponFile
         File? ponArtefactFile
         String? ponFilters
@@ -856,7 +858,16 @@ task Pave {
         proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
         transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
-
+        mappabilityBed: {description: "A bed file with mappability information.", category: "required"}
+        ponFile: {description: "A panel of normals files.", category: "common"}
+        ponArtefactFile: {description: "A panel of normals artefact file.", category: "common"}
+        ponFilters: {description: "Filters to be applied based on the panel of normals.", category: "common"}
+        gnomadFreqDir: {description: "A directory with gnomad frequency information.", category: "common"}
+        clinvarVcf: {description: "A clinvar VCF file.", category: "common"}
+        clinvarVcfIndex: {description: "The index for the clinvar VCF file.", category: "common"}
+        blacklistVcf: {description: "A blacklist VCF file.", category: "common"}
+        blacklistBed: {description: "A blacklist bed file.", category: "common"}
+        blacklistVcfIndex: {description: "The index for the blacklist vcf file.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
