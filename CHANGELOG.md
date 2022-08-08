@@ -9,6 +9,8 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Purple's `somaticRainfallPlot` output is now optional and included in
+  the `plots` output as well.
 + Bedtools coverage's timeMinutes now defaults to `320`.
 + Gridss' runtime attribute defaults were changed to:
   + jvmHeapSizeGb: `64`
