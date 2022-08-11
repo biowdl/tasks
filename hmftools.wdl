@@ -476,6 +476,65 @@ task HealthChecker {
     }
 }
 
+task Lilac {
+    input {
+        String tumorName
+        File referenceBam
+        File referenceBamIndex
+        File tumorBam
+        File tumorBamIndex
+        String refGenomeVersion
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        File geneCopyNumberFile
+        File somaticVariantsFile
+        File somaticVariantsFileIndex
+        String outputDir = "./lilac"
+
+        #The following need to be in the same directory
+        File hlaRefAminoacidSequencesCsv
+        File hlaRefNucleotideSequencesCsv
+        File lilacAlleleFrequenciesCsv
+
+        String javaXmx = "15G"
+        String memory = "16G"
+        Int timeMinutes = 1440 #FIXME
+        Int threads = 1
+        String dockerImage = "" #TODO
+    }
+
+    command {
+        LILAC -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -sample ~{tumorName} \
+        -reference_bam ~{referenceBam} \
+        -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{refGenomeVersion} \
+        -resource_dir ~{sub(hlaRefAminoacidSequencesCsv, basename(hlaRefAminoacidSequencesCsv), "")} \
+        -outputDir ~{outputDir} \
+        -threads ~{threads} \
+        -tumor_bam ~{tumorBam} \
+        -gene_copy_number_file ~{geneCopyNumberFile} \
+        -somatic_variants_file ~{somaticVariantsFile}
+    }
+
+    output {
+        #TODO
+    }
+
+    runtime {
+        memory: memory
+        cpu: threads
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+
+    }
+}
+
+
 task Linx {
     input {
         String sampleName
