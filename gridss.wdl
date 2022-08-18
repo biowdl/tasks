@@ -34,7 +34,7 @@ task AnnotateInsertedSequence {
         Int threads = 8
         String javaXmx = "8G"
         String memory = "9G"
-        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
+        String dockerImage = "quay.io/biowdl/gridss:2.13.2" #TODO check if we still need our own patched image
         Int timeMinutes = 120
     }
 
@@ -289,7 +289,7 @@ task Virusbreakend {
         File virusbreakendDB
         String outputPath = "./virusbreakend.vcf"
 
-        String extraMemoryGB = 10
+        Int extraMemoryGB = 10
         Int gridssMemoryGB = 60
         Int threads = 12
         String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image

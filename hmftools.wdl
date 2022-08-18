@@ -114,7 +114,7 @@ task Cobalt {
         Int threads = 1
         String memory = "5G"
         String javaXmx = "4G"
-        Int timeMinutes = 480
+        Int timeMinutes = 960
         String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.13--hdfd78af_0"
     }
 
