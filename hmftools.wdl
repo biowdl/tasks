@@ -1253,7 +1253,7 @@ task Sage {
         -hotspots ~{hotspots} \
         -panel_bed ~{panelBed} \
         -high_confidence_bed ~{highConfidenceBed} \
-        -ref_genome_version ~{true="hg38" false="hg19" hg38} \
+        -ref_genome_version ~{true="38" false="37" hg38} \
         -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -write_bqr_data \
         -write_bqr_plot \
