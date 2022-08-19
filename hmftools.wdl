@@ -501,7 +501,7 @@ task Lilac {
         String memory = "16G"
         Int timeMinutes = 1440 #FIXME
         Int threads = 1
-        String dockerImage = "" #TODO
+        String dockerImage = "quay.io/biocontainers/hmftools-lilac:1.1--hdfd78af_0" #TODO
     }
 
     command {
