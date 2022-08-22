@@ -45,7 +45,7 @@ task Fastqc {
         # weird edge case fastq's.
         String javaXmx="1750M"
         Int threads = 1
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
 

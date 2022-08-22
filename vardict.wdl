@@ -48,7 +48,7 @@ task VarDict {
 
         String javaXmx = "16G"
         Int threads = 1
-        String memory = "18G"
+        String memory = "18GiB"
         Int timeMinutes = 300
         String dockerImage = "quay.io/biocontainers/vardict-java:1.5.8--1"
     }

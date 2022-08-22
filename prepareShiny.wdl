@@ -25,7 +25,7 @@ task CreateDesignMatrix {
         File countTable
         String shinyDir = "."
 
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/predex:0.9.2--pyh3252c3a_0"
     }
@@ -67,7 +67,7 @@ task CreateAnnotation {
         File referenceGtfFile
         String shinyDir = "."
 
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/predex:0.9.2--pyh3252c3a_0"
     }

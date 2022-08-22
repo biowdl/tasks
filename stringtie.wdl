@@ -34,7 +34,7 @@ task Stringtie {
         Float? minimumCoverage
 
         Int threads = 1
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(bam, "G") * 60 / threads)
         String dockerImage = "quay.io/biocontainers/stringtie:1.3.6--h92e31bf_0"
     }
@@ -102,7 +102,7 @@ task Merge {
         Float? minimumIsoformFraction
         String? label
 
-        String memory = "10G"
+        String memory = "10GiB"
         Int timeMinutes = 1 + ceil(size(gtfFiles, "G") * 20)
         String dockerImage = "quay.io/biocontainers/stringtie:2.1.4--h7e0af3c_0"
     }

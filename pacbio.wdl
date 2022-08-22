@@ -25,7 +25,7 @@ task mergePacBio {
         Array[File]+ reports
         String outputPathMergedReport
 
-        String memory = "4G"
+        String memory = "4GiB"
         String dockerImage = "quay.io/redmar_van_den_berg/pacbio-merge:0.2"
     }
 
@@ -62,7 +62,7 @@ task ccsChunks {
     input {
         Int chunkCount
 
-        String memory = "4G"
+        String memory = "4GiB"
         String dockerImage = "python:3.7-slim"
     }
 

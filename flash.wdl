@@ -34,7 +34,7 @@ task Flash {
         Int? maxOverlap
 
         Int threads = 2
-        String memory = "2G"
+        String memory = "2GiB"
     }
 
     command {

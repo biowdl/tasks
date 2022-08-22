@@ -47,7 +47,7 @@ task ParallelPaired {
         File? strelkaSNV
         File? strelkaIndel
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int threads = 1
         Int timeMinutes = 60
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -162,7 +162,7 @@ task ParallelPairedTrain {
         File? strelkaSNV
         File? strelkaIndel
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int threads = 1
         Int timeMinutes = 240
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -270,7 +270,7 @@ task ParallelSingle {
         File? scalpelVCF
         File? strelkaVCF
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int threads = 1
         Int timeMinutes = 60
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -362,7 +362,7 @@ task ParallelSingleTrain {
         File? scalpelVCF
         File? strelkaVCF
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int threads = 1
         Int timeMinutes = 240
         String dockerImage = "lethalfang/somaticseq:3.1.0"
@@ -441,7 +441,7 @@ task ModifyStrelka {
         File strelkaVCF
         String outputVCFName = basename(strelkaVCF, ".gz")
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 20
         String dockerImage = "lethalfang/somaticseq:3.1.0"
     }

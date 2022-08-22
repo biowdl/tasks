@@ -34,8 +34,8 @@ task CPAT {
         Array[String]? startCodons
         Array[String]? stopCodons
 
-        String memory = "4G"
-        Int timeMinutes = 10 + ceil(size(gene, "G") * 30)
+        String memory = "4GiB"
+        Int timeMinutes = 10 + ceil(size(gene, "GiB") * 30)
         String dockerImage = "quay.io/biocontainers/cpat:3.0.4--py39hcbe4a3b_0"
     }
 

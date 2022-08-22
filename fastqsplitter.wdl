@@ -63,7 +63,7 @@ task Fastqsplitter {
 
     runtime {
         cpu: cores
-        memory: "~{memory}G"
+        memory: "~{memory}GiB"
         docker: dockerImage
     }
 }

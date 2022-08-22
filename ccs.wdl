@@ -42,7 +42,7 @@ task CCS {
         String? chunkString
 
         Int threads = 2
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 1440
         String dockerImage = "quay.io/biocontainers/pbccs:6.0.0--h9ee0642_2"
     }

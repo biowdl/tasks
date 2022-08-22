@@ -30,7 +30,7 @@ task Duphold {
         String sample
         String outputPath = "./duphold.vcf"
 
-        String memory = "15G"
+        String memory = "15GiB"
         Int timeMinutes = 1440
         String dockerImage = "quay.io/biocontainers/duphold:0.2.1--h516909a_1"
     }

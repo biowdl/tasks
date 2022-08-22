@@ -82,7 +82,7 @@ task Hisat2 {
 
     runtime {
         cpu: threads
-        memory: "~{select_first([memoryGb, estimatedMemoryGb])}G"
+        memory: "~{select_first([memoryGb, estimatedMemoryGb])}GiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }

@@ -27,7 +27,7 @@ task BedToIntervalList {
         String outputPath = "regions.interval_list"
 
         String javaXmx = "3G"
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
@@ -88,7 +88,7 @@ task CollectHsMetrics {
         Int memoryMb = javaXmxMb + 512
         # Additional * 2 because picard multiple metrics reads the
         # reference fasta twice.
-        Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
+        Int timeMinutes = 1 + ceil(size(referenceFasta, "GiB") * 3 * 2) + ceil(size(inputBam, "GiB") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -109,7 +109,7 @@ task CollectHsMetrics {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -157,7 +157,7 @@ task CollectMultipleMetrics {
         Int javaXmxMb = 3072
         Int memoryMb = javaXmxMb + 512
         # Additional * 2 because picard multiple metrics reads the reference fasta twice.
-        Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 3 * 2) + ceil(size(inputBam, "G") * 6)
+        Int timeMinutes = 1 + ceil(size(referenceFasta, "GiB") * 3 * 2) + ceil(size(inputBam, "GiB") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -223,7 +223,7 @@ task CollectMultipleMetrics {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -281,9 +281,9 @@ task CollectRnaSeqMetrics {
         String strandSpecificity = "NONE"
 
         String javaXmx =  "8G"
-        String memory = "9G"
+        String memory = "9GiB"
         # With 6 minutes per G there were several timeouts.
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 12)
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 12)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -340,8 +340,8 @@ task CollectTargetedPcrMetrics {
         String basename
 
         String javaXmx = "3G"
-        String memory = "4G"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
+        String memory = "4GiB"
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -402,7 +402,7 @@ task CollectVariantCallingMetrics {
         String basename
 
         String javaXmx =  "8G"
-        String memory = "9G"
+        String memory = "9GiB"
         Int timeMinutes = 1440
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
@@ -459,9 +459,9 @@ task CollectWgsMetrics {
         Int? minimumBaseQuality
         Int? coverageCap
 
-        String memory = "5G"
+        String memory = "5GiB"
         String javaXmx = "4G"
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 6)
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 6)
         String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
     }
 
@@ -516,7 +516,7 @@ task CreateSequenceDictionary {
         String outputDir
 
         String javaXmx = "2G"
-        String memory = "3G"
+        String memory = "3GiB"
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -568,7 +568,7 @@ task GatherBamFiles {
         Int javaXmxMb = 1024
         Int memoryMb = javaXmxMb + 512
         # One minute per input gigabyte.
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 1)
+        Int timeMinutes = 1 + ceil(size(inputBams, "GiB") * 1)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -593,7 +593,7 @@ task GatherBamFiles {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -630,8 +630,8 @@ task GatherVcfs {
         Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
 
         String javaXmx = "4G"
-        String memory = "5G"
-        Int timeMinutes = 1 + ceil(size(inputVcfs, "G") * 2)
+        String memory = "5GiB"
+        Int timeMinutes = 1 + ceil(size(inputVcfs, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -700,7 +700,7 @@ task MarkDuplicates {
         Int javaXmxMb =  6656  # 6.5G
         String memoryMb = javaXmxMb + 512
 
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 8)
+        Int timeMinutes = 1 + ceil(size(inputBams, "GiB") * 8)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -736,7 +736,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -782,8 +782,8 @@ task MergeVCFs {
         Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
 
         String javaXmx = "4G"
-        String memory = "5G"
-        Int timeMinutes = 1 + ceil(size(inputVCFs, "G")) * 2
+        String memory = "5GiB"
+        Int timeMinutes = 1 + ceil(size(inputVCFs, "GiB")) * 2
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -838,7 +838,7 @@ task SamToFastq {
         Boolean paired = true
 
         String javaXmx = "16G" # High memory default to avoid crashes.
-        String memory = "17G"
+        String memory = "17GiB"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
 
@@ -900,7 +900,7 @@ task ScatterIntervalList {
         Int scatter_count
 
         String javaXmx = "3G"
-        String memory = "4G"
+        String memory = "4GiB"
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -943,7 +943,7 @@ task SortSam {
         # 4.000000001 which gets rounded to 5.
         # GATK Best practices uses 75000 here: https://github.com/gatk-workflows/broad-prod-wgs-germline-snps-indels/blob/d2934ed656ade44801f9cfe1c0e78d4f80684b7b/PairedEndSingleSampleWf-fc-hg38.wdl#L778
         Int XmxGb = ceil(maxRecordsInRam / 125001.0)
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 3)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -971,7 +971,7 @@ task SortSam {
 
     runtime {
         cpu: 1
-        memory: "~{1 + XmxGb}G"
+        memory: "~{1 + XmxGb}GiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -1004,8 +1004,8 @@ task SortVcf {
         File? dict
 
         String javaXmx = "8G"
-        String memory = "9G"
-        Int timeMinutes = 1 + ceil(size(vcfFiles, "G") * 5)
+        String memory = "9GiB"
+        Int timeMinutes = 1 + ceil(size(vcfFiles, "GiB") * 5)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -1054,8 +1054,8 @@ task RenameSample {
         String newSampleName
 
         String javaXmx = "8G"
-        String memory = "9G"
-        Int timeMinutes = 1 + ceil(size(inputVcf, "G") * 2)
+        String memory = "9GiB"
+        Int timeMinutes = 1 + ceil(size(inputVcf, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }
 
@@ -1109,7 +1109,7 @@ task UmiAwareMarkDuplicatesWithMateCigar {
         Boolean useJdkInflater = false
         Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
         String javaXmx = "8G"
-        String memory = "9G"
+        String memory = "9GiB"
         Int timeMinutes = 360
         String dockerImage = "quay.io/biocontainers/picard:2.26.10--hdfd78af_0"
     }

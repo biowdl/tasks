@@ -26,7 +26,7 @@ task Index {
 
         String? outputBamPath
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(bamFile, "G") * 4)
         String dockerImage = "quay.io/biocontainers/pbbam:1.6.0--h5b7e6e0_0"
     }

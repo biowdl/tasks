@@ -66,7 +66,7 @@ task Unicycler {
         String? lowScore
 
         Int threads = 1
-        String memory = "4G"
+        String memory = "4GiB"
     }
 
     command {
