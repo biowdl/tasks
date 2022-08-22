@@ -34,7 +34,7 @@ task Mateclever {
         Int maxOffset = 150
 
         Int threads = 10
-        String memory = "15G"
+        String memory = "15GiB"
         Int timeMinutes = 600
         String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }
@@ -94,7 +94,7 @@ task Prediction {
         String outputPath = "./clever"
 
         Int threads = 10
-        String memory = "55G"
+        String memory = "55GiB"
         Int timeMinutes = 480
         String dockerImage = "quay.io/biocontainers/clever-toolkit:2.4--py36hcfe0e84_6"
     }

@@ -27,7 +27,7 @@ task DeconstructSigs {
         String outputPath = "./signatures.rds"
 
         Int timeMinutes = 15
-        String memory = "4G"
+        String memory = "4GiB"
         String dockerImage = "quay.io/biocontainers/r-deconstructsigs:1.9.0--r41hdfd78af_1"
     }
 

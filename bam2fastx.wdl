@@ -30,7 +30,7 @@ task Bam2Fasta {
 
         String? seqIdPrefix
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 15
         String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.1--hf05d43a_1"
     }
@@ -98,7 +98,7 @@ task Bam2Fastq {
 
         String? seqIdPrefix
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 15
         String dockerImage = "quay.io/biocontainers/bam2fastx:1.3.1--hf05d43a_1"
     }

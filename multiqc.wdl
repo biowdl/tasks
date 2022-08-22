@@ -57,11 +57,11 @@ task MultiQC {
         String? clConfig
 
         String? memory
-        Int timeMinutes = 10 + ceil(size(reports, "G") * 8)
+        Int timeMinutes = 10 + ceil(size(reports, "GiB") * 8)
         String dockerImage = "quay.io/biocontainers/multiqc:1.9--py_1"
     }
 
-    Int memoryGb = 2 + ceil(size(reports, "G"))
+    Int memoryGb = 2 + ceil(size(reports, "GiB"))
 
     # This is where the reports end up. It does not need to be changed by the
     # user. It is full of symbolic links, so it is not of any use to the user
@@ -139,7 +139,7 @@ task MultiQC {
     }
 
     runtime {
-        memory: select_first([memory, "~{memoryGb}G"])
+        memory: select_first([memory, "~{memoryGb}GiB"])
         time_minutes: timeMinutes
         docker: dockerImage
     }

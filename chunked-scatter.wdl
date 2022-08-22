@@ -30,7 +30,7 @@ task ChunkedScatter {
         Int? overlap
         Int? minimumBasesPerFile
 
-        String memory = "256M"
+        String memory = "256MiB"
         Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/chunked-scatter:1.0.0--py_0"
     }
@@ -84,7 +84,7 @@ task ScatterRegions {
 
         Int? scatterSize
 
-        String memory = "256M"
+        String memory = "256MiB"
         Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/chunked-scatter:1.0.0--py_0"
     }

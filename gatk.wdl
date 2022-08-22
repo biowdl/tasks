@@ -34,7 +34,7 @@ task AnnotateIntervals {
         File? segmentalDuplicationTrack
 
         String javaXmx = "2G"
-        String memory = "3G"
+        String memory = "3GiB"
         Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -129,7 +129,7 @@ task ApplyBQSR {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -197,7 +197,7 @@ task BaseRecalibrator {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -232,7 +232,7 @@ task CalculateContamination {
         File? normalPileups
 
         String javaXmx = "12G"
-        String memory = "13G"
+        String memory = "13GiB"
         Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -279,7 +279,7 @@ task CallCopyRatioSegments {
         File copyRatioSegments
 
         String javaXmx = "2G"
-        String memory = "3G"
+        String memory = "3GiB"
         Int timeMinutes = 2
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -332,7 +332,7 @@ task CollectAllelicCounts {
         File? commonVariantSitesIndex
 
         String javaXmx = "10G"
-        String memory = "11G"
+        String memory = "11GiB"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -390,7 +390,7 @@ task CollectReadCounts {
         String intervalMergingRule = "OVERLAPPING_ONLY"
 
         String javaXmx = "7G"
-        String memory = "8G"
+        String memory = "8GiB"
         Int timeMinutes = 1 + ceil(size(inputBam, "G") * 5)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -449,7 +449,7 @@ task CombineGVCFs {
         File referenceFastaFai
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 1 + ceil(size(gvcfFiles, "G") * 8)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -509,7 +509,7 @@ task CombineVariants {
         String outputPath
 
         String javaXmx = "12G"
-        String memory = "13G"
+        String memory = "13GiB"
         Int timeMinutes = 180
         String dockerImage = "broadinstitute/gatk3:3.8-1"
     }
@@ -579,7 +579,7 @@ task CreateReadCountPanelOfNormals {
         File? annotatedIntervals
 
         String javaXmx = "7G"
-        String memory = "8G"
+        String memory = "8GiB"
         Int timeMinutes = 5
         # The biocontainer causes a spark related error for some reason.
         String dockerImage = "broadinstitute/gatk:4.1.8.0"
@@ -629,7 +629,7 @@ task DenoiseReadCounts {
         File? annotatedIntervals
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 5
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -690,7 +690,7 @@ task FilterMutectCalls {
         File? artifactPriors
 
         String javaXmx = "12G"
-        String memory = "13G"
+        String memory = "13GiB"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -775,7 +775,7 @@ task GatherBqsrReports {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -805,7 +805,7 @@ task GenomicsDBImport {
         String? tmpDir
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 180
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -866,7 +866,7 @@ task GenotypeGVCFs {
         File? pedigree
 
         String javaXmx = "6G"
-        String memory = "7G"
+        String memory = "7GiB"
         Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -932,7 +932,7 @@ task GetPileupSummaries {
         String outputPrefix
 
         String javaXmx = "12G"
-        String memory = "13G"
+        String memory = "13GiB"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1032,7 +1032,7 @@ task HaplotypeCaller {
     }
 
     runtime {
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -1073,7 +1073,7 @@ task LearnReadOrientationModel {
         Array[File]+ f1r2TarGz
 
         String javaXmx = "12G"
-        String memory = "13G"
+        String memory = "13GiB"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1114,7 +1114,7 @@ task MergeStats {
         Array[File]+ stats
 
         String javaXmx = "14G"
-        String memory = "15G"
+        String memory = "15GiB"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1162,7 +1162,7 @@ task ModelSegments {
         File? normalAllelicCounts
 
         String javaXmx = "10G"
-        String memory = "11G"
+        String memory = "11GiB"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1250,7 +1250,7 @@ task MuTect2 {
         File? panelOfNormalsIndex
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1325,7 +1325,7 @@ task PlotDenoisedCopyRatios {
         Int? minimumContigLength
 
         String javaXmx = "3G"
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.8.0"
     }
@@ -1393,7 +1393,7 @@ task PlotModeledSegments {
         Int? minimumContigLength
 
         String javaXmx = "3G"
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 2
         String dockerImage = "broadinstitute/gatk:4.1.8.0"
     }
@@ -1454,7 +1454,7 @@ task PreprocessIntervals {
         File? intervals
 
         String javaXmx = "3G"
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 1 + ceil(size(referenceFasta, "G") * 6)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1516,7 +1516,7 @@ task SelectVariants {
         String? selectTypeToInclude
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 60
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1576,7 +1576,7 @@ task SplitNCigarReads {
         Array[File] intervals = []
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 120 # This will likely be used with intervals, as such size based estimation can't be used.
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }
@@ -1645,7 +1645,7 @@ task VariantEval {
         File? dbsnpVCFIndex
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         # TODO: Refine estimate. For now 4 minutes per GB of input.
         Int timeMinutes = ceil(size(flatten([evalVcfs, comparisonVcfs, select_all([referenceFasta, dbsnpVCF])]), "G") * 20)
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
@@ -1722,7 +1722,7 @@ task VariantFiltration {
         Array[File] intervals = []
 
         String javaXmx = "4G"
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/gatk4:4.1.8.0--py38h37ae868_0"
     }

@@ -40,7 +40,7 @@ task NanoPlot {
         String? readType
 
         Int threads = 2
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 15
         String dockerImage = "quay.io/biocontainers/nanoplot:1.38.0--pyhdfd78af_0"
     }
@@ -130,7 +130,7 @@ task NanoQc {
 
         Int? minLength
 
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 15
         String dockerImage = "quay.io/biocontainers/nanoqc:0.9.4--py_0"
     }

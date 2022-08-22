@@ -26,7 +26,7 @@ task Complement {
         File inputBed
         String outputBed = basename(inputBed, "\.bed") + ".complement.bed"
 
-        String memory = "~{512 + ceil(size([inputBed, faidx], "M"))}M"
+        String memory = "~{512 + ceil(size([inputBed, faidx], "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size([inputBed, faidx], "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
@@ -75,7 +75,7 @@ task Coverage {
         File? bIndex
         String outputPath = "./coverage.tsv"
 
-        String memory = "8G"
+        String memory = "8GiB"
         Int timeMinutes = 320
         String dockerImage = "quay.io/biocontainers/bedtools:2.30.0--h7d7f7ad_2"
     }
@@ -120,7 +120,7 @@ task Merge {
         File inputBed
         String outputBed = "merged.bed"
 
-        String memory = "~{512 + ceil(size(inputBed, "M"))}M"
+        String memory = "~{512 + ceil(size(inputBed, "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size(inputBed, "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
@@ -159,7 +159,7 @@ task MergeBedFiles {
         Array[File]+ bedFiles
         String outputBed = "merged.bed"
 
-        String memory = "~{512 + ceil(size(bedFiles, "M"))}M"
+        String memory = "~{512 + ceil(size(bedFiles, "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size(bedFiles, "G"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
@@ -207,8 +207,8 @@ task Sort {
         File? genome
         File? faidx
 
-        String memory = "~{512 + ceil(size(inputBed, "M"))}M"
-        Int timeMinutes = 1 + ceil(size(inputBed, "G"))
+        String memory = "~{512 + ceil(size(inputBed, "MiB"))}MiB"
+        Int timeMinutes = 1 + ceil(size(inputBed, "GiB"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 
@@ -267,8 +267,8 @@ task Intersect {
 
         File? faidx # Giving a faidx file will set the sorted option.
 
-        String memory = "~{512 + ceil(size([regionsA, regionsB], "M"))}M"
-        Int timeMinutes = 1 + ceil(size([regionsA, regionsB], "G"))
+        String memory = "~{512 + ceil(size([regionsA, regionsB], "MiB"))}MiB"
+        Int timeMinutes = 1 + ceil(size([regionsA, regionsB], "GiB"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
     }
 

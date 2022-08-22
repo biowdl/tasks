@@ -30,8 +30,8 @@ task BamReadNameToUmiTag {
         String outputPath = "output.bam"
         String umiTag = "RX"
 
-        String memory = "2G"
-        Int timeMinutes = 1 + ceil(size([inputBam], "G") * 10)
+        String memory = "2GiB"
+        Int timeMinutes = 1 + ceil(size([inputBam], "GiB") * 10)
         String dockerImage = "quay.io/biocontainers/pysam:0.17.0--py39h051187c_0"
     }
     

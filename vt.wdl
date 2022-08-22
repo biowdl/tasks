@@ -29,7 +29,7 @@ task Normalize {
         Boolean ignoreMaskedRef = false
         String outputPath = "./vt/normalized_decomposed.vcf"
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/vt:0.57721--hdf88d34_2"
     }
