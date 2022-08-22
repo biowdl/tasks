@@ -33,6 +33,7 @@ task Amber {
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
+        String refGenomeVersion
 
         Int threads = 2
         String memory = "70G"
@@ -50,6 +51,7 @@ task Amber {
         -output_dir ~{outputDir} \
         -threads ~{threads} \
         -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{refGenomeVersion} \
         -loci ~{loci}
     }
 
@@ -90,6 +92,7 @@ task Amber {
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.",
                              category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        refGenomeVersion: {description: "The version of the reference genome: 37 or 38.", category: "required"}
         threads: {description: "The number of threads the program will use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
