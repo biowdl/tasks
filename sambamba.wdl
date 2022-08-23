@@ -159,11 +159,12 @@ task Slice {
         -L ~{regions} \
         -o ~{outputPath} \
         ~{bamFile}
+        sambamba index ~{outputPath}
     }
 
     output {
         File slicedBam = outputPath
-        File slicedBamIndex = sub(outputPath, "\.bam$", ".bai")
+        File slicedBamIndex = "~{outputPath}.bai"
     }
 
     runtime {

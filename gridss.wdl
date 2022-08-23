@@ -29,12 +29,12 @@ task AnnotateInsertedSequence {
         File viralReference
         File viralReferenceFai
         File viralReferenceDict
-        File viralReferenceImg
+        Array[File]+ viralReferenceBwaIndex
 
         Int threads = 8
         String javaXmx = "8G"
         String memory = "9G"
-        String dockerImage = "quay.io/biowdl/gridss:2.13.2" #TODO check if we still need our own patched image
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
         Int timeMinutes = 120
     }
 
