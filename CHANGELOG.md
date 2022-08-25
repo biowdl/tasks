@@ -9,6 +9,7 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Updated SURVIVOR version to 1.0.7
 + Move all memory notation to `KiB`, `MiB` and `GiB` from `K`, `M` and `G` 
   previously. The WDL spec clearly distuingishes between SI and binary 
   notations. Since Java always takes `K`, `M` and `G` to mean `KiB`, `MiB` and 

@@ -33,7 +33,7 @@ task Merge {
 
         String memory = "24GiB"
         Int timeMinutes = 60
-        String dockerImage = "quay.io/biocontainers/survivor:1.0.6--h6bb024c_0"
+        String dockerImage = "quay.io/biocontainers/survivor:1.0.7--hd03093a_2"
     }
 
     command {
