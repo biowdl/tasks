@@ -373,11 +373,13 @@ task Gripss {
         -output_id ~{outputId}
     }
 
+    String suffix = if defined(referenceName) then "somatic" else "germline"
+
     output {
-        File fullVcf = "~{outputDir}/~{sampleName}.gripss.somatic.vcf.gz"
-        File fullVcfIndex = "~{outputDir}/~{sampleName}.gripss.somatic.vcf.gz.tbi"
-        File filteredVcf = "~{outputDir}/~{sampleName}.gripss.filtered.somatic.vcf.gz"
-        File filteredVcfIndex = "~{outputDir}/~{sampleName}.gripss.filtered.somatic.vcf.gz.tbi"
+        File fullVcf = "~{outputDir}/~{sampleName}.gripss.~{suffix}.vcf.gz"
+        File fullVcfIndex = "~{outputDir}/~{sampleName}.gripss.~{suffix}.vcf.gz.tbi"
+        File filteredVcf = "~{outputDir}/~{sampleName}.gripss.filtered.~{suffix}.vcf.gz"
+        File filteredVcfIndex = "~{outputDir}/~{sampleName}.gripss.filtered.~{suffix}.vcf.gz.tbi"
     }
 
     runtime {
