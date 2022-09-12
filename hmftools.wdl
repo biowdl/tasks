@@ -39,7 +39,7 @@ task Amber {
         String memory = "70GiB"
         String javaXmx = "64G"
         Int timeMinutes = 240
-        String dockerImage = "quay.io/biocontainers/hmftools-amber:3.9--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-amber:3.9--hdfd78af_1"
     }
 
     command {
@@ -118,7 +118,7 @@ task Cobalt {
         String memory = "5GiB"
         String javaXmx = "4G"
         Int timeMinutes = 960
-        String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.13--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-cobalt:1.13--hdfd78af_1"
     }
 
     command {
