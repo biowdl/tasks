@@ -47,7 +47,7 @@ task Annotate {
         File? samplesFile
 
         Int threads = 0
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 60 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
@@ -138,7 +138,7 @@ task Filter {
         String? softFilter
         String outputPath = "./filtered.vcf.gz"
 
-        String memory = "256M"
+        String memory = "256MiB"
         Int timeMinutes = 1 + ceil(size(vcf, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
@@ -186,7 +186,7 @@ task Sort {
         String outputPath = "output.vcf.gz"
         String tmpDir = "./sorting-tmp"
 
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G")) * 5
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
@@ -261,7 +261,7 @@ task Stats {
         String? userTsTv
 
         Int threads = 0
-        String memory = "256M"
+        String memory = "256MiB"
         Int timeMinutes = 1 + 2* ceil(size(select_all([inputVcf, compareVcf]), "G")) # TODO: Estimate, 2 minutes per GB, refine later.
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
@@ -350,7 +350,7 @@ task View {
         String? exclude
         String? include
 
-        String memory = "256M"
+        String memory = "256MiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }

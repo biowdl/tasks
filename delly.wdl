@@ -28,7 +28,7 @@ task CallSV {
         File referenceFastaFai
         String outputPath = "./delly/delly.bcf"
 
-        String memory = "15G"
+        String memory = "15GiB"
         Int timeMinutes = 300
         String dockerImage = "quay.io/biocontainers/delly:0.8.1--h4037b6b_1"
     }

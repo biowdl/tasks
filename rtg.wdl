@@ -27,8 +27,8 @@ task Format {
         String outputPath = "seq_data.sdf"
 
         String rtgMem = "8G"
-        String memory = "9G"
-        Int timeMinutes = 1 + ceil(size(inputFiles) * 2)
+        String memory = "9GiB"
+        Int timeMinutes = 1 + ceil(size(inputFiles, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
     }
 
@@ -85,8 +85,8 @@ task VcfEval {
 
         String rtgMem = "8G"
         Int threads = 1  # Tool default is number of cores in the system 😱.
-        String memory = "9G"
-        Int timeMinutes = 1 + ceil(size([baseline, calls], "G") * 5)
+        String memory = "9GiB"
+        Int timeMinutes = 1 + ceil(size([baseline, calls], "GiB") * 5)
         String dockerImage = "quay.io/biocontainers/rtg-tools:3.10.1--0"
     }
 

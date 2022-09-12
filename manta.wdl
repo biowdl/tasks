@@ -60,7 +60,7 @@ task Germline {
 
     runtime {
         cpu: cores
-        memory: "~{memoryGb}G"
+        memory: "~{memoryGb}GiB"
         docker: dockerImage
         time_minutes: timeMinutes
     }
@@ -138,7 +138,7 @@ task Somatic {
 
     runtime {
         cpu: cores
-        memory: "~{memoryGb}G"
+        memory: "~{memoryGb}GiB"
         docker: dockerImage
         time_minutes: timeMinutes
     }

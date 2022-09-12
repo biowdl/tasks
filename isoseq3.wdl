@@ -32,7 +32,7 @@ task Refine {
         String outputNamePrefix
 
         Int threads = 2
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/isoseq3:3.4.0--0"
     }

@@ -37,7 +37,7 @@ task RunDeepVariant {
         String? sampleName
         Boolean? VCFStatsReport = true
 
-        String memory = "3G"
+        String memory = "3GiB"
         Int timeMinutes = 5000
         String dockerImage = "google/deepvariant:1.0.0"
     }

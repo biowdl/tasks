@@ -32,7 +32,7 @@ task InputConverter {
         Boolean checkFileMd5sums=false
         Boolean old=false
 
-        String memory = "128M"
+        String memory = "128MiB"
         Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.3.0--pyhdfd78af_0"
     }

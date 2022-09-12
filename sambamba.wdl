@@ -27,7 +27,7 @@ task Flagstat {
         String outputPath = "./flagstat.txt"
 
         Int threads = 2
-        String memory = "8G"
+        String memory = "8GiB"
         Int timeMinutes = 320
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
     }
@@ -84,7 +84,7 @@ task Markdup {
         # Added 8192 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
         Int memoryMb = 8192 + sortBufferSize + 2 * ioBufferSize
         # Time minute calculation does not work well for higher number of threads.
-        Int timeMinutes = 1 + ceil(size(inputBams, "G") * 25) / threads
+        Int timeMinutes = 1 + ceil(size(inputBams, "GiB") * 25) / threads
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
     }
 
@@ -113,7 +113,7 @@ task Markdup {
 
     runtime {
         cpu: threads
-        memory: "~{memoryMb}M"
+        memory: "~{memoryMb}MiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -195,7 +195,7 @@ task Sort {
         Int memoryPerThreadGb = 4
         Int threads = 1
         Int memoryGb = 1 + threads * memoryPerThreadGb
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 3)
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
     }
 
@@ -223,7 +223,7 @@ task Sort {
 
     runtime {
         cpu: threads
-        memory: "~{memoryGb}G"
+        memory: "~{memoryGb}GiB"
         docker: dockerImage
         time_minutes: timeMinutes
     }

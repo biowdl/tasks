@@ -83,7 +83,7 @@ task Cutadapt {
         Boolean? noZeroCap
 
         Int cores = 4
-        String memory = "5G"
+        String memory = "5GiB"
         Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 12.0 / cores)
         String dockerImage = "quay.io/biocontainers/cutadapt:2.10--py37hf01694f_1"
     }

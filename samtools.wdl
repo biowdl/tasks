@@ -26,8 +26,8 @@ task BgzipAndIndex {
         String outputDir
         String type = "vcf"
 
-        String memory = "2G"
-        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        String memory = "2GiB"
+        Int timeMinutes = 1 + ceil(size(inputFile, "GiB"))
         String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
 
@@ -71,7 +71,7 @@ task Faidx {
         File inputFile
         String outputDir
 
-        String memory = "2G"
+        String memory = "2GiB"
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
@@ -119,7 +119,7 @@ task Fastq {
         Int? compressionLevel
 
         Int threads = 1
-        String memory = "1G"
+        String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(inputBam) * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
@@ -183,8 +183,8 @@ task FilterShortReadsBam {
         File bamFile
         String outputPathBam
 
-        String memory = "1G"
-        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 8)
+        String memory = "1GiB"
+        Int timeMinutes = 1 + ceil(size(bamFile, "GiB") * 8)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
@@ -229,7 +229,7 @@ task Flagstat {
         File inputBam
         String outputPath
 
-        String memory = "256M"  # Only 40.5 MiB used for 150G bam file.
+        String memory = "256MiB"  # Only 40.5 MiB used for 150G bam file.
         Int timeMinutes = 1 + ceil(size(inputBam, "G"))
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
@@ -269,8 +269,8 @@ task Index {
 
         String? outputBamPath
 
-        String memory = "2G"
-        Int timeMinutes = 1 + ceil(size(bamFile, "G") * 4)
+        String memory = "2GiB"
+        Int timeMinutes = 1 + ceil(size(bamFile, "GiB") * 4)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
@@ -321,7 +321,7 @@ task Markdup {
         File inputBam
         String outputBamPath
 
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 2)
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
@@ -359,8 +359,8 @@ task Merge {
         Boolean force = true
 
         Int threads = 1
-        String memory = "4G"
-        Int timeMinutes = 1 + ceil(size(bamFiles, "G") * 2)
+        String memory = "4GiB"
+        Int timeMinutes = 1 + ceil(size(bamFiles, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
@@ -415,7 +415,7 @@ task Sort {
         Int memoryPerThreadGb = 4
         Int threads = 1
         Int memoryGb = 1 + threads * memoryPerThreadGb
-        Int timeMinutes = 1 + ceil(size(inputBam, "G") * 3)
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 3)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
@@ -444,7 +444,7 @@ task Sort {
 
     runtime {
         cpu: threads
-        memory: "~{memoryGb}G"
+        memory: "~{memoryGb}GiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }
@@ -473,7 +473,7 @@ task Tabix {
         String outputFilePath = "indexed.vcf.gz"
         String type = "vcf"
 
-        Int timeMinutes = 1 + ceil(size(inputFile, "G") * 2)
+        Int timeMinutes = 1 + ceil(size(inputFile, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
     }
 
@@ -526,8 +526,8 @@ task View {
         Int? MAPQthreshold
 
         Int threads = 1
-        String memory = "1G"
-        Int timeMinutes = 1 + ceil(size(inFile, "G") * 5)
+        String memory = "1GiB"
+        Int timeMinutes = 1 + ceil(size(inFile, "GiB") * 5)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 

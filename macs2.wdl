@@ -31,7 +31,7 @@ task PeakCalling {
         String format = "AUTO"
         Boolean nomodel = false
         Int timeMinutes = 600  # Default to 10 hours
-        String memory = "8G"
+        String memory = "8GiB"
         String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
     }
 

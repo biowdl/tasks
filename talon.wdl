@@ -30,7 +30,7 @@ task CreateAbundanceFileFromDatabase {
         File? whitelistFile
         File? datasetsFile
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -86,7 +86,7 @@ task CreateGtfFromDatabase {
         File? whitelistFile
         File? datasetFile
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -144,7 +144,7 @@ task FilterTalonTranscripts {
         File? datasetsFile
         Int? minDatasets
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -200,7 +200,7 @@ task GetReadAnnotations {
 
         File? datasetFile
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -248,7 +248,7 @@ task GetSpliceJunctions {
         String runMode = "intron"
         String outputPrefix
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -302,7 +302,7 @@ task InitializeTalonDatabase {
         Int cutOff3p = 300
         String outputPrefix
 
-        String memory = "10G"
+        String memory = "10GiB"
         Int timeMinutes = 60
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -360,7 +360,7 @@ task LabelReads {
         String outputPrefix
 
         Int threads = 4
-        String memory = "25G"
+        String memory = "25GiB"
         Int timeMinutes = 2880
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -413,7 +413,7 @@ task ReformatGtf {
     input {
         File gtfFile
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -454,7 +454,7 @@ task SummarizeDatasets {
 
         File? datasetGroupsCsv
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 50
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }
@@ -506,7 +506,7 @@ task Talon {
         String outputPrefix
 
         Int threads = 4
-        String memory = "25G"
+        String memory = "25GiB"
         Int timeMinutes = 2880
         String dockerImage = "biocontainers/talon:v5.0_cv1"
     }

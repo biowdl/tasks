@@ -27,7 +27,7 @@ task GetSJsFromGtf {
         String outputPrefix
         Int minIntronSize = 21
 
-        String memory = "8G"
+        String memory = "8GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
@@ -72,7 +72,7 @@ task GetTranscriptCleanStats {
         File inputSam
         String outputPrefix
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 30
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }
@@ -128,7 +128,7 @@ task TranscriptClean {
         File? variantFile
 
         Int cores = 1
-        String memory = "25G"
+        String memory = "25GiB"
         Int timeMinutes = 2880
         String dockerImage = "biocontainers/transcriptclean:v2.0.2_cv1"
     }

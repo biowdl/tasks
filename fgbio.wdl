@@ -26,7 +26,7 @@ task AnnotateBamWithUmis {
         File inputUmi
         String outputPath
 
-        String memory = "120G"
+        String memory = "120GiB"
         Int timeMinutes = 360
         String javaXmx="100G"
         String dockerImage = "quay.io/biocontainers/fgbio:1.4.0--hdfd78af_0"

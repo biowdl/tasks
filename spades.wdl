@@ -100,6 +100,6 @@ task Spades {
 
     runtime {
         cpu: threads
-        memory: "~{memoryGb}G"
+        memory: "~{memoryGb}GiB"
     }
 }

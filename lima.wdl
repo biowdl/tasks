@@ -49,7 +49,7 @@ task Lima {
         String outputPrefix
         
         Int threads = 2
-        String memory = "2G"
+        String memory = "2GiB"
         Int timeMinutes = 30
         String dockerImage = "quay.io/biocontainers/lima:2.2.0--h9ee0642_0"
     }

@@ -36,7 +36,7 @@ task Mem {
         
         Int threads = 4
         Int? memoryGb
-        Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 220 / threads)
+        Int timeMinutes = 1 + ceil(size([read1, read2], "GiB") * 220 / threads)
         # Contains bwa-mem2 2.0 bwakit 0.7.17.dev1 and samtools 1.10.
         String dockerImage = "quay.io/biocontainers/mulled-v2-6a15c99309c82b345497d24489bee67bbb76c2f6:1c9c3227b9bf825a8dc9726a25701aa23c0b1f12-0"
     }
@@ -84,7 +84,7 @@ task Mem {
         # One extra thread for bwa-postalt + samtools is not needed.
         # These only use 5-10% of compute power and not always simultaneously.
         cpu: threads
-        memory: "~{select_first([memoryGb, estimatedMemoryGb])}G"
+        memory: "~{select_first([memoryGb, estimatedMemoryGb])}GiB"
         time_minutes: timeMinutes
         docker: dockerImage
     }

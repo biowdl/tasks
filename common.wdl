@@ -25,7 +25,7 @@ task AppendToStringArray {
         Array[String] array
         String string
         
-        String memory = "1G"
+        String memory = "1GiB"
     }
 
     command {
@@ -51,7 +51,7 @@ task CheckFileMD5 {
         # By default cromwell expects /bin/bash to be present in the container.
         # The 'bash' container does not fill this requirement. (It is in /usr/local/bin/bash)
         # Use a stable version of debian:stretch-slim for this. (Smaller than ubuntu)
-        String memory = "1G"
+        String memory = "1GiB"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -75,7 +75,7 @@ task ConcatenateTextFiles {
         Boolean unzip = false
         Boolean zip = false
 
-        String memory = "1G"
+        String memory = "1GiB"
     }
 
     # When input and output is both compressed decompression is not needed.
@@ -104,7 +104,7 @@ task Copy {
         Boolean recursive = false
 
         # Version not that important as long as it is stable.
-        String memory = "1G"
+        String memory = "1GiB"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -132,7 +132,7 @@ task CreateLink {
         String inputFile
         String outputPath
 
-        String memory = "1G"
+        String memory = "1GiB"
     }
 
     command {
@@ -170,7 +170,7 @@ task GetSamplePositionInArray {
 
     runtime {
         # 4 gigs of memory to be able to build the docker image in singularity.
-        memory: "4G"
+        memory: "4GiB"
         docker: dockerImage
         timeMinutes: 5
     }
@@ -190,7 +190,7 @@ task MapMd5 {
     input {
         Map[String,String] map
 
-        String memory = "1G"
+        String memory = "1GiB"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -214,7 +214,7 @@ task StringArrayMd5 {
     input {
         Array[String] stringArray
 
-        String memory = "1G"
+        String memory = "1GiB"
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
 
@@ -238,7 +238,7 @@ task TextToFile {
         String text
         String outputFile = "out.txt"
 
-        String memory = "1G"
+        String memory = "1GiB"
         Int timeMinutes = 1
         String dockerImage = "debian@sha256:f05c05a218b7a4a5fe979045b1c8e2a9ec3524e5611ebfdd0ef5b8040f9008fa"
     }
@@ -274,7 +274,7 @@ task YamlToJson {
         File yaml
         String outputJson = basename(yaml, "\.ya?ml$") + ".json"
 
-        String  memory = "128M"
+        String  memory = "128MiB"
         Int timeMinutes = 1
         # biowdl-input-converter has python and pyyaml.
         String dockerImage = "quay.io/biocontainers/biowdl-input-converter:0.3.0--pyhdfd78af_0"

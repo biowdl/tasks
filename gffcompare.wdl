@@ -46,8 +46,8 @@ task GffCompare {
         Int? maxDistanceGroupingTranscriptStartSites
         String? namePrefix
 
-        String memory = "4G"
-        Int timeMinutes = 1 + ceil(size(inputGtfFiles, "G") * 30)
+        String memory = "4GiB"
+        Int timeMinutes = 1 + ceil(size(inputGtfFiles, "GiB") * 30)
         String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
 
         # This workaround only works in the input section.

@@ -30,7 +30,7 @@ task Extract {
         String? read2Output = "umi_extracted_R2.fastq.gz"
         Boolean threePrime = false
 
-        String memory = "20G"
+        String memory = "20GiB"
         Int timeMinutes = 1 + ceil(size([read1, read2], "G") * 2)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:3067b520386698317fd507c413baf7f901666fd4-0"
     }
@@ -87,8 +87,8 @@ task Dedup {
         String? umiSeparator
         String? statsPrefix
 
-        String memory = "25G"
-        Int timeMinutes = 30 + ceil(size(inputBam, "G") * 30)
+        String memory = "25GiB"
+        Int timeMinutes = 30 + ceil(size(inputBam, "GiB") * 30)
         String dockerImage = "quay.io/biocontainers/mulled-v2-509311a44630c01d9cb7d2ac5727725f51ea43af:3067b520386698317fd507c413baf7f901666fd4-0"
     }
 

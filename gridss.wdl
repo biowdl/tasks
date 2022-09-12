@@ -33,7 +33,7 @@ task AnnotateInsertedSequence {
 
         Int threads = 8
         String javaXmx = "8G"
-        String memory = "9G"
+        String memory = "9GiB"
         String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
         Int timeMinutes = 120
     }
@@ -85,7 +85,7 @@ task AnnotateSvTypes {
         File gridssVcfIndex
         String outputPath = "./gridss.svtyped.vcf.bgz"
 
-        String memory = "32G"
+        String memory = "32GiB"
         String dockerImage = "quay.io/biocontainers/bioconductor-structuralvariantannotation:1.10.0--r41hdfd78af_0"
         Int timeMinutes = 240
     }
@@ -239,7 +239,7 @@ task GridssAnnotateVcfRepeatmasker {
         File gridssVcfIndex
         String outputPath = "./gridss.repeatmasker_annotated.vcf.gz"
 
-        String memory = "25G"
+        String memory = "25GiB"
         Int threads = 8
         String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
         Int timeMinutes = 1440
@@ -318,7 +318,7 @@ task Virusbreakend {
 
     runtime {
         cpu: threads
-        memory: "~{gridssMemoryGB + extraMemoryGB}G"
+        memory: "~{gridssMemoryGB + extraMemoryGB}GiB"
         time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
     }

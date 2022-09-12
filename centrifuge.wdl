@@ -36,7 +36,7 @@ task Build {
         File? sizeTable
 
         Int threads = 5
-        String memory = "20G"
+        String memory = "20GiB"
         Int timeMinutes = 2880
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
@@ -109,7 +109,7 @@ task Classify {
         String? excludeTaxIDs
 
         Int threads = 4
-        String memory = "16G"
+        String memory = "16GiB"
         Int timeMinutes = 2880
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
@@ -186,7 +186,7 @@ task Inspect {
 
         Int? across
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
@@ -245,7 +245,7 @@ task KReport {
         Int? minimumScore
         Int? minimumLength
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/centrifuge:1.0.4_beta--he513fc3_5"
     }
@@ -303,7 +303,7 @@ task KTimportTaxonomy {
         File inputFile
         String outputPrefix
 
-        String memory = "4G"
+        String memory = "4GiB"
         Int timeMinutes = 1
         String dockerImage = "biocontainers/krona:v2.7.1_cv1"
     }

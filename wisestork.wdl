@@ -31,7 +31,7 @@ task Count {
         Int? binSize
         File? binFile
 
-        String memory = "2G"
+        String memory = "2GiB"
         String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
@@ -69,7 +69,7 @@ task GcCorrect {
         Int? iter
         Float? fracLowess
 
-        String memory = "2G"
+        String memory = "2GiB"
         String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 
@@ -129,7 +129,7 @@ task Newref {
     }
 
     runtime {
-        memory: "~{memory}G"
+        memory: "~{memory}GiB"
         docker: dockerImage
     }
 }
@@ -147,7 +147,7 @@ task Zscore {
         Int? binSize
         File? binFile
 
-        String memory = "2G"
+        String memory = "2GiB"
         String dockerImage = "quay.io/biocontainers/wisestork:0.1.2--pyh24bf2e0_0"
     }
 

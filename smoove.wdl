@@ -29,7 +29,7 @@ task Call {
         String sample
         String outputDir = "./smoove"
 
-        String memory = "15G"
+        String memory = "15GiB"
         Int timeMinutes = 1440
         String dockerImage = "quay.io/biocontainers/smoove:0.2.5--0"
     }
