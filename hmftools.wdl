@@ -58,18 +58,16 @@ task Amber {
     output {
         File version = "~{outputDir}/amber.version"
         File tumorBafPcf = "~{outputDir}/~{tumorName}.amber.baf.pcf"
-        File tumorBafTsv = "~{outputDir}/~{tumorName}.amber.baf.tsv"
-        File tumorBafVcf = "~{outputDir}/~{tumorName}.amber.baf.vcf.gz"
-        File tumorBafVcfIndex = "~{outputDir}/~{tumorName}.amber.baf.vcf.gz.tbi"
+        File tumorBafTsv = "~{outputDir}/~{tumorName}.amber.baf.tsv.gz"
         File tumorContaminationVcf = "~{outputDir}/~{tumorName}.amber.contamination.vcf.gz"
         File tumorContaminationVcfIndex = "~{outputDir}/~{tumorName}.amber.contamination.vcf.gz.tbi"
         File tumorContaminationTsv = "~{outputDir}/~{tumorName}.amber.contamination.tsv"
         File tumorQc = "~{outputDir}/~{tumorName}.amber.qc"
+        File normalHomozygousregionsTsv = "~{outputDir}/~{referenceName}.amber.homozygousregion.tsv"
         File normalSnpVcf = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz"
         File normalSnpVcfIndex = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz.tbi"
-        Array[File] outputs = [version, tumorBafPcf, tumorBafTsv, tumorBafVcf, tumorBafVcfIndex,
-            tumorContaminationVcf, tumorContaminationVcfIndex, tumorContaminationTsv, tumorQc,
-            normalSnpVcf, normalSnpVcfIndex]
+        Array[File] outputs = [version, tumorBafPcf, tumorBafTsv, tumorContaminationVcf,
+            tumorContaminationVcfIndex, tumorContaminationTsv, tumorQc, normalSnpVcf, normalSnpVcfIndex]
     }
 
     runtime {
@@ -139,10 +137,9 @@ task Cobalt {
         File normalRationPcf = "~{outputDir}/~{referenceName}.cobalt.ratio.pcf"
         File tumorGcMedianTsv = "~{outputDir}/~{tumorName}.cobalt.gc.median.tsv"
         File tumorRatioPcf = "~{outputDir}/~{tumorName}.cobalt.ratio.pcf"
-        File tumorRatioTsv = "~{outputDir}/~{tumorName}.cobalt.ratio.tsv"
-        File tumorChrLen = "~{outputDir}/~{tumorName}.chr.len"
+        File tumorRatioTsv = "~{outputDir}/~{tumorName}.cobalt.ratio.tsv.gz"
         Array[File] outputs = [version, normalGcMedianTsv, normalRationMedianTsv,
-            normalRationPcf, tumorGcMedianTsv, tumorRatioPcf, tumorRatioTsv, tumorChrLen]
+            normalRationPcf, tumorGcMedianTsv, tumorRatioPcf, tumorRatioTsv]
     }
 
     runtime {
