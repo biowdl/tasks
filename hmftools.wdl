@@ -562,7 +562,7 @@ task Linx {
         File transExonDataCsv
         File transSpliceDataCsv
 
-        String memory = "9iB"
+        String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 10
         String dockerImage = "quay.io/biowdl/linx:1.19.1" #patched version of biocontainer
