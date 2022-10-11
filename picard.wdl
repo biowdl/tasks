@@ -136,6 +136,58 @@ task CollectHsMetrics {
     }
 }
 
+task CollectInsertSizeMetrics {
+    input {
+        File inputBam
+        File inputBamIndex
+
+        Float? minimumPercentage
+        String basename = "./insertSize_metrics"
+
+        String memory = "5GiB"
+        String javaXmx = "4G"
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 6)
+        String dockerImage = "quay.io/biocontainers/picard:2.23.2--0"
+    }
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{basename})"
+        picard -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        CollectInsertSizeMetrics \
+        I=~{inputBam} \
+        O=~{basename}.txt \
+        H=~{basename}.pdf \
+        ~{"M=" + minimumPercentage}
+    }
+
+    output {
+        File metricsTxt = "~{basename}.txt"
+        File metricsPdf = "~{basename}.pdf"
+    }
+
+    runtime {
+        docker: dockerImage
+        time_minutes: timeMinutes
+        memory: memory
+    }
+    
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The input BAM file for which metrics will be collected.", category: "required"}
+        inputBamIndex: {description: "The index of the input BAM file.", category: "required"}
+        minimumPercentage: {description: "Equivalent to picard CollectInsertSizeMetrics' `M` option.", category: "advanced"}
+        basename: {description: "The basename for the output files.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task CollectMultipleMetrics {
     input {
         File inputBam

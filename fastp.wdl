@@ -1,4 +1,4 @@
-verison 1.0
+version 1.0
 
 # MIT License
 #
@@ -24,8 +24,8 @@ verison 1.0
 
 task Fastp {
     input {
-        File r1
-        File r2
+        File read1
+        File read2
         String outputPathR1
         String outputPathR2
         String htmlPath
@@ -35,24 +35,26 @@ task Fastp {
         Boolean correction = false
         Int lengthRequired = 15
         Int? split
+        Boolean performAdapterTrimming = true
         
         Int threads = 4
         String memory = "5GiB"
-        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 7.0 / cores)
+        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 7.0 / threads)
         String dockerImage = "quay.io/biocontainers/fastp:0.23.2--h5f740d0_3"
     }
 
     String outputDirR1 = sub(outputPathR1, basename(outputPathR1), "")
+    String outputDirR2 = sub(outputPathR2, basename(outputPathR2), "")
 
-    command {
+    command <<<
         set -e 
         mkdir -p $(dirname ~{outputPathR1} ~{outputPathR2} ~{htmlPath} ~{jsonPath})
         # predict output paths
         seq 1 ~{if defined(split) then split else "2"} | awk '{print "~{outputDirR1}/"$0".~{basename(outputPathR1)}"}' > r1_paths
         seq 1 ~{if defined(split) then split else "2"} | awk '{print "~{outputDirR2}/"$0".~{basename(outputPathR2)}"}' > r2_paths
         fastp \
-        -i ~{r1} \
-        ~{"-I " + r2} \
+        -i ~{read1} \
+        ~{"-I " + read2} \
         -o ~{outputPathR1} \
         ~{"-O " + outputPathR2} \
         -h ~{htmlPath} \
@@ -62,8 +64,9 @@ task Fastp {
         --length_required ~{lengthRequired} \
         --threads ~{threads} \
         ~{"--split " + split} \
-        ~{if defined(split) then "-d 0" else ""}
-    }
+        ~{if defined(split) then "-d 0" else ""} \
+        ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"}
+    >>>
 
     Array[String] r1Paths = read_lines("r1_paths")
     Array[String] r2Paths = read_lines("r2_paths")
@@ -76,15 +79,15 @@ task Fastp {
     }
 
     runtime {
-        cpu: cores
+        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
     }
 
     parameter_meta {
-        r1: {description: "The R1 fastq file.", category: "required"}
-        r2: {description: "The R2 fastq file.", category: "required"}
+        read1: {description: "The R1 fastq file.", category: "required"}
+        read2: {description: "The R2 fastq file.", category: "required"}
         outputPathR1: {description: "The output path for the R1 file.", category: "required"}
         outputPathR2: {description: "The output path for the R2 file.", category: "required"}
         htmlPath: {description: "The path to write the html report to.", category: "required"}
@@ -93,6 +96,7 @@ task Fastp {
         correction: {description: "Whether or not to apply overlap based correction.", category: "advanced"}
         lengthRequired: {description: "The minimum read length.", category: "advanced"}
         split: {description: "The number of chunks to split the files into.", category: "common"}
+        performAdapterTrimming: {description: "Whether adapter trimming should be performed or not.", category: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
