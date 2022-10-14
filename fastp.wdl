@@ -48,7 +48,11 @@ task Fastp {
 
     command <<<
         set -e 
-        mkdir -p $(dirname ~{outputPathR1} ~{outputPathR2} ~{htmlPath} ~{jsonPath})
+        mkdir -p $(dirname ~{outputPathR1})
+        mkdir -p $(dirname ~{outputPathR2})
+        mkdir -p $(dirname ~{htmlPath})
+        mkdir -p $(dirname ~{jsonPath})
+
         # predict output paths
         seq 1 ~{if defined(split) then split else "2"} | awk '{print "~{outputDirR1}/"$0".~{basename(outputPathR1)}"}' > r1_paths
         seq 1 ~{if defined(split) then split else "2"} | awk '{print "~{outputDirR2}/"$0".~{basename(outputPathR2)}"}' > r2_paths
@@ -68,14 +72,11 @@ task Fastp {
         ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"}
     >>>
 
-    Array[String] r1Paths = read_lines("r1_paths")
-    Array[String] r2Paths = read_lines("r2_paths")
-
     output {
         File htmlReport = htmlPath
         File jsonReport = jsonPath
-        Array[File] clippedR1 = if defined(split) then r1Paths else [outputPathR1]
-        Array[File] clippedR2 = if defined(split) then r2Paths else [outputPathR2]
+        Array[File] clippedR1 = if defined(split) then read_lines("r1_paths") else [outputPathR1]
+        Array[File] clippedR2 = if defined(split) then read_lines("r2_paths") else [outputPathR2]
     }
 
     runtime {
