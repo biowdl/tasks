@@ -66,7 +66,7 @@ task Fastp {
         -z ~{compressionLevel} \
         ~{if correction then "--correction" else ""} \
         --length_required ~{lengthRequired} \
-        --threads ~{threads} \
+        --thread ~{threads} \
         ~{"--split " + split} \
         ~{if defined(split) then "-d 0" else ""} \
         ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"}
