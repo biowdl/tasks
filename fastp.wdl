@@ -38,8 +38,8 @@ task Fastp {
         Boolean performAdapterTrimming = true
         
         Int threads = 4
-        String memory = "20GiB"
-        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 7.0 / threads)
+        String memory = "50GiB"
+        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 6.0 / threads)
         String dockerImage = "quay.io/biocontainers/fastp:0.23.2--h5f740d0_3"
     }
 
@@ -66,7 +66,7 @@ task Fastp {
         -z ~{compressionLevel} \
         ~{if correction then "--correction" else ""} \
         --length_required ~{lengthRequired} \
-        --thread ~{threads} \
+        --thread ~{select_first([split, threads])} \
         ~{"--split " + split} \
         ~{if defined(split) then "-d 0" else ""} \
         ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"}
@@ -80,7 +80,7 @@ task Fastp {
     }
 
     runtime {
-        cpu: threads
+        cpu: select_first([split, threads])
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -96,9 +96,9 @@ task Fastp {
         compressionLevel: {description: "The compression level to use for the output.", category: "advanced"}
         correction: {description: "Whether or not to apply overlap based correction.", category: "advanced"}
         lengthRequired: {description: "The minimum read length.", category: "advanced"}
-        split: {description: "The number of chunks to split the files into.", category: "common"}
+        split: {description: "The number of chunks to split the files into. Number of threads will be set equal to the amount of splits.", category: "common"}
         performAdapterTrimming: {description: "Whether adapter trimming should be performed or not.", category: "advanced"}
-        threads: {description: "The number of threads to use.", category: "advanced"}
+        threads: {description: "The number of threads to use. Only used if the split input is not set.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
