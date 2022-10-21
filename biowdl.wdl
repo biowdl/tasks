@@ -73,3 +73,49 @@ task InputConverter {
         json: {description: "JSON file version of the input sample sheet."}
     }
 }
+
+task IndexFastaFile {
+    input {
+        File inputFile
+        String outputDir = "."
+        String javaXmx = "2G"
+        String memory = "3GiB"
+    }
+    String outputFile = outputDir + "/" + basename(inputFile)
+    # This executes both picard and samtools, so indexes are co-located in the same folder.
+    command <<<
+        set -e
+        mkdir -p ~{outputDir}
+        ln -s ~{inputFile} ~{outputFile}
+        picard -Xmx~{javaXmx} \
+            -XX:ParallelGCThreads=1 \
+            CreateSequenceDictionary \
+            REFERENCE=~{inputFile} \
+            OUTPUT="~{outputFile}.dict"
+        samtools faidx ~{outputFile} --fai-idx ~{outputFile}.fai
+    >>>
+
+    output {
+        File outputFasta = outputFile
+        File outputFastaDict = outputFile + ".dict"
+        File outputFastaFai = outputFile + ".fai"
+    }
+
+    runtime {
+        memory: memory
+        # Contains picard 2.27.4, samtools 1.15.1
+        docker: "quay.io/biocontainers/mulled-v2-b0664646864bfdb46c5343b1b2b93fc05adb4b77:39a005770a3e30fb6aa3bf424b57ddf52bae7ece-0"
+    }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "The input fasta file.", category: "required"}
+        outputDir: {description: "Output directory path.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
+        memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        # outputs
+        outputFasta: {description: "Fasta file that is co-located with the indexes"}
+        outputFastaFai: {description: "Fasta index file for the outputFasta file."}
+        outputFastaDict: {description: "Sequence dictionary for the outputFasta file."}
+    }
+}
