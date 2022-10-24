@@ -119,7 +119,7 @@ task Index {
     input {
         File fasta
     }
-    File indexedFile = "reference.fasta"
+    String indexedFile = "reference.fasta"
 
     command {
         set -e
@@ -128,9 +128,9 @@ task Index {
     }
 
     output {
-        BwaIndex index = {
-            "fastaFile": indexedFile,
-            "indexFiles": [
+        BwaIndex index = object {
+            fastaFile: indexedFile,
+            indexFiles: [
                 indexedFile + ".amb",
                 indexedFile + ".ann",
                 indexedFile + ".bwt",
@@ -138,5 +138,11 @@ task Index {
                 indexedFile + ".sa"
             ]
         }
+    }
+
+    runtime {
+        docker: "quay.io/biocontainers/bwa:0.7.17--hed695b0_7"
+        cpu: 1
+        memory: "~{size(fasta, 'G') + 1}GiB"
     }
 }
