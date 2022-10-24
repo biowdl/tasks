@@ -86,7 +86,7 @@ task IndexFastaFile {
     command <<<
         set -e
         mkdir -p ~{outputDir}
-        ln -s ~{inputFile} ~{outputFile}
+        cp ~{inputFile} ~{outputFile}
         picard -Xmx~{javaXmx} \
             -XX:ParallelGCThreads=1 \
             CreateSequenceDictionary \
