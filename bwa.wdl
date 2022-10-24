@@ -114,3 +114,29 @@ struct BwaIndex {
     File fastaFile
     Array[File] indexFiles
 }
+
+task Index {
+    input {
+        File fasta
+    }
+    File indexedFile = "reference.fasta"
+
+    command {
+        set -e
+        cp ~{fasta} ~{indexedFile}
+        bwa index ~{indexedFile}
+    }
+
+    output {
+        BwaIndex index = {
+            "fastaFile": indexedFile,
+            "indexFiles": [
+                indexedFile + ".amb",
+                indexedFile + ".ann",
+                indexedFile + ".bwt",
+                indexedFile + ".pac",
+                indexedFile + ".sa"
+            ]
+        }
+    }
+}
