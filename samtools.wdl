@@ -470,7 +470,7 @@ task Sort {
 task Tabix {
     input {
         File inputFile
-        String outputFilePath = "indexed.vcf.gz"
+        String outputFilePath = basename(inputFile)
         String type = "vcf"
 
         Int timeMinutes = 1 + ceil(size(inputFile, "GiB") * 2)
