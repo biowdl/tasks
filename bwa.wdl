@@ -119,7 +119,7 @@ task Index {
     input {
         File fasta
     }
-    String indexedFile = "reference.fasta"
+    String indexedFile = basename(fasta)
 
     command {
         set -e

@@ -77,27 +77,27 @@ task InputConverter {
 task IndexFastaFile {
     input {
         File inputFile
-        String outputDir = "."
         String javaXmx = "2G"
         String memory = "3GiB"
     }
-    String outputFile = outputDir + "/" + basename(inputFile)
+    String outputFile = basename(inputFile)
+    # Capture .fa¸ .fna and .fasta
+    String outputDict = sub(outputFile, "\.fn?as?t?a?$", "") + ".dict"
     # This executes both picard and samtools, so indexes are co-located in the same folder.
     command <<<
         set -e
-        mkdir -p ~{outputDir}
         cp ~{inputFile} ~{outputFile}
         picard -Xmx~{javaXmx} \
             -XX:ParallelGCThreads=1 \
             CreateSequenceDictionary \
             REFERENCE=~{inputFile} \
-            OUTPUT="~{outputFile}.dict"
+            OUTPUT="~{outputDict}"
         samtools faidx ~{outputFile} --fai-idx ~{outputFile}.fai
     >>>
 
     output {
         File outputFasta = outputFile
-        File outputFastaDict = outputFile + ".dict"
+        File outputFastaDict = outputDict
         File outputFastaFai = outputFile + ".fai"
     }
 
@@ -110,7 +110,6 @@ task IndexFastaFile {
     parameter_meta {
         # inputs
         inputFile: {description: "The input fasta file.", category: "required"}
-        outputDir: {description: "Output directory path.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         # outputs
