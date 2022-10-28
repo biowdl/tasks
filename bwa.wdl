@@ -148,6 +148,7 @@ task Index {
         memory: "~{size(fasta, 'G') + 1}GiB"
         time_minutes: timeMinutes
     }
+
     parameter_meta {
         # inputs
         fasta: {description: "Reference fasta file.", category: "required"}

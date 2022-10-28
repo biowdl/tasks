@@ -95,6 +95,8 @@ task DictAndFaidx {
     runtime {
         memory: memory
         docker: dockerImage
+        time_minutes: timeMinutes
+        cpu: 1
     }
 
     parameter_meta {
