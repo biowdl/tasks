@@ -118,6 +118,8 @@ struct BwaIndex {
 task Index {
     input {
         File fasta
+        String dockerImage = "quay.io/biocontainers/bwa:0.7.17--hed695b0_7"
+        Int? timeMinutes = 5 + ceil(size(fasta, "G") * 5)
     }
     String indexedFile = basename(fasta)
 
@@ -141,8 +143,18 @@ task Index {
     }
 
     runtime {
-        docker: "quay.io/biocontainers/bwa:0.7.17--hed695b0_7"
+        docker: dockerImage
         cpu: 1
         memory: "~{size(fasta, 'G') + 1}GiB"
+        time_minutes: timeMinutes
+    }
+    parameter_meta {
+        # inputs
+        fasta: {description: "Reference fasta file.", category: "required"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        index: {description: "The produced BWA index."}
     }
 }

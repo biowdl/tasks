@@ -71,6 +71,7 @@ task DictAndFaidx {
         File inputFile
         String javaXmx = "2G"
         String memory = "3GiB"
+        Int timeMinutes = 5 + ceil(size(inputFile, "GiB") * 5)
         String dockerImage = "quay.io/biocontainers/samtools:1.11--h6270b1f_0"
     }
 
@@ -101,11 +102,12 @@ task DictAndFaidx {
         inputFile: {description: "The input fasta file.", category: "required"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
         # outputs
         outputFasta: {description: "Fasta file that is co-located with the indexes"}
         outputFastaFai: {description: "Fasta index file for the outputFasta file."}
         outputFastaDict: {description: "Sequence dictionary for the outputFasta file."}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
 
