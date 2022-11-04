@@ -12,7 +12,6 @@ version 5.1.0-dev
 + Updated SURVIVOR version to 1.0.7
 + Add a combined samtools dict and samtools faidx task.
 + Add a BWA index task.
-
 + Move all memory notation to `KiB`, `MiB` and `GiB` from `K`, `M` and `G` 
   previously. The WDL spec clearly distuingishes between SI and binary 
   notations. Since Java always takes `K`, `M` and `G` to mean `KiB`, `MiB` and 
