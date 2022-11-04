@@ -9,6 +9,7 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Updated SURVIVOR version to 1.0.7
 + Add a combined samtools dict and samtools faidx task.
 + Add a BWA index task.
 + Move all memory notation to `KiB`, `MiB` and `GiB` from `K`, `M` and `G` 
