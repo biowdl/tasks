@@ -57,6 +57,8 @@ task Updio {
     runtime {
         # Should be replaced with a tagged version after shake-out
         docker: "quay.io/biowdl/updio:1.0"
+        memory: "3GiB"  # Uses an iterator so should be fine.
+        runtime_minutes: size([childVcf, momVcf, dadVcf], "G") * 30 
     }
 }
 
@@ -100,5 +102,7 @@ task UpdioMultisample {
     runtime {
         # Should be replaced with a tagged version after shake-out
         docker: "quay.io/biowdl/updio:1.0"
+        memory: "3GiB"  # Uses an iterator so should be fine.
+        runtime_minutes: size(multisampleVcf, "G") * 30 
     }
 }
