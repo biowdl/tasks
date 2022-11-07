@@ -443,7 +443,7 @@ task CombineGVCFs {
         Array[File]+ gvcfFiles
         Array[File]+ gvcfFilesIndex
         Array[File] intervals = []
-        String outputPath
+        String outputPath = "combined.g.vcf.gz"
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
@@ -854,7 +854,7 @@ task GenotypeGVCFs {
     input {
         File gvcfFile
         File gvcfFileIndex
-        String outputPath
+        String outputPath = "genotyped.vcf.gz"
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
