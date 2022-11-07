@@ -48,7 +48,8 @@ task Updio {
         File eventsPlot = outputPrefix + ".events_plot.png"
         File log = outputPrefix + ".log"
         File table = outputPrefix + ".table"
-        File upd = outputPrefix + ".upd" 
+        File upd = outputPrefix + ".upd"
+        Array[File] files = [eventsList, eventsPlot, log, table, upd]
     }
 
     runtime {
@@ -91,6 +92,7 @@ task UpdioMultisample {
         File log = outputPrefix + ".log"
         File table = outputPrefix + ".table"
         File upd = outputPrefix + ".upd"
+        Array[File] files = [eventsList, eventsPlot, log, table, upd]
     }
 
     runtime {
