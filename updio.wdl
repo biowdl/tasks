@@ -56,3 +56,45 @@ task Updio {
         docker: "quay.io/biowdl/updio:1.0"
     }
 }
+
+task UpdioMultisample {
+    input {
+        File multisampleVcf
+        File multisampleVcfIndex
+        String childId
+        String momId
+        String dadId
+        File? commonCnvFile
+        String outputPath = "output_dir"
+        Boolean includeX = false
+    }
+
+    # "catch .vcf and .gz"
+    String outputPrefix = outputPath + "/" + childId
+
+    command <<<
+        set -e
+        mkdir -p ~{outputPath}
+        updio \
+        --output_path ~{outputPath} \
+        --multisample_vcf ~{multisampleVcf} \
+        --childID ~{childId} \
+        --momID ~{momId} \
+        --dadID ~{dadId} \
+        ~{"--common_cnv_file " + commonCnvFile} \
+        ~{true="--include_X=1" false="" includeX}
+    >>>
+
+    output {
+        File eventsList = outputPrefix + ".events_list"
+        File eventsPlot = outputPrefix + ".events_plot.png"
+        File log = outputPrefix + ".log"
+        File table = outputPrefix + ".table"
+        File upd = outputPrefix + ".upd"
+    }
+
+    runtime {
+        # Should be replaced with a tagged version after shake-out
+        docker: "quay.io/biowdl/updio:1.0"
+    }
+}
