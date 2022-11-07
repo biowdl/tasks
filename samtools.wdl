@@ -543,6 +543,7 @@ task Tabix {
 
     runtime {
         time_minutes: timeMinutes
+        memory: "512MiB"
         docker: dockerImage
     }
 
