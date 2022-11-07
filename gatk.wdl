@@ -859,6 +859,7 @@ task GenotypeGVCFs {
         File referenceFastaDict
         File referenceFastaFai
         Array[String] annotationGroups = ["StandardAnnotation"]
+        Boolean disableToolStandardAnnotations = false
 
         Array[File]? intervals
         File? dbsnpVCF
@@ -882,6 +883,7 @@ task GenotypeGVCFs {
         ~{"--pedigree " + pedigree} \
         ~{true="-G" false="" length(annotationGroups) > 0} ~{sep=" -G " annotationGroups} \
         -V ~{gvcfFile} \
+        ~{true="--disable-tool-default-annotations" false="" disableToolStandardAnnotations} \
         ~{true="--only-output-calls-starting-in-intervals" false="" defined(intervals)} \
         ~{true="-L" false="" defined(intervals)} ~{sep=' -L ' intervals}
     }
