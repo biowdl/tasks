@@ -332,7 +332,7 @@ task Index {
         if [ ! -f ~{outputPath} ]
         then
             mkdir -p "$(dirname ~{outputPath})"
-            ln ~{bamFile} ~{outputPath}
+            ln ~{bamFile} ~{outputPath} || cp ~{bamFile} ~{outputPath}
         fi
         samtools index ~{outputPath} ~{bamIndexPath}
         '
@@ -531,7 +531,7 @@ task Tabix {
         mkdir -p "$(dirname ~{outputFilePath})"
         if [ ! -f ~{outputFilePath} ]
         then
-            ln ~{inputFile} ~{outputFilePath}
+            ln ~{inputFile} ~{outputFilePath} || cp ~{inputFile} ~{outputFilePath}
         fi
         tabix ~{outputFilePath} -p ~{type}
     }
