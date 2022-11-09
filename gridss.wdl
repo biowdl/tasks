@@ -119,9 +119,14 @@ task AnnotateSvTypes {
         gr <- breakpointRanges(vcf)
         svtype <- simpleEventType(gr)
         info(vcf[gr$sourceId])$SVTYPE <- svtype
-        # GRIDSS doesn't supply a GT, so we estimate GT based on AF (assuming CN of 2, might be inaccurate)
-        geno(vcf)$GT <- ifelse(geno(vcf)$AF > 0.75, "1/1", ifelse(geno(vcf)$AF < 0.25, "0/0", "0/1"))
-        writeVcf(vcf, out_path, index=~{index})
+        # GRIDSS doesn't supply a GT, simply set it to 0/1
+        geno(vcf)$GT <- "0/1"
+        # Select only one breakend per event (also removes single breakends):
+        # sourceId ends with o or h for paired breakends, the first in the pair
+        # end with o the second with h. Single breakend end with b, these will
+        # also be removed since we can't determine the SVTYPE.
+        gr2 <- gr[grepl(".*o$", gr$sourceId)]
+        writeVcf(vcf[gr2$sourceId], out_path, index=~{index})
         EOF
     >>>
 
