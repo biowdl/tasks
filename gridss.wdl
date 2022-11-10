@@ -120,7 +120,7 @@ task AnnotateSvTypes {
         svtype <- simpleEventType(gr)
         info(vcf[gr$sourceId])$SVTYPE <- svtype
         # GRIDSS doesn't supply a GT, simply set it to 0/1
-        geno(vcf)$GT <- "0/1"
+        geno(vcf)$GT <- as.matrix(sapply(row.names(vcf), function(x) {"0/1"}))
         # Select only one breakend per event (also removes single breakends):
         # sourceId ends with o or h for paired breakends, the first in the pair
         # end with o the second with h. Single breakend end with b, these will
