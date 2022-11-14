@@ -41,10 +41,14 @@ task Fastp {
         String memory = "50GiB"
         Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 6.0 / threads)
         String dockerImage = "quay.io/biocontainers/fastp:0.23.2--h5f740d0_3"
+
+        Int? noneInt
     }
 
     String outputDirR1 = sub(outputPathR1, basename(outputPathR1), "")
     String outputDirR2 = sub(outputPathR2, basename(outputPathR2), "")
+
+    Int? effectiveSplit = if select_first([split, 1]) > 1 then split else noneInt
 
     command <<<
         set -e 
@@ -54,8 +58,8 @@ task Fastp {
         mkdir -p $(dirname ~{jsonPath})
 
         # predict output paths
-        seq 1 ~{if defined(split) then split else "2"} | awk '{print "~{outputDirR1}/"$0".~{basename(outputPathR1)}"}' > r1_paths
-        seq 1 ~{if defined(split) then split else "2"} | awk '{print "~{outputDirR2}/"$0".~{basename(outputPathR2)}"}' > r2_paths
+        seq 1 ~{if defined(effectiveSplit) then effectiveSplit else "2"} | awk '{print "~{outputDirR1}/"$0".~{basename(outputPathR1)}"}' > r1_paths
+        seq 1 ~{if defined(effectiveSplit) then effectiveSplit else "2"} | awk '{print "~{outputDirR2}/"$0".~{basename(outputPathR2)}"}' > r2_paths
         fastp \
         -i ~{read1} \
         ~{"-I " + read2} \
@@ -66,21 +70,21 @@ task Fastp {
         -z ~{compressionLevel} \
         ~{if correction then "--correction" else ""} \
         --length_required ~{lengthRequired} \
-        --thread ~{select_first([split, threads])} \
-        ~{"--split " + split} \
-        ~{if defined(split) then "-d 0" else ""} \
+        --thread ~{select_first([effectiveSplit, threads])} \
+        ~{"--split " + effectiveSplit} \
+        ~{if defined(effectiveSplit) then "-d 0" else ""} \
         ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"}
     >>>
 
     output {
         File htmlReport = htmlPath
         File jsonReport = jsonPath
-        Array[File] clippedR1 = if defined(split) then read_lines("r1_paths") else [outputPathR1]
-        Array[File] clippedR2 = if defined(split) then read_lines("r2_paths") else [outputPathR2]
+        Array[File] clippedR1 = if defined(effectiveSplit) then read_lines("r1_paths") else [outputPathR1]
+        Array[File] clippedR2 = if defined(effectiveSplit) then read_lines("r2_paths") else [outputPathR2]
     }
 
     runtime {
-        cpu: select_first([split, threads])
+        cpu: select_first([effectiveSplit, threads])
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
