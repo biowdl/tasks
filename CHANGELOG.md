@@ -9,6 +9,9 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ The GRIDSS AnnotateSvTypes task now also removes the second breakend of
+  the breakpoints and single breakends. This will prepare the output better
+  to be passed into survivor.
 + Updated SURVIVOR version to 1.0.7
 + Add a combined samtools dict and samtools faidx task.
 + Add a BWA index task.
