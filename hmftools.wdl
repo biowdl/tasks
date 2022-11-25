@@ -35,8 +35,8 @@ task Amber {
         File referenceFastaDict
 
         Int threads = 2
-        String memory = "70GiB"
-        String javaXmx = "64G"
+        String memory = "85GiB"
+        String javaXmx = "80G"
         Int timeMinutes = 480
         String dockerImage = "quay.io/biocontainers/hmftools-amber:3.5--0"
     }
