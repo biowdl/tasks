@@ -571,6 +571,7 @@ task View {
         Int? excludeFilter
         Int? excludeSpecificFilter
         Int? MAPQthreshold
+        File? targetFile
 
         Int threads = 1
         String memory = "1GiB"
@@ -593,6 +594,7 @@ task View {
         ~{"-G " + excludeSpecificFilter} \
         ~{"-q " + MAPQthreshold} \
         ~{"--threads " + (threads - 1)} \
+        ~{"--target-file " + targetFile} \
         ~{inFile}
         samtools index ~{outputFileName} ~{outputIndexPath}
     }
