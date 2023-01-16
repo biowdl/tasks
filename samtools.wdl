@@ -621,6 +621,7 @@ task View {
         excludeFilter: {description: "Equivalent to samtools view's `-F` option.", category: "advanced"}
         excludeSpecificFilter: {description: "Equivalent to samtools view's `-G` option.", category: "advanced"}
         MAPQthreshold: {description: "Equivalent to samtools view's `-q` option.", category: "advanced"}
+        targetFile: {description: "A BED file with regions to include", caegory: "advanced"}
         threads: {description: "The number of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
