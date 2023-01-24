@@ -152,11 +152,108 @@ task AnnotateSvTypes {
     }
 }
 
+task FilterPon {
+    input {
+        File ponBed
+        File ponBedpe
+        Int minimumScore = 3
+        String outputDir = "."
+
+        String memory = "1GiB"
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        Int timeMinutes = 20
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+
+        cat ~{ponBed} | awk '{if ($5 >= ~{minimumScore}) print $0}' > ~{outputDir}/gridss_pon_single_breakend.bed
+        cat ~{ponBedpe} | awk '{if ($8 >= ~{minimumScore}) print $0}' > ~{outputDir}/gridss_pon_breakpoint.bedpe
+    }
+
+    output {
+        File bedpe = "~{outputDir}/gridss_pon_breakpoint.bedpe"
+        File bed = "~{outputDir}/gridss_pon_single_breakend.bed"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        ponBed: {description: "The PON BED file.", category: "required"}
+        ponBedpe: {description: "The PON BEDPE file.", category: "required"}
+        minimumScore: {description: "The minimum number normal samples an SV must have been found in to be kept.", category: "advanced"}
+        outputDir: {description: "The directory the output will be written to.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task GeneratePonBedpe {
+    input {
+        Array[File]+ vcfFiles
+        Array[File]+ vcfIndexes
+        File referenceFasta
+        String outputDir = "."
+
+        Int threads = 8
+        String javaXmx = "8G"
+        String memory = "9GiB"
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        Int timeMinutes = 120
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        java -Xmx~{javaXmx} \
+        -cp /usr/local/share/gridss-2.12.2-0/gridss.jar \
+        gridss.GeneratePonBedpe \
+        INPUT=~{sep=" INPUT=" vcfFiles} \
+        O=~{outputDir}/gridss_pon_breakpoint.bedpe \
+        SBO=~{outputDir}/gridss_pon_single_breakend.bed \
+        REFERENCE_SEQUENCE=~{referenceFasta} \
+        THREADS=~{threads}
+    }
+
+    output {
+        File bedpe = "~{outputDir}/gridss_pon_breakpoint.bedpe"
+        File bed = "~{outputDir}/gridss_pon_single_breakend.bed"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        vcfFiles: {description: "The vcf files with the normals as the first sample.", category: "required"}
+        referenceFasta: {description: "The fasta of the reference genome.", category: "required"}
+        outputDir: {description: "The directory the output will be written to.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task GRIDSS {
     input {
-        File tumorBam
-        File tumorBai
-        String tumorLabel
+        Array[File]+ tumorBam
+        Array[File]+ tumorBai
+        Array[String]+ tumorLabel
         BwaIndex reference
         String outputPrefix = "gridss"
 
@@ -184,10 +281,10 @@ task GRIDSS {
         ~{"-c " + gridssProperties} \
         ~{"-t " + threads} \
         ~{"--jvmheap " + jvmHeapSizeGb + "G"} \
-        --labels ~{normalLabel}~{true="," false="" defined(normalLabel)}~{tumorLabel} \
+        --labels ~{normalLabel}~{true="," false="" defined(normalLabel)}~{sep="," tumorLabel} \
         ~{"--blacklist " + blacklistBed} \
         ~{normalBam} \
-        ~{tumorBam}
+        ~{sep=" " tumorBam}
         samtools index ~{outputPrefix}_assembly.bam ~{outputPrefix}_assembly.bai
 
         # For some reason the VCF index is sometimes missing
@@ -276,6 +373,60 @@ task GridssAnnotateVcfRepeatmasker {
         gridssVcfIndex: {description: "The index for the GRIDSS output.", category: "required"}
         outputPath: {description: "The path the output should be written to.", category: "common"}
         threads: {description: "The number of the threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task SomaticFilter {
+    input {
+        File vcfFile
+        File vcfIndex
+        File ponBed
+        File ponBedpe
+        String outputPath = "./high_confidence_somatic.vcf.gz"
+        String fullOutputPath = "./high_and_low_confidence_somatic.vcf.gz"
+
+        String memory = "16GiB"
+        String dockerImage = "quay.io/biowdl/gridss:2.12.2"
+        Int timeMinutes = 60
+    }
+
+    command {
+        set -e
+        mkdir -p $(dirname ~{outputPath})
+        mkdir -p $(dirname ~{fullOutputPath})
+
+        gridss_somatic_filter \
+        --pondir ~{dirname(ponBed)} \
+        --input ~{vcfFile} \
+        --output ~{outputPath} \
+        --fulloutput ~{fullOutputPath}
+    }
+
+    output {
+        File fullVcf = fullOutputPath
+        File fullVcfIndex = "~{fullOutputPath}.tbi"
+        File highConfidenceVcf = outputPath
+        File highConfidenceVcfIndex = "~{outputPath}.tbi"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        vcfFile: {description: "The GRIDSS VCF file.", category: "required"}
+        vcfIndex: {description: "The index for the GRIDSS VCF file.", category: "required"}
+        ponBed: {description: "The PON BED file.", category: "required"}
+        ponBedpe: {description: "The PON BEDPE file.", category: "required"}
+        outputPath: {description: "The path the high confidence output should be written to.", category: "common"}
+        fullOutputPath: {description: "The path the full output should be written to.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
