@@ -29,16 +29,16 @@ task PeakCalling {
         String outDir = "macs2"
         String sampleName
         String format = "AUTO"
-        Boolean nomodel = false
-        String gensz = "hs"
-        Int extsize
-        Int shiftsize = -1*round(extsize/2)
-        Float pval_thres = 0.01
-        Boolean bdg = true
-        String keepdup = "auto"
-        Boolean callsummits = true
+        Boolean? nomodel
+        String? gensz
+        Int? extsize
+        Int? shiftsize = -1*round(extsize/2)
+        Float? pval_thres
+        Boolean? bdg
+        String? keepdup
+        Boolean? callsummits
         Int timeMinutes = 600  # Default to 10 hours
-        String memory = "8G"
+        String memory = "8GiB"
         String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
     }
 
@@ -49,14 +49,14 @@ task PeakCalling {
         ~{true="--control" false="" length(controlBams) > 0} ~{sep = ' ' controlBams} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
-        -f ~{format} \
-        -g ~{gensz} \
-        -p ~{pval_thres} \
-        --shift ~{shiftsize} \
-        --extsize ~{extsize} \
+        ~{"-f" + format} \
+        ~{"-g" + gensz} \
+        ~{"-p" + pval_thres} \
+        ~{"--shift" + shiftsize} \
+        ~{"--extsize" + extsize} \
         ~{true='--nomodel' false='' nomodel} \
         ~{true='-B' false='' bdg} \
-        --keep-dup ~{keepdup} \
+        ~{"--keep-dup" + keepdup} \
         ~{true='--call-summits' false='' callsummits}
     }
 
