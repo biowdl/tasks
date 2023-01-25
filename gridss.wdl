@@ -164,13 +164,13 @@ task FilterPon {
         Int timeMinutes = 20
     }
 
-    command {
+    command <<<
         set -e
         mkdir -p ~{outputDir}
 
         cat ~{ponBed} | awk '{if ($5 >= ~{minimumScore}) print $0}' > ~{outputDir}/gridss_pon_single_breakend.bed
         cat ~{ponBedpe} | awk '{if ($8 >= ~{minimumScore}) print $0}' > ~{outputDir}/gridss_pon_breakpoint.bedpe
-    }
+    >>>
 
     output {
         File bedpe = "~{outputDir}/gridss_pon_breakpoint.bedpe"
@@ -189,8 +189,6 @@ task FilterPon {
         minimumScore: {description: "The minimum number normal samples an SV must have been found in to be kept.", category: "advanced"}
         outputDir: {description: "The directory the output will be written to.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
-                  category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
@@ -394,13 +392,15 @@ task SomaticFilter {
         Int timeMinutes = 60
     }
 
+    String ponDir = sub(ponBed, basename(ponBed), "")
+
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
         mkdir -p $(dirname ~{fullOutputPath})
 
         gridss_somatic_filter \
-        --pondir ~{dirname(ponBed)} \
+        --pondir ~{ponDir} \
         --input ~{vcfFile} \
         --output ~{outputPath} \
         --fulloutput ~{fullOutputPath}
@@ -414,7 +414,6 @@ task SomaticFilter {
     }
 
     runtime {
-        cpu: threads
         memory: memory
         time_minutes: timeMinutes # !UnknownRuntimeKey
         docker: dockerImage
