@@ -32,7 +32,7 @@ task PeakCalling {
         Boolean? nomodel
         String? gensz
         Int? extsize
-        Int? shiftsize = -1*round(extsize/2)
+        Int? shiftsize
         Float? pval_thres
         Boolean? bdg
         String? keepdup
