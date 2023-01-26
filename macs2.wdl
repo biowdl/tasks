@@ -29,7 +29,7 @@ task PeakCalling {
         String outDir = "macs2"
         String sampleName
         String format = "AUTO"
-        Boolean? nomodel
+        Boolean nomodel = false
         String? gensz
         Int? extsize
         Int? shiftsize
