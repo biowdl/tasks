@@ -34,7 +34,7 @@ task PeakCalling {
         Int? extsize
         Int? shiftsize
         Float? pval_thres
-        Boolean? bdg
+        Boolean bdg = false
         String? keepdup
         Boolean? callsummits
         Int timeMinutes = 600  # Default to 10 hours
