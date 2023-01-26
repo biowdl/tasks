@@ -9,6 +9,15 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Add optional inputs to macs2, aiming to allow adhering to Encode ATACs-seq. Inputs added:
+  + nomodel
+  + gensz
+  + extsize
+  + shiftsize
+  + pval_thres
+  + bdg
+  + keepdup
+  + callsummits
 + Update samtools image to version 1.16.
 + Add targetsFile input for samtools View.
 + Mateclever's runtime attribute defaults were changed to:
