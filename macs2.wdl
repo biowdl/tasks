@@ -36,7 +36,7 @@ task PeakCalling {
         Float? pval_thres
         Boolean bdg = false
         String? keepdup
-        Boolean? callsummits
+        Boolean callsummits = false
         Int timeMinutes = 600  # Default to 10 hours
         String memory = "8GiB"
         String dockerImage = "quay.io/biocontainers/macs2:2.1.2--py27r351_0"
