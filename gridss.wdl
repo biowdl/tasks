@@ -238,6 +238,7 @@ task GeneratePonBedpe {
         vcfFiles: {description: "The vcf files with the normals as the first sample.", category: "required"}
         referenceFasta: {description: "The fasta of the reference genome.", category: "required"}
         outputDir: {description: "The directory the output will be written to.", category: "common"}
+        threads: {description: "The number of the threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}
