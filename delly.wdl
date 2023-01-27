@@ -29,6 +29,7 @@ task CallSV {
         String outputPath = "./delly/delly.bcf"
 
         File? genotypeBcf
+        File? genotypeBcfIndex
 
         String memory = "15GiB"
         Int timeMinutes = 300
