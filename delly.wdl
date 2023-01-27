@@ -64,7 +64,8 @@ task CallSV {
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
         outputPath: {description: "The location the output BCF file should be written.", category: "common"}
-        genotypeBcf: {description: "A BCF with SVs to get genotyped in the samples."}
+        genotypeBcf: {description: "A BCF with SVs to get genotyped in the samples.", category: "advanced"}
+        genotypeBcfIndex: {description: "The index for the genotype BCF file.", category: "advanced"}
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -114,6 +115,7 @@ task SomaticFilter {
 
     parameter_meta {
         dellyBcf: {description: "The BCF file produced by delly.", category: "required"}
+        dellyBcfIndex: {description: "The index for the delly BCF file.", category: "required"}
         normalSamples: {description: "The names for the normal samples as used in the delly BCF file.", category: "required"}
         tumorSamples: {description: "The names for the tumor samples as used in the delly BCF file.", category: "required"}
         outputPath: {description: "The location the output BCF file should be written.", category: "common"}
