@@ -47,6 +47,7 @@ task CallSV {
 
     output {
         File dellyBcf = outputPath
+        File dellyBcfIndex = outputPath + ".csi"
     }
 
     runtime {
@@ -100,6 +101,7 @@ task SomaticFilter {
 
     output {
         File filterBcf = outputPath
+        File filterBcfIndex = outputPath + ".csi"
     }
 
     runtime {
