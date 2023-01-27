@@ -77,6 +77,7 @@ task CallSV {
 task SomaticFilter {
     input {
         File dellyBcf
+        File dellyBcfIndex
         Array[String]+ normalSamples
         Array[String]+ tumorSamples
         String outputPath = "./delly/delly_filter.bcf"
