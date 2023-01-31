@@ -32,7 +32,7 @@ task CallSV {
         File? genotypeBcfIndex
 
         String memory = "15GiB"
-        Int timeMinutes = 300
+        Int timeMinutes = 600
         String dockerImage = "quay.io/biocontainers/delly:1.1.6--ha41ced6_0"
     }
 

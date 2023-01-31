@@ -216,6 +216,7 @@ task GeneratePonBedpe {
         -cp /usr/local/share/gridss-2.12.2-0/gridss.jar \
         gridss.GeneratePonBedpe \
         INPUT=~{sep=" INPUT=" vcfFiles} \
+        NO=0 \
         O=~{outputDir}/gridss_pon_breakpoint.bedpe \
         SBO=~{outputDir}/gridss_pon_single_breakend.bed \
         REFERENCE_SEQUENCE=~{referenceFasta} \
