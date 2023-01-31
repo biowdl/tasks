@@ -200,6 +200,7 @@ task GeneratePonBedpe {
         Array[File]+ vcfFiles
         Array[File]+ vcfIndexes
         File referenceFasta
+        File referenceFastaFai
         String outputDir = "."
 
         Int threads = 8
@@ -238,6 +239,7 @@ task GeneratePonBedpe {
     parameter_meta {
         vcfFiles: {description: "The vcf files with the normals as the first sample.", category: "required"}
         referenceFasta: {description: "The fasta of the reference genome.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference genome fasta.", category: "required"}
         outputDir: {description: "The directory the output will be written to.", category: "common"}
         threads: {description: "The number of the threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
