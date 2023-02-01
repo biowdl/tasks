@@ -388,8 +388,8 @@ task SomaticFilter {
         File vcfIndex
         File ponBed
         File ponBedpe
-        String outputPath = "./high_confidence_somatic.vcf.gz"
-        String fullOutputPath = "./high_and_low_confidence_somatic.vcf.gz"
+        String outputPath = "./high_confidence_somatic.vcf.bgz"
+        String fullOutputPath = "./high_and_low_confidence_somatic.vcf.bgz"
 
         String memory = "16GiB"
         String dockerImage = "quay.io/biowdl/gridss:2.12.2"
