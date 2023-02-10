@@ -94,7 +94,7 @@ task BamReadNameToUmiTag {
         inputBam: {description: "The input SAM file.", category: "required"}
         outputPath: {description: "Output directory path + output file.", category: "common"}
         umiTag: {description: "The tag used for UMIs in the output BAM file.", category: "common"}
-        separatorChar: {description: "Character used to separate the UMIs from the read name", category: "common"}
+        separatorChar: {description: "Character used to separate the UMIs from the read name.", category: "common"}
 
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
