@@ -9,6 +9,8 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Add a task for fastp.
++ Add a task for picard CollectInsertSizeMetrics.
 + Add a separatorChar input to the tagUmi task.
 + Bug fix: Add space between flag and the value provided for macs2
 + Add optional inputs to macs2, aiming to allow adhering to Encode ATACs-seq. Inputs added:
