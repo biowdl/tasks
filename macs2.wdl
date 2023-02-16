@@ -49,14 +49,14 @@ task PeakCalling {
         ~{true="--control" false="" length(controlBams) > 0} ~{sep = ' ' controlBams} \
         --outdir ~{outDir} \
         --name ~{sampleName} \
-        ~{"-f" + format} \
-        ~{"-g" + gensz} \
-        ~{"-p" + pval_thres} \
-        ~{"--shift" + shiftsize} \
-        ~{"--extsize" + extsize} \
+        ~{"-f " + format} \
+        ~{"-g " + gensz} \
+        ~{"-p " + pval_thres} \
+        ~{"--shift " + shiftsize} \
+        ~{"--extsize " + extsize} \
         ~{true='--nomodel' false='' nomodel} \
         ~{true='-B' false='' bdg} \
-        ~{"--keep-dup" + keepdup} \
+        ~{"--keep-dup " + keepdup} \
         ~{true='--call-summits' false='' callsummits}
     }
 
