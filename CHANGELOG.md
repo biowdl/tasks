@@ -9,6 +9,31 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Add a separatorChar input to the tagUmi task.
++ Bug fix: Add space between flag and the value provided for macs2
++ Add optional inputs to macs2, aiming to allow adhering to Encode ATACs-seq. Inputs added:
+  + nomodel
+  + gensz
+  + extsize
+  + shiftsize
+  + pval_thres
+  + bdg
+  + keepdup
+  + callsummits
++ Update samtools image to version 1.16.
++ Add targetsFile input for samtools View.
++ Mateclever's runtime attribute defaults were changed to:
+  + memory: `"250GiB"`
+  + timeMinutes: `2880`
++ Clever's Prediction task's runtime attribute defaults were changed to:
+  + memory: `"80GiB"`
+  + timeMinutes: `2200`
++ The GRIDSS AnnotateSvTypes task now also removes the second breakend of
+  the breakpoints and single breakends. This will prepare the output better
+  to be passed into survivor.
++ Updated SURVIVOR version to 1.0.7
++ Add a combined samtools dict and samtools faidx task.
++ Add a BWA index task.
 + Move all memory notation to `KiB`, `MiB` and `GiB` from `K`, `M` and `G` 
   previously. The WDL spec clearly distuingishes between SI and binary 
   notations. Since Java always takes `K`, `M` and `G` to mean `KiB`, `MiB` and 
