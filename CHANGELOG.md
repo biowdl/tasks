@@ -11,6 +11,14 @@ version 5.1.0-dev
 ---------------------------
 + Add a task for fastp.
 + Add a task for picard CollectInsertSizeMetrics.
++ Increased the timeMinutes runtime attribute for manta (somatic and germline) to `2880`.
++ Add a task for GRIDSS somatic filtering.
++ Add a task to generate a panel of normals BED and BEDPE file for GRIDSS.
++ Add a task to filter a GRIDSS PON.
++ Add a task for delly somatic filtering.
++ Delly CallSV's `bamFile` and `bamIndex` inputs are not arrays of files, allowing
+  for multiple samples to be included.
++ Add `samples` input to bcftools view to select samples included in the output vcf.
 + Add a separatorChar input to the tagUmi task.
 + Bug fix: Add space between flag and the value provided for macs2
 + Add optional inputs to macs2, aiming to allow adhering to Encode ATACs-seq. Inputs added:
