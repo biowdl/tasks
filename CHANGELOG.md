@@ -9,6 +9,8 @@ that users understand how the changes affect the new version.
 -->
 version 5.1.0-dev
 ---------------------------
++ Add a task for fastp.
++ Add a task for picard CollectInsertSizeMetrics.
 + Increased the timeMinutes runtime attribute for manta (somatic and germline) to `2880`.
 + Add a task for GRIDSS somatic filtering.
 + Add a task to generate a panel of normals BED and BEDPE file for GRIDSS.

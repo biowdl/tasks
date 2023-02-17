@@ -36,9 +36,9 @@ task Amber {
         String refGenomeVersion
 
         Int threads = 2
-        String memory = "70GiB"
-        String javaXmx = "64G"
-        Int timeMinutes = 240
+        String memory = "85GiB"
+        String javaXmx = "80G"
+        Int timeMinutes = 480
         String dockerImage = "quay.io/biocontainers/hmftools-amber:3.9--hdfd78af_1"
     }
 
