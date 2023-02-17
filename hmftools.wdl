@@ -35,9 +35,9 @@ task Amber {
         File referenceFastaDict
 
         Int threads = 2
-        String memory = "70GiB"
-        String javaXmx = "64G"
-        Int timeMinutes = 240
+        String memory = "85GiB"
+        String javaXmx = "80G"
+        Int timeMinutes = 480
         String dockerImage = "quay.io/biocontainers/hmftools-amber:3.5--0"
     }
 
@@ -604,7 +604,7 @@ task Linx {
         File transExonDataCsv
         File transSpliceDataCsv
 
-        String memory = "9iB"
+        String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 10
         String dockerImage = "quay.io/biocontainers/hmftools-linx:1.18--hdfd78af_0"
