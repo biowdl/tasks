@@ -349,6 +349,7 @@ task View {
 
         String? exclude
         String? include
+        Array[String] samples = []
 
         String memory = "256MiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
@@ -364,6 +365,7 @@ task View {
         ~{"--exclude " + exclude} \
         ~{"--include " + include} \
         ~{true="--exclude-uncalled" false="" excludeUncalled} \
+        ~{if length(samples) > 0 then "-s" else ""} ~{sep="," samples} \
         -o ~{outputPath} \
         -O ~{true="z" false="v" compressed} \
         ~{inputFile}
@@ -389,6 +391,7 @@ task View {
         include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
         excludeUncalled: {description: "Exclude sites without a called genotype (see man page for details).", category: "advanced"}
+        samples: {description: "A list of sample names to include.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}

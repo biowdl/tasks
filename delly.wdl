@@ -22,15 +22,18 @@ version 1.0
 
 task CallSV {
     input {
-        File bamFile
-        File bamIndex
+        Array[File]+ bamFile
+        Array[File]+ bamIndex
         File referenceFasta
         File referenceFastaFai
         String outputPath = "./delly/delly.bcf"
 
+        File? genotypeBcf
+        File? genotypeBcfIndex
+
         String memory = "15GiB"
-        Int timeMinutes = 300
-        String dockerImage = "quay.io/biocontainers/delly:0.8.1--h4037b6b_1"
+        Int timeMinutes = 600
+        String dockerImage = "quay.io/biocontainers/delly:1.1.6--ha41ced6_0"
     }
 
     command {
@@ -39,11 +42,13 @@ task CallSV {
         delly call \
         -o ~{outputPath} \
         -g ~{referenceFasta} \
-        ~{bamFile}
+        ~{"-v " + genotypeBcf} \
+        ~{sep=" " bamFile}
     }
 
     output {
         File dellyBcf = outputPath
+        File dellyBcfIndex = outputPath + ".csi"
     }
 
     runtime {
@@ -54,16 +59,68 @@ task CallSV {
 
     parameter_meta {
         # inputs
-        bamFile: {description: "The bam file to process.", category: "required"}
-        bamIndex: {description: "The index bam file.", category: "required"}
+        bamFile: {description: "The bam files to process.", category: "required"}
+        bamIndex: {description: "The indexes for the bam files.", category: "required"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "required"}
         referenceFastaFai: {description: "Fasta index (.fai) file of the reference.", category: "required" }
-        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        outputPath: {description: "The location the output BCF file should be written.", category: "common"}
+        genotypeBcf: {description: "A BCF with SVs to get genotyped in the samples.", category: "advanced"}
+        genotypeBcfIndex: {description: "The index for the genotype BCF file.", category: "advanced"}
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
         dellyBcf: {description: "File containing structural variants."}
+    }
+}
+
+
+task SomaticFilter {
+    input {
+        File dellyBcf
+        File dellyBcfIndex
+        Array[String]+ normalSamples
+        Array[String]+ tumorSamples
+        String outputPath = "./delly/delly_filter.bcf"
+
+        String memory = "15GiB"
+        Int timeMinutes = 300
+        String dockerImage = "quay.io/biocontainers/delly:1.1.6--ha41ced6_0"
+    }
+
+    command <<<
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+        for SAMPLE in ~{sep=" " normalSamples}; do echo -e "${SAMPLE}\tcontrol" >> samples.tsv; done
+        for SAMPLE in ~{sep=" " tumorSamples}; do echo -e "${SAMPLE}\ttumor" >> samples.tsv; done
+
+        delly filter \
+        -f somatic \
+        -o ~{outputPath} \
+        -s samples.tsv \
+        ~{dellyBcf}
+    >>>
+
+    output {
+        File filterBcf = outputPath
+        File filterBcfIndex = outputPath + ".csi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        dellyBcf: {description: "The BCF file produced by delly.", category: "required"}
+        dellyBcfIndex: {description: "The index for the delly BCF file.", category: "required"}
+        normalSamples: {description: "The names for the normal samples as used in the delly BCF file.", category: "required"}
+        tumorSamples: {description: "The names for the tumor samples as used in the delly BCF file.", category: "required"}
+        outputPath: {description: "The location the output BCF file should be written.", category: "common"}
+        memory: {description: "The memory required to run the programs.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
     }
 }
