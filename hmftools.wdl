@@ -111,6 +111,7 @@ task Cobalt {
         File tumorBamIndex
         String outputDir = "./cobalt"
         File gcProfile
+        File refGenomeFile
 
         Int threads = 1
         String memory = "5GiB"
@@ -127,7 +128,8 @@ task Cobalt {
         -tumor_bam ~{tumorBam} \
         -output_dir ~{outputDir} \
         -threads ~{threads} \
-        -gc_profile ~{gcProfile}
+        -gc_profile ~{gcProfile} \
+        -ref_genome ~{refGenomeFile}
     }
 
     output {
@@ -158,6 +160,7 @@ task Cobalt {
         tumorBamIndex: {description: "The index for the tumor BAM file.", category: "required"}
         outputDir: {description: "The path to the output directory.", category: "common"}
         gcProfile: {description: "A file describing the GC profile of the reference genome.", category: "required"}
+        refGenomeFile: {description: "The reference genome fasta file.", category: "required"}
         threads: {description: "The number of threads the program will use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
@@ -1237,6 +1240,8 @@ task Sage {
         Int? panelMaxGermlineRelRawBaseQual
         String? mnvFilterEnabled
         File? coverageBed
+        Int? refSampleCount
+
 
         Int threads = 32
         String javaXmx = "16G"
@@ -1268,6 +1273,7 @@ task Sage {
         ~{"-mnv_filter_enabled " + mnvFilterEnabled} \
         ~{"-coverage_bed " + coverageBed} \
         ~{true="-panel_only" false="" panelOnly} \
+        ~{"-ref_sample_count " + refSampleCount} \
         -threads ~{threads} \
         -out ~{outputPath}
     }
@@ -1310,6 +1316,7 @@ task Sage {
         panelMaxGermlineVaf: {description: "Equivalent to sage's `panel_max_germline_vaf` option.", category: "advanced"}
         panelMaxGermlineRelRawBaseQual: {description: "Equivalent to sage's `panel_max_germline_vaf` option.", category: "advanced"}
         mnvFilterEnabled: {description: "Equivalent to sage's `mnv_filter_enabled` option.", category: "advanced"}
+        refSampleCount: {description: "Equivalent to sage's `ref_sample_count` option.", category: "advanced"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
