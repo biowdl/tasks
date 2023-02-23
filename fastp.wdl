@@ -36,6 +36,8 @@ task Fastp {
         Int lengthRequired = 15
         Int? split
         Boolean performAdapterTrimming = true
+        Boolean performQualityFiltering = true
+        Boolean performLengthFiltering = true
         
         Int threads = 4
         String memory = "50GiB"
@@ -73,7 +75,9 @@ task Fastp {
         --thread ~{select_first([effectiveSplit, threads])} \
         ~{"--split " + effectiveSplit} \
         ~{if defined(effectiveSplit) then "-d 0" else ""} \
-        ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"}
+        ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"} \
+        ~{if performQualityFiltering then "" else "--disable_quality_filtering"} \
+        ~{if performLengthFiltering then "" else "--disable_length_filtering"}
     >>>
 
     output {
@@ -102,6 +106,8 @@ task Fastp {
         lengthRequired: {description: "The minimum read length.", category: "advanced"}
         split: {description: "The number of chunks to split the files into. Number of threads will be set equal to the amount of splits.", category: "common"}
         performAdapterTrimming: {description: "Whether adapter trimming should be performed or not.", category: "advanced"}
+        performQualityFiltering: {description: "Whether reads should be filtered based on quality scores.", category: "advanced"}
+        performLengthFiltering: {description: "Whether reads shoulde be filtered based on lengths.", catgegory: "advanced"}
         threads: {description: "The number of threads to use. Only used if the split input is not set.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
