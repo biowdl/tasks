@@ -1070,6 +1070,8 @@ task Purple {
         File driverGenePanel
         File somaticHotspots
         File germlineHotspots
+        Float? highlyDiploidPercentage
+        Float? somaticMinPuritySpread
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
@@ -1103,6 +1105,8 @@ task Purple {
         -run_drivers \
         -somatic_hotspots ~{somaticHotspots} \
         -driver_gene_panel ~{driverGenePanel} \
+        ~{"-highly_diploid_percentage " + highlyDiploidPercentage} \
+        ~{"-somatic_min_purity_spread " + somaticMinPuritySpread} \
         -threads ~{threads}
     }
 
