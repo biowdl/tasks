@@ -1186,6 +1186,8 @@ task Purple {
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
         somaticHotspots: {description: "A vcf file with hotspot somatic variant sites.", category: "required"}
         germlineHotspots: {description: "A vcf file with hotspot germline variant sites.", category: "required"}
+        highlyDiploidPercentage: {description: "Equivalent to PURPLE's `-highly_diploid_percentage` option.", category: "advanced"}
+        somaticMinPuritySpread: {description: "Equivalent to PURPLE's `-somatic_min_purity_spread` option.", category: "advanced"}
         geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
