@@ -49,10 +49,6 @@ task GffCompare {
         String memory = "4G"
         Int timeMinutes = 1 + ceil(size(inputGtfFiles, "G") * 30)
         String dockerImage = "quay.io/biocontainers/gffcompare:0.10.6--h2d50403_0"
-
-        # This workaround only works in the input section.
-        # Issue addressed at https://github.com/openwdl/wdl/pull/263.
-        File? noneFile # This is a wdl workaround. Please do not assign!
     }
 
     # This allows for the creation of output directories.
@@ -96,9 +92,6 @@ task GffCompare {
         then "annotated"
         else "combined"
 
-    # Check if a redundant .gtf will be created.
-    Boolean createRedundant = C || A || X
-
     output {
         # noneFile is not stable. Please replace this as soon as wdl spec allows.
         File annotated = totalPrefix + "." + annotatedName + ".gtf"
@@ -106,12 +99,8 @@ task GffCompare {
         File stats = totalPrefix + ".stats"
         File tracking = totalPrefix + ".tracking"
         Array[File] allFiles = select_all([annotated, loci, stats, tracking, redundant, missedIntrons])
-        File? redundant = if createRedundant
-            then totalPrefix + ".redundant.gtf"
-            else noneFile
-        File? missedIntrons = if debugMode
-            then totalPrefix + ".missed_introns.gtf"
-            else noneFile
+        File? redundant = totalPrefix + ".redundant.gtf"
+        File? missedIntrons = totalPrefix + ".missed_introns.gtf"
     }
 
     runtime {
