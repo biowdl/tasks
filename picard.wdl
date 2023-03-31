@@ -510,6 +510,7 @@ task CollectWgsMetrics {
         Int? minimumMappingQuality
         Int? minimumBaseQuality
         Int? coverageCap
+        File? intervals
 
         String memory = "5GiB"
         String javaXmx = "4G"
@@ -528,7 +529,8 @@ task CollectWgsMetrics {
         OUTPUT=~{outputPath} \
         ~{"MINIMUM_MAPPING_QUALITY=" + minimumMappingQuality} \
         ~{"MINIMUM_BASE_QUALITY=" + minimumBaseQuality} \
-        ~{"COVERAGE_CAP=" + coverageCap}
+        ~{"COVERAGE_CAP=" + coverageCap} \
+        ~{"INTERVALS=" + intervals}
     }
 
     output {

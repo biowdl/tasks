@@ -22,9 +22,9 @@ version 1.0
 
 task Amber {
     input {
-        String referenceName
-        File referenceBam
-        File referenceBamIndex
+        String? referenceName
+        File? referenceBam
+        File? referenceBamIndex
         String tumorName
         File tumorBam
         File tumorBamIndex
@@ -35,6 +35,8 @@ task Amber {
         File referenceFastaDict
         String refGenomeVersion
 
+        Int? tumorOnlyMinDepth
+
         Int threads = 2
         String memory = "85GiB"
         String javaXmx = "80G"
@@ -44,15 +46,16 @@ task Amber {
 
     command {
         AMBER -Xmx~{javaXmx} \
-        -reference ~{referenceName} \
-        -reference_bam ~{referenceBam} \
+        ~{"-reference " + referenceName} \
+        ~{"-reference_bam " + referenceBam} \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
         -output_dir ~{outputDir} \
         -threads ~{threads} \
         -ref_genome ~{referenceFasta} \
         -ref_genome_version ~{refGenomeVersion} \
-        -loci ~{loci}
+        -loci ~{loci} \
+        ~{"-tumor-only-min-depth " + tumorOnlyMinDepth}
     }
 
     output {
@@ -103,15 +106,19 @@ task Amber {
 
 task Cobalt {
     input {
-        String referenceName
-        File referenceBam
-        File referenceBamIndex
+        String? referenceName
+        File? referenceBam
+        File? referenceBamIndex
         String tumorName
         File tumorBam
         File tumorBamIndex
         String outputDir = "./cobalt"
         File gcProfile
         File refGenomeFile
+
+        File? tumorOnlyDiploidBed
+        File? targetRegionsNormalisationTsv
+        Int? pcfGamma
 
         Int threads = 1
         String memory = "5GiB"
@@ -122,14 +129,17 @@ task Cobalt {
 
     command {
         COBALT -Xmx~{javaXmx} \
-        -reference ~{referenceName} \
-        -reference_bam ~{referenceBam} \
+        ~{"-reference " + referenceName} \
+        ~{"-reference_bam " + referenceBam} \
         -tumor ~{tumorName} \
         -tumor_bam ~{tumorBam} \
         -output_dir ~{outputDir} \
         -threads ~{threads} \
         -gc_profile ~{gcProfile} \
-        -ref_genome ~{refGenomeFile}
+        -ref_genome ~{refGenomeFile} \
+        ~{"-tumor_only_diploid_bed " + tumorOnlyDiploidBed} \
+        ~{"-target_region " + targetRegionsNormalisationTsv} \
+        ~{"-pcf_gamma" + pcfGamma}
     }
 
     output {
