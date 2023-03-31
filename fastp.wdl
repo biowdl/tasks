@@ -38,6 +38,7 @@ task Fastp {
         Boolean performAdapterTrimming = true
         Boolean performQualityFiltering = true
         Boolean performLengthFiltering = true
+        Boolean? performPolyGTrimming
         
         Int threads = 4
         String memory = "50GiB"
@@ -49,6 +50,11 @@ task Fastp {
 
     String outputDirR1 = sub(outputPathR1, basename(outputPathR1), "")
     String outputDirR2 = sub(outputPathR2, basename(outputPathR2), "")
+
+    String polyGTrimmingFlag = if defined(performPolyGTrimming)
+        then
+            if select_first([performPolyGTrimming]) then "--trim_poly_g" else "--disable_trim_poly_g"
+        else ""
 
     Int? effectiveSplit = if select_first([split, 1]) > 1 then split else noneInt
 
@@ -77,7 +83,8 @@ task Fastp {
         ~{if defined(effectiveSplit) then "-d 0" else ""} \
         ~{if performAdapterTrimming then "" else "--disable_adapter_trimming"} \
         ~{if performQualityFiltering then "" else "--disable_quality_filtering"} \
-        ~{if performLengthFiltering then "" else "--disable_length_filtering"}
+        ~{if performLengthFiltering then "" else "--disable_length_filtering"} \
+        ~{polyGTrimmingFlag}
     >>>
 
     output {
@@ -108,6 +115,7 @@ task Fastp {
         performAdapterTrimming: {description: "Whether adapter trimming should be performed or not.", category: "advanced"}
         performQualityFiltering: {description: "Whether reads should be filtered based on quality scores.", category: "advanced"}
         performLengthFiltering: {description: "Whether reads shoulde be filtered based on lengths.", catgegory: "advanced"}
+        performPolyGTrimming: {description: "Whether or not poly-G-tail trimming should be performed. If undefined fastp's default behaviour will be used, ie. enabled for NextSeq/NovaSeq data as detected from read headers.", category: "advanced"}
         threads: {description: "The number of threads to use. Only used if the split input is not set.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
