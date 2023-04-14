@@ -355,17 +355,24 @@ task Gripss {
         File knownFusionPairBedpe
         File breakendPon
         File breakpointPon
+        File repeatMaskFile
         String? referenceName
         String sampleName
         File vcf
         File vcfIndex
         String outputId
         String outputDir = "./"
+        Boolean hg38 = false
+        Int? hardMinTumorQual
+        Int? minQualBreakPoint
+        Int? minQualBreakEnd
+        Boolean filterSgls = false
+        Boolean germline = false
 
         String memory = "17GiB"
         String javaXmx = "16G"
         Int timeMinutes = 50
-        String dockerImage = "quay.io/biocontainers/hmftools-gripss:2.1--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-gripss:2.3.2--hdfd78af_0"
     }
 
     command {
@@ -373,14 +380,21 @@ task Gripss {
         mkdir -p ~{outputDir}
         gripss -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{if hg38 then "38" else "37"} \
         -known_hotspot_file ~{knownFusionPairBedpe} \
         -pon_sgl_file ~{breakendPon} \
         -pon_sv_file ~{breakpointPon} \
+        -repeat_mask_file ~{repeatMaskFile} \
         ~{"-reference " + referenceName} \
         -sample ~{sampleName} \
         -vcf ~{vcf} \
         -output_dir ~{outputDir} \
-        -output_id ~{outputId}
+        -output_id ~{outputId} \
+        ~{if filterSgls then "-filter_sgls" else ""} \
+        ~{"-hard_min_tumor_qual " + hardMinTumorQual} \
+        ~{"-min_qual_break_point " + minQualBreakPoint} \
+        ~{"-min_qual_break_end " + minQualBreakEnd} \
+        ~{if germline then "-germline" else ""}
     }
 
     String suffix = if defined(referenceName) then "somatic" else "germline"
@@ -890,11 +904,12 @@ task Pave {
         File? blacklistVcf
         File? blacklistBed
         File? blacklistVcfIndex
+        Boolean writePassOnly = false
 
         Int timeMinutes = 50
         String javaXmx = "8G"
         String memory = "9GiB"
-        String dockerImage = "quay.io/biowdl/pave:v1.2.2"
+        String dockerImage = "quay.io/biocontainers/hmftools-pave:1.4.1--hdfd78af_0"
 
         String? DONOTDEFINE
     }
@@ -923,7 +938,8 @@ task Pave {
         ~{if defined(gnomadFreqDir) then "-gnomad_load_chr_on_demand" else ""} \
         ~{"-clinvar_vcf " + clinvarVcf} \
         ~{"-blacklist_bed " + blacklistBed} \
-        ~{"-blacklist_vcf " + blacklistVcf}
+        ~{"-blacklist_vcf " + blacklistVcf} \
+        ~{if writePassOnly then "-write_pass_only" else ""}
     }
 
     output {
@@ -1068,14 +1084,14 @@ task Protect {
 
 task Purple {
     input {
-        String referenceName
+        String? referenceName
         String tumorName
         String outputDir = "./purple"
         Array[File]+ amberOutput
         Array[File]+ cobaltOutput
         File gcProfile
         File somaticVcf
-        File germlineVcf
+        File? germlineVcf
         File filteredSvVcf
         File filteredSvVcfIndex
         File fullSvVcf
@@ -1086,10 +1102,15 @@ task Purple {
         String refGenomeVersion
         File driverGenePanel
         File somaticHotspots
-        File germlineHotspots
-        File germlineDelFreqFile
+        File? germlineHotspots
+        File? germlineDelFreqFile
         Float? highlyDiploidPercentage
         Float? somaticMinPuritySpread
+        File? targetRegionsBed
+        File? targetRegionsRatios
+        File? targetRegionsMsiIndels
+        Int? minDiploidTumorRatioCount
+        Int? minDiploidTumorRatioCountCentromere
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
@@ -1102,15 +1123,15 @@ task Purple {
         String javaXmx = "8G"
         # clone of quay.io/biocontainers/hmftools-purple:3.2--hdfd78af_0 with 'ln -s /usr/local/lib/libwebp.so.7 /usr/local/lib/libwebp.so.6'
         #String dockerImage = "quay.io/biowdl/hmftools-purple:3.2" FIXME see if biocontainer works
-        String dockerImage = "quay.io/biocontainers/hmftools-purple:3.5--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-purple:3.7.1--hdfd78af_0"
     }
 
     command {
         PURPLE -Xmx~{javaXmx} \
-        -reference ~{referenceName} \
-        -germline_vcf ~{germlineVcf} \
-        -germline_hotspots ~{germlineHotspots} \
-        -germline_del_freq_file ~{germlineDelFreqFile} \
+        ~{"-reference " + referenceName} \
+        ~{"-germline_vcf " + germlineVcf} \
+        ~{"-germline_hotspots " + germlineHotspots} \
+        ~{"-germline_del_freq_file " + germlineDelFreqFile} \
         -tumor ~{tumorName} \
         -output_dir ~{outputDir} \
         -amber ~{sub(amberOutput[0], basename(amberOutput[0]), "")} \
@@ -1128,6 +1149,11 @@ task Purple {
         -driver_gene_panel ~{driverGenePanel} \
         ~{"-highly_diploid_percentage " + highlyDiploidPercentage} \
         ~{"-somatic_min_purity_spread " + somaticMinPuritySpread} \
+        ~{"-target_regions_bed " + targetRegionsBed} \
+        ~{"-target_regions_ratios " + targetRegionsRatios} \
+        ~{"-target_regions_msi_indels " + targetRegionsMsiIndels} \
+        ~{"-min_diploid_tumor_ratio_count " + minDiploidTumorRatioCount} \
+        ~{"-min_diploid_tumor_ratio_count_centromere" + minDiploidTumorRatioCountCentromere} \ 
         -threads ~{threads}
     }
 
@@ -1227,15 +1253,16 @@ task Purple {
 
 task Sage {
     input {
-        String tumorName
-        File tumorBam
-        File tumorBamIndex
+        Array[String]+ tumorName
+        Array[File]+ tumorBam
+        Array[File]+ tumorBamIndex
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
         File hotspots
         File panelBed
         File highConfidenceBed
+        File coverageBed
         Boolean hg38 = false
         Boolean panelOnly = false
         String outputPath = "./sage.vcf.gz"
@@ -1245,63 +1272,65 @@ task Sage {
         File transExonDataCsv
         File transSpliceDataCsv
 
-        String? referenceName
-        File? referenceBam
-        File? referenceBamIndex
+        Array[String] referenceName = []
+        Array[File] referenceBam = []
+        Array[File] referenceBamIndex = []
         Int? hotspotMinTumorQual
         Int? panelMinTumorQual
         Int? hotspotMaxGermlineVaf
         Int? hotspotMaxGermlineRelRawBaseQual
         Int? panelMaxGermlineVaf
         Int? panelMaxGermlineRelRawBaseQual
-        String? mnvFilterEnabled
-        File? coverageBed
         Int? refSampleCount
-
+        Float? hotspotMinTumorVaf
+        Int? highConfidenceMinTumorQual
+        Int? lowConfidenceMinTumorQual
 
         Int threads = 32
         String javaXmx = "16G"
         String memory = "20GiB"
         Int timeMinutes = 720
-        String dockerImage = "quay.io/biocontainers/hmftools-sage:3.0.3--hdfd78af_0"
+        String dockerImage = "quay.io/biocontainers/hmftools-sage:3.2.3--hdfd78af_0"
     }
 
     command {
         SAGE -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -tumor ~{tumorName} \
-        -tumor_bam ~{tumorBam} \
-        ~{"-reference " + referenceName} \
-        ~{"-reference_bam " + referenceBam} \
-        -ref_genome ~{referenceFasta} \
+        -tumor ~{sep="," tumorName} \
+        -tumor_bam ~{sep="," tumorBam} \
+        ~{if length(referenceName) > 0 then "-reference" else ""} ~{sep="," referenceName} \
+        ~{if length(referenceBam) > 0 then "-reference_bam" else ""}  ~{sep="," referenceBam} \
         -hotspots ~{hotspots} \
-        -panel_bed ~{panelBed} \
+        ~{"-hotspot_min_tumor_qual " + hotspotMinTumorQual} \
         -high_confidence_bed ~{highConfidenceBed} \
+        -panel_bed ~{panelBed} \
+        -coverage_bed ~{coverageBed} \
+        -ref_genome ~{referenceFasta} \
         -ref_genome_version ~{true="38" false="37" hg38} \
         -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -write_bqr_data \
         -write_bqr_plot \
-        ~{"-hotspot_min_tumor_qual " + hotspotMinTumorQual} \
+        -out ~{outputPath} \
+        -threads ~{threads} \
         ~{"-panel_min_tumor_qual " + panelMinTumorQual} \
         ~{"-hotspot_max_germline_vaf " + hotspotMaxGermlineVaf} \
         ~{"-hotspot_max_germline_rel_raw_base_qual " + hotspotMaxGermlineRelRawBaseQual} \
         ~{"-panel_max_germline_vaf " + panelMaxGermlineVaf} \
         ~{"-panel_max_germline_rel_raw_base_qual " + panelMaxGermlineRelRawBaseQual} \
-        ~{"-mnv_filter_enabled " + mnvFilterEnabled} \
-        ~{"-coverage_bed " + coverageBed} \
         ~{true="-panel_only" false="" panelOnly} \
         ~{"-ref_sample_count " + refSampleCount} \
-        -threads ~{threads} \
-        -out ~{outputPath}
+        ~{"-hotspot_min_tumor_vaf " + hotspotMinTumorVaf} \
+        ~{"-high_confidence_min_tumor_qual " + highConfidenceMinTumorQual} \
+        ~{"-low_confidence_min_tumor_qual " + lowConfidenceMinTumorQual}
     }
 
-    output {
+    output { #FIXME does it produce multiple plots/tsvs if multiple samples are given?
         File outputVcf = outputPath
         File outputVcfIndex = outputPath + ".tbi"
-        File? referenceSageBqrPng = "~{referenceName}.sage.bqr.png"
-        File? referenceSageBqrTsv = "~{referenceName}.sage.bqr.tsv"
-        File tumorSageBqrPng = "~{tumorName}.sage.bqr.png"
-        File tumorSageBqrTsv = "~{tumorName}.sage.bqr.tsv"
-        File sageGeneCoverageTsv = "~{tumorName}.sage.gene.coverage.tsv"
+        File? referenceSageBqrPng = "~{referenceName[0]}.sage.bqr.png"
+        File? referenceSageBqrTsv = "~{referenceName[0]}.sage.bqr.tsv"
+        File tumorSageBqrPng = "~{tumorName[0]}.sage.bqr.png"
+        File tumorSageBqrTsv = "~{tumorName[0]}.sage.bqr.tsv"
+        File sageGeneCoverageTsv = "~{tumorName[0]}.sage.gene.coverage.tsv"
     }
 
     runtime {
@@ -1331,9 +1360,151 @@ task Sage {
         hotspotMaxGermlineRelRawBaseQual: {description: "Equivalent to sage's `hotspot_max_germline_rel_raw_base_qual` option.", category: "advanced"}
         panelMaxGermlineVaf: {description: "Equivalent to sage's `panel_max_germline_vaf` option.", category: "advanced"}
         panelMaxGermlineRelRawBaseQual: {description: "Equivalent to sage's `panel_max_germline_vaf` option.", category: "advanced"}
-        mnvFilterEnabled: {description: "Equivalent to sage's `mnv_filter_enabled` option.", category: "advanced"}
         refSampleCount: {description: "Equivalent to sage's `ref_sample_count` option.", category: "advanced"}
+        hg38: {description: "Whether or not the refernce genome is HG18, if false HG19 is assumed.", category: "common"}
 
+        threads: {description: "The numve of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task SvPrep {
+    # for ref also add tumorJunctionFile
+    input {
+        String sampleName
+        File bamFile
+        File bamIndex
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        File blacklistBed
+        File knownFusionBed
+        String outputDir = "."
+
+        File? existingJunctionFile
+        Boolean hg38 = false
+
+        Int threads = 10
+        String javaXmx = "48G"
+        String memory = "50GiB"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/hmftools-sv-prep:1.1--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        SvPrep -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -sample ~{sampleName} \
+        -bam_file ~{bamFile} \
+        -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{true="38" false="37" hg38} \
+        -blacklist_bed ~{blacklistBed} \
+        -known_fusion_bed ~{knownFusionBed} \
+        ~{"-existing_junction_file " + existingJunctionFile} \
+        -write_types "JUNCTIONS;BAM;FRAGMENT_LENGTH_DIST" \
+        -output_dir ~{outputDir} \
+        -threads ~{threads}
+        samtools sort -O bam ~{outputDir}/~{sampleName}.sv_prep.bam -o ~{outputDir}/~{sampleName}.sv_prep.sorted.bam
+        samtools index ~{outputDir}/~{sampleName}.sv_prep.sorted.bam
+    }
+
+    output {
+        File preppedBam = "~{outputDir}/~{sampleName}.sv_prep.sorted.bam"
+        File preppedBamIndex = "~{outputDir}/~{sampleName}.sv_prep.sorted.bam.bai"
+        File junctions = "~{outputDir}/~{sampleName}.sv_prep.junctions.csv"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        cpu: threads
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        sampleName: {description: "The name of the sample.", category: "required"}
+        bamFile: {description: "The BAM file to prepare for SV calling with GRIDSS.", category: "required"}
+        bamIndex: {description: "The index for the BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        blacklistBed: {description: "Blacklist bed file.", category: "required"}
+        knownFusionBed: {description: "Bed file with known fusion sites", category: "required"}
+        outputDir: {description: "Path to the output directory.", category: "common"}
+        existingJunctionFile: {description: "Junctions file generated by an earlier run of this tool, eg. from a paired sample.", category: "common"}
+        hg38: {description: "Whether or not the refernce genome is HG18, if false HG19 is assumed.", category: "common"}
+
+        threads: {description: "The numve of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task SvPrepDepthAnnotator {
+    input {
+        File inputVcf
+        File inputVcfIndex
+        Array[File]+ bamFiles
+        Array[File]+ bamIndexes
+        Array[String]+ samples
+        File referenceFasta
+        File referenceFastaDict
+        File referenceFastaFai
+        Boolean hg38 = false
+        String outputVcf = "gridss.depth_annotated.vcf.gz"
+
+        Int threads = 10
+        String javaXmx = "48G"
+        String memory = "50GiB"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/hmftools-sv-prep:1.1--hdfd78af_0"
+    }
+
+    command {
+        java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -cp /usr/local/share/hmftools-sv-prep-1.1-0/sv-prep.jar \
+        com.hartwig.hmftools.svprep.depth.DepthAnnotator \
+        -input_vcf ~{inputVcf} \
+        -output_vcf ~{outputVcf} \
+        -samples ~{sep="," samples} \
+        -bam_files ~{sep="," bamFiles} \
+        -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{if hg38 then "38" else "37"} \
+        -threads ~{threads}
+    }
+
+    output {
+        File vcf = outputVcf
+        File vcfIndex = outputVcf + ".tbi"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        cpu: threads
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        samples: {description: "The names of the samples.", category: "required"}
+        bamFiles: {description: "The BAM files.", category: "required"}
+        bamIndexes: {description: "The indexes for the BAM files.", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        hg38: {description: "Whether or not the refernce genome is HG18, if false HG19 is assumed.", category: "common"}
+        outputVcf: {description: "The path for the output VCF.", category: "common"}
+
+        threads: {description: "The numve of threads to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
                   category: "advanced"}

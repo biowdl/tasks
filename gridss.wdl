@@ -34,7 +34,7 @@ task AnnotateInsertedSequence {
         Int threads = 8
         String javaXmx = "8G"
         String memory = "9GiB"
-        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1"
         Int timeMinutes = 120
     }
 
@@ -269,7 +269,7 @@ task GRIDSS {
         Int nonJvmMemoryGb = 10
         Int threads = 12
         Int timeMinutes = ceil(7200 / threads) + 1800
-        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1"
     }
 
     command {
@@ -382,6 +382,83 @@ task GridssAnnotateVcfRepeatmasker {
     }
 }
 
+task GridssSvPrep {
+    input {
+        Array[String]+ tumorLabel
+        Array[File]+ tumorBam
+        Array[File]+ tumorBai
+        Array[File]+ tumorFilteredBam
+        Array[File]+ tumorFilteredBai
+        BwaIndex reference
+        File blacklistBed
+        File gridssProperties
+
+        String? normalLabel
+        File? normalBam
+        File? normalBai
+        File? normalFilteredBam
+        File? normalFilteredBai
+        String outputPath = "gridss.vcf.gz"
+
+        Int jvmHeapSizeGb = 48
+        Int nonJvmMemoryGb = 10
+        Int threads = 10
+        Int timeMinutes = ceil(7200 / threads) + 1800
+        String dockerImage = "quay.io/biowdl/gridss:2.13.2_1"
+    }
+
+    command {
+        gridss_sv-prep \
+        --steps all \
+        --output ~{outputPath} \
+        --wirkingdir . \
+        --reference ~{reference.fastaFile} \
+        --jar /usr/local/share/gridss-2.13.2-1/gridss.jar \
+        --blacklist ~{blacklistBed} \
+        --configuration ~{gridssProperties} \
+        --labels ~{normalLabel}~{true="," false="" defined(normalLabel)}~{sep="," tumorLabel} \
+        --bams ~{normalBam}~{true="," false="" defined(normalBam)}~{sep="," tumorBam} \
+        --filtered_bams ~{normalFilteredBam}~{true="," false="" defined(normalFilteredBam)}~{sep="," tumorFilteredBam} \
+        --jvmheap ~{jvmHeapSizeGb}G \
+        --threads ~{threads}
+    }
+
+    output {
+        File vcf = outputPath
+        File vcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        cpu: threads
+        memory: "~{jvmHeapSizeGb + nonJvmMemoryGb}GiB"
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        tumorBam: {description: "The input BAM file. This should be the tumor/case sample in case of a paired analysis.", category: "required"}
+        tumorBai: {description: "The index for tumorBam.", category: "required"}
+        tumorFilteredBam: {description: "The input BAM file preprocessed by hmftools' sv-prep.", category: "required"}
+        tumorFilteredBai: {description: "The index for tumorFilteredBam.", category: "required"}
+        tumorLabel: {description: "The name of the (tumor) sample.", category: "required"}
+        reference: {description: "A BWA index, this should also include the fasta index file (.fai).", category: "required"}
+        outputPath: {description: "The path for the output VCf file.", category: "common"}
+        normalBam: {description: "The BAM file for the normal/control sample.", category: "advanced"}
+        normalBai: {description: "The index for normalBam.", category: "advanced"}
+        normalFilteredBam: {description: "The BAM file for the normal control sample preprocessed by hmftools' sv-prep.", category: "required"}
+        normalFilteredBai: {description: "The index for normalFilteredBam.", category: "required"}
+        normalLabel: {description: "The name of the normal sample.", category: "advanced"}
+        blacklistBed: {description: "A bed file with blaclisted regins.", category: "advanced"}
+        gridssProperties: {description: "A properties file for gridss.", category: "advanced"}
+
+        threads: {description: "The number of the threads to use.", category: "advanced"}
+        jvmHeapSizeGb: {description: "The size of JVM heap for assembly and variant calling", category: "advanced"}
+        nonJvmMemoryGb: {description: "The amount of memory in Gb to be requested besides JVM memory.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    }
+}
+
 task SomaticFilter {
     input {
         File vcfFile
@@ -451,7 +528,7 @@ task Virusbreakend {
         Int extraMemoryGB = 10
         Int gridssMemoryGB = 60
         Int threads = 12
-        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1"
         Int timeMinutes = 320
     }
 
