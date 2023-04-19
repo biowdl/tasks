@@ -566,7 +566,9 @@ task View {
         File inFile
         String outputFileName = "view.bam"
         Boolean uncompressedBamOutput = false
+        Boolean useIndex = false
 
+        File? inFileIndex
         File? referenceFasta
         Int? includeFilter
         Int? excludeFilter
@@ -589,7 +591,8 @@ task View {
         samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
-        ~{true="-u " false="" uncompressedBamOutput} \
+        ~{if uncompressedBamOutput then "-u" else ""} \
+        ~{if useIndex then "-M" else ""} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
@@ -617,6 +620,8 @@ task View {
         inFile: {description: "A BAM, SAM or CRAM file.", category: "required"}
         outputFileName: {description: "The location the output BAM file should be written.", category: "common"}
         uncompressedBamOutput: {description: "Equivalent to samtools view's `-u` flag.", category: "advanced"}
+        useIndex: {description: "Equivalent to samtools view's `-M` flag.", category: "advanced"}
+        inFileIndex: {description: "An index for the inFile.", category: "common"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
         includeFilter: {description: "Equivalent to samtools view's `-f` option.", category: "advanced"}
         excludeFilter: {description: "Equivalent to samtools view's `-F` option.", category: "advanced"}
