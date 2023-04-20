@@ -507,18 +507,18 @@ task HealthChecker {
 
 task Lilac {
     input {
-        String tumorName
+        String sampleName
         File referenceBam
         File referenceBamIndex
-        File tumorBam
-        File tumorBamIndex
+        File? tumorBam
+        File? tumorBamIndex
         String refGenomeVersion
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
-        File geneCopyNumberFile
-        File somaticVariantsFile
-        File somaticVariantsFileIndex
+        File? geneCopyNumberFile
+        File? somaticVariantsFile
+        File? somaticVariantsFileIndex
         String outputDir = "./lilac"
 
         #The following need to be in the same directory
@@ -530,21 +530,21 @@ task Lilac {
         String memory = "16GiB"
         Int timeMinutes = 1440 #FIXME
         Int threads = 1
-        String dockerImage = "quay.io/biocontainers/hmftools-lilac:1.1--hdfd78af_0" #TODO
+        String dockerImage = "quay.io/biocontainers/hmftools-lilac:1.4.2--hdfd78af_0"
     }
 
     command {
         LILAC -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -sample ~{tumorName} \
+        -sample ~{sampleName} \
         -reference_bam ~{referenceBam} \
         -ref_genome ~{referenceFasta} \
         -ref_genome_version ~{refGenomeVersion} \
         -resource_dir ~{sub(hlaRefAminoacidSequencesCsv, basename(hlaRefAminoacidSequencesCsv), "")} \
         -outputDir ~{outputDir} \
         -threads ~{threads} \
-        -tumor_bam ~{tumorBam} \
-        -gene_copy_number_file ~{geneCopyNumberFile} \
-        -somatic_variants_file ~{somaticVariantsFile}
+        ~{"-tumor_bam " + tumorBam} \
+        ~{"-gene_copy_number " + geneCopyNumberFile} \
+        ~{"-somatic_vcf " + somaticVariantsFile}
     }
 
     output {
@@ -581,8 +581,6 @@ task Linx {
         Boolean checkFusions = true
         Boolean checkDrivers = true
         Boolean writeVisData = true
-        File? germlinePonSvFile
-        File? germlinePonSglFile
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
@@ -592,7 +590,7 @@ task Linx {
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biowdl/linx:1.19.1" #patched version of biocontainer
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.22.1--hdfd78af_0"
 
         String? DONOTDEFINE
     }
@@ -617,9 +615,7 @@ task Linx {
         -driver_gene_panel ~{driverGenePanel} \
         ~{if writeVisData then "-write_vis_data" else ""} \
         ~{if writeAllVisFusions then "-write_all_vis_fusions" else ""} \
-        ~{if germline then "-germline" else ""} \
-        ~{"-germline_pon_sv_file " + germlinePonSvFile} \
-        ~{"-germline_pon_sgl_file " + germlinePonSglFile}
+        ~{if germline then "-germline" else ""}
     }
 
     output {
@@ -686,14 +682,14 @@ task LinxVisualisations {
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 1440
-        String dockerImage = "quay.io/biowdl/linx:1.19.1" #patched version of biocontainer
+        String dockerImage = "quay.io/biocontainers/hmftools-linx:1.22.1--hdfd78af_0"
     }
 
     command {
         set -e
         mkdir -p ~{outputDir}
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
-        -cp /usr/local/share/hmftools-linx-1.19-0/linx.jar \
+        -cp /usr/local/share/hmftools-linx-1.22.1-0/linx.jar \
         com.hartwig.hmftools.linx.visualiser.SvVisualiser \
         -sample ~{sample} \
         -ref_genome_version ~{refGenomeVersion} \
