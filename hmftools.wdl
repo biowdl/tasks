@@ -189,7 +189,7 @@ task CupGenerateReport {
 
         String memory = "5GiB"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biowdl/cuppa:1.6"
+        String dockerImage = "quay.io/biowdl/cuppa:1.7.1"
     }
 
     # This script writes to the directory that the input is located in.
@@ -245,34 +245,29 @@ task Cuppa {
     input {
         Array[File]+ linxOutput
         Array[File]+ purpleOutput
+        File virusInterpreterOutput
         String sampleName
         Array[String]+ categories = ["DNA"]
         Array[File]+ referenceData
-        File purpleSvVcf
-        File purpleSvVcfIndex
-        File purpleSomaticVcf
-        File purpleSomaticVcfIndex
         String outputDir = "./cuppa"
 
         String javaXmx = "4G"
         String memory = "5GiB"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biowdl/cuppa:1.6"
+        String dockerImage = "quay.io/biowdl/cuppa:1.7.1"
     }
 
     command {
         set -e
         mkdir -p sampleData ~{outputDir}
         ln -s -t sampleData ~{sep=" " linxOutput} ~{sep=" " purpleOutput}
+        ln -s -t sampleData ~{virusInterpreterOutput}
         cuppa -Xmx~{javaXmx} \
         -output_dir ~{outputDir} \
-        -output_id ~{sampleName} \
         -categories '~{sep="," categories}' \
         -ref_data_dir ~{sub(referenceData[0], basename(referenceData[0]), "")} \
         -sample_data_dir sampleData \
-        -sample_data ~{sampleName} \
-        -sample_sv_file ~{purpleSvVcf} \
-        -sample_somatic_vcf ~{purpleSomaticVcf}
+        -sample_data ~{sampleName}
     }
 
     output {
@@ -291,10 +286,6 @@ task Cuppa {
         sampleName: {description: "The name of the sample.", category: "required"}
         categories: {description: "The classifiers to use.", category: "advanced"}
         referenceData : {description: "The reference data.", category: "required"}
-        purpleSvVcf: {description: "The VCF file produced by purple which contains structural variants.", category: "required"}
-        purpleSvVcfIndex: {description: "The index of the structural variants VCF file produced by purple.", category: "required"}
-        purpleSomaticVcf: {description: "The VCF file produced by purple which contains somatic variants.", category: "required"}
-        purpleSomaticVcfIndex: {description: "The index of the somatic VCF file produced by purple.", category: "required"}
         outputDir: {description: "The directory the ouput will be placed in.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
@@ -313,7 +304,7 @@ task CuppaChart {
 
         String memory = "4GiB"
         Int timeMinutes = 5
-        String dockerImage = "quay.io/biowdl/cuppa:1.6"
+        String dockerImage = "quay.io/biowdl/cuppa:1.7.1"
     }
 
     command {
@@ -548,7 +539,8 @@ task Lilac {
     }
 
     output {
-        #TODO
+        File lilacCsv = "~{outputDir}/~{sampleName}.lilac.csv"
+        File lilacQcCsv = "~{outputDir}/~{sampleName}.lilac.qc.csv"
     }
 
     runtime {
@@ -627,16 +619,18 @@ task Linx {
         File linxLinks = "~{outputDir}/~{sampleName}.linx.links.tsv"
         File linxSvs = "~{outputDir}/~{sampleName}.linx.svs.tsv"
         File linxVisCopyNumber = "~{outputDir}/~{sampleName}.linx.vis_copy_number.tsv"
-        File linxVisFusion = "~{outputDir}/~{sampleName}.linx.vis_fusion.tsv"
-        File linxVisGeneExon = "~{outputDir}/~{sampleName}.linx.vis_gene_exon.tsv"
-        File linxVisProteinDomain = "~{outputDir}/~{sampleName}.linx.vis_protein_domain.tsv"
-        File linxVisSegments = "~{outputDir}/~{sampleName}.linx.vis_segments.tsv"
-        File linxVisSvData = "~{outputDir}/~{sampleName}.linx.vis_sv_data.tsv"
+        File? linxVisFusion = "~{outputDir}/~{sampleName}.linx.vis_fusion.tsv"
+        File? linxVisGeneExon = "~{outputDir}/~{sampleName}.linx.vis_gene_exon.tsv"
+        File? linxVisProteinDomain = "~{outputDir}/~{sampleName}.linx.vis_protein_domain.tsv"
+        File? linxVisSegments = "~{outputDir}/~{sampleName}.linx.vis_segments.tsv"
+        File? linxVisSvData = "~{outputDir}/~{sampleName}.linx.vis_sv_data.tsv"
+        File? linxGermlineDriverCatalogTsv = "~{outputDir}/~{sampleName}.linx.germline.driver.catalog.tsv"
+        File? linxGermlineDisruptionTsv = "~{outputDir}/~{sampleName}.linx.germline.disruption.tsv"
         File linxVersion = "~{outputDir}/linx.version"
-        Array[File] outputs = [driverCatalog, linxBreakend, linxClusters, linxDrivers, linxFusion,
+        Array[File] outputs = select_all([driverCatalog, linxBreakend, linxClusters, linxDrivers, linxFusion,
                                linxLinks, linxSvs, linxVisCopyNumber, linxVisFusion,
                                linxVisGeneExon, linxVisProteinDomain, linxVisSegments, linxVisSvData,
-                               linxVersion]
+                               linxGermlineDriverCatalogTsv, linxGermlineDisruptionTsv, linxVersion])
     }
 
     runtime {
@@ -743,19 +737,25 @@ task Orange {
         File sageSomaticTumorSampleBqrPlot
         File purpleGeneCopyNumberTsv
         File purpleGermlineDriverCatalogTsv
+        File purpleGermlineDeletionTsv
         File purpleGermlineVariantVcf
         File purpleGermlineVariantVcfIndex
         Array[File]+ purplePlots
         File purplePurityTsv
         File purpleQcFile
+        File purpleSomaticCopyNumberFile
         File purpleSomaticDriverCatalogTsv
         File purpleSomaticVariantVcf
         File purpleSomaticVariantVcfIndex
+        File lilacQcCsv
+        File lilacResultCsv
         File linxFusionTsv
         File linxBreakendTsv
         File linxDriverCatalogTsv
         File linxDriverTsv
+        File linxGermlineDisruptionTsv
         Array[File]+ linxPlots
+        File linxStructuralVariantTsv
         File cuppaResultCsv
         File cuppaSummaryPlot
         File? cuppaFeaturePlot
@@ -766,11 +766,14 @@ task Orange {
         #File pipelineVersionFile
         File cohortMappingTsv
         File cohortPercentilesTsv
+        Boolean hg38 = false
+        File driverGenePanel
+        File knownFusionFile
 
         String memory = "17GiB"
         String javaXmx = "16G"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biowdl/orange:v1.6"
+        String dockerImage = "quay.io/biocontainers/hmftools-orange:1.10.2--hdfd78af_0"
     }
 
     command {
@@ -778,6 +781,7 @@ task Orange {
         mkdir -p ~{outputDir}
         orange -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -output_dir ~{outputDir} \
+        -ref_genome_version ~{if hg38 then "38" else "37"} \
         -doid_json ~{doidJson} \
         -primary_tumor_doids '~{sep=";" sampleDoids}' \
         -max_evidence_level C \
@@ -792,17 +796,23 @@ task Orange {
         -sage_somatic_tumor_sample_bqr_plot ~{sageSomaticTumorSampleBqrPlot} \
         -purple_gene_copy_number_tsv ~{purpleGeneCopyNumberTsv} \
         -purple_germline_driver_catalog_tsv ~{purpleGermlineDriverCatalogTsv} \
+        -purple_germline_deletion_tsv ~{purpleGermlineDeletionTsv} \
         -purple_germline_variant_vcf ~{purpleGermlineVariantVcf} \
         -purple_plot_directory ~{sub(purplePlots[0], basename(purplePlots[0]), "")} \
         -purple_purity_tsv ~{purplePurityTsv} \
         -purple_qc_file ~{purpleQcFile} \
+        -purple_somatic_copy_number_tsv ~{purpleSomaticCopyNumberFile} \
         -purple_somatic_driver_catalog_tsv ~{purpleSomaticDriverCatalogTsv} \
         -purple_somatic_variant_vcf ~{purpleSomaticVariantVcf} \
+        -lilac_qc_csv ~{lilacQcCsv} \
+        -lilac_result_csv ~{lilacResultCsv} \
         -linx_fusion_tsv ~{linxFusionTsv} \
         -linx_breakend_tsv ~{linxBreakendTsv} \
         -linx_driver_catalog_tsv ~{linxDriverCatalogTsv} \
         -linx_driver_tsv ~{linxDriverTsv} \
+        -linx_germline_disruption_tsv ~{linxGermlineDisruptionTsv} \
         -linx_plot_directory ~{sub(linxPlots[0], basename(linxPlots[0]), "")} \
+        -linx_structural_variant_tsv ~{linxStructuralVariantTsv} \
         -cuppa_result_csv ~{cuppaResultCsv} \
         -cuppa_summary_plot ~{cuppaSummaryPlot} \
         ~{"-cuppa_feature_plot " + cuppaFeaturePlot} \
@@ -811,7 +821,9 @@ task Orange {
         -protect_evidence_tsv ~{protectEvidenceTsv} \
         -annotated_virus_tsv ~{annotatedVirusTsv} \
         -cohort_mapping_tsv ~{cohortMappingTsv} \
-        -cohort_percentiles_tsv ~{cohortPercentilesTsv}
+        -cohort_percentiles_tsv ~{cohortPercentilesTsv} \
+        -driver_gene_panel_tsv ~{driverGenePanel} \
+        -known_fusion_file ~{knownFusionFile}
     }
     #TODO may need to be added: -pipeline_version_file ~{pipelineVersionFile}
 
@@ -1006,21 +1018,25 @@ task Protect {
         File linxDriversCatalog
         File chordPrediction
         File annotatedVirus
+        File lilacResultCsv
+        File lilacQcCsv
+        File driverGeneTsv
 
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 60
-        String dockerImage = "quay.io/biowdl/protect:v2.0"
+        String dockerImage = "quay.io/biocontainers/hmftools-protect:2.3--hdfd78af_0"
     }
 
     command {
-        protect -Xmx~{javaXmx} \
+        protect -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -ref_genome_version ~{refGenomeVersion} \
         -tumor_sample_id ~{tumorName} \
         -reference_sample_id ~{referenceName} \
         -primary_tumor_doids '~{sep=";" sampleDoids}' \
         -output_dir ~{outputDir} \
         -serve_actionability_dir ~{sub(serveActionability[0], basename(serveActionability[0]), "")} \
+        -driver_gene_tsv ~{driverGeneTsv} \
         -doid_json ~{doidJson} \
         -purple_purity_tsv ~{purplePurity} \
         -purple_qc_file ~{purpleQc} \
@@ -1033,7 +1049,9 @@ task Protect {
         -linx_breakend_tsv ~{linxBreakend} \
         -linx_driver_catalog_tsv ~{linxDriversCatalog} \
         -chord_prediction_txt ~{chordPrediction} \
-        -annotated_virus_tsv ~{annotatedVirus}
+        -annotated_virus_tsv ~{annotatedVirus} \
+        -lilac_result_csv ~{lilacResultCsv} \
+        -lilac_qc_csv ~{lilacQcCsv}
     }
 
     output {
@@ -1123,7 +1141,7 @@ task Purple {
     }
 
     command {
-        PURPLE -Xmx~{javaXmx} \
+        PURPLE -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         ~{"-reference " + referenceName} \
         ~{"-germline_vcf " + germlineVcf} \
         ~{"-germline_hotspots " + germlineHotspots} \
@@ -1247,6 +1265,77 @@ task Purple {
     }
 }
 
+task Rose {
+    input {
+        File actionabilityDatabaseTsv
+        Boolean hg38 = false
+        File driverGeneTsv
+        File purplePurityTsv
+        File purpleQc
+        File purpleGeneCopyNumberTsv
+        File purpleSomaticDriverCatalogTsv
+        File purpleGermlineDriverCatalogTsv
+        File purpleSomaticVcf
+        File purpleSomaticVcfIndex
+        File purpleGermlineVcf
+        File purpleGermlineVcfIndex
+        File linxFusionTsv
+        File linxBreakendTsv
+        File linxDriverCatalogTsv
+        File annotatedVirusTsv
+        File chordPredictionTxt
+        File cuppaResultCsv
+        String outputDir = "./rose"
+        String tumorName
+        String referenceName
+
+        String memory = "9GiB"
+        String javaXmx = "8G"
+        Int timeMinutes = 60
+        String dockerImage = "quay.io/biocontainers/hmftools-rose:1.3--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        rose -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -actionability_database_tsv ~{actionabilityDatabaseTsv} \
+        -ref_genome_version ~{if hg38 then "38" else "37"} \
+        -driver_gene_tsv ~{driverGeneTsv} \
+        -purple_purity_tsv ~{purplePurityTsv} \
+        -purple_qc_file ~{purpleQc} \
+        -purple_gene_copy_number_tsv ~{purpleGeneCopyNumberTsv} \
+        -purple_somatic_driver_catalog_tsv ~{purpleSomaticDriverCatalogTsv} \
+        -purple_germline_driver_catalog_tsv ~{purpleGermlineDriverCatalogTsv} \
+        -purple_somatic_variant_vcf ~{purpleSomaticVcf} \
+        -purple_germline_variant_vcf ~{purpleGermlineVcf} \
+        -linx_fusion_tsv ~{linxFusionTsv} \
+        -linx_breakend_tsv ~{linxBreakendTsv} \
+        -linx_driver_catalog_tsv ~{linxDriverCatalogTsv} \
+        -annotated_virus_tsv ~{annotatedVirusTsv} \
+        -chord_prediction_txt ~{chordPredictionTxt} \
+        -cuppa_result_csv ~{cuppaResultCsv} \
+        -output_dir ~{outputDir} \
+        -tumor_sample_id ~{tumorName} \
+        -ref_sample_id ~{referenceName} \
+        -patient_id not_used_because_primary_tumor_tsv_has_only_headers
+    }
+
+    output {
+        #TODO
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+
+    }
+}
+
 task Sage {
     input {
         Array[String]+ tumorName
@@ -1366,6 +1455,45 @@ task Sage {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+    }
+}
+
+task Sigs {
+    input {
+        String sampleName
+        File signaturesFile
+        File somaticVcfFile
+        File somaticVcfIndex
+        String outputDir = "./sigs"
+
+        String javaXmx = "4G"
+        String memory = "5GiB"
+        Int timeMinutes = 60
+        String dockerImage = "quay.io/biocontainers/hmftools-sigs:1.1--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        sigs -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -sample ~{sampleName} \
+        -signatures_file ~{signaturesFile} \
+        -somatic_vcf_file ~{somaticVcfFile} \
+        -output_dir ~{outputDir}
+    }
+
+    output {
+        File sigAllocationTsv = "~{outputDir}/~{sampleName}.sig.allocation.tsv"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+
     }
 }
 

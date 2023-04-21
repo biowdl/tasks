@@ -30,7 +30,7 @@ task Peach {
         File panelJson
 
         String memory = "2GiB"
-        String dockerImage = "quay.io/biowdl/peach:v1.5"
+        String dockerImage = "quay.io/biowdl/peach:v1.7"
         Int timeMinutes = 5
     }
 
@@ -41,7 +41,7 @@ task Peach {
         --vcf ~{germlineVcf} \
         --sample_t_id ~{tumorName} \
         --sample_r_id ~{normalName} \
-        --tool_version 1.5 \
+        --tool_version 1.7 \
         --outputdir ~{outputDir} \
         --panel ~{panelJson}
     }
