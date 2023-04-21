@@ -562,7 +562,6 @@ task Virusbreakend {
         bam: {description: "A BAM file.", category: "required"}
         bamIndex: {description: "The index for the BAM file.", category: "required"}
         referenceFasta: {description: "The fasta of the reference genome.", category: "required"}
-        referenceImg: {description: "The BWA index image (generated with GATK BwaMemIndexImageCreator) of the reference.", category: "required"}
         virusbreakendDB: {description: "A .tar.gz containing the virusbreakend database.", category: "required"}
         outputPath: {description: "The path the output should be written to.", category: "common"}
         extraMemoryGB: {description: "Extra memory needed for the job in GB.", category: "advanced"}
