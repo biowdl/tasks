@@ -29,7 +29,7 @@ task AnnotateInsertedSequence {
         File viralReference
         File viralReferenceFai
         File viralReferenceDict
-        Array[File]+ viralReferenceBwaIndex
+        File viralReferenceBwaIndex
 
         Int threads = 8
         String javaXmx = "8G"
@@ -68,7 +68,7 @@ task AnnotateInsertedSequence {
         viralReference: {description: "A fasta file with viral sequences.", category: "required"}
         viralReferenceFai: {description: "The index for the viral reference fasta.", category: "required"}
         viralReferenceDict: {description: "The dict file for the viral reference.", category: "required"}
-        viralReferenceBwaIndex: {description: "The BWA index files of the viral reference.", category: "required"}
+        viralReferenceBwaIndex: {description: "The BWA index img file of the viral reference.", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
