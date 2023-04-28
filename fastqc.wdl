@@ -47,7 +47,7 @@ task Fastqc {
         Int threads = 1
         String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
-        String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
+        String dockerImage = "quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
 
         Array[File]? noneArray
         File? noneFile
