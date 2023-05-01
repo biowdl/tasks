@@ -47,7 +47,7 @@ task Fastqc {
         Int threads = 1
         String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
-        String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
+        String dockerImage = "quay.io/biocontainers/fastqc:0.12.1--hdfd78af_0"
 
         Array[File]? noneArray
         File? noneFile
@@ -67,7 +67,7 @@ task Fastqc {
     command <<<
         set -e
         mkdir -p "~{outdirPath}"
-        FASTQC_DIR="/usr/local/opt/fastqc-0.11.9"
+        FASTQC_DIR="/usr/local/opt/fastqc-0.12.1"
         export CLASSPATH="$FASTQC_DIR:$FASTQC_DIR/sam-1.103.jar:$FASTQC_DIR/jbzip2-0.9.jar:$FASTQC_DIR/cisd-jhdf5.jar"
         java -Djava.awt.headless=true -XX:ParallelGCThreads=1 \
         -Xms200M -Xmx~{javaXmx} \

@@ -7,6 +7,12 @@ Newest changes should be on top.
 This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
+
+version 5.2.0-dev
+---------------------------
++ Update cutadapt version to 4.4
++ Update FastQC version to 0.12.1
+
 version 5.1.0
 ---------------------------
 + Add the `highlyDiploidPercentage` and `somaticMinPuritySpread` inputs to the
