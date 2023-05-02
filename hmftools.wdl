@@ -1589,7 +1589,7 @@ task SvPrepDepthAnnotator {
         Int threads = 10
         String javaXmx = "48G"
         String memory = "50GiB"
-        Int timeMinutes = 120
+        Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/hmftools-sv-prep:1.1--hdfd78af_0"
     }
 
