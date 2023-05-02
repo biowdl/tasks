@@ -404,7 +404,7 @@ task GridssSvPrep {
         Int nonJvmMemoryGb = 10
         Int threads = 10
         Int timeMinutes = ceil(7200 / threads) + 1800
-        String dockerImage = "quay.io/biowdl/gridss:2.13.2_1"
+        String dockerImage = "quay.io/biowdl/gridss@sha256:f70696fda4b6f2612b21539d49986cf31bee7542a9eb0269a9f718f99df3fb2a"
     }
 
     command {
