@@ -411,7 +411,7 @@ task GridssSvPrep {
         gridss_sv-prep \
         --steps all \
         --output ~{outputPath} \
-        --wirkingdir . \
+        --workingdir . \
         --reference ~{reference.fastaFile} \
         --jar /usr/local/share/gridss-2.13.2-1/gridss.jar \
         --blacklist ~{blacklistBed} \
