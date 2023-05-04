@@ -26,10 +26,7 @@ task AnnotateInsertedSequence {
     input {
         File inputVcf
         String outputPath = "gridss.annotated.vcf.gz"
-        File viralReference
-        File viralReferenceFai
-        File viralReferenceDict
-        File viralReferenceBwaIndex
+        BwaIndex viralReferenceBwaIndex
 
         Int threads = 8
         String javaXmx = "8G"
@@ -42,7 +39,7 @@ task AnnotateInsertedSequence {
         set -e
         _JAVA_OPTIONS="$_JAVA_OPTIONS -Xmx~{javaXmx}"
         AnnotateInsertedSequence \
-        REFERENCE_SEQUENCE=~{viralReference} \
+        REFERENCE_SEQUENCE=~{viralReferenceBwaIndex.fastaFile} \
         INPUT=~{inputVcf} \
         OUTPUT=~{outputPath} \
         ALIGNMENT=APPEND \
@@ -65,10 +62,7 @@ task AnnotateInsertedSequence {
     parameter_meta {
         inputVcf: {description: "The input VCF file.", category: "required"}
         outputPath: {description: "The path the output will be written to.", category: "common"}
-        viralReference: {description: "A fasta file with viral sequences.", category: "required"}
-        viralReferenceFai: {description: "The index for the viral reference fasta.", category: "required"}
-        viralReferenceDict: {description: "The dict file for the viral reference.", category: "required"}
-        viralReferenceBwaIndex: {description: "The BWA index img file of the viral reference.", category: "required"}
+        viralReferenceBwaIndex: {description: "The BWA index of the viral reference.", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
