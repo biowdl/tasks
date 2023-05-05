@@ -1167,7 +1167,7 @@ task Purple {
         ~{"-target_regions_ratios " + targetRegionsRatios} \
         ~{"-target_regions_msi_indels " + targetRegionsMsiIndels} \
         ~{"-min_diploid_tumor_ratio_count " + minDiploidTumorRatioCount} \
-        ~{"-min_diploid_tumor_ratio_count_centromere" + minDiploidTumorRatioCountCentromere} \ 
+        ~{"-min_diploid_tumor_ratio_count_centromere" + minDiploidTumorRatioCountCentromere} \
         -threads ~{threads}
     }
 
