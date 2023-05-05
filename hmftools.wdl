@@ -610,27 +610,28 @@ task Linx {
         ~{if germline then "-germline" else ""}
     }
 
+    String prefix = if germline then "~{sampleName}.linx.germline" else "~{sampleName}.linx"
+
     output {
-        File driverCatalog = "~{outputDir}/~{sampleName}.linx.driver.catalog.tsv"
-        File linxBreakend = "~{outputDir}/~{sampleName}.linx.breakend.tsv"
-        File linxClusters = "~{outputDir}/~{sampleName}.linx.clusters.tsv"
-        File linxDrivers = "~{outputDir}/~{sampleName}.linx.drivers.tsv"
-        File linxFusion = "~{outputDir}/~{sampleName}.linx.fusion.tsv"
-        File linxLinks = "~{outputDir}/~{sampleName}.linx.links.tsv"
-        File linxSvs = "~{outputDir}/~{sampleName}.linx.svs.tsv"
-        File linxVisCopyNumber = "~{outputDir}/~{sampleName}.linx.vis_copy_number.tsv"
-        File? linxVisFusion = "~{outputDir}/~{sampleName}.linx.vis_fusion.tsv"
-        File? linxVisGeneExon = "~{outputDir}/~{sampleName}.linx.vis_gene_exon.tsv"
-        File? linxVisProteinDomain = "~{outputDir}/~{sampleName}.linx.vis_protein_domain.tsv"
-        File? linxVisSegments = "~{outputDir}/~{sampleName}.linx.vis_segments.tsv"
-        File? linxVisSvData = "~{outputDir}/~{sampleName}.linx.vis_sv_data.tsv"
-        File? linxGermlineDriverCatalogTsv = "~{outputDir}/~{sampleName}.linx.germline.driver.catalog.tsv"
-        File? linxGermlineDisruptionTsv = "~{outputDir}/~{sampleName}.linx.germline.disruption.tsv"
+        File driverCatalog = "~{outputDir}/~{prefix}.driver.catalog.tsv"
+        File linxClusters = "~{outputDir}/~{prefix}.clusters.tsv"
+        File linxLinks = "~{outputDir}/~{prefix}.links.tsv"
+        File linxSvs = "~{outputDir}/~{prefix}.svs.tsv"
+        File? linxBreakend = "~{outputDir}/~{prefix}.breakend.tsv"
+        File? linxDrivers = "~{outputDir}/~{prefix}.drivers.tsv"
+        File? linxFusion = "~{outputDir}/~{prefix}.fusion.tsv"
+        File? linxVisCopyNumber = "~{outputDir}/~{prefix}.vis_copy_number.tsv"
+        File? linxVisFusion = "~{outputDir}/~{prefix}.vis_fusion.tsv"
+        File? linxVisGeneExon = "~{outputDir}/~{prefix}.vis_gene_exon.tsv"
+        File? linxVisProteinDomain = "~{outputDir}/~{prefix}.vis_protein_domain.tsv"
+        File? linxVisSegments = "~{outputDir}/~{prefix}.vis_segments.tsv"
+        File? linxVisSvData = "~{outputDir}/~{prefix}.vis_sv_data.tsv"
+        File? linxDisruptionTsv = "~{outputDir}/~{prefix}.disruption.tsv"
         File linxVersion = "~{outputDir}/linx.version"
         Array[File] outputs = select_all([driverCatalog, linxBreakend, linxClusters, linxDrivers, linxFusion,
                                linxLinks, linxSvs, linxVisCopyNumber, linxVisFusion,
                                linxVisGeneExon, linxVisProteinDomain, linxVisSegments, linxVisSvData,
-                               linxGermlineDriverCatalogTsv, linxGermlineDisruptionTsv, linxVersion])
+                               linxDisruptionTsv, linxVersion])
     }
 
     runtime {
