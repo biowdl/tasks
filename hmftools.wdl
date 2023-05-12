@@ -826,7 +826,6 @@ task Orange {
         -driver_gene_panel_tsv ~{driverGenePanel} \
         -known_fusion_file ~{knownFusionFile}
     }
-    #TODO may need to be added: -pipeline_version_file ~{pipelineVersionFile}
 
     output {
         File orangeJson = "~{outputDir}/~{tumorName}.orange.json"

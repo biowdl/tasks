@@ -339,7 +339,7 @@ task GridssAnnotateVcfRepeatmasker {
 
         String memory = "25GiB"
         Int threads = 8
-        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1" #TODO check if we still need our own patched image
+        String dockerImage = "quay.io/biocontainers/gridss:2.13.2--h20b1175_1"
         Int timeMinutes = 1440
     }
 
