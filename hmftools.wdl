@@ -531,7 +531,7 @@ task Lilac {
         -ref_genome ~{referenceFasta} \
         -ref_genome_version ~{refGenomeVersion} \
         -resource_dir ~{sub(hlaRefAminoacidSequencesCsv, basename(hlaRefAminoacidSequencesCsv), "")} \
-        -outputDir ~{outputDir} \
+        -output_dir ~{outputDir} \
         -threads ~{threads} \
         ~{"-tumor_bam " + tumorBam} \
         ~{"-gene_copy_number " + geneCopyNumberFile} \
