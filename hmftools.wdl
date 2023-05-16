@@ -189,7 +189,7 @@ task CupGenerateReport {
 
         String memory = "5GiB"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biowdl/cuppa:1.7.1"
+        String dockerImage = "quay.io/biowdl/cuppa@sha256:e76d367a3226068967fb64ad6adaa889cbdcc01397075b0cbc382bbba4350b98"
     }
 
     # This script writes to the directory that the input is located in.
@@ -254,7 +254,7 @@ task Cuppa {
         String javaXmx = "4G"
         String memory = "5GiB"
         Int timeMinutes = 10
-        String dockerImage = "quay.io/biowdl/cuppa:1.7.1"
+        String dockerImage = "quay.io/biowdl/cuppa@sha256:e76d367a3226068967fb64ad6adaa889cbdcc01397075b0cbc382bbba4350b98"
     }
 
     command {
@@ -304,7 +304,7 @@ task CuppaChart {
 
         String memory = "4GiB"
         Int timeMinutes = 5
-        String dockerImage = "quay.io/biowdl/cuppa:1.7.1"
+        String dockerImage = "quay.io/biowdl/cuppa@sha256:e76d367a3226068967fb64ad6adaa889cbdcc01397075b0cbc382bbba4350b98"
     }
 
     command {
