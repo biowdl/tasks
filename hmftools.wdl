@@ -780,6 +780,7 @@ task Orange {
     command {
         set -e
         mkdir -p ~{outputDir}
+        export JAVA_TOOL_OPTIONS='--add-opens=java.base/java.time=ALL-UNNAMED'
         orange -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -output_dir ~{outputDir} \
         -ref_genome_version ~{if hg38 then "38" else "37"} \
