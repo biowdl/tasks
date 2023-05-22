@@ -1323,7 +1323,7 @@ task Rose {
     }
 
     output {
-        #TODO
+        File roseTsv = "~{outputDir}/~{tumorName}.rose.tsv"
     }
 
     runtime {
