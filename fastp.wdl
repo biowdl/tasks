@@ -42,7 +42,7 @@ task Fastp {
         
         Int threads = 4
         String memory = "50GiB"
-        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 6.0 / threads)
+        Int timeMinutes = 1 + ceil(size([read1, read2], "G")  * 7.0 / select_first([effectiveSplit, threads]))
         String dockerImage = "quay.io/biocontainers/fastp:0.23.2--h5f740d0_3"
 
         Int? noneInt
