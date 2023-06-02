@@ -84,7 +84,7 @@ task Markdup {
         # Added 8192 mb as a margin of safety. Real life use with this setting uses 2.7 GiB.
         Int memoryMb = 8192 + sortBufferSize + 2 * ioBufferSize
         # Time minute calculation does not work well for higher number of threads.
-        Int timeMinutes = 1 + ceil(size(inputBams, "GiB") * 30) / threads
+        Int timeMinutes = 1 + ceil(size(inputBams, "GiB") * 35) / threads
         String dockerImage = "quay.io/biocontainers/sambamba:0.7.1--h148d290_2"
     }
 
