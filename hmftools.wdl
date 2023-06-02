@@ -1215,7 +1215,8 @@ task Purple {
             purpleCnvSomaticTsv, purplePurityRangeTsv, purplePurityTsv, purpleQc,
             purpleSegmentTsv, purpleSomaticClonalityTsv, purpleSomaticHistTsv,
             purpleSomaticVcf, purpleSomaticVcfIndex, purpleSvVcf, purpleSvVcfIndex,
-            purpleVersion, purpleGermlineVcf, purpleGermlineVcfIndex, driverCatalogGermlineTsv]
+            purpleVersion, purpleGermlineVcf, purpleGermlineVcfIndex, driverCatalogGermlineTsv,
+            purpleGermlineDeletionTsv]
         Array[File] plots = select_all([circosPlot, copynumberPlot, inputPlot, mapPlot, purityRangePlot,
             segmentPlot, somaticClonalityPlot, somaticPlot, somaticRainfallPlot])
         Array[File] circos = [circosNormalRatio, circosConf, circosIndel, circosLink,
