@@ -70,7 +70,8 @@ task Amber {
         File normalSnpVcf = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz"
         File normalSnpVcfIndex = "~{outputDir}/~{referenceName}.amber.snp.vcf.gz.tbi"
         Array[File] outputs = [version, tumorBafPcf, tumorBafTsv, tumorContaminationVcf,
-            tumorContaminationVcfIndex, tumorContaminationTsv, tumorQc, normalSnpVcf, normalSnpVcfIndex]
+            tumorContaminationVcfIndex, tumorContaminationTsv, tumorQc, normalHomozygousregionsTsv,
+            normalSnpVcf, normalSnpVcfIndex]
     }
 
     runtime {
@@ -541,6 +542,7 @@ task Lilac {
     output {
         File lilacCsv = "~{outputDir}/~{sampleName}.lilac.csv"
         File lilacQcCsv = "~{outputDir}/~{sampleName}.lilac.qc.csv"
+        File candidatesCoverageCsv = "~{outputDir}/~{sampleName}.candidates.coverage.csv"
     }
 
     runtime {
@@ -668,7 +670,7 @@ task Linx {
 
 task LinxVisualisations {
     input {
-        String outputDir = "./linx_visualisation"
+        String outputDir = "./linx"
         String sample
         String refGenomeVersion
         Array[File]+ linxOutput
@@ -1002,7 +1004,7 @@ task Protect {
         String tumorName
         String referenceName
         Array[String]+ sampleDoids
-        String outputDir = "."
+        String outputDir = "./protect"
         Array[File]+ serveActionability
         File doidJson
         File purplePurity
@@ -1410,14 +1412,20 @@ task Sage {
         ~{"-low_confidence_min_tumor_qual " + lowConfidenceMinTumorQual}
     }
 
+    String outputDir = sub(outputPath, basename(outputPath), "")
+
     output { #FIXME does it produce multiple plots/tsvs if multiple samples are given?
         File outputVcf = outputPath
         File outputVcfIndex = outputPath + ".tbi"
-        File? referenceSageBqrPng = "~{referenceName[0]}.sage.bqr.png"
-        File? referenceSageBqrTsv = "~{referenceName[0]}.sage.bqr.tsv"
-        File tumorSageBqrPng = "~{tumorName[0]}.sage.bqr.png"
-        File tumorSageBqrTsv = "~{tumorName[0]}.sage.bqr.tsv"
-        File sageGeneCoverageTsv = "~{tumorName[0]}.sage.gene.coverage.tsv"
+        File? referenceSageBqrPng = "~{outputDir}/~{referenceName[0]}.sage.bqr.png"
+        File? referenceSageBqrTsv = "~{outputDir}/~{referenceName[0]}.sage.bqr.tsv"
+        File tumorSageBqrPng = "~{outputDir}/~{tumorName[0]}.sage.bqr.png"
+        File tumorSageBqrTsv = "~{outputDir}/~{tumorName[0]}.sage.bqr.tsv"
+        File sageGeneCoverageTsv = "~{outputDir}/~{tumorName[0]}.sage.gene.coverage.tsv"
+        File referenceSageExonMediansTsv = "~{outputDir}/~{tumorName[0]}.sage.exon.medians.tsv"
+        Array[File] outputs = select_all([outputVcf, outputVcfIndex, referenceSageBqrPng,
+                                          referenceSageBqrTsv, tumorSageBqrPng, tumorSageBqrTsv,
+                                          sageGeneCoverageTsv, referenceSageExonMediansTsv])
     }
 
     runtime {
@@ -1486,6 +1494,7 @@ task Sigs {
 
     output {
         File sigAllocationTsv = "~{outputDir}/~{sampleName}.sig.allocation.tsv"
+        File sigSnvCountsCsv = "~{outputDir}/~{sampleName}.sig.snv_counts.csv"
     }
 
     runtime {

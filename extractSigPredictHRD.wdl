@@ -22,7 +22,7 @@ version 1.0
 
 task ExtractSigPredictHRD {
     input {
-        String outputDir = "."
+        String outputDir = "./chord"
         String sampleName
         File snvIndelVcf
         File snvIndelVcfIndex
