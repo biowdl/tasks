@@ -150,7 +150,7 @@ task Cutadapt {
         ~{true="--bwa" false="" bwa} \
         ~{true="--zero-cap" false="" zeroCap} \
         ~{true="--no-zero-cap" false="" noZeroCap} \
-        ~{if revcomp then "--revcomp" else ""}
+        ~{if revcomp then "--revcomp" else ""} \
         ~{read1} \
         ~{read2} \
         ~{"> " + reportPath}
