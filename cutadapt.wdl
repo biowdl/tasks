@@ -81,6 +81,7 @@ task Cutadapt {
         Boolean? bwa
         Boolean? zeroCap
         Boolean? noZeroCap
+        Boolean revcomp = false
 
         Int cores = 4
         String memory = "5GiB"
@@ -149,6 +150,7 @@ task Cutadapt {
         ~{true="--bwa" false="" bwa} \
         ~{true="--zero-cap" false="" zeroCap} \
         ~{true="--no-zero-cap" false="" noZeroCap} \
+        ~{if revcomp then "--revcomp" else ""} \
         ~{read1} \
         ~{read2} \
         ~{"> " + reportPath}
@@ -231,6 +233,7 @@ task Cutadapt {
         bwa: {description: "Equivalent to cutadapt's --bwa flag.", category: "advanced"}
         zeroCap: {description: "Equivalent to cutadapt's --zero-cap flag.", category: "advanced"}
         noZeroCap: {description: "Equivalent to cutadapt's --no-zero-cap flag.", category: "advanced"}
+        revcomp: {description: "Equivalent to cutadapt's --revcomp flag.", category: "advanced"}
         cores: {description: "The number of cores to use.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}

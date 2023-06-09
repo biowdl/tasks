@@ -8,6 +8,11 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
+version 5.3.0-dev
+---------------------------
++ Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
+
+
 version 5.2.0
 ---------------------------
 + Update cutadapt version to 4.4
