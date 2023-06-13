@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 5.3.0-dev
 ---------------------------
++ Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
 
 
