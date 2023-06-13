@@ -29,7 +29,7 @@ task FastqFilter {
         Int? minLength
         Int? maxLength
 
-        String memory = "4GiB"
+        String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(fastq, "G"))
         String dockerImage = "quay.io/biocontainers/fastq-filter:0.3.0--py39hf95cd2a_1"
     }
