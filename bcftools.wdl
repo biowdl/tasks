@@ -180,6 +180,67 @@ task Filter {
     }
 }
 
+task Isec {
+    input {
+        File aVcf
+        File? aVcfIndex
+        File bVcf
+        File? bVcfIndex
+        String prefix = "isec"
+
+        String memory = "1GiB"
+        Int timeMinutes = 1 + ceil(size([aVcf, bVcf], "G")) * 30
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+    }
+   
+    command {
+        set -e
+        bcftools isec \
+        -p ~{prefix} \
+        -O z \
+        ~{aVcf} ~{bVcf}
+        for file in isec/*
+            do bcftools index $file 
+        done 
+    }
+
+    output {
+        File privateAVcf = prefix + "/0000.vcf.gz"
+        File privateAVcfIndex = prefix + "/0000.vcf.gz.tbi"
+        File privateBVcf = prefix + "/0001.vcf.gz"
+        File privateBVcfIndex = prefix + "/0001.vcf.gz.tbi"
+        File sharedAVcf = prefix + "/0002.vcf.gz"
+        File sharedAVcfIndex = prefix + "/0002.vcf.gz.tbi"
+        File sharedBVcf = prefix + "/0003.vcf.gz"
+        File sharedBVcfIndex = prefix + "/0003.vcf.gz.tbi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "A vcf or bcf file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        privateAVcf: {description: "VCF with variants private to aVcf"}
+        privateAVcfIndex: {description: "Index for privateAVcfIndex"}
+        privateBVcf: {description: "VCF with variants private to bVcf"}
+        privateBVcfIndex: {description: "Index for privateBVcfIndex"}
+        sharedAVcf: {description: "VCF with variants from aVcf shared with bVcf"}
+        sharedAVcfIndex: {description: "Index for sharedAVcfIndex"}
+        sharedBVcf: {description: "VCF with variants from bVcf shared with aVcf"}
+        sharedBVcfIndex: {description: "Index for sharedBVcfIndex"}
+    }
+}
+
 task Norm {
     input {
         File inputFile 
@@ -197,9 +258,8 @@ task Norm {
 
         bcftools norm \
         -o ~{outputPath} \
-        -O ~{true="z" false="v" compressed} 
-        
-        ~{inputFile}
+        -O ~{true="z" false="v" compressed} \
+        ~{inputFile} \
         ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
     }
 
