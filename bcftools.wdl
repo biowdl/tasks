@@ -180,6 +180,55 @@ task Filter {
     }
 }
 
+task Norm {
+    input {
+        File inputFile 
+        String outputPath = "output.vcf.gz"
+        String memory = "1GiB"
+        Int timeMinutes = 1 + ceil(size(inputFile, "G")) * 30
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+    }
+
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
+    
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+
+        bcftools norm \
+        -o ~{outputPath} \
+        -O ~{true="z" false="v" compressed} 
+        
+        ~{inputFile}
+        ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File? outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "A vcf or bcf file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Sorted VCF file."}
+        outputVcfIndex: {description: "Index of sorted VCF file."}
+    }
+}
+
+
 task Sort {
     input {
         File inputFile
