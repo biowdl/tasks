@@ -183,9 +183,9 @@ task Filter {
 task Isec {
     input {
         File aVcf
-        File? aVcfIndex
+        File aVcfIndex
         File bVcf
-        File? bVcfIndex
+        File bVcfIndex
         String prefix = "isec"
 
         String memory = "1GiB"
@@ -223,8 +223,11 @@ task Isec {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "A vcf or bcf file.", category: "required"}
-        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        aVcf: {description: "The vcf file to be compared.", category: "required"}
+        bVcf: {description: "The other vcf file to be compared.", category: "required"}
+        aVcfIndex: {description: "The index of the aVcf file", category: "required"}
+        bVcfIndex: {description: "The index of the bVcf file", category: "required"}
+        prefix: {description: "The directory location for the output", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -250,8 +253,6 @@ task Norm {
         Int timeMinutes = 1 + ceil(size(inputVcf, "G")) * 30
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
-
-    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
     
     command {
         set -e
@@ -259,14 +260,15 @@ task Norm {
 
         bcftools norm \
         -o ~{outputPath} \
-        -O ~{true="z" false="v" compressed} \
-        ~{inputVcf} \
-        ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
+        -O z \
+        ~{inputVcf}
+        
+        bcftools index --tbi ~{outputPath}' else ''
     }
 
     output {
         File outputVcf = outputPath
-        File? outputVcfIndex = outputPath + ".tbi"
+        File outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -277,7 +279,7 @@ task Norm {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "A vcf or bcf file.", category: "required"}
+        inputVcf: {description: "A vcf or bcf file.", category: "required"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
