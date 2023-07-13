@@ -575,6 +575,7 @@ task Linx {
         Boolean checkFusions = true
         Boolean checkDrivers = true
         Boolean writeVisData = true
+        Boolean writeNeoEpitopes = false
         #The following should be in the same directory.
         File geneDataCsv
         File proteinFeaturesCsv
@@ -609,6 +610,7 @@ task Linx {
         -driver_gene_panel ~{driverGenePanel} \
         ~{if writeVisData then "-write_vis_data" else ""} \
         ~{if writeAllVisFusions then "-write_all_vis_fusions" else ""} \
+        ~{if writeNeoEpitopes then "-write_neo_epitopes" else ""} \
         ~{if germline then "-germline" else ""}
     }
 
@@ -654,6 +656,7 @@ task Linx {
         knownFusionCsv: {description: "A CSV file describing known fusions.", category: "required"}
         driverGenePanel: {description: "A TSV file describing the driver gene panel.", category: "required"}
         writeAllVisFusions: {description: "Equivalent to the -write_all_vis_fusions flag.", category: "advanced"}
+        writeNeoEpitopes: {description: "Equivalent to the -write_neo_epitopes flag.", category: "advanced"}
         geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
