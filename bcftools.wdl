@@ -199,7 +199,7 @@ task Isec {
         -p ~{prefix} \
         -O z \
         ~{aVcf} ~{bVcf}
-        for file in isec/*
+        for file in $(find -name '*.vcf.gz' isec)
             do bcftools index $file 
         done 
     }
@@ -264,7 +264,7 @@ task Norm {
         -m- \
         ~{inputVcf}
         
-        bcftools index --tbi ~{outputPath}' else ''
+        bcftools index --tbi '~{outputPath}' else ''
     }
 
     output {
