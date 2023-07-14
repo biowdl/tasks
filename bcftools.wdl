@@ -261,6 +261,7 @@ task Norm {
         bcftools norm \
         -o ~{outputPath} \
         -O z \
+        -m- \
         ~{inputVcf}
         
         bcftools index --tbi ~{outputPath}' else ''
