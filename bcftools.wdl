@@ -213,6 +213,7 @@ task Isec {
         File sharedAVcfIndex = prefix + "/0002.vcf.gz.tbi"
         File sharedBVcf = prefix + "/0003.vcf.gz"
         File sharedBVcfIndex = prefix + "/0003.vcf.gz.tbi"
+        File readme = prefix + "/README.txt"
     }
 
     runtime {
