@@ -35,7 +35,7 @@ task SnpEff {
         Boolean noIntergenic = false
         Boolean noShiftHgvs = false
         Int? upDownStreamLen
-
+        Array[String] configOptions = []
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 60
@@ -58,6 +58,8 @@ task SnpEff {
         ~{true="-no-intergenic" false="" noIntergenic} \
         ~{true="-noShiftHgvs" false="" noShiftHgvs} \
         ~{"-upDownStreamLen " + upDownStreamLen} \
+        ~{true="-configOption" false="" length(configOptions) > 0} \
+        ~{sep=" -configOption " configOptions} \
         > ~{outputPath}
         rm -r $PWD/data
     }
