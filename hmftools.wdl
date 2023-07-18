@@ -566,8 +566,6 @@ task Lilac {
         somaticVariantsFile: {description: "Somatic variant VCF produced by purple.", category: "common"}
         somaticVariantsFileIndex: {description: "Index for the somatic variant VCf produced by purple.", category: "common"}
         outputDir: {description: "The directory the outputs will be written to.", category: "required"}
-
-        #The following need to be in the same directory
         hlaRefAminoacidSequencesCsv: {description: "LILAC reference file.", category: "required"}
         hlaRefNucleotideSequencesCsv: {description: "LILAC reference file.", category: "required"}
         lilacAlleleFrequenciesCsv: {description: "LILAC reference file.", category: "required"}
@@ -812,6 +810,102 @@ task Neo {
         proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
         transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
+task neoScorer {
+    input {
+        String sampleId
+        String refGenomeVersion
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        Array[File]+ neoBindingFiles
+        String neoBindingFileId = "cmb_02"
+        File cancerTpmMedians
+        File neoData
+        Array[File]+ lilacOutput
+        Array[File]+ purpleOutput
+        String outputDir = "./neo"
+
+        #The following should be in the same directory.
+        File geneDataCsv
+        File proteinFeaturesCsv
+        File transExonDataCsv
+        File transSpliceDataCsv
+
+        String? cancerType
+        Array[File]? isofoxOutput
+        File? rnaSomaticVcf
+        File? rnaSomaticVcfIndex
+
+        String memory = "9GiB"
+        String javaXmx = "8G"
+        Int timeMinutes = 1440
+        String dockerImage = "quay.io/biocontainers/hmftools-neo:1.0.1--hdfd78af_0"
+    }
+
+    String isofoxDir = sub(select_first([isofoxOutput, [""]])[0], basename(select_first([isofoxOutput, [""]])[0]), "")
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        neo com.hartwig.hmftools.neo.scorer.NeoScorer Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -sample ~{sampleId} \
+        ~{"-cancer_type " + cancerType} \
+        -ref_genome_version ~{refGenomeVersion} \
+        -ref_genome ~{referenceFasta} \
+        -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -score_file_dir ~{sub(neoBindingFiles[0], basename(neoBindingFiles[0]), "")} \
+        -score_file_id ~{neoBindingFileId} \
+        -cancer_tpm_medians_file ~{cancerTpmMedians} \
+        -neo_dir ~{sub(neoData, basename(neoData), "")} \
+        ~{if defined(isofoxOutput) then "-isofox_dir " + isofoxDir else ""} \
+        -lilac_dir ~{sub(lilacOutput[0], basename(lilacOutput[0]), "")} \
+        -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
+        ~{"-rna_somatic_vcf " + rnaSomaticVcf} \
+        -output_dir ~{outputDir}
+    }
+
+    output {
+        File neoepitopes = "~{outputDir}/~{sampleId}.neo.neoepitope.tsv"
+        File peptideScores = "~{outputDir}/~{sampleId}.neo.peptide_scores.tsv"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        sampleId: {description: "The name/id of the sample.", category: "required"}
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        neoBindingFiles: {description: "The neo binding reference files.", category: "required"}
+        neoBindingFileId: {description: "The neo binding reference file version id.", category: "required"}
+        cancerTpmMedians: {description: "HMF RNA cohort transcript median TPM file.", category: "required"}
+        neoData: {description: "Data file produced by neo.", category: "required"}
+        lilacOutput: {description: "The output produced by lilac.", category: "required"}
+        purpleOutput: {description: "The output produced by purple.", category: "required"}
+        outputDir: {description: "The directory the outputs will be written to.", category: "required"}
+        geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
+        transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
+        cancerType: {description: "The cancer type.", category: "common"}
+        isofoxOutput: {description: "The output produced by isofox.", category: "common"}
+        rnaSomaticVcf: {description: "SageAppend produced rna somatic VCF file.", category: "common"}
+        rnaSomaticVcfIndex: {description: "Index for the rna somatic VCF file.", category: "common"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
