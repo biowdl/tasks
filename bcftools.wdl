@@ -253,6 +253,7 @@ task Norm {
         String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(inputVcf, "G")) * 30
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+        File? regionsFile
     }
     
     command {
@@ -263,8 +264,9 @@ task Norm {
         -o ~{outputPath} \
         -O z \
         -m- \
+        ~{"--regions-file " + regionsFile} \
         ~{inputVcf}
-        
+
         bcftools index --tbi '~{outputPath}' else ''
     }
 
