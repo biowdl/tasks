@@ -727,6 +727,76 @@ task LinxVisualisations {
     }
 }
 
+task Neo {
+    input {
+        String sampleId
+        File somaticVcf
+        File somaticVcfIndex
+        Array[File]+ linxOutput
+        String refGenomeVersion
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        String outputDir = "./neo"
+        #The following should be in the same directory.
+        File geneDataCsv
+        File proteinFeaturesCsv
+        File transExonDataCsv
+        File transSpliceDataCsv
+
+        String memory = "9GiB"
+        String javaXmx = "8G"
+        Int timeMinutes = 1440
+        String dockerImage = "quay.io/biocontainers/hmftools-neo:1.0.1--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        neo -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -sample ~{sampleId} \
+        -ref_genome_version ~{refGenomeVersion} \
+        -ref_genome ~{referenceFasta} \
+        -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -linx_dir ~{sub(linxOutput[0], basename(linxOutput[0]), "")} \
+        -somatic_vcf ~{somaticVcf} \
+        -output_dir ~{outputDir}
+    }
+
+    output {
+        File neoData = "~{outputDir}/~{sampleId}.neo.neo_data.tsv"
+    }
+
+    runtime {
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+        memory: memory
+    }
+
+    parameter_meta {
+        sampleId: {description: "The name/id of the sample.", category: "required"}
+        somaticVcf: {description: "The vcf containing the samples's somatic variants.", category: "required"}
+        somaticVcfIndex: {description: "The vcf containing the samples's somatic variants.", category: "required"}
+        linxOutput: {description: "The directory containing the linx output.", category: "required"}
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        outputDir: {description: "The directory the outputs will be written to.", category: "required"}
+        geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
+        transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Orange {
     input {
         String outputDir = "./orange"
