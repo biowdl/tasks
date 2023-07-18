@@ -553,7 +553,32 @@ task Lilac {
     }
 
     parameter_meta {
+        sampleName: {description: "The name of the sample.", category: "required"}
+        referenceBam: {description: "The bam file for the reference sample.", category: "required"}
+        referenceBamIndex: {description: "The index for the reference sample's bam file.", category: "required"}
+        tumorBam: {description: "The bam file for the tumor sample.", category: "common"}
+        tumorBamIndex: {description: "The index for the tumor sample's bam file.", category: "required"}
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        geneCopyNumberFile: {description: "Gene copy number file produced by purple.", category: "common"}
+        somaticVariantsFile: {description: "Somatic variant VCF produced by purple.", category: "common"}
+        somaticVariantsFileIndex: {description: "Index for the somatic variant VCf produced by purple.", category: "common"}
+        outputDir: {description: "The directory the outputs will be written to.", category: "required"}
 
+        #The following need to be in the same directory
+        hlaRefAminoacidSequencesCsv: {description: "LILAC reference file.", category: "required"}
+        hlaRefNucleotideSequencesCsv: {description: "LILAC reference file.", category: "required"}
+        lilacAlleleFrequenciesCsv: {description: "LILAC reference file.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        threads: {description: "The number of threads to use", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
     }
 }
 
