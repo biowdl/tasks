@@ -543,6 +543,7 @@ task Lilac {
         File lilacCsv = "~{outputDir}/~{sampleName}.lilac.csv"
         File lilacQcCsv = "~{outputDir}/~{sampleName}.lilac.qc.csv"
         File candidatesCoverageCsv = "~{outputDir}/~{sampleName}.candidates.coverage.csv"
+        Array[File] outputs = [lilacCsv, lilacQcCsv, candidatesCoverageCsv]
     }
 
     runtime {
@@ -654,11 +655,12 @@ task Linx {
         File? linxVisSegments = "~{outputDir}/~{prefix}.vis_segments.tsv"
         File? linxVisSvData = "~{outputDir}/~{prefix}.vis_sv_data.tsv"
         File? linxDisruptionTsv = "~{outputDir}/~{prefix}.disruption.tsv"
+        File? linxNeoepitopeTsv = "~{outputDir}/~{prefix}.neoepitope.tsv"
         File linxVersion = "~{outputDir}/linx.version"
         Array[File] outputs = select_all([driverCatalog, linxBreakend, linxClusters, linxDrivers, linxFusion,
                                linxLinks, linxSvs, linxVisCopyNumber, linxVisFusion,
                                linxVisGeneExon, linxVisProteinDomain, linxVisSegments, linxVisSvData,
-                               linxDisruptionTsv, linxVersion])
+                               linxDisruptionTsv, linxNeoepitopeTsv, linxVersion])
     }
 
     runtime {
@@ -820,7 +822,7 @@ task Neo {
     }
 }
 
-task neoScorer {
+task NeoScorer {
     input {
         String sampleId
         String refGenomeVersion
@@ -828,7 +830,7 @@ task neoScorer {
         File referenceFastaFai
         File referenceFastaDict
         Array[File]+ neoBindingFiles
-        String neoBindingFileId = "cmb_02"
+        String neoBindingFileId
         File cancerTpmMedians
         File neoData
         Array[File]+ lilacOutput
