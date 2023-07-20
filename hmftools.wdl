@@ -1605,6 +1605,8 @@ task SvPrepDepthAnnotator {
     }
 
     command {
+        set -e
+        mkdir -p "$(dirname ~{outputVcf})"
         java -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -cp /usr/local/share/hmftools-sv-prep-1.1-0/sv-prep.jar \
         com.hartwig.hmftools.svprep.depth.DepthAnnotator \
