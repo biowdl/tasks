@@ -769,6 +769,8 @@ task Neo {
         File transExonDataCsv
         File transSpliceDataCsv
 
+        Int reqAminoAcids = 15
+
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 1440
@@ -785,6 +787,7 @@ task Neo {
         -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -linx_dir ~{sub(linxOutput[0], basename(linxOutput[0]), "")} \
         -somatic_vcf ~{somaticVcf} \
+        -req_amino_acids ~{reqAminoAcids} \
         -output_dir ~{outputDir}
     }
 
@@ -807,11 +810,12 @@ task Neo {
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        outputDir: {description: "The directory the outputs will be written to.", category: "required"}
+        outputDir: {description: "The directory the outputs will be written to.", category: "common"}
         geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
         transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
         transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
+        reqAminoAcids: {description: "Equivalent to neo's -req_amino_acids option.", category: "required"}
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
@@ -825,10 +829,6 @@ task Neo {
 task NeoScorer {
     input {
         String sampleId
-        String refGenomeVersion
-        File referenceFasta
-        File referenceFastaFai
-        File referenceFastaDict
         Array[File]+ neoBindingFiles
         String neoBindingFileId
         File cancerTpmMedians
@@ -862,8 +862,6 @@ task NeoScorer {
         neo com.hartwig.hmftools.neo.scorer.NeoScorer Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -sample ~{sampleId} \
         ~{"-cancer_type " + cancerType} \
-        -ref_genome_version ~{refGenomeVersion} \
-        -ref_genome ~{referenceFasta} \
         -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
         -score_file_dir ~{sub(neoBindingFiles[0], basename(neoBindingFiles[0]), "")} \
         -score_file_id ~{neoBindingFileId} \
@@ -889,10 +887,6 @@ task NeoScorer {
 
     parameter_meta {
         sampleId: {description: "The name/id of the sample.", category: "required"}
-        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
-        referenceFasta: {description: "The reference fasta file.", category: "required"}
-        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
-        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         neoBindingFiles: {description: "The neo binding reference files.", category: "required"}
         neoBindingFileId: {description: "The neo binding reference file version id.", category: "required"}
         cancerTpmMedians: {description: "HMF RNA cohort transcript median TPM file.", category: "required"}
