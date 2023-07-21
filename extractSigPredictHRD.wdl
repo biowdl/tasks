@@ -38,8 +38,9 @@ task ExtractSigPredictHRD {
     command {
         set -e
         mkdir -p ~{outputDir}
+        cd ~{outputDir}
         extractSigPredictHRD.R \
-        ~{outputDir} \
+        . \
         ~{sampleName} \
         ~{snvIndelVcf} \
         ~{svVcf} \
