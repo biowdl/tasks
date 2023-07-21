@@ -1669,6 +1669,8 @@ task VirusInterpreter {
     }
 
     command {
+        set -e
+        mkdir -p ~{outputDir}
         virus-interpreter -Xmx~{javaXmx} -XX:ParallelGCThreads=1  \
         -sample_id ~{sampleId} \
         -purple_purity_tsv ~{purplePurityTsv} \
