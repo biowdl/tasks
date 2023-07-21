@@ -36,6 +36,8 @@ task ExtractSigPredictHRD {
     }
 
     command {
+        set -e
+        mkdir -p ~{outputDir}
         extractSigPredictHRD.R \
         ~{outputDir} \
         ~{sampleName} \
