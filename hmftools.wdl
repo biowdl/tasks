@@ -544,7 +544,7 @@ task Isofox {
 
     output {
         File neoepitopeTsv = "~{outputDir}/~{sampleName}.isf.neoepitope.tsv"
-        File outputs = [neoepitopeTsv]
+        Array[File] outputs = [neoepitopeTsv]
         #TODO
     }
 

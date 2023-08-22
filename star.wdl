@@ -133,7 +133,7 @@ task Star {
         Int? chimScoreDropMax
         Int? chimScoreJunctionNonGTAG
         Int? chimScoreSeparation
-        Int? alignSplicedMateMapLminOverLmate
+        Float? alignSplicedMateMapLminOverLmate
         Int? alignSplicedMateMapLmin
         String? alignSJstitchMismatchNmax
         String? outStd
