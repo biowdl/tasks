@@ -497,6 +497,90 @@ task HealthChecker {
     }
 }
 
+task Isofox {
+    input {
+        String sampleName
+        File neoepitopeFile
+        File bamFile
+        File bamIndex
+        File referenceFasta
+        File referenceFastaFai
+        File referenceFastaDict
+        String refGenomeVersion
+        File expCountsFile
+        File expGcRatiosFile
+
+        String outputDir = "./isofox"
+        Int readLength = 151
+
+        #The following should be in the same directory.
+        File geneDataCsv
+        File proteinFeaturesCsv
+        File transExonDataCsv
+        File transSpliceDataCsv
+
+        Int threads = 10
+        String javaXmx = "12G"
+        String memory = "13GiB"
+        Int timeMinutes = 120
+        String dockerImage = "quay.io/biocontainers/hmftools-isofox:1.6.2--hdfd78af_0"
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        isofox -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        -sample ~{sampleName} \
+        -functions NEO_EPITOPES;TRANSCRIPT_COUNTS;ALT_SPLICE_JUNCTIONS;FUSIONS \
+        -neoepitope_file ~{neoepitopeFile} \
+        -bam_file ~{bamFile} \
+        -ref_genome ~{referenceFasta} \
+        -ref_genome_version ~{refGenomeVersion} \
+        -ensembl_data_dir ~{sub(geneDataCsv, basename(geneDataCsv), "")} \
+        -output_dir ~{outputDir} \
+        -log_debug \
+        -threads ~{threads}
+    }
+
+    output {
+        File neoepitopeTsv = "~{outputDir}/~{sampleName}.isf.neoepitope.tsv"
+        File outputs = [neoepitopeTsv]
+        #TODO
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        sampleName: {description: "The name of the sample.", category: "required"}
+        neoepitopeFile: {description: "Neo's data file.", category: "required"}
+        bamFile: {description: "Input rna BAM file.", category: "required"}
+        bamIndex: {description: "Index for the rna BAM file.", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}  
+        refGenomeVersion: {description: "The version of the genome assembly used for alignment. Either \"37\" or \"38\".", category: "required"}
+        expCountsFile: {description: "Isofox reference file.", category: "required"}
+        expGcRatiosFile: {description: "Isofox reference file.", category: "required"}
+        outputDir: {description: "The directory the outputs will be written to.", category: "required"}
+        geneDataCsv: {description: "A  CSV file containing gene information, must be in the same directory as `proteinFeaturesCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        proteinFeaturesCsv: {description: "A  CSV file containing protein feature information, must be in the same directory as `geneDataCsv`, `transExonDataCsv` and `transSpliceDataCsv`.", category: "required"}
+        transExonDataCsv: {description: "A  CSV file containing transcript exon information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transSpliceDataCsv`.", category: "required"}
+        transSpliceDataCsv: {description: "A  CSV file containing transcript splicing information, must be in the same directory as `geneDataCsv`, `proteinFeaturesCsv` and `transExonDataCsv`.", category: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
+
 task Lilac {
     input {
         String sampleName

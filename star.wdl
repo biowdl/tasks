@@ -121,6 +121,21 @@ task Star {
         Float? outFilterScoreMinOverLread
         Int? outFilterMatchNmin
         Float? outFilterMatchNminOverLread
+        String? outSAMattributes
+        Int? outFilterMultimapNmax
+        Int? outFilterMismatchNmax
+        Int? limitOutSJcollapsed
+        Int? chimSegmentMin
+        String? chimOutType
+        Int? chimJunctionOverhangMin
+        Int? chimSegmentReadGapMax
+        Int? chimScoreMin
+        Int? chimScoreDropMax
+        Int? chimScoreJunctionNonGTAG
+        Int? chimScoreSeparation
+        Int? alignSplicedMateMapLminOverLmate
+        Int? alignSplicedMateMapLmin
+        String? alignSJstitchMismatchNmax
         String? outStd
         String? twopassMode = "Basic"
         Array[String]? outSAMattrRGline
@@ -158,6 +173,21 @@ task Star {
         ~{"--outFilterMatchNmin " + outFilterMatchNmin} \
         ~{"--outFilterMatchNminOverLread " + outFilterMatchNminOverLread} \
         ~{"--outSAMunmapped " + outSAMunmapped} \
+        ~{"--outSAMattributes " + outSAMattributes} \
+        ~{"--outFilterMultimapNmax " + outFilterMultimapNmax} \
+        ~{"--outFilterMismatchNmax " + outFilterMismatchNmax} \
+        ~{"--limitOutSJcollapsed " + limitOutSJcollapsed} \
+        ~{"--chimSegmentMin " + chimSegmentMin} \
+        ~{"--chimOutType " + chimOutType} \
+        ~{"--chimJunctionOverhangMin " + chimJunctionOverhangMin} \
+        ~{"--chimSegmentReadGapMax " + chimSegmentReadGapMax} \
+        ~{"--chimScoreMin " + chimScoreMin} \
+        ~{"--chimScoreDropMax " + chimScoreDropMax} \
+        ~{"--chimScoreJunctionNonGTAG " + chimScoreJunctionNonGTAG} \
+        ~{"--chimScoreSeparation " + chimScoreSeparation} \
+        ~{"--alignSplicedMateMapLminOverLmate " + alignSplicedMateMapLminOverLmate} \
+        ~{"--alignSplicedMateMapLmin " + alignSplicedMateMapLmin} \
+        ~{"--alignSJstitchMismatchNmax " + alignSJstitchMismatchNmax} \
         ~{"--runThreadN " + runThreadN} \
         ~{"--outStd " + outStd} \
         ~{"--twopassMode " + twopassMode} \
