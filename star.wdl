@@ -156,7 +156,8 @@ task Star {
     # in the runtime section.
 
     #TODO: Could be extended for all possible output extensions.
-    Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam"}
+    Map[String, String] samOutputNames = {"BAM SortedByCoordinate": "sortedByCoord.out.bam",
+                                          "BAM Unsorted": "out.bam"}
 
     command {
         set -e
