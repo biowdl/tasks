@@ -103,12 +103,15 @@ task Markdup {
         ~{"--io-buffer-size " + ioBufferSize} \
         ~{sep=' ' inputBams} ~{outputPath}
         # sambamba creates an index for us.
-        mv ~{outputPath}.bai ~{bamIndexPath}
+        if [ -f ~{outputPath}.bai ]
+          then
+            mv ~{outputPath}.bai ~{bamIndexPath}
+        fi
     }
 
     output {
         File outputBam = outputPath
-        File outputBamIndex = bamIndexPath
+        File? outputBamIndex = bamIndexPath
     }
 
     runtime {

@@ -502,7 +502,6 @@ task Isofox {
         String sampleName
         File neoepitopeFile
         File bamFile
-        File bamIndex
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -559,7 +558,6 @@ task Isofox {
         sampleName: {description: "The name of the sample.", category: "required"}
         neoepitopeFile: {description: "Neo's data file.", category: "required"}
         bamFile: {description: "Input rna BAM file.", category: "required"}
-        bamIndex: {description: "Index for the rna BAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}  
@@ -1744,7 +1742,7 @@ task SageAppend {
     input {
         String sampleName
         File bamFile
-        File bamIndex
+        File? bamIndex
         File referenceFasta
         File referenceFastaDict
         File referenceFastaFai
