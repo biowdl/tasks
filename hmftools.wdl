@@ -530,7 +530,7 @@ task Isofox {
         mkdir -p ~{outputDir}
         isofox -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -sample ~{sampleName} \
-        -functions NEO_EPITOPES;TRANSCRIPT_COUNTS;ALT_SPLICE_JUNCTIONS;FUSIONS \
+        -functions 'NEO_EPITOPES;TRANSCRIPT_COUNTS;ALT_SPLICE_JUNCTIONS;FUSIONS' \
         -neoepitope_file ~{neoepitopeFile} \
         -bam_file ~{bamFile} \
         -ref_genome ~{referenceFasta} \
