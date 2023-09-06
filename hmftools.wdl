@@ -528,10 +528,11 @@ task Isofox {
     command {
         set -e
         mkdir -p ~{outputDir}
+        sed 's/\t/,/g' ~{neoepitopeFile} > tmp.neo_data.csv
         isofox -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -sample ~{sampleName} \
         -functions 'NEO_EPITOPES;TRANSCRIPT_COUNTS;ALT_SPLICE_JUNCTIONS;FUSIONS' \
-        -neoepitope_file ~{neoepitopeFile} \
+        -neoepitope_file tmp.neo_data.csv \
         -bam_file ~{bamFile} \
         -ref_genome ~{referenceFasta} \
         -ref_genome_version ~{refGenomeVersion} \
