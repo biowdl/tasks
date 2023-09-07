@@ -122,7 +122,7 @@ task Classify {
         indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
         for file in ~{sep=" " indexFiles}
         do
-            ln ${file} $PWD/"$(basename ${file})"
+            ln -s ${file} $PWD/"$(basename ${file})"
         done
         centrifuge \
         ~{inputFormatOptions[inputFormat]} \
@@ -199,7 +199,7 @@ task Inspect {
         indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
         for file in ~{sep=" " indexFiles}
         do
-            ln ${file} $PWD/"$(basename ${file})"
+            ln -s ${file} $PWD/"$(basename ${file})"
         done
         centrifuge-inspect \
         ~{outputOptions[printOption]} \
@@ -256,7 +256,7 @@ task KReport {
         indexBasename="$(basename ~{sub(indexFiles[0], "\.[0-9]\.cf", "")})"
         for file in ~{sep=" " indexFiles}
         do
-            ln ${file} $PWD/"$(basename ${file})"
+            ln -s ${file} $PWD/"$(basename ${file})"
         done
         centrifuge-kreport \
         -x $PWD/${indexBasename} \
