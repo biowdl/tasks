@@ -548,7 +548,7 @@ task Isofox {
         File geneCollection = "~{outputDir}/~{sampleName}.isf.gene_collection.csv"
         File passFusions = "~{outputDir}/~{sampleName}.isf.pass_fusions.csv"
         File fusions = "~{outputDir}/~{sampleName}.isf.fusions.csv"
-        Array[File] outputs = [neoepitopeTsv, altSpliceJunc, geneCollection,
+        Array[File] outputs = [neoepitope, altSpliceJunc, geneCollection,
                                passFusions, fusions]
     }
 
