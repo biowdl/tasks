@@ -543,9 +543,13 @@ task Isofox {
     }
 
     output {
-        File neoepitopeTsv = "~{outputDir}/~{sampleName}.isf.neoepitope.tsv"
-        Array[File] outputs = [neoepitopeTsv]
-        #TODO
+        File neoepitope = "~{outputDir}/~{sampleName}.isf.neoepitope.csv"
+        File altSpliceJunc = "~{outputDir}/~{sampleName}.isf.alt_splice_junc.csv"
+        File geneCollection = "~{outputDir}/~{sampleName}.isf.gene_collection.csv"
+        File passFusions = "~{outputDir}/~{sampleName}.isf.pass_fusions.csv"
+        File fusions = "~{outputDir}/~{sampleName}.isf.fusions.csv"
+        Array[File] outputs = [neoepitopeTsv, altSpliceJunc, geneCollection,
+                               passFusions, fusions]
     }
 
     runtime {
