@@ -501,6 +501,7 @@ task Isofox {
     input {
         String sampleName
         File bamFile
+        File bamIndex
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -554,6 +555,7 @@ task Isofox {
     parameter_meta {
         sampleName: {description: "The name of the sample.", category: "required"}
         bamFile: {description: "Input rna BAM file.", category: "required"}
+        bamIndex: {description: "Index of the BAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}  
@@ -580,6 +582,7 @@ task IsofoxNeoEpitopes {
         String sampleName
         File neoepitopeFile
         File bamFile
+        File bamIndex
         File referenceFasta
         File referenceFastaFai
         File referenceFastaDict
@@ -643,6 +646,7 @@ task IsofoxNeoEpitopes {
         sampleName: {description: "The name of the sample.", category: "required"}
         neoepitopeFile: {description: "Neo's data file.", category: "required"}
         bamFile: {description: "Input rna BAM file.", category: "required"}
+        bamIndex: {description: "Index of the BAM file.", category: "required"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaDict: {description: "The sequence dictionary associated with the reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}  
