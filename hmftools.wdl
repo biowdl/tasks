@@ -519,8 +519,8 @@ task Isofox {
         File transSpliceDataCsv
 
         Int threads = 10
-        String javaXmx = "12G"
-        String memory = "13GiB"
+        String javaXmx = "24G"
+        String memory = "25GiB"
         Int timeMinutes = 120
         String dockerImage = "quay.io/biocontainers/hmftools-isofox:1.6.2--hdfd78af_0"
     }
