@@ -541,8 +541,15 @@ task Isofox {
     }
 
     output {
-        #TODO
-        Array[File] outputs = []
+        File altSpliceJunc = "~{outputDir}/~{sampleName}.isf.alt_splice_junc.csv"
+        File fusions = "~{outputDir}/~{sampleName}.isf.fusions.csv"
+        File geneCollection = "~{outputDir}/~{sampleName}.isf.gene_collection.csv"
+        File geneData = "~{outputDir}/~{sampleName}.isf.gene_data.csv "
+        File passFusions = "~{outputDir}/~{sampleName}.isf.pass_fusions.csv"
+        File summary = "~{outputDir}/~{sampleName}.isf.summary.csv"
+        File transcriptData = "~{outputDir}/~{sampleName}.isf.transcript_data.csv"
+        Array[File] outputs = [altSpliceJunc, fusions, geneCollection, geneData,
+                               passFusions, summary, transcriptData]
     }
 
     runtime {
@@ -625,14 +632,16 @@ task IsofoxNeoEpitopes {
     }
 
     output {
-        File neoepitope = "~{outputDir}/~{sampleName}.isf.neoepitope.csv"
         File altSpliceJunc = "~{outputDir}/~{sampleName}.isf.alt_splice_junc.csv"
-        File geneCollection = "~{outputDir}/~{sampleName}.isf.gene_collection.csv"
-        File passFusions = "~{outputDir}/~{sampleName}.isf.pass_fusions.csv"
         File fusions = "~{outputDir}/~{sampleName}.isf.fusions.csv"
-        #TODO
-        Array[File] outputs = [neoepitope, altSpliceJunc, geneCollection,
-                               passFusions, fusions]
+        File geneCollection = "~{outputDir}/~{sampleName}.isf.gene_collection.csv"
+        File geneData = "~{outputDir}/~{sampleName}.isf.gene_data.csv "
+        File passFusions = "~{outputDir}/~{sampleName}.isf.pass_fusions.csv"
+        File summary = "~{outputDir}/~{sampleName}.isf.summary.csv"
+        File transcriptData = "~{outputDir}/~{sampleName}.isf.transcript_data.csv"
+        File neoepitope = "~{outputDir}/~{sampleName}.isf.neoepitope.csv"
+        Array[File] outputs = [altSpliceJunc, fusions, geneCollection, geneData,
+                               passFusions, summary, transcriptData, neoepitope]
     }
 
     runtime {
