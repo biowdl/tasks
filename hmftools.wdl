@@ -521,7 +521,7 @@ task Isofox {
         Int threads = 10
         String javaXmx = "48G"
         String memory = "60GiB"
-        Int timeMinutes = 120
+        Int timeMinutes = 240
         String dockerImage = "quay.io/biocontainers/hmftools-isofox:1.6.2--hdfd78af_0"
     }
 
