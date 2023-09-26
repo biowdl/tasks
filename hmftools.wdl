@@ -1040,6 +1040,8 @@ task NeoScorer {
     command {
         set -e
         mkdir -p ~{outputDir}
+        mkdir isofox
+        sed 's/,/\t/g' ~{isofoxDir}/~{sampleName}.isf.neoepitope.csv > isofox/~{sampleName}.isf.neoepitope.tsv
         neo com.hartwig.hmftools.neo.scorer.NeoScorer Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -sample ~{sampleId} \
         ~{"-cancer_type " + cancerType} \
