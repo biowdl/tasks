@@ -1037,7 +1037,7 @@ task NeoScorer {
 
     String isofoxDir = sub(select_first([isofoxOutput, [""]])[0], basename(select_first([isofoxOutput, [""]])[0]), "")
     String sedCommand = if defined(isofoxOutput) 
-        then "sed 's/,/\t/g' ~{isofoxDir}/~{sampleName}.isf.neoepitope.csv > isofox/~{sampleName}.isf.neoepitope.tsv"
+        then "sed 's/,/\t/g' ~{isofoxDir}/~{sampleId}.isf.neoepitope.csv > isofox/~{sampleId}.isf.neoepitope.tsv"
         else ""
 
     command {
