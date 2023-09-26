@@ -1036,12 +1036,15 @@ task NeoScorer {
     }
 
     String isofoxDir = sub(select_first([isofoxOutput, [""]])[0], basename(select_first([isofoxOutput, [""]])[0]), "")
+    String sedCommand = if defined(isofoxOutput) 
+        then "sed 's/,/\t/g' ~{isofoxDir}/~{sampleName}.isf.neoepitope.csv > isofox/~{sampleName}.isf.neoepitope.tsv"
+        else ""
 
     command {
         set -e
         mkdir -p ~{outputDir}
         mkdir isofox
-        sed 's/,/\t/g' ~{isofoxDir}/~{sampleName}.isf.neoepitope.csv > isofox/~{sampleName}.isf.neoepitope.tsv
+        ~{sedCommand}
         neo com.hartwig.hmftools.neo.scorer.NeoScorer Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -sample ~{sampleId} \
         ~{"-cancer_type " + cancerType} \
@@ -1050,7 +1053,7 @@ task NeoScorer {
         -score_file_id ~{neoBindingFileId} \
         -cancer_tpm_medians_file ~{cancerTpmMedians} \
         -neo_dir ~{sub(neoData, basename(neoData), "")} \
-        ~{if defined(isofoxOutput) then "-isofox_dir " + isofoxDir else ""} \
+        ~{if defined(isofoxOutput) then "-isofox_dir isofox" else ""} \
         -lilac_dir ~{sub(lilacOutput[0], basename(lilacOutput[0]), "")} \
         -purple_dir ~{sub(purpleOutput[0], basename(purpleOutput[0]), "")} \
         ~{"-rna_somatic_vcf " + rnaSomaticVcf} \
