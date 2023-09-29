@@ -1044,6 +1044,7 @@ task NeoScorer {
         set -e
         mkdir -p ~{outputDir}
         mkdir isofox
+        cp isofoxDir/* -t isofox
         ~{sedCommand}
         neo com.hartwig.hmftools.neo.scorer.NeoScorer Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         -sample ~{sampleId} \
