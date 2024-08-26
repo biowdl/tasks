@@ -1514,6 +1514,7 @@ task SelectVariants {
         Array[File] intervals = []
 
         String? selectTypeToInclude
+        String? selectGenotype
 
         String javaXmx = "4G"
         String memory = "5GiB"
@@ -1529,6 +1530,7 @@ task SelectVariants {
         -R ~{referenceFasta} \
         -V ~{inputVcf} \
         ~{"--select-type-to-include " + selectTypeToInclude} \
+        ~{"-select-genotype " + selectGenotype} \
         ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals} \
         -O ~{outputPath}
     }
