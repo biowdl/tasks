@@ -1530,7 +1530,7 @@ task SelectVariants {
         -R ~{referenceFasta} \
         -V ~{inputVcf} \
         ~{"--select-type-to-include " + selectTypeToInclude} \
-        ~{"-select-genotype " + selectGenotype} \
+        ~{"-select-genotype \"" + selectGenotype}~{true="\"" false="" defined(selectGenotype)} \
         ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals} \
         -O ~{outputPath}
     }
