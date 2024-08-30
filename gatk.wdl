@@ -1513,6 +1513,7 @@ task SelectVariants {
         String outputPath = "output.vcf.gz"
         Array[File] intervals = []
 
+        Boolean excludeFiltered = false
         String? selectTypeToInclude
         String? selectGenotype
 
@@ -1531,6 +1532,7 @@ task SelectVariants {
         -V ~{inputVcf} \
         ~{"--select-type-to-include " + selectTypeToInclude} \
         ~{"-select-genotype \"" + selectGenotype}~{true="\"" false="" defined(selectGenotype)} \
+        ~{true="--exclude-filtered" false="" excludeFiltered} \
         ~{true="-L" false="" length(intervals) > 0} ~{sep=' -L ' intervals} \
         -O ~{outputPath}
     }
