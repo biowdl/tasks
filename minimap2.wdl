@@ -81,15 +81,19 @@ task Indexing {
 task Mapping {
     input {
         String presetOption
-        Int kmerSize = 15
-        Boolean skipSelfAndDualMappings = false
-        Boolean outputSam = false
         String outputPrefix
-        Boolean addMDTagToSam = false
-        Boolean secondaryAlignment = false
         File referenceFile
         File queryFile
+        
+        Int compressionLevel = 1 
+        Int additionalSortThreads = 1
+        Int sortMemoryGb = 1
 
+        Boolean skipSelfAndDualMappings = false
+        Boolean addMDTagToSam = false
+        Boolean secondaryAlignment = true
+
+        Int? kmerSize
         Int? maxIntronLength
         Int? maxFragmentLength
         Int? retainMaxSecondaryAlignments
@@ -97,8 +101,8 @@ task Mapping {
         Int? mismatchPenalty
         String? howToFindGTAG
 
-        Int cores = 4
-        String memory = "30GiB"
+        Int cores = 8
+        String memory = "24GiB"
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 200 / cores)
         String dockerImage = "quay.io/biocontainers/minimap2:2.20--h5bf99c6_0"
     }
@@ -108,13 +112,11 @@ task Mapping {
         mkdir -p "$(dirname ~{outputPrefix})"
         minimap2 \
         -x ~{presetOption} \
-        -k ~{kmerSize} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
-        ~{true="-a" false="" outputSam} \
-        -o ~{outputPrefix} \
         ~{true="--MD" false="" addMDTagToSam} \
         --secondary=~{true="yes" false="no" secondaryAlignment} \
         -t ~{cores} \
+        ~{"-k " + kmerSize} \
         ~{"-G " + maxIntronLength} \
         ~{"-F " + maxFragmentLength} \
         ~{"-N " + retainMaxSecondaryAlignments} \
@@ -122,11 +124,18 @@ task Mapping {
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
         ~{referenceFile} \
-        ~{queryFile}
+        ~{queryFile} \ 
+        | samtools sort \
+        -@ ~{additionalSortThreads} \
+        -l ~{compressionLevel} \
+        -m ~{sortMemoryGb}G \
+        -o ~{outputPrefix}.bam 
+        samtools index -o ~{outputPrefix}.bam
     }
 
     output {
-        File alignmentFile = outputPrefix
+        File bam = ~{outputPrefix}.bam 
+        File bamIndex =  ~{outputPrefix}.bam.bai
     }
 
     runtime {
