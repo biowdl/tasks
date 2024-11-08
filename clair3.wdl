@@ -33,25 +33,25 @@ task Clair3 {
         Int threads = 8
         Boolean includeAllCtgs = false
         String memory = "20GiB"
-        Int timeMinutes = 10 + ceil(size(bam, "G") * 200 / cores)
-        String dockerImage = "quay.io/biocontainers/minimap2:2.20--h5bf99c6_0"
+        Int timeMinutes = 10 + ceil(size(bam, "G") * 200 / threads)
+        String dockerImage = "quay.io/biocontainers/minimap2:2.20--h5bf99c6_0"   
     }
 
-    # A default set for testing
-    String modelArg = "~{true=model false=builtinModel, defined(model)}"
+    String modelArg = "~{true=model false=builtinModel defined(model)}"
 
     command <<<
     run_clair3.sh \
     --model=~{modelArg} \
-    --ref_fn=~{reference_fasta} \
+    --ref_fn=~{referenceFasta} \
     --bam_fn=~{bam} \
     --output=out \
     --threads=~{threads} \
     --platform=~{platform} \
-    ~{true="--include_all_ctgs" false =""}  
-    mv out/merge_output.vcf.gz ~{prefix}.vcf.gz
-    mv out/merge_output.vcf.gz.tbi ~{prefix}.vcf.gz.tbi
+    ~{true="--include_all_ctgs" false ="" includeAllCtgs}  
+    mv out/merge_output.vcf.gz ~{outputPrefix}.vcf.gz
+    mv out/merge_output.vcf.gz.tbi ~{outputPrefix}.vcf.gz.tbi
     >>>
+
     output {
         File vcf = "~{outputPrefix}.vcf.gz"
         File vcfIndex = "~{outputPrefix}.vcf.gz.tbi"  

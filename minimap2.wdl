@@ -136,8 +136,8 @@ task Mapping {
     }
 
     output {
-        File bam = ~{outputPrefix}.bam 
-        File bamIndex =  ~{outputPrefix}.bam.bai
+        File bam = "~{outputPrefix}.bam "
+        File bamIndex =  "~{outputPrefix}.bam.bai"
     }
 
     runtime {
@@ -152,7 +152,6 @@ task Mapping {
         presetOption: {description: "This option applies multiple options at the same time.", category: "common"}
         kmerSize: {description: "K-mer size (no larger than 28).", category: "advanced"}
         skipSelfAndDualMappings: {description: "Skip self and dual mappings (for the all-vs-all mode).", category: "advanced"}
-        outputSam: {description: "Output in the sam format.", category: "common"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         addMDTagToSam: {description: "Adds a MD tag to the sam output file.", category: "common"}
         secondaryAlignment: {description: "Whether to output secondary alignments.", category: "advanced"}
@@ -170,6 +169,7 @@ task Mapping {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        alignmentFile: {description: "Mapping and alignment between collections of dna sequences file."}
+        bam: {description: "Mapping and alignment between collections of dna sequences file in BAM format."}
+        bamIndex: {description: "Accompanying index file for the BAM file."}
     }
 }

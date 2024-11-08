@@ -26,7 +26,7 @@ task Sequali {
         File? mate_reads 
         Int threads = 2
         String outDir = "."
-        dockerImage = "quay.io/biocontainers/sequali:0.12.0--py312hf67a6ed_0"
+        String dockerImage = "quay.io/biocontainers/sequali:0.12.0--py312hf67a6ed_0"
     } 
 
     command <<<
@@ -42,5 +42,12 @@ task Sequali {
     output {
         File html = basename(reads) + ".html"
         File json = basename(reads) + ".json"
+    }
+
+    runtime {
+        cpu: threads
+        memory: "2GiB"
+        docker: dockerImage
+        time_minutes: 59
     }
 }
