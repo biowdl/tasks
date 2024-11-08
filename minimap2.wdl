@@ -88,6 +88,7 @@ task Mapping {
         Int compressionLevel = 1 
         Int additionalSortThreads = 1
         Int sortMemoryGb = 1
+        Boolean nameSorted = false
 
         Boolean skipSelfAndDualMappings = false
         Boolean addMDTagToSam = false
@@ -126,6 +127,7 @@ task Mapping {
         ~{referenceFile} \
         ~{queryFile} \ 
         | samtools sort \
+        ~{true="-N" false="" nameSorted} \
         -@ ~{additionalSortThreads} \
         -l ~{compressionLevel} \
         -m ~{sortMemoryGb}G \
