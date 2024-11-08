@@ -1,0 +1,61 @@
+version 1.0
+
+# Copyright (c) 2024 Leiden University Medical Center
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+task Clair3 {
+    input {
+        File bam 
+        File bamIndex 
+        File referenceFasta 
+        File referenceFastaFai
+        String outputPrefix 
+        File? model 
+        String? builtinModel
+        String platform
+        Int threads = 8
+        Boolean includeAllCtgs = false
+        String memory = "20GiB"
+        Int timeMinutes = 10 + ceil(size(bam, "G") * 200 / cores)
+        String dockerImage = "quay.io/biocontainers/minimap2:2.20--h5bf99c6_0"
+    }
+
+    # A default set for testing
+    String modelArg = "~{true=model false=builtinModel, defined(model)}"
+
+    command <<<
+    run_clair3.sh \
+    --model=~{modelArg} \
+    --ref_fn=~{reference_fasta} \
+    --bam_fn=~{bam} \
+    --output=out \
+    --threads=~{threads} \
+    --platform=~{platform} \
+    ~{true="--include_all_ctgs" false =""}  
+    mv out/merge_output.vcf.gz ~{prefix}.vcf.gz
+    mv out/merge_output.vcf.gz.tbi ~{prefix}.vcf.gz.tbi
+    >>>
+    output {
+        File vcf = "~{outputPrefix}.vcf.gz"
+        File vcfIndex = "~{outputPrefix}.vcf.gz.tbi"  
+    }
+
+
+}
