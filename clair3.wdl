@@ -27,7 +27,7 @@ task Clair3 {
         File referenceFasta 
         File referenceFastaFai
         String outputPrefix 
-        File? model 
+        File? modelTar
         String? builtinModel
         String platform
         Int threads = 8
@@ -37,10 +37,11 @@ task Clair3 {
         String dockerImage = "quay.io/biocontainers/clair3:1.0.10--py39h46983ab_0"   
     }
 
-    String modelArg = "~{if defined(model) then model else builtinModel}"
+    String modelArg = "~{if defined(modelTar) then basename(select_first([modelTar]), '.tar.gz') else builtinModel}"
 
     command <<<
     set -e
+    ~{if defined(modelTar) then "tar -xvf " + modelTar else "" }
     mkdir -p $(dirname ~{outputPrefix})
     run_clair3.sh \
     --model=~{modelArg} \
