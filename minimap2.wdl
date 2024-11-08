@@ -105,13 +105,15 @@ task Mapping {
         Int cores = 8
         String memory = "24GiB"
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 200 / cores)
-        String dockerImage = "quay.io/biocontainers/minimap2:2.20--h5bf99c6_0"
+        # Minimap 2.28 samtools 1.20
+        String dockerImage = "quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:3161f532a5ea6f1dec9be5667c9efc2afdac6104-0"
     }
 
     command {
         set -e
         mkdir -p "$(dirname ~{outputPrefix})"
         minimap2 \
+        -a \
         -x ~{presetOption} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
         ~{true="--MD" false="" addMDTagToSam} \
@@ -125,19 +127,19 @@ task Mapping {
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
         ~{referenceFile} \
-        ~{queryFile} \ 
+        ~{queryFile} \
         | samtools sort \
         ~{true="-N" false="" nameSorted} \
         -@ ~{additionalSortThreads} \
         -l ~{compressionLevel} \
         -m ~{sortMemoryGb}G \
         -o ~{outputPrefix}.bam 
-        samtools index -o ~{outputPrefix}.bam
+        samtools index ~{outputPrefix}.bam
     }
 
     output {
-        File bam = "~{outputPrefix}.bam "
-        File bamIndex =  "~{outputPrefix}.bam.bai"
+        File bam = "~{outputPrefix}.bam"
+        File bamIndex = "~{outputPrefix}.bam.bai"
     }
 
     runtime {

@@ -34,12 +34,14 @@ task Clair3 {
         Boolean includeAllCtgs = false
         String memory = "20GiB"
         Int timeMinutes = 10 + ceil(size(bam, "G") * 200 / threads)
-        String dockerImage = "quay.io/biocontainers/minimap2:2.20--h5bf99c6_0"   
+        String dockerImage = "quay.io/biocontainers/clair3:1.0.10--py39h46983ab_0"   
     }
 
-    String modelArg = "~{true=model false=builtinModel defined(model)}"
+    String modelArg = "~{if defined(model) then model else builtinModel}"
 
     command <<<
+    set -e
+    mkdir -p $(dirname ~{outputPrefix})
     run_clair3.sh \
     --model=~{modelArg} \
     --ref_fn=~{referenceFasta} \
@@ -57,5 +59,11 @@ task Clair3 {
         File vcfIndex = "~{outputPrefix}.vcf.gz.tbi"  
     }
 
+    runtime {
+        cpu: threads 
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    } 
 
 }

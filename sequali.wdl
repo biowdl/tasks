@@ -40,8 +40,8 @@ task Sequali {
     >>>
     
     output {
-        File html = basename(reads) + ".html"
-        File json = basename(reads) + ".json"
+        File html = outDir + "/" + basename(reads) + ".html"
+        File json = outDir + "/" + basename(reads) + ".json"
     }
 
     runtime {
