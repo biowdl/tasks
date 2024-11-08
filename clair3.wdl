@@ -31,7 +31,7 @@ task Clair3 {
         String? builtinModel
         String platform
         Int threads = 8
-        Boolean includeAllCtgs = false
+        Boolean includeAllCtgs = true  # Not the clair3 default, but generally what you want.
         String memory = "20GiB"
         Int timeMinutes = 10 + ceil(size(bam, "G") * 200 / threads)
         String dockerImage = "quay.io/biocontainers/clair3:1.0.10--py39h46983ab_0"   
