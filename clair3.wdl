@@ -32,7 +32,7 @@ task Clair3 {
         String platform
         Int threads = 8
         Boolean includeAllCtgs = false
-        String memory = "20GiB"
+        String memory = "~{threads + 16}GiB"
         Int timeMinutes = 10 + ceil(size(bam, "G") * 200 / threads)
         String dockerImage = "quay.io/biocontainers/clair3:1.0.10--py39h46983ab_0"   
     }
