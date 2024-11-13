@@ -1558,6 +1558,8 @@ task SelectVariants {
         outputPath: {description: "The location the output VCF file should be written.", category: "advanced"}
         intervals: {description: "Bed files or interval lists describing the regions to operate on.", category: "common"}
         selectTypeToInclude: {description: "Select only a certain type of variants from the input file.", category: "common"}
+        excludeFiltered: {description: "Remove all variants that do not have a PASS filter", category: "advanced"}
+        selectGenotype: {description: "The genotype to be selected", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
