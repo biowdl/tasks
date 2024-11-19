@@ -8,12 +8,13 @@ This document is user facing. Please word the changes in such a way
 that users understand how the changes affect the new version.
 -->
 
-version 5.3.0-dev
+version 6.0.0-dev
 ---------------------------
++ rtg Format and VcfEval tasks now handle reference as an array of files to enable caching.
++ Added --select-genotype and --exclude-filtered flags to GATK SelectVariants
 + Use softlinks to localise the database for centrifuge.
 + Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
-
 
 version 5.2.0
 ---------------------------
