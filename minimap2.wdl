@@ -101,6 +101,7 @@ task Mapping {
         Int? matchingScore
         Int? mismatchPenalty
         String? howToFindGTAG
+        String? readgroup
 
         Int cores = 8
         String memory = "24GiB"
@@ -126,6 +127,7 @@ task Mapping {
         ~{"-A " + matchingScore} \
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
+        ~{"-R '" + readgroup}~{false="" true="'" defined(readgroup)} \
         ~{referenceFile} \
         ~{queryFile} \
         | samtools sort \
