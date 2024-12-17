@@ -111,7 +111,7 @@ task Mapping {
     }
 
     command {
-        set -e
+        set -e -o pipefail
         mkdir -p "$(dirname ~{outputPrefix})"
         minimap2 \
         -a \
