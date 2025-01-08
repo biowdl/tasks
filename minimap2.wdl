@@ -93,6 +93,7 @@ task Mapping {
         Boolean skipSelfAndDualMappings = false
         Boolean addMDTagToSam = false
         Boolean secondaryAlignment = true
+        Boolean copyCommentsFromFastq = true
 
         Int? kmerSize
         Int? maxIntronLength
@@ -119,6 +120,7 @@ task Mapping {
         ~{true="-X" false="" skipSelfAndDualMappings} \
         ~{true="--MD" false="" addMDTagToSam} \
         --secondary=~{true="yes" false="no" secondaryAlignment} \
+        ~{true="-y" false="" copyCommentsFromFastq} \
         -t ~{cores} \
         ~{"-k " + kmerSize} \
         ~{"-G " + maxIntronLength} \
