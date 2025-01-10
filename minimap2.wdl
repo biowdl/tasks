@@ -89,11 +89,19 @@ task Mapping {
         Int additionalSortThreads = 1
         Int sortMemoryGb = 1
         Boolean nameSorted = false
+        # MM, ML, MN -> Methylation flags
+        # Also keep the following flags for Sequali to be able to run on the mapped bam file and get ONT information.
+        # ch -> channel
+        # st -> start time
+        # du -> duration
+        # dx -> Whether read was duplex
+        # pi -> Parent ID for split read
+
+        String tagsToKeep = "MM,ML,MN,ch,st,du,dx,pi"
 
         Boolean skipSelfAndDualMappings = false
         Boolean addMDTagToSam = false
         Boolean secondaryAlignment = true
-        Boolean copyCommentsFromFastq = true
 
         Int? kmerSize
         Int? maxIntronLength
@@ -111,16 +119,21 @@ task Mapping {
         String dockerImage = "quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:3161f532a5ea6f1dec9be5667c9efc2afdac6104-0"
     }
 
-    command {
+    # Always run data through samtools fastq. This supports both FASTQ and uBAM 
+    # files. It does remove any existing FASTQ comments, but this should not be
+    # problematic for most files.
+
+    command <<<
         set -e -o pipefail
         mkdir -p "$(dirname ~{outputPrefix})"
+        samtools fastq -T "~{tagsToKeep}" ~{queryFile} | \
         minimap2 \
         -a \
         -x ~{presetOption} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
         ~{true="--MD" false="" addMDTagToSam} \
         --secondary=~{true="yes" false="no" secondaryAlignment} \
-        ~{true="-y" false="" copyCommentsFromFastq} \
+        -y \
         -t ~{cores} \
         ~{"-k " + kmerSize} \
         ~{"-G " + maxIntronLength} \
@@ -131,7 +144,7 @@ task Mapping {
         ~{"-u " + howToFindGTAG} \
         ~{"-R '" + readgroup}~{false="" true="'" defined(readgroup)} \
         ~{referenceFile} \
-        ~{queryFile} \
+        - \
         | samtools sort \
         ~{true="-N" false="" nameSorted} \
         -@ ~{additionalSortThreads} \
@@ -139,7 +152,7 @@ task Mapping {
         -m ~{sortMemoryGb}G \
         -o ~{outputPrefix}.bam 
         samtools index ~{outputPrefix}.bam
-    }
+    >>>
 
     output {
         File bam = "~{outputPrefix}.bam"
@@ -168,6 +181,7 @@ task Mapping {
         retainMaxSecondaryAlignments: {description: "Retain at most N secondary alignments.", category: "advanced"}
         matchingScore: {description: "Matching score.", category: "advanced"}
         mismatchPenalty: {description: "Mismatch penalty.", category: "advanced"}
+        tagsToKeep: {description: "Tags to keep from the input unaligned BAM file.", category: "Advanced"}
         howToFindGTAG: {description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.", category: "common"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
