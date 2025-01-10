@@ -27,6 +27,7 @@ task Clair3 {
         File referenceFasta 
         File referenceFastaFai
         String outputPrefix 
+        String? sampleName
         File? modelTar
         String? builtinModel
         String platform
@@ -50,6 +51,7 @@ task Clair3 {
     --output=out \
     --threads=~{threads} \
     --platform=~{platform} \
+    ~{"--sample_name=" + sampleName} \
     ~{true="--include_all_ctgs" false ="" includeAllCtgs}  
     mv out/merge_output.vcf.gz ~{outputPrefix}.vcf.gz
     mv out/merge_output.vcf.gz.tbi ~{outputPrefix}.vcf.gz.tbi
