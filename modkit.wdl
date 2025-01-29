@@ -37,6 +37,7 @@ task Pileup {
         String logFilePath = "modkit.log"
 
         Int threads = 4
+        String memory = "16GiB"
 
     }
 
@@ -64,6 +65,7 @@ task Pileup {
     runtime {
         docker: dockerImage
         cpu: threads
+        memory: memory
 
     }
 }
