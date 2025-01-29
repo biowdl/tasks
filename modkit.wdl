@@ -36,8 +36,9 @@ task Pileup {
         Boolean combineMods = false
         String logFilePath = "modkit.log"
 
-        Int threads = 4
-        String memory = "16GiB"
+        Int threads = 8
+        String memory = "48GiB"
+        Int timeMinutes = 4320  # 3 Days
 
     }
 
@@ -66,6 +67,6 @@ task Pileup {
         docker: dockerImage
         cpu: threads
         memory: memory
-
+        time_minutes: timeMinutes
     }
 }
