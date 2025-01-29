@@ -48,7 +48,7 @@ task Pileup {
         modkit pileup \
         --threads ~{threads} \
         ~{"--interval-size " + intervalSize} \
-        ~{"--include-bed " + includeBed}
+        ~{"--include-bed " + includeBed} \
         --ref ~{referenceFasta} \
         ~{true="--cpg" false="" cpg} \
         ~{true="--combine-mods" false="" combineMods} \
