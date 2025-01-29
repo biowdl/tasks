@@ -46,7 +46,7 @@ task Sequali {
 
     runtime {
         cpu: threads
-        memory: "2GiB"
+        memory: "4GiB"
         docker: dockerImage
         time_minutes: 59
     }
