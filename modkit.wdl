@@ -56,6 +56,11 @@ task Pileup {
         ~{outputBed} 
     >>>
 
+    output {
+        File out = outputBed
+        File logFile = logFilePath
+    }
+
     runtime {
         docker: dockerImage
         cpu: threads
