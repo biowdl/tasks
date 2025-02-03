@@ -34,6 +34,9 @@ task Pileup {
 
         Boolean cpg = false
         Boolean combineMods = false
+        Boolean combineStrands = false
+        Boolean bedgraph = false
+        String? ignore
         String logFilePath = "modkit.log"
 
         Int threads = 8
@@ -50,9 +53,12 @@ task Pileup {
         --threads ~{threads} \
         ~{"--interval-size " + intervalSize} \
         ~{"--include-bed " + includeBed} \
+        ~{"--ignore " + ignore} \
         --ref ~{referenceFasta} \
         ~{true="--cpg" false="" cpg} \
         ~{true="--combine-mods" false="" combineMods} \
+        ~{true="--combine-strands" false="" combineStrands} \
+        ~{true="--bedgraph" false="" bedgraph} \
         --log-filepath ~{logFilePath} \
         ~{bam} \
         ~{outputBed} 
