@@ -65,7 +65,8 @@ task Pileup {
     >>>
 
     output {
-        File out = outputBed
+        File? out = outputBed  # Normal mode
+        Array[File] outFiles = glob(outputBed + "/*")  # Bedgraph mode
         File logFile = logFilePath
     }
 
