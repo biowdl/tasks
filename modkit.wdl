@@ -22,7 +22,6 @@ version 1.0
 
 task Pileup {
     input {
-        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
         File bam
         File bamIndex
         String outputBed = "output.bed"
@@ -42,6 +41,7 @@ task Pileup {
         Int threads = 8
         String memory = "48GiB"
         Int timeMinutes = 4320  # 3 Days
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
 
     }
 
@@ -75,5 +75,33 @@ task Pileup {
         cpu: threads
         memory: memory
         time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # input
+        bam: {description: "The input alignment file", category: "required"}
+        bamIndex: {description: "The index for the input alignment file", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        outputBed: {description: "The output name where the data should be placed.", category: "common"}
+
+        intervalSize: {description: "Sets the interval size", category: "advanced"}
+        includeBed: {description: "Bed file with regions to include", category: "advanced"}
+        cpg: {description: "Whether to call only at cpg sites", category: "advanced"}
+        combineMods: {description: "Whether to combine modifications in the output", category: "advanced"}
+        combineStrands: {description: "Whether to combine strands in the output", category: "advanced"}
+        bedgraph: {description: "Whether to create a folder instead with a bedgraph file", category: "advanced"}
+        ignore: {description: "Modification type to ignore. For example 'h'.", category: "advanced"}
+        logFilePath: {description: "Path where the log file should be written.", category: "advanced"}
+
+        threads: {description: "The number of threads to use for variant calling.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"} 
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    
+        # output
+        out: {description: "The output bed files. Not available when bedgraph = true."}
+        outFiles: {description: "Output files when bedgraph = true."}
+        logFile: {description: "The generated log file."}
     }
 }

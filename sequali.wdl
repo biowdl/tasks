@@ -24,9 +24,12 @@ task Sequali {
     input {
         File reads
         File? mate_reads 
-        Int threads = 2
         String outDir = "."
+
+        Int threads = 2
+        String memory = "4GiB"
         String dockerImage = "quay.io/biocontainers/sequali:0.12.0--py312hf67a6ed_0"
+        Int timeMinutes = 59
     } 
 
     command <<<
@@ -46,8 +49,24 @@ task Sequali {
 
     runtime {
         cpu: threads
-        memory: "4GiB"
+        memory: memory
         docker: dockerImage
-        time_minutes: 59
+        time_minutes: timeMinutes
+    }
+    parameter_meta {
+        # inputs
+        reads: {description: "A FASTQ or BAM file.", category: "required"}
+        mate_reads: {description: "FASTQ mate file"}
+        threads: {description: "The number of cores to use.", category: "advanced"}
+
+        outDir: {description: "The path to write the output to.", catgory: "required"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        html: {description: "HTML report file."}
+        json: {description: "JSON report file for use with MultiQC."}
     }
 }

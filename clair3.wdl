@@ -69,4 +69,26 @@ task Clair3 {
         docker: dockerImage
     } 
 
+    parameter_meta {
+        # input
+        bam: {description: "The input alignment file", category: "required"}
+        bamIndex: {description: "The index for the input alignment file", category: "required"}
+        referenceFasta: {description: "The reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+        outputPrefix: {description: "The output prefix where the data should be placed.", category: "common"}
+        modelTar: {description: "The TAR file with the model", category: "common"}
+        builtinModel: {description: "The builtin model name (in case a tar file is not used)", category: "common"}
+        sampleName: {description: "The name of the sample in the VCF", category: "common"}
+        platform: {description: "platform setting for clair3.", category: "required"}
+        includeAllCtgs: {description: "whether or not to call all contigs in the reference", category: "advanced"}
+        threads: {description: "The number of threads to use for variant calling.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"} 
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+    
+        # output
+        vcf: {description: "Output VCF file."}
+        vcfIndex: {description: "Output VCF index."}
+
+    }
 }
