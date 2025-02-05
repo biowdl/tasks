@@ -41,20 +41,20 @@ task Clair3 {
     String modelArg = "~{if defined(modelTar) then basename(select_first([modelTar]), '.tar.gz') else builtinModel}"
 
     command <<<
-    set -e
-    ~{if defined(modelTar) then "tar -xvf " + modelTar else "" }
-    mkdir -p $(dirname ~{outputPrefix})
-    run_clair3.sh \
-    --model=~{modelArg} \
-    --ref_fn=~{referenceFasta} \
-    --bam_fn=~{bam} \
-    --output=out \
-    --threads=~{threads} \
-    --platform=~{platform} \
-    ~{"--sample_name=" + sampleName} \
-    ~{true="--include_all_ctgs" false ="" includeAllCtgs}  
-    mv out/merge_output.vcf.gz ~{outputPrefix}.vcf.gz
-    mv out/merge_output.vcf.gz.tbi ~{outputPrefix}.vcf.gz.tbi
+        set -e
+        ~{if defined(modelTar) then "tar -xvf " + modelTar else "" }
+        mkdir -p $(dirname ~{outputPrefix})
+        run_clair3.sh \
+        --model=~{modelArg} \
+        --ref_fn=~{referenceFasta} \
+        --bam_fn=~{bam} \
+        --output=out \
+        --threads=~{threads} \
+        --platform=~{platform} \
+        ~{"--sample_name=" + sampleName} \
+        ~{true="--include_all_ctgs" false ="" includeAllCtgs}  
+        mv out/merge_output.vcf.gz ~{outputPrefix}.vcf.gz
+        mv out/merge_output.vcf.gz.tbi ~{outputPrefix}.vcf.gz.tbi
     >>>
 
     output {
