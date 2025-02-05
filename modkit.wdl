@@ -39,8 +39,8 @@ task Pileup {
         String logFilePath = "modkit.log"
 
         Int threads = 8
-        String memory = "48GiB"
-        Int timeMinutes = 4320  # 3 Days
+        String memory = "4GiB"
+        Int timeMinutes = 2880 / threads  # 2 Days / threads
         String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
 
     }
