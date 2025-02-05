@@ -24,7 +24,7 @@ task Pileup {
     input {
         File bam
         File bamIndex
-        String outputBed = "output.methyl.bed"
+        String outputBed = "output.bedMethyl"
         File referenceFasta
         File referenceFastaFai
 
