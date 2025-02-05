@@ -53,6 +53,7 @@ task Sequali {
         docker: dockerImage
         time_minutes: timeMinutes
     }
+
     parameter_meta {
         # inputs
         reads: {description: "A FASTQ or BAM file.", category: "required"}
