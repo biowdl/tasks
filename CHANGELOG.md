@@ -10,6 +10,12 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Add Sequali task.
++ Add Clair3 task.
++ Add Modkit task.
++ Modify minimap2 task to accept ubam input, including transfer of methylation
+  tags. Also sort the BAM output file by coordinate.
++ Update DeepVariant container and update resource requirements.
 + rtg Format and VcfEval tasks now handle reference as an array of files to enable caching.
 + Added --select-genotype and --exclude-filtered flags to GATK SelectVariants
 + Use softlinks to localise the database for centrifuge.

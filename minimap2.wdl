@@ -81,52 +81,82 @@ task Indexing {
 task Mapping {
     input {
         String presetOption
-        Int kmerSize = 15
-        Boolean skipSelfAndDualMappings = false
-        Boolean outputSam = false
         String outputPrefix
-        Boolean addMDTagToSam = false
-        Boolean secondaryAlignment = false
         File referenceFile
         File queryFile
+        
+        Int compressionLevel = 1 
+        Int additionalSortThreads = 1
+        Int sortMemoryGb = 1
+        Boolean nameSorted = false
+        # MM, ML, MN -> Methylation flags
+        # Also keep the following flags for Sequali to be able to run on the mapped bam file and get ONT information.
+        # ch -> channel
+        # st -> start time
+        # du -> duration
+        # dx -> Whether read was duplex
+        # pi -> Parent ID for split read
 
+        String tagsToKeep = "MM,ML,MN,ch,st,du,dx,pi"
+
+        Boolean skipSelfAndDualMappings = false
+        Boolean addMDTagToSam = false
+        Boolean secondaryAlignment = true
+
+        Int? kmerSize
         Int? maxIntronLength
         Int? maxFragmentLength
         Int? retainMaxSecondaryAlignments
         Int? matchingScore
         Int? mismatchPenalty
         String? howToFindGTAG
+        String? readgroup
 
-        Int cores = 4
-        String memory = "30GiB"
+        Int cores = 8
+        String memory = "24GiB"
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 200 / cores)
-        String dockerImage = "quay.io/biocontainers/minimap2:2.20--h5bf99c6_0"
+        # Minimap 2.28 samtools 1.20
+        String dockerImage = "quay.io/biocontainers/mulled-v2-66534bcbb7031a148b13e2ad42583020b9cd25c4:3161f532a5ea6f1dec9be5667c9efc2afdac6104-0"
     }
 
-    command {
-        set -e
+    # Always run data through samtools fastq. This supports both FASTQ and uBAM 
+    # files. It does remove any existing FASTQ comments, but this should not be
+    # problematic for most files.
+
+    command <<<
+        set -e -o pipefail
         mkdir -p "$(dirname ~{outputPrefix})"
+        samtools fastq -T "~{tagsToKeep}" ~{queryFile} | \
         minimap2 \
+        -a \
         -x ~{presetOption} \
-        -k ~{kmerSize} \
         ~{true="-X" false="" skipSelfAndDualMappings} \
-        ~{true="-a" false="" outputSam} \
-        -o ~{outputPrefix} \
         ~{true="--MD" false="" addMDTagToSam} \
         --secondary=~{true="yes" false="no" secondaryAlignment} \
+        -y \
         -t ~{cores} \
+        ~{"-k " + kmerSize} \
         ~{"-G " + maxIntronLength} \
         ~{"-F " + maxFragmentLength} \
         ~{"-N " + retainMaxSecondaryAlignments} \
         ~{"-A " + matchingScore} \
         ~{"-B " + mismatchPenalty} \
         ~{"-u " + howToFindGTAG} \
+        ~{"-R '" + readgroup}~{false="" true="'" defined(readgroup)} \
         ~{referenceFile} \
-        ~{queryFile}
-    }
+        - \
+        | samtools sort \
+        ~{true="-N" false="" nameSorted} \
+        -@ ~{additionalSortThreads} \
+        -l ~{compressionLevel} \
+        -m ~{sortMemoryGb}G \
+        -o ~{outputPrefix}.bam 
+        samtools index ~{outputPrefix}.bam
+    >>>
 
     output {
-        File alignmentFile = outputPrefix
+        File bam = "~{outputPrefix}.bam"
+        File bamIndex = "~{outputPrefix}.bam.bai"
     }
 
     runtime {
@@ -141,7 +171,6 @@ task Mapping {
         presetOption: {description: "This option applies multiple options at the same time.", category: "common"}
         kmerSize: {description: "K-mer size (no larger than 28).", category: "advanced"}
         skipSelfAndDualMappings: {description: "Skip self and dual mappings (for the all-vs-all mode).", category: "advanced"}
-        outputSam: {description: "Output in the sam format.", category: "common"}
         outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
         addMDTagToSam: {description: "Adds a MD tag to the sam output file.", category: "common"}
         secondaryAlignment: {description: "Whether to output secondary alignments.", category: "advanced"}
@@ -152,6 +181,7 @@ task Mapping {
         retainMaxSecondaryAlignments: {description: "Retain at most N secondary alignments.", category: "advanced"}
         matchingScore: {description: "Matching score.", category: "advanced"}
         mismatchPenalty: {description: "Mismatch penalty.", category: "advanced"}
+        tagsToKeep: {description: "Tags to keep from the input unaligned BAM file.", category: "Advanced"}
         howToFindGTAG: {description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.", category: "common"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
@@ -159,6 +189,7 @@ task Mapping {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        alignmentFile: {description: "Mapping and alignment between collections of dna sequences file."}
+        bam: {description: "Mapping and alignment between collections of dna sequences file in BAM format."}
+        bamIndex: {description: "Accompanying index file for the BAM file."}
     }
 }

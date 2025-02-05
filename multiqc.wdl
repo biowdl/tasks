@@ -58,7 +58,7 @@ task MultiQC {
 
         String? memory
         Int timeMinutes = 10 + ceil(size(reports, "GiB") * 8)
-        String dockerImage = "quay.io/biocontainers/multiqc:1.9--py_1"
+        String dockerImage = "quay.io/biocontainers/multiqc:1.25.1--pyhdfd78af_0"
     }
 
     Int memoryGb = 2 + ceil(size(reports, "GiB"))

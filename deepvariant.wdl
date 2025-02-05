@@ -27,19 +27,19 @@ task RunDeepVariant {
         File inputBam
         File inputBamIndex
         String modelType
-        String outputVcf
+        String outputVcf = "sample.vcf.gz"
         String? postprocessVariantsExtraArgs
         File? customizedModel
-        Int? numShards
+        Int numShards = 4
         String? outputGVcf
         String? outputGVcfIndex
         File? regions
         String? sampleName
         Boolean? VCFStatsReport = true
 
-        String memory = "3GiB"
+        String memory = "48GiB"
         Int timeMinutes = 5000
-        String dockerImage = "google/deepvariant:1.0.0"
+        String dockerImage = "google/deepvariant:1.6.1"
     }
 
     command {
@@ -62,6 +62,7 @@ task RunDeepVariant {
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
+        cpu: numShards
     }
 
     output {
