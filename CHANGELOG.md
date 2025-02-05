@@ -16,10 +16,11 @@ version 6.0.0-dev
 + Modify minimap2 task to accept ubam input, including transfer of methylation
   tags. Also sort the BAM output file by coordinate.
 + Update DeepVariant container and update resource requirements.
++ rtg Format and VcfEval tasks now handle reference as an array of files to enable caching.
++ Added --select-genotype and --exclude-filtered flags to GATK SelectVariants
 + Use softlinks to localise the database for centrifuge.
 + Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
-
 
 version 5.2.0
 ---------------------------
