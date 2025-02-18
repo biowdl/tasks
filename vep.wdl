@@ -1,0 +1,74 @@
+version 1.0
+
+# Copyright (c) 2017 Leiden University Medical Center
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+task Vep {
+    input {
+        File inputFile
+        String outputPath = "vep.annotated.vcf.gz"
+        File cacheTar
+        File? pluginsTar
+        String? species 
+        Array[String] plugins = []
+        Boolean refseq = false 
+        Boolean merged = false
+
+        Boolean everything = false
+        Boolean symbol = false
+
+    }     
+
+    command <<< 
+        set -e
+        mkdir vep_cache
+        tar -x --directory vep_cache -f ~{cacheTar}
+        ~{"tar -x --directory vep_cache -f " + pluginsTar}
+
+        # Output all stats files by default for MultiQC integration
+        vep \
+        --input_file ~{inputFile} \
+        ~{"--species " + species} \ 
+        --stats_html --stats_text \
+        --dir vep_cache \    # Output all stats files by default for MultiQC integration
+ 
+        --offline \
+        ~{true="--plugin" false="" length(plugins) > 0} {sep=" --plugin " plugins} \
+        --vcf \
+        --compress-output bgzip \
+        ~{true="--refseq" false="" refseq} \
+        ~{true="--merged" false="" merged} \
+        \
+        ~{true="--everything" false="" everything} \
+        ~{true="--symbol" false="" symbol} \
+
+
+        # Cleanup the tar extract to save filesystem space
+        rm -rf vep_cache
+        
+
+    >>>
+
+    output {
+        File outputFile = outputPath
+        File statsHtml = outputPath + "_summary.html"
+    }
+
+}
