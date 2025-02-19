@@ -55,7 +55,7 @@ task Vep {
         --offline \
         ~{true="--plugin" false="" length(plugins) > 0} ~{sep=" --plugin " plugins} \
         --vcf \
-        --compress-output bgzip \
+        --compress_output bgzip \
         ~{true="--refseq" false="" refseq} \
         ~{true="--merged" false="" merged} \
         \
