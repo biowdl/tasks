@@ -49,7 +49,7 @@ task Vep {
         # Output all stats files by default for MultiQC integration
         vep \
         --input_file ~{inputFile} \
-        ~{"--species " + species} \ 
+        ~{"--species " + species} \
         --stats_html --stats_text \
         --dir vep_cache \
         --offline \
@@ -58,7 +58,6 @@ task Vep {
         --compress_output bgzip \
         ~{true="--refseq" false="" refseq} \
         ~{true="--merged" false="" merged} \
-        \
         ~{true="--everything" false="" everything} \
         ~{true="--symbol" false="" symbol} \
 
