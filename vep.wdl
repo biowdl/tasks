@@ -53,7 +53,7 @@ task Vep {
         --stats_html --stats_text \
         --dir vep_cache \
         --offline \
-        ~{true="--plugin" false="" length(plugins) > 0} {sep=" --plugin " plugins} \
+        ~{true="--plugin" false="" length(plugins) > 0} ~{sep=" --plugin " plugins} \
         --vcf \
         --compress-output bgzip \
         ~{true="--refseq" false="" refseq} \
