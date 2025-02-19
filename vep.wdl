@@ -36,7 +36,7 @@ task Vep {
 
         String memory = "8GiB"
         # Account time for unpacking the cache.
-        Int timeMinutes = 1 + ceil(size(cacheTar, GiB)) + ceil(size(inputFile, "MiB") * 3)
+        Int timeMinutes = 1 + ceil(size(cacheTar, "GiB")) + ceil(size(inputFile, "MiB") * 3)
         String dockerImage = "quay.io/biocontainers/ensembl-vep:113.3--pl5321h2a3209d_0"
     }
 
@@ -51,8 +51,7 @@ task Vep {
         --input_file ~{inputFile} \
         ~{"--species " + species} \ 
         --stats_html --stats_text \
-        --dir vep_cache \    # Output all stats files by default for MultiQC integration
- 
+        --dir vep_cache \
         --offline \
         ~{true="--plugin" false="" length(plugins) > 0} {sep=" --plugin " plugins} \
         --vcf \
