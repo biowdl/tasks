@@ -49,6 +49,7 @@ task Vep {
         # Output all stats files by default for MultiQC integration
         vep \
         --input_file ~{inputFile} \
+        --output_file ~{outputPath} \
         ~{"--species " + species} \
         --stats_html --stats_text \
         --dir vep_cache \
@@ -71,6 +72,7 @@ task Vep {
     output {
         File outputFile = outputPath
         File statsHtml = outputPath + "_summary.html"
+        File statsTxt = outputPath + "_summary.txt"
     }
 
     runtime {
