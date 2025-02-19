@@ -43,6 +43,7 @@ task Vep {
     command <<< 
         set -e
         mkdir vep_cache
+        mkdir -p "$(dirname ~{outputPath})"
         tar -x --directory vep_cache -f ~{cacheTar}
         ~{"tar -x --directory vep_cache -f " + pluginsTar}
 
