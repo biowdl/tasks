@@ -41,12 +41,14 @@ task Vep {
     }
 
     command <<< 
-        set -e
+        set -eu
         mkdir vep_cache
         mkdir -p "$(dirname ~{outputPath})"
         tar -x --directory vep_cache -f ~{cacheTar}
         ~{"tar -x --directory vep_cache -f " + pluginsTar}
 
+        # Make sure vep can error, so the removal always succeeds.
+        set +e 
         # Output all stats files by default for MultiQC integration
         vep \
         --input_file ~{inputFile} \
@@ -61,13 +63,14 @@ task Vep {
         ~{true="--refseq" false="" refseq} \
         ~{true="--merged" false="" merged} \
         ~{true="--everything" false="" everything} \
-        ~{true="--symbol" false="" symbol} \
+        ~{true="--symbol" false="" symbol} 
 
-
+        VEP_EXIT_CODE=$?
+        set -e
         # Cleanup the tar extract to save filesystem space
         rm -rf vep_cache
         
-
+        exit $VEP_EXIT_CODE
     >>>
 
     output {
@@ -83,8 +86,23 @@ task Vep {
     }
 
     parameter_meta {
+         # input
+        inputFile: {description: "The VCF to annotate.", category: "required"}
+        outputPath: {description: "Where to put the output file", category: "advanced"}
+        cacheTar: {description: "A TAR archive containing the cache. The TAR archives from the VEP website work.", category: "required"}
+        pluginsTar: {description: "A TAR file with custom plugins.", category: "advanced"}
+        refseq: {description: "Use the refseq cache", category: "common"}
+        merged: {description: "Use the merged cache", category: "common"}
+        everything: {description: "Use all annotation sources bundeld with vep.", category: "common"}
+        symbol: {description: "Add the gene symbol to the output where available", category: "advanced"}
+
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # output
+        outputFile: {description: "The annotated VEP VCF file."}
+        statsHtml: {description: "The VEP summary stats HTML file."}
+        statsTxt: {description: "The VEP summary stats TXT file."}
     }
 }
