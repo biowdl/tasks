@@ -91,6 +91,8 @@ task Vep {
         outputPath: {description: "Where to put the output file", category: "advanced"}
         cacheTar: {description: "A TAR archive containing the cache. The TAR archives from the VEP website work.", category: "required"}
         pluginsTar: {description: "A TAR file with custom plugins.", category: "advanced"}
+        species: {description: "Which species cache to use", category: "common"}
+        plugins: {description: "Which plugins to use", category: "common"}
         refseq: {description: "Use the refseq cache", category: "common"}
         merged: {description: "Use the merged cache", category: "common"}
         everything: {description: "Use all annotation sources bundeld with vep.", category: "common"}
