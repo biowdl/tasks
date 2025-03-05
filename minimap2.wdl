@@ -183,6 +183,11 @@ task Mapping {
         mismatchPenalty: {description: "Mismatch penalty.", category: "advanced"}
         tagsToKeep: {description: "Tags to keep from the input unaligned BAM file.", category: "Advanced"}
         howToFindGTAG: {description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.", category: "common"}
+        compressionLevel: {description: "compressionLevel for the output file", category: "advanced"}
+        additionalSortThreads: {description: "Extra sorting threads used for samtools sort", category: "advanced"}
+        sortMemoryGb: {description: "Amount of memory set for sorting", category: "advanced"}
+        nameSorted: {description: "Output a name sorted file instead", category: "common"}
+
         cores: {description: "The number of cores to be used.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}

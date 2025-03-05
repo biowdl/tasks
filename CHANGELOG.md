@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Add VEP task.
 + Add Sequali task.
 + Add Clair3 task.
 + Add Modkit task.
