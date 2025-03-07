@@ -520,7 +520,6 @@ task Split {
         String outputPath
         String? unaccountedPath
         String filenameFormat = "%!.%."
-        Boolean writeIndex = true
 
         Int compressionLevel = 1
 
@@ -538,7 +537,7 @@ task Split {
             --output-fmt-option level=~{compressionLevel} \
             -f "~{outputPath}/rg/~{filenameFormat}" \
             ~{"-u " + unaccountedPath} \
-            ~{true="--write-index" false="" writeIndex} \
+            --write-index \
             ~{inputBam}
     }
 
@@ -563,7 +562,6 @@ task Split {
         # Optional parameters
         unaccountedPath: {description: "The location to write reads to which are not detected as being part of an existing read group.", category: "common"}
         filenameFormat: {description: "Format of the filename, the following tokens can be used: %% a literal % sign, %* basename,  %# @RG index, %! @RG ID, %. filename extension for output format", category: "common"}
-        writeIndex: {description: "Automatically index outputs", category: "advanced"}
         compressionLevel: {description: "Set compression level when writing gz or bgzf fastq files.", category: "advanced"}
 
         # outputs
