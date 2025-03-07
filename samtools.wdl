@@ -517,7 +517,7 @@ task Sort {
 task Split {
     input {
         File inputBam
-        Directory outputPath
+        String outputPath
         String? unaccountedPath
         String? filenameFormat = "%!.%."
         String? outputFormat = "bam"
