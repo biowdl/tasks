@@ -544,6 +544,7 @@ task Split {
 
     output {
         Array[File] splitBam = glob(outputPath + "/rg/*.bam")
+        Array[File] splitBamIndex = glob(outputPath + "/rg/*.bai")
         File? unaccounted = unaccountedPath
     }
 
@@ -566,7 +567,8 @@ task Split {
         compressionLevel: {description: "Set compression level when writing gz or bgzf fastq files.", category: "advanced"}
 
         # outputs
-        split: {description: "BAM file split by read groups"}
+        splitBam: {description: "BAM file split by read groups"}
+        splitBamIndex: {description: "BAM indexes"}
         unaccounted: {description: "Reads with no RG tag or an unrecognised RG tag."}
     }
 }
