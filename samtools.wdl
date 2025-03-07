@@ -519,8 +519,8 @@ task Split {
         File inputBam
         String outputPath
         String? unaccountedPath
-        String? filenameFormat = "%!.%."
-        String? outputFormat = "bam"
+        String filenameFormat = "%!.%."
+        String outputFormat = "bam"
         Boolean writeIndex = false
 
         Int threads = 1
