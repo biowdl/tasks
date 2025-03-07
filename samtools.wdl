@@ -543,7 +543,7 @@ task Split {
 
     output {
         Array[File] splitBam = glob(outputPath + "/rg/*.bam")
-        Array[File] splitBamIndex = glob(outputPath + "/rg/*.bai")
+        Array[File] splitBamIndex = glob(outputPath + "/rg/*.bam.csi")
         File? unaccounted = unaccountedPath
     }
 
