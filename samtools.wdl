@@ -558,10 +558,10 @@ task Split {
         outputPath: {description: "Directory to store output bams", category: "required"}
 
         # Optional parameters
-        unaccountedPath: {description: "The location to write reads to which are not detected as being part of an existing read group.", category: "optional"}
-        filenameFormat: {description: "Format of the filename, the following tokens can be used: %% a literal % sign, %* basename,  %# @RG index, %! @RG ID, %. filename extension for output format", category: "format"}
-        outputFormat: {description: "Format of output files (SAM, BAM, CRAM)", category: "format"}
-        writeIndex: {description: "Automatically index outputs", category: "indexing"}
+        unaccountedPath: {description: "The location to write reads to which are not detected as being part of an existing read group.", category: "common"}
+        filenameFormat: {description: "Format of the filename, the following tokens can be used: %% a literal % sign, %* basename,  %# @RG index, %! @RG ID, %. filename extension for output format", category: "common"}
+        outputFormat: {description: "Format of output files (SAM, BAM, CRAM)", category: "advanced"}
+        writeIndex: {description: "Automatically index outputs", category: "advanced"}
 
         # outputs
         split: {description: "BAM file split by read groups"}
