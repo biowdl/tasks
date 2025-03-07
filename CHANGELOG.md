@@ -22,6 +22,7 @@ version 6.0.0-dev
 + Use softlinks to localise the database for centrifuge.
 + Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
++ New samtools task: split.
 
 version 5.2.0
 ---------------------------
