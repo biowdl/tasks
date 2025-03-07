@@ -514,6 +514,61 @@ task Sort {
     }
 }
 
+task Split {
+    input {
+        File inputBam
+        Directory outputPath
+        String? unaccountedPath
+        String? filenameFormat = "%!.%."
+        String? outputFormat = "bam"
+        Boolean writeIndex = false
+
+        Int threads = 1
+        String memory = "1GiB"
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
+        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+    }
+
+    command {
+        set -e
+        mkdir -p "~{outputPath}"
+        samtools split \
+            --output-fmt ~{outputFormat} \
+            -f "~{outputPath}/rg/~{filenameFormat}" \
+            ~{"-u " + unaccountedPath} \
+            ~{true="--write-index" false="" writeIndex} \
+            ~{inputBam}
+    }
+
+    output {
+        Array[File] split = glob(outputPath + "/rg/*." + outputFormat)
+        File? unaccounted = unaccountedPath
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        docker: dockerImage
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The bam file to split.", category: "required"}
+        outputPath: {description: "Directory to store output bams", category: "required"}
+
+        # Optional parameters
+        unaccountedPath: {description: "The location to write reads to which are not detected as being part of an existing read group.", category: "optional"}
+        filenameFormat: {description: "Format of the filename, the following tokens can be used: %% a literal % sign, %* basename,  %# @RG index, %! @RG ID, %. filename extension for output format", category: "format"}
+        outputFormat: {description: "Format of output files (SAM, BAM, CRAM)", category: "format"}
+        writeIndex: {description: "Automatically index outputs", category: "indexing"}
+
+        # outputs
+        split: {description: "BAM file split by read groups"}
+        unaccounted: {description: "Reads with no RG tag or an unrecognised RG tag."}
+    }
+}
+
 task Tabix {
     input {
         File inputFile
