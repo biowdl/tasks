@@ -537,6 +537,7 @@ task Split {
             --output-fmt-option level=~{compressionLevel} \
             -f "~{outputPath}/rg/~{filenameFormat}" \
             ~{"-u " + unaccountedPath} \
+            --threads ~{threads} \
             --write-index \
             ~{inputBam}
     }
