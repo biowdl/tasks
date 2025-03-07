@@ -523,6 +523,8 @@ task Split {
         String outputFormat = "bam"
         Boolean writeIndex = false
 
+        Int compressionLevel = 1
+
         Int threads = 1
         String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
@@ -534,6 +536,7 @@ task Split {
         mkdir -p "~{outputPath}"
         samtools split \
             --output-fmt ~{outputFormat} \
+            --output-fmt-option level=~{compressionLevel} \
             -f "~{outputPath}/rg/~{filenameFormat}" \
             ~{"-u " + unaccountedPath} \
             ~{true="--write-index" false="" writeIndex} \
@@ -562,6 +565,7 @@ task Split {
         filenameFormat: {description: "Format of the filename, the following tokens can be used: %% a literal % sign, %* basename,  %# @RG index, %! @RG ID, %. filename extension for output format", category: "common"}
         outputFormat: {description: "Format of output files (SAM, BAM, CRAM)", category: "advanced"}
         writeIndex: {description: "Automatically index outputs", category: "advanced"}
+        compressionLevel: {description: "Set compression level when writing gz or bgzf fastq files.", category: "advanced"}
 
         # outputs
         split: {description: "BAM file split by read groups"}
