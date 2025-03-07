@@ -520,7 +520,6 @@ task Split {
         String outputPath
         String? unaccountedPath
         String filenameFormat = "%!.%."
-        String outputFormat = "bam"
         Boolean writeIndex = true
 
         Int compressionLevel = 1
@@ -535,7 +534,7 @@ task Split {
         set -e
         mkdir -p "~{outputPath}"
         samtools split \
-            --output-fmt ~{outputFormat} \
+            --output-fmt bam \
             --output-fmt-option level=~{compressionLevel} \
             -f "~{outputPath}/rg/~{filenameFormat}" \
             ~{"-u " + unaccountedPath} \
@@ -544,7 +543,7 @@ task Split {
     }
 
     output {
-        Array[File] split = glob(outputPath + "/rg/*." + outputFormat)
+        Array[File] splitBam = glob(outputPath + "/rg/*.bam")
         File? unaccounted = unaccountedPath
     }
 
@@ -563,7 +562,6 @@ task Split {
         # Optional parameters
         unaccountedPath: {description: "The location to write reads to which are not detected as being part of an existing read group.", category: "common"}
         filenameFormat: {description: "Format of the filename, the following tokens can be used: %% a literal % sign, %* basename,  %# @RG index, %! @RG ID, %. filename extension for output format", category: "common"}
-        outputFormat: {description: "Format of output files (SAM, BAM, CRAM)", category: "advanced"}
         writeIndex: {description: "Automatically index outputs", category: "advanced"}
         compressionLevel: {description: "Set compression level when writing gz or bgzf fastq files.", category: "advanced"}
 
