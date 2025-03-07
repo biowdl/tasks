@@ -521,7 +521,7 @@ task Split {
         String? unaccountedPath
         String filenameFormat = "%!.%."
         String outputFormat = "bam"
-        Boolean writeIndex = false
+        Boolean writeIndex = true
 
         Int compressionLevel = 1
 
