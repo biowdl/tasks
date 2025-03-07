@@ -531,7 +531,7 @@ task Split {
 
     command {
         set -e
-        mkdir -p "~{outputPath}"
+        mkdir -p "~{outputPath}/rg/"
         samtools split \
             --output-fmt bam \
             --output-fmt-option level=~{compressionLevel} \
