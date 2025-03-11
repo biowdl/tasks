@@ -167,7 +167,7 @@ task Fastq {
 
         Int threads = 1
         String memory = "1GiB"
-        Int timeMinutes = 1 + ceil(size(inputBam) * 2)
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
     }
 
