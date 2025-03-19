@@ -89,7 +89,7 @@ task Vep {
          # input
         inputFile: {description: "The VCF to annotate.", category: "required"}
         outputPath: {description: "Where to put the output file", category: "advanced"}
-        cacheTar: {description: "A TAR archive containing the cache. The TAR archives from the VEP website work.", category: "required"}
+        cacheTar: {description: "A TAR archive containing the cache. The TAR archives from the VEP website work (http://www.ensembl.org/info/docs/tools/vep/script/vep_cache.html)", category: "required"}
         pluginsTar: {description: "A TAR file with custom plugins.", category: "advanced"}
         species: {description: "Which species cache to use", category: "common"}
         plugins: {description: "Which plugins to use", category: "common"}
