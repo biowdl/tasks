@@ -174,6 +174,7 @@ task Fastq {
     command {
         set -e
         mkdir -p "$(dirname ~{outputRead1})"
+        samtools collate -u -O ~{inputBam} | \
         samtools fastq \
         ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
         ~{"-2 " + outputRead2} \
@@ -184,8 +185,7 @@ task Fastq {
         ~{true="-N" false="-n" appendReadNumber} \
         ~{true="-O" false="" outputQuality} \
         ~{"-c " + compressionLevel} \
-        ~{"--threads " + threads} \
-        ~{inputBam}
+        ~{"--threads " + threads}
     }
 
     output {
