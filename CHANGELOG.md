@@ -22,6 +22,7 @@ version 6.0.0-dev
 + Use softlinks to localise the database for centrifuge.
 + Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
++ Added `samtools.Quickcheck` to allow failing on truncated files early.
 
 version 5.2.0
 ---------------------------
