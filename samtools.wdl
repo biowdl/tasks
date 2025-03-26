@@ -456,9 +456,6 @@ task Quickcheck {
     input {
         File inputBam
 
-        Int threads = 1
-        Int memoryGb = 1
-        Int timeMinutes = 1
         String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
     }
 
@@ -472,9 +469,7 @@ task Quickcheck {
     }
 
     runtime {
-        cpu: threads
-        memory: "~{memoryGb}GiB"
-        time_minutes: timeMinutes
+        time_minutes: 5
         docker: dockerImage
     }
 
@@ -482,9 +477,6 @@ task Quickcheck {
         # inputs
         inputBam: {description: "The input BAM/SAM/CRAM file.", category: "required"}
 
-        threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
-        memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
