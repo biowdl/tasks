@@ -469,7 +469,9 @@ task Quickcheck {
     }
 
     runtime {
+        cpu: 1
         time_minutes: 5
+        memory: "1GiB"
         docker: dockerImage
     }
 
