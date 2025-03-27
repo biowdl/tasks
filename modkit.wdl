@@ -25,6 +25,7 @@ task Pileup {
         File bam
         File bamIndex
         String outputBed = "output.bedMethyl"
+        String outputBedGraph = "m_CG0_combined.bedgraph"
         File referenceFasta
         File referenceFastaFai
 
@@ -34,7 +35,6 @@ task Pileup {
         Boolean cpg = false
         Boolean combineMods = false
         Boolean combineStrands = false
-        Boolean bedgraph = false
         String? ignore
         String logFilePath = "modkit.log"
 
@@ -42,7 +42,6 @@ task Pileup {
         String memory = "4GiB"
         Int timeMinutes = 2880 / threads  # 2 Days / threads
         String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
-
     }
 
     command <<<
@@ -58,15 +57,17 @@ task Pileup {
         ~{true="--cpg" false="" cpg} \
         ~{true="--combine-mods" false="" combineMods} \
         ~{true="--combine-strands" false="" combineStrands} \
-        ~{true="--bedgraph" false="" bedgraph} \
         --log-filepath ~{logFilePath} \
         ~{bam} \
-        ~{outputBed} 
+         - | tee ~{outputBed} | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > ~{outputBedGraph}
     >>>
 
+    # You can use modkit pileup ${bam_path} - | tee out.bedmethyl | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > out.bg to get both outputs at once without running anything twice.
+    # https://github.com/nanoporetech/modkit/issues/210#issuecomment-2181706374
+
     output {
-        File? out = outputBed  # Normal mode
-        Array[File] outFiles = glob(outputBed + "/*")  # Bedgraph mode
+        File out = outputBed  # Normal mode
+        File outFiles = outputBedGraph # Bedgraph mode
         File logFile = logFilePath
     }
 
