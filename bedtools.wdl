@@ -267,6 +267,10 @@ task Intersect {
 
         File? faidx # Giving a faidx file will set the sorted option.
 
+        Boolean writeA = false
+        Boolean writeB = false
+        Boolean stranded = false
+
         String memory = "~{512 + ceil(size([regionsA, regionsB], "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size([regionsA, regionsB], "GiB"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
@@ -276,10 +280,14 @@ task Intersect {
 
     command {
         set -e
+        mkdir -p "$(dirname ~{outputBed})"
         ~{"cut -f1,2 " + faidx} ~{true="> sorted.genome" false ="" sorted}
         bedtools intersect \
         -a ~{regionsA} \
         -b ~{regionsB} \
+        ~{true="-wa" false="" writeA} \
+        ~{true="-wb" false="" writeB} \
+        ~{true="-s" false="" stranded} \
         ~{true="-sorted" false="" sorted} \
         ~{true="-g sorted.genome" false="" sorted} \
         > ~{outputBed}
@@ -301,6 +309,11 @@ task Intersect {
         regionsB: {description: "Region file b to intersect.", category: "required"}
         outputBed: {description: "The path to write the output to.", category: "advanced"}
         faidx: {description: "The fasta index (.fai) file that is used to create the genome file required for sorted output. Implies sorted option.", category: "common"}
+
+        writeA: {description: "Write the original entry in A for each overlap.", category: "advanced"}
+        writeB: {description: "Write the original entry in B for each overlap. Useful for knowing what A overlaps.", category: "advanced"}
+        stranded: {description: "Force “strandedness”. That is, only report hits in B that overlap A on the same strand. By default, overlaps are reported without respect to strand.", category: "advanced"}
+
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
