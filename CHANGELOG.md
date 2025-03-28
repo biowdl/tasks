@@ -23,6 +23,7 @@ version 6.0.0-dev
 + Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
 + New samtools task: split.
++ Update `bedtools.Intersect` to support `-wa`, `-wb`, and `-s` flags.
 
 version 5.2.0
 ---------------------------
