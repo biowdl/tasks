@@ -85,7 +85,7 @@ task Pileup {
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         outputBed: {description: "The output name where the bedMethyl file should be placed.", category: "common"}
-        outputBedgraph: {description: "The output name where the bedgraph file should be placed", category: "common"}
+        outputBedGraph: {description: "The output name where the bedgraph file should be placed", category: "common"}
 
         intervalSize: {description: "Sets the interval size", category: "advanced"}
         includeBed: {description: "Bed file with regions to include", category: "advanced"}
