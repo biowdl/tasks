@@ -514,6 +514,64 @@ task Sort {
     }
 }
 
+task Split {
+    input {
+        File inputBam
+        String outputPath
+        String? unaccountedPath
+        String filenameFormat = "%!.%."
+
+        Int compressionLevel = 1
+
+        Int threads = 1
+        String memory = "1GiB"
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
+        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+    }
+
+    command {
+        set -e
+        mkdir -p "~{outputPath}/rg/"
+        samtools split \
+            --output-fmt bam \
+            --output-fmt-option level=~{compressionLevel} \
+            -f "~{outputPath}/rg/~{filenameFormat}" \
+            ~{"-u " + unaccountedPath} \
+            --threads ~{threads} \
+            --write-index \
+            ~{inputBam}
+    }
+
+    output {
+        Array[File] splitBam = glob(outputPath + "/rg/*.bam")
+        Array[File] splitBamIndex = glob(outputPath + "/rg/*.bam.csi")
+        File? unaccounted = unaccountedPath
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        docker: dockerImage
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The bam file to split.", category: "required"}
+        outputPath: {description: "Directory to store output bams", category: "required"}
+
+        # Optional parameters
+        unaccountedPath: {description: "The location to write reads to which are not detected as being part of an existing read group.", category: "common"}
+        filenameFormat: {description: "Format of the filename, the following tokens can be used: %% a literal % sign, %* basename,  %# @RG index, %! @RG ID, %. filename extension for output format", category: "common"}
+        compressionLevel: {description: "Set compression level when writing gz or bgzf fastq files.", category: "advanced"}
+
+        # outputs
+        splitBam: {description: "BAM file split by read groups"}
+        splitBamIndex: {description: "BAM indexes"}
+        unaccounted: {description: "Reads with no RG tag or an unrecognised RG tag."}
+    }
+}
+
 task Tabix {
     input {
         File inputFile
