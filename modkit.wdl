@@ -84,14 +84,14 @@ task Pileup {
         bamIndex: {description: "The index for the input alignment file", category: "required"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        outputBed: {description: "The output name where the data should be placed.", category: "common"}
+        outputBed: {description: "The output name where the bedMethyl file should be placed.", category: "common"}
+        outputBedgraph: {description: "The output name where the bedgraph file should be placed", category: "common"}
 
         intervalSize: {description: "Sets the interval size", category: "advanced"}
         includeBed: {description: "Bed file with regions to include", category: "advanced"}
         cpg: {description: "Whether to call only at cpg sites", category: "advanced"}
         combineMods: {description: "Whether to combine modifications in the output", category: "advanced"}
         combineStrands: {description: "Whether to combine strands in the output", category: "advanced"}
-        bedgraph: {description: "Whether to create a folder instead with a bedgraph file", category: "advanced"}
         ignore: {description: "Modification type to ignore. For example 'h'.", category: "advanced"}
         logFilePath: {description: "Path where the log file should be written.", category: "advanced"}
 
