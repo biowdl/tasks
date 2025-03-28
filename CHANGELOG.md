@@ -23,6 +23,9 @@ version 6.0.0-dev
 + Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
 + Added `samtools.Quickcheck` to allow failing on truncated files early.
++ Fixed bug whereby `samtools.Fastq` could produce out of sync R1/R2 when used with an unsorted bam input. `samtools collate` is now used by default to group reads by readname in order to avoid this issue.
++ New samtools task: split.
++ Update `bedtools.Intersect` to support `-wa`, `-wb`, and `-s` flags.
 
 version 5.2.0
 ---------------------------
