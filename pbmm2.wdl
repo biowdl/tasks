@@ -25,16 +25,19 @@ task Mapping {
         String presetOption
         Boolean sort=true
         String sample
+        String outputPrefix = "./~{sample}.align"
         File referenceMMI
         File queryFile
 
         Int cores = 4
         String memory = "30GiB"
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 2000 / cores)
-        String dockerImage = "quay.io/biocontainers/pbmm2:1.3.0--h56fc30b_1"
+        String dockerImage = "quay.io/biocontainers/pbmm2:1.17.0--h9ee0642_0"
     }
 
     command {
+        set -e 
+        mkdir -p $(dirname ~{outputPrefix})
         pbmm2 align \
         --preset ~{presetOption} \
         ~{true="--sort" false="" sort} \
@@ -42,12 +45,12 @@ task Mapping {
         ~{referenceMMI} \
         ~{queryFile} \
         --sample ~{sample} \
-        ~{sample}.align.bam
+        ~{outputPrefix}.bam
     }
 
     output {
-        File outputAlignmentFile = sample + ".align.bam"
-        File outputIndexFile = sample + ".align.bam.bai"
+        File outputAlignmentFile = outputPrefix + ".bam"
+        File outputIndexFile = outputPrefix + ".bam.bai"
     }
 
     runtime {
@@ -62,6 +65,7 @@ task Mapping {
         presetOption: {description: "This option applies multiple options at the same time.", category: "required"}
         sort: {description: "Sort the output bam file.", category: "advanced"}
         sample: {description: "Name of the sample.", category: "required"}
+        outputPrefix: {description: "The prefix of the output filename before the .bam extension.", category: "advanced"}
         referenceMMI: {description: "MMI file for the reference.", category: "required"}
         queryFile: {description: "BAM file with reads to align against the reference.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
@@ -69,7 +73,7 @@ task Mapping {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
-        # outputs
+        # output
         outputAlignmentFile: {description: "Mapped bam file."}
         outputIndexFile: {description: "Bam index file."}
     }
