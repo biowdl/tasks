@@ -65,7 +65,7 @@ task Mapping {
         presetOption: {description: "This option applies multiple options at the same time.", category: "required"}
         sort: {description: "Sort the output bam file.", category: "advanced"}
         sample: {description: "Name of the sample.", category: "required"}
-        outputPrefix: {description: "The prefix of the output filename before the .bam extension." category: "advanced"}
+        outputPrefix: {description: "The prefix of the output filename before the .bam extension.", category: "advanced"}
         referenceMMI: {description: "MMI file for the reference.", category: "required"}
         queryFile: {description: "BAM file with reads to align against the reference.", category: "required"}
         cores: {description: "The number of cores to be used.", category: "advanced"}
