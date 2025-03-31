@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Add Mosdepth task.
 + Allow pbmm2 to work with a set output prefix for the BAM file.
 + Update pbmm2 docker container to version 1.17
 + Add VEP task.
