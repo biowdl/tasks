@@ -25,7 +25,7 @@ task Mapping {
         String presetOption
         Boolean sort=true
         String sample
-        String outputPrefix = sample + ".align"
+        String outputPrefix = "./~{sample}.align"
         File referenceMMI
         File queryFile
 
