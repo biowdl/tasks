@@ -37,7 +37,7 @@ task Mapping {
 
     command {
         set -e 
-        mkdir -p ~{outputPrefix} 
+        mkdir -p $(dirname ~{outputPrefix})
         pbmm2 align \
         --preset ~{presetOption} \
         ~{true="--sort" false="" sort} \
