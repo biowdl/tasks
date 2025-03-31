@@ -25,7 +25,7 @@ task Pileup {
         File bam
         File bamIndex
         String outputBed = "output.bedMethyl"
-        String outputBedGraph = "m_CG0_combined.bedgraph"
+        String outputBedGraph = "combined.bedgraph"
         File referenceFasta
         File referenceFastaFai
 
@@ -59,7 +59,9 @@ task Pileup {
         ~{true="--combine-strands" false="" combineStrands} \
         --log-filepath ~{logFilePath} \
         ~{bam} \
-         - | tee ~{outputBed} | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > ~{outputBedGraph}
+         - | tee ~{outputBed} | awk -v OFS="\t" '{print $1, $2, $3, $11, $10 >> "~{outputBedGraph}_"$4"_"$6".bedGraph"}'
+        # Separately generate the combined file as well, so users can have a choice.
+        cat ~{outputBed} | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > ~{outputBedGraph}
     >>>
 
     # You can use modkit pileup ${bam_path} - | tee out.bedmethyl | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > out.bg to get both outputs at once without running anything twice.
@@ -67,7 +69,8 @@ task Pileup {
 
     output {
         File out = outputBed  # Normal mode
-        File outFiles = outputBedGraph # Bedgraph mode
+        File outGraph = outputBedGraph  # Normal mode
+        Array[File] outFiles = glob(outputBedGraph + "*.bedGraph")  # Bedgraph mode
         File logFile = logFilePath
     }
 
