@@ -31,7 +31,7 @@ task Mapping {
         Int cores = 4
         String memory = "30GiB"
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 2000 / cores)
-        String dockerImage = "quay.io/biocontainers/pbmm2:1.3.0--h56fc30b_1"
+        String dockerImage = "quay.io/biocontainers/pbmm2:1.17.0--h9ee0642_0"
     }
 
     command {
