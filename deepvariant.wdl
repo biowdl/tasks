@@ -35,11 +35,11 @@ task RunDeepVariant {
         String? outputGVcfIndex
         File? regions
         String? sampleName
-        Boolean? VCFStatsReport = true
+        Boolean VCFStatsReport = true
 
         String memory = "48GiB"
         Int timeMinutes = 5000
-        String dockerImage = "google/deepvariant:1.6.1"
+        String dockerImage = "google/deepvariant:1.8.0"
     }
 
     command {
