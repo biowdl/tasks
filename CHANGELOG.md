@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Samtools merge default thread count increased to 8.
 + Update docker images in samtools.wdl
 + Add threads and compression levels to applicable tasks. Default to 
   compression level 1.
