@@ -31,6 +31,8 @@ task Pileup {
 
         Int? intervalSize
         File? includeBed
+        String? filterThreshold
+        String? filterPercentile
 
         Boolean cpg = false
         Boolean combineMods = false
@@ -57,6 +59,8 @@ task Pileup {
         ~{true="--cpg" false="" cpg} \
         ~{true="--combine-mods" false="" combineMods} \
         ~{true="--combine-strands" false="" combineStrands} \
+        ~{"--filter-percentile " + filterPercentile} \
+        ~{"--filter-threshold " + filterThreshold} \
         --log-filepath ~{logFilePath} \
         ~{bam} \
          - | tee ~{outputBed} | awk -v OFS="\t" '{print $1, $2, $3, $11, $10 >> "~{outputBedGraph}_"$4"_"$6".bedGraph"}'
@@ -97,12 +101,14 @@ task Pileup {
         combineStrands: {description: "Whether to combine strands in the output", category: "advanced"}
         ignore: {description: "Modification type to ignore. For example 'h'.", category: "advanced"}
         logFilePath: {description: "Path where the log file should be written.", category: "advanced"}
+        filterThreshold: {description: "Global filter threshold can be specified with by a decimal number (e.g. 0.75). Otherwise the automatic filter percentile will be used.", category: "advanced"}
+        filterPercentile: {description: "This defaults to 0.1, to remove the lowest 10% confidence modification calls, but can be manually adjusted", category: "advanced"}
 
         threads: {description: "The number of threads to use for variant calling.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"} 
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-    
+
         # output
         out: {description: "The output bed files. Not available when bedgraph = true."}
         outFiles: {description: "Output files when bedgraph = true."}
