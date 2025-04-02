@@ -32,7 +32,7 @@ task Mapping {
         Int sortMemoryGb = 1
         Int sortThreads = 2
         Int cores = 8
-        String memory = "24GiB"
+        String memory = "30GiB"
         # Slightly higher than minimap2 as compression level can not be set.
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 400 / cores)
         String dockerImage = "quay.io/biocontainers/pbmm2:1.17.0--h9ee0642_0"
