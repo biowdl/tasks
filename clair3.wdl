@@ -35,7 +35,7 @@ task Clair3 {
         Boolean includeAllCtgs = false
         String memory = "~{threads + 16}GiB"
         Int timeMinutes = 10 + ceil(size(bam, "G") * 200 / threads)
-        String dockerImage = "quay.io/biocontainers/clair3:1.0.10--py39h46983ab_0"   
+        String dockerImage = "quay.io/biocontainers/clair3:1.0.11--py39hd649744_0"   
     }
 
     String modelArg = "~{if defined(modelTar) then basename(select_first([modelTar]), '.tar.gz') else builtinModel}"
