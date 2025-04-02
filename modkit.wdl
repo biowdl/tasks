@@ -115,3 +115,65 @@ task Pileup {
         logFile: {description: "The generated log file."}
     }
 }
+
+task Summary {
+    input {
+        File bam
+        File bamIndex
+
+        String summary = "modkit.summary.txt"
+
+        Boolean sample = true
+        Int? numReads # = 10042
+        Float? samplingFrac # = 0.1
+        Int? seed
+
+        Int threads = 4
+        String memory = ceil(size(bam, "GiB") * 0.20) + 10 # Based on a linear model with some fudge (y=-0.13x - 4).
+        Int timeMinutes = 2880 / threads  # 2 Days / threads
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
+    }
+
+    command <<<
+        set -e
+        mkdir -p $(dirname ~{summary})
+
+        modkit summary \
+        --threads ~{threads} \
+        ~{true="" false="--no-sampling" sample} \
+        ~{"--num-reads " + numReads} \
+        ~{"--sampling-frac " + samplingFrac} \
+        ~{"--seed " + seed} \
+        ~{bam} > ~{summary}
+    >>>
+
+    output {
+        File summaryReport = summary # Normal mode
+    }
+
+    runtime {
+        docker: dockerImage
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # input
+        bam: {description: "The input alignment file", category: "required"}
+        bamIndex: {description: "The index for the input alignment file", category: "required"}
+
+        sample: {description: "Allows you to disable sampling and report stats for the whole file.", category: "advanced"}
+        numReads: {description: "By default a fixed amount of reads are read, you can set this to change the number of reads to sample.", category: "advanced"}
+        samplingFrac: {description: "Use a fixed percentage of reads, rather than a fixed number of reads, for sampling.", category: "advanced"}
+        seed: {description: "A seed can be provided for reproducibility in the sampling fraction case.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # output
+        summaryReport: {description: "The output modkit summary."}
+    }
+}

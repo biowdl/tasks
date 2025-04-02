@@ -30,6 +30,8 @@ version 6.0.0-dev
 + New samtools task: split.
 + Update `bedtools.Intersect` to support `-wa`, `-wb`, and `-s` flags.
 + Deprecate `modkit.Pileup`'s bedGraph option, it is now output by default.
++ Add support for filterThreshold/filterPercent for `modkit.Pileup`.
++ Add `modkit.Summary` task.
 
 version 5.2.0
 ---------------------------
