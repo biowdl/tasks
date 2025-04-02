@@ -41,7 +41,7 @@ task Pileup {
         Int threads = 8
         String memory = "4GiB"
         Int timeMinutes = 2880 / threads  # 2 Days / threads
-        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
 
     }
 

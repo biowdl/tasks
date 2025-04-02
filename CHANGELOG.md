@@ -16,6 +16,7 @@ version 6.0.0-dev
 + samtools BgzipAndIndex and Tabix "type" parameter changed to "preset" as is 
   the name of the flag.
 + Unused javaXmx parameter removed from samtools DictAndFaidx
++ Update Picard images
 + Add Mosdepth task.
 + Allow pbmm2 to work with a set output prefix for the BAM file.
 + Update pbmm2 docker container to version 1.17
