@@ -72,7 +72,7 @@ task DictAndFaidx {
         String javaXmx = "2G"
         String memory = "3GiB"
         Int timeMinutes = 5 + ceil(size(inputFile, "GiB") * 5)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     String outputFile = basename(inputFile)
@@ -119,7 +119,7 @@ task Faidx {
         String outputDir
 
         String memory = "2GiB"
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     command {
@@ -168,7 +168,7 @@ task Fastq {
         Int threads = 1
         String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     command {
@@ -232,7 +232,7 @@ task FilterShortReadsBam {
 
         String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(bamFile, "GiB") * 8)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     String outputPathBamIndex = sub(outputPathBam, "\.bam$", ".bai")
@@ -278,7 +278,7 @@ task Flagstat {
 
         String memory = "256MiB"  # Only 40.5 MiB used for 150G bam file.
         Int timeMinutes = 1 + ceil(size(inputBam, "G"))
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     command {
@@ -318,7 +318,7 @@ task Index {
 
         String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(bamFile, "GiB") * 4)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     # Select_first is needed, otherwise womtool validate fails.
@@ -369,7 +369,7 @@ task Markdup {
         String outputBamPath
 
         Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     command {
@@ -408,7 +408,7 @@ task Merge {
         Int threads = 1
         String memory = "4GiB"
         Int timeMinutes = 1 + ceil(size(bamFiles, "GiB") * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     String indexPath = sub(outputBamPath, "\.bam$",".bai")
@@ -456,7 +456,7 @@ task Quickcheck {
     input {
         File inputBam
 
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     command {
@@ -497,7 +497,7 @@ task Sort {
         Int threads = 1
         Int memoryGb = 1 + threads * memoryPerThreadGb
         Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 3)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     # Select first needed as outputPath is optional input (bug in cromwell).
@@ -560,7 +560,7 @@ task Split {
         Int threads = 1
         String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     command {
@@ -669,7 +669,7 @@ task View {
         Int threads = 1
         String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(inFile, "GiB") * 5)
-        String dockerImage = "quay.io/biocontainers/samtools:1.16.1--h6899075_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
     String outputIndexPath = basename(outputFileName) + ".bai"
