@@ -433,7 +433,7 @@ task Merge {
         Int compressionLevel = 1
         Int threads = 1
         String memory = "4GiB"
-        Int timeMinutes = 1 + ceil(size(bamFiles, "GiB") * 2)
+        Int timeMinutes = 1 + ceil(size(bamFiles, "GiB") * 4)
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
