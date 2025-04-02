@@ -24,11 +24,13 @@ task BgzipAndIndex {
     input {
         File inputFile
         String outputDir
-        String type = "vcf"
+        String preset = "vcf"
 
+        Int compressLevel = 1
+        Int threads = 1
         String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "GiB"))
-        String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
+        String dockerImage = "quay.io/biocontainers/htslib:1.21--h566b1c6_1"
     }
 
     String outputGz = outputDir + "/" + basename(inputFile) + ".gz"
@@ -36,8 +38,15 @@ task BgzipAndIndex {
     command {
         set -e
         mkdir -p "$(dirname ~{outputGz})"
-        bgzip -c ~{inputFile} > ~{outputGz}
-        tabix ~{outputGz} -p ~{type}
+        bgzip \
+        --threads ~{threads} \
+        --compress-level ~{compressLevel} \
+        -c ~{inputFile} > ~{outputGz}
+        
+        tabix \
+        --preset ~{preset} \
+        --threads ~{threads - 1} \
+        ~{outputGz} 
     }
 
     output {
@@ -46,6 +55,7 @@ task BgzipAndIndex {
     }
 
     runtime {
+        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -55,7 +65,7 @@ task BgzipAndIndex {
         # inputs
         inputFile: {description: "The file to be compressed and indexed.", category: "required"}
         outputDir: {description: "The directory in which the output will be placed.", category: "required"}
-        type: {description: "The type of file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
+        preset: {description: "The preset for the file (eg. vcf or bed) to be compressed and indexed.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -69,7 +79,6 @@ task BgzipAndIndex {
 task DictAndFaidx {
     input {
         File inputFile
-        String javaXmx = "2G"
         String memory = "3GiB"
         Int timeMinutes = 5 + ceil(size(inputFile, "GiB") * 5)
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
@@ -102,7 +111,6 @@ task DictAndFaidx {
     parameter_meta {
         # inputs
         inputFile: {description: "The input fasta file.", category: "required"}
-        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         memory: {description: "The amount of memory available to the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -163,7 +171,7 @@ task Fastq {
         Int? includeFilter
         Int? excludeFilter
         Int? excludeSpecificFilter
-        Int? compressionLevel
+        Int compressionLevel = 1
 
         Int threads = 1
         String memory = "1GiB"
@@ -184,8 +192,8 @@ task Fastq {
         ~{"-G " + excludeSpecificFilter} \
         ~{true="-N" false="-n" appendReadNumber} \
         ~{true="-O" false="" outputQuality} \
-        ~{"-c " + compressionLevel} \
-        ~{"--threads " + threads}
+        -c ~{compressionLevel} \
+        "--threads "  ~{threads - 1}
     }
 
     output {
@@ -276,6 +284,8 @@ task Flagstat {
         File inputBam
         String outputPath
 
+        Int threads = 1
+
         String memory = "256MiB"  # Only 40.5 MiB used for 150G bam file.
         Int timeMinutes = 1 + ceil(size(inputBam, "G"))
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
@@ -284,7 +294,9 @@ task Flagstat {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
-        samtools flagstat ~{inputBam} > ~{outputPath}
+        samtools flagstat \
+        --threads ~{threads - 1}
+        ~{inputBam} > ~{outputPath}
     }
 
     output {
@@ -292,6 +304,7 @@ task Flagstat {
     }
 
     runtime {
+        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -316,6 +329,8 @@ task Index {
 
         String? outputBamPath
 
+        Int threads = 1
+
         String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(bamFile, "GiB") * 4)
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
@@ -334,7 +349,9 @@ task Index {
             mkdir -p "$(dirname ~{outputPath})"
             ln ~{bamFile} ~{outputPath} || cp ~{bamFile} ~{outputPath}
         fi
-        samtools index ~{outputPath} ~{bamIndexPath}
+        samtools index \
+        --threads ~{threads -1} \
+        ~{outputPath} ~{bamIndexPath}
         '
     }
 
@@ -344,6 +361,7 @@ task Index {
     }
 
     runtime {
+        cpu: threads
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -367,6 +385,7 @@ task Markdup {
     input {
         File inputBam
         String outputBamPath
+        Int threads = 1
 
         Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
@@ -375,7 +394,9 @@ task Markdup {
     command {
         set -e
         mkdir -p "$(dirname ~{outputBamPath})"
-        samtools markdup ~{inputBam} ~{outputBamPath}
+        samtools markdup \
+        --threads ~{threads - 1} \
+        ~{inputBam} ~{outputBamPath}
     }
 
     output {
@@ -383,6 +404,7 @@ task Markdup {
     }
 
     runtime {
+        cpu: threads
         docker: dockerImage
         time_minutes: timeMinutes
     }
@@ -405,6 +427,10 @@ task Merge {
         String outputBamPath = "merged.bam"
         Boolean force = true
 
+        Boolean combineRGHeaders = false 
+        Boolean combinePGHeaders = false
+
+        Int compressionLevel = 1
         Int threads = 1
         String memory = "4GiB"
         Int timeMinutes = 1 + ceil(size(bamFiles, "GiB") * 2)
@@ -420,6 +446,9 @@ task Merge {
         samtools merge \
         --threads ~{threads - 1} \
         ~{true="-f" false="" force} \
+        -l ~{compressionLevel} \
+        ~{true="-c" false="" combineRGHeaders} \
+        ~{true="-p" false="" combinePGHeaders} \
         ~{outputBamPath} ~{sep=' ' bamFiles}
         samtools index ~{outputBamPath} ~{indexPath}
     }
@@ -514,7 +543,7 @@ task Sort {
         -o ~{outputPath} \
         ~{inputBam}
         samtools index \
-        -@ ~{threads} \
+        --threads ~{threads - 1} \
         ~{outputPath} ~{bamIndexPath}
     }
 
@@ -571,7 +600,7 @@ task Split {
             --output-fmt-option level=~{compressionLevel} \
             -f "~{outputPath}/rg/~{filenameFormat}" \
             ~{"-u " + unaccountedPath} \
-            --threads ~{threads} \
+            --threads ~{threads - 1} \
             --write-index \
             ~{inputBam}
     }
@@ -610,10 +639,10 @@ task Tabix {
     input {
         File inputFile
         String outputFilePath = basename(inputFile)
-        String type = "vcf"
+        String preset = "vcf"
 
         Int timeMinutes = 1 + ceil(size(inputFile, "GiB") * 2)
-        String dockerImage = "quay.io/biocontainers/tabix:0.2.6--ha92aebf_0"
+        String dockerImage = "quay.io/biocontainers/htslib:1.21--h566b1c6_1"
     }
 
     # FIXME: It is better to do the indexing on VCF creation.
@@ -625,7 +654,7 @@ task Tabix {
         then
             ln ~{inputFile} ~{outputFilePath} || cp ~{inputFile} ~{outputFilePath}
         fi
-        tabix ~{outputFilePath} -p ~{type}
+        tabix ~{outputFilePath} -p ~{preset}
     }
 
     output {
@@ -643,7 +672,7 @@ task Tabix {
         # inputs
         inputFile: {description: "The file to be indexed.", category: "required"}
         outputFilePath: {description: "The location where the file should be written to. The index will appear alongside this link to the file.", category: "common"}
-        type: {description: "The type of file (eg. vcf or bed) to be indexed.", category: "common"}
+        preset: {description: "The preset for the file (eg. vcf or bed) to be indexed.", category: "common"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
@@ -666,6 +695,8 @@ task View {
         Int? MAPQthreshold
         File? targetFile
 
+        Boolean fast = false  # Default should be true, unless a non-BAM format is preferred. So th
+
         Int threads = 1
         String memory = "1GiB"
         Int timeMinutes = 1 + ceil(size(inFile, "GiB") * 5)
@@ -682,11 +713,12 @@ task View {
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
         ~{true="-u " false="" uncompressedBamOutput} \
+        ~{true="--fast" false="" fast} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
         ~{"-q " + MAPQthreshold} \
-        ~{"--threads " + (threads - 1)} \
+        --threads ~{threads - 1} \
         ~{"--target-file " + targetFile} \
         ~{inFile}
         samtools index ~{outputFileName} ~{outputIndexPath}

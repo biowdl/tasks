@@ -10,6 +10,12 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Update docker images in samtools.wdl
++ Add threads and compression levels to applicable tasks. Default to 
+  compression level 1.
++ samtools BgzipAndIndex and Tabix "type" parameter changed to "preset" as is 
+  the name of the flag.
++ Unused javaXmx parameter removed from samtools DictAndFaidx
 + Add Mosdepth task.
 + Allow pbmm2 to work with a set output prefix for the BAM file.
 + Update pbmm2 docker container to version 1.17
