@@ -39,7 +39,9 @@ task RunDeepVariant {
 
         String memory = "48GiB"
         Int timeMinutes = 5000
-        String dockerImage = "google/deepvariant:1.8.0"
+        # Version 1.8.0 has a bug.
+        # https://github.com/google/deepvariant/issues/912
+        String dockerImage = "google/deepvariant:1.6.1"
     }
 
     command {
