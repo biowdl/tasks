@@ -436,9 +436,8 @@ task Merge {
         Boolean combinePGHeaders = false
 
         Int compressionLevel = 1
-        # Merging is often a bottleneck. With compression level 1 however,
-        # more than three threads does not add more benefit.
-        Int threads = 3
+        # Use one thread per input + one for the output + one for merging
+        Int threads = length(bamFiles) + 2
         String memory = "4GiB"
         Int timeMinutes = 1 + ceil(size(bamFiles, "GiB") * 4)
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
