@@ -27,27 +27,39 @@ task Normalize {
         File referenceFasta
         File referenceFastaFai
         Boolean ignoreMaskedRef = false
-        String outputPath = "./vt/normalized_decomposed.vcf"
+        String outputPath = "./vt/normalized_decomposed.vcf.gz"
+        String? filterExpression
+
+        Int compressionLevel = 1
 
         String memory = "4GiB"
-        Int timeMinutes = 30
-        String dockerImage = "quay.io/biocontainers/vt:0.57721--hdf88d34_2"
+        Int timeMinutes = 10 + ceil(size(inputVCF, "GiB") * 240)
+        String dockerImage = "quay.io/biocontainers/vt:0.57721--h2419454_12"
     }
 
     command {
         set -eo pipefail
         mkdir -p "$(dirname ~{outputPath})"
-        vt normalize ~{inputVCF} \
+        vt view -h \
+        ~{"-f " + filterExpression} \
+        ~{inputVCF} \
+        | vt normalize - \
         -r ~{referenceFasta} \
         ~{true="-m " false="" ignoreMaskedRef} \
-        | vt decompose -s - -o ~{outputPath}
+        | vt decompose -s - \
+        | vt view - \
+        -c ~{compressionLevel} \
+        -o ~{outputPath} 
+        vt index ~{outputPath}
     }
 
     output {
         File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
+        cpu: 1
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
@@ -61,11 +73,15 @@ task Normalize {
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         ignoreMaskedRef: {description: "Warns but does not exit when REF is inconsistent with masked reference sequence for non SNPs.", category: "advanced"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        filterExpression: {description: "See https://genome.sph.umich.edu/wiki/Vt#Filters for valid expressions.", category: "common"}
+        compressionLevel: {description: "Compression level for the out vcf.gz file.", category: "advanced"}
+
         memory: {description: "The memory required to run the programs.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputVcf: {description: "Normalized & decomposed VCF file."}
+        outputVcf: {description: "Normalized and decomposed VCF file."}
+        outputVcfIndex: {description: "Index for normalized and decomposed VCF file."}
     }
 }
