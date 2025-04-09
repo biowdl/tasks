@@ -30,13 +30,17 @@ task RunDeepVariant {
         String outputVcf = "sample.vcf.gz"
         String? postprocessVariantsExtraArgs
         File? customizedModel
-        Int numShards = 4
+        Int numShards = 8
         String? outputGVcf
         String? outputGVcfIndex
         File? regions
         String? sampleName
         Boolean VCFStatsReport = true
 
+        # Most of the memory used is at the end, in the step where the variants
+        # are merged. This is a single-threaded high memory step. The number
+        # of shards does not influence the memory so much.
+        # The provided memory here is enough for merge human chromosome 1.
         String memory = "48GiB"
         Int timeMinutes = 5000
         # Version 1.8.0 has a bug.
