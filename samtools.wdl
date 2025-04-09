@@ -456,7 +456,7 @@ task Merge {
         ~{true="-c" false="" combineRGHeaders} \
         ~{true="-p" false="" combinePGHeaders} \
         ~{outputBamPath} ~{sep=' ' bamFiles}
-        samtools index ~{outputBamPath} ~{indexPath}
+        samtools index -@ ~{threads - 1} ~{outputBamPath} ~{indexPath}
     }
 
     output {
