@@ -480,6 +480,8 @@ task Merge {
         combineRGHeaders: {description: "Combine @RG headers with colliding IDs", category: "advanced"}
         combinePGHeaders: {description: "Combine @PG headers with colliding IDs", category: "advanced"}
 
+        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
+        
         threads: {description: "Number of threads to use.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
