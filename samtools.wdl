@@ -69,6 +69,8 @@ task BgzipAndIndex {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        compressLevel: {description: "Set compression level.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
 
         # outputs
         compressed: {description: "Compressed input file."}
@@ -317,6 +319,7 @@ task Flagstat {
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
 
         # outputs
         flagstat: {description: "The number of alignments for each FLAG type."}
@@ -374,6 +377,7 @@ task Index {
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
 
         # outputs
         indexedBam: {description: "BAM file that was indexed."}
@@ -415,6 +419,7 @@ task Markdup {
         outputBamPath: {description: "The location of the output BAM file.", category: "required"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+        threads: {description: "The number of threads to use.", category: "advanced"}
 
         # outputs
         outputBam: {description: "BAM file with duplicate alignments marked."}
@@ -471,6 +476,10 @@ task Merge {
         bamFiles: {description: "The BAM files to merge.", category: "required"}
         outputBamPath: {description: "The location the merged BAM file should be written to.", category: "common"}
         force: {description: "Equivalent to samtools merge's `-f` flag.", category: "advanced"}
+
+        combineRGHeaders: {description: "Combine @RG headers with colliding IDs", category: "advanced"}
+        combinePGHeaders: {description: "Combine @PG headers with colliding IDs", category: "advanced"}
+
         threads: {description: "Number of threads to use.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
@@ -567,7 +576,7 @@ task Sort {
         sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
         compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
         memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes.", category: "advanced"}
-        threads: {description: "The number of additional threads that will be used for this task.", category: "advanced"}
+        threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
         memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
@@ -696,7 +705,7 @@ task View {
         Int? MAPQthreshold
         File? targetFile
 
-        Boolean fast = false  # Default should be true, unless a non-BAM format is preferred. So th
+        Boolean fast = true  # Sets compression level to 1.
 
         Int threads = 1
         String memory = "1GiB"
@@ -707,14 +716,15 @@ task View {
     String outputIndexPath = basename(outputFileName) + ".bai"
 
     # Always output to bam and output header.
+    # -u should be after --fast, and will override it in that case.
     command {
         set -e
         mkdir -p "$(dirname ~{outputFileName})"
         samtools view -b \
         ~{"-T " + referenceFasta} \
         ~{"-o " + outputFileName} \
-        ~{true="-u " false="" uncompressedBamOutput} \
         ~{true="--fast" false="" fast} \
+        ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
@@ -741,6 +751,7 @@ task View {
         # inputs
         inFile: {description: "A BAM, SAM or CRAM file.", category: "required"}
         outputFileName: {description: "The location the output BAM file should be written.", category: "common"}
+        fast: {description: "Sets compression level to 1. Set to true by default.", category: "common"}
         uncompressedBamOutput: {description: "Equivalent to samtools view's `-u` flag.", category: "advanced"}
         referenceFasta: {description: "The reference fasta file also used for mapping.", category: "advanced"}
         includeFilter: {description: "Equivalent to samtools view's `-f` option.", category: "advanced"}
