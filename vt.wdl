@@ -41,7 +41,7 @@ task Normalize {
         set -eo pipefail
         mkdir -p "$(dirname ~{outputPath})"
         vt view -h \
-        ~{"-f " + filterExpression} \
+        ~{"-f '" + filterExpression}~{true="'" false="" defined(filterExpression)} \
         ~{inputVCF} \
         | vt normalize - \
         -r ~{referenceFasta} \
