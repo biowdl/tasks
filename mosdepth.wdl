@@ -39,7 +39,7 @@ task Mosdepth {
         Boolean fastMode = false
  
         Int threads = 1
-        String memory = "1GiB"
+        String memory = "4GiB"
         Int timeMinutes = 10 + ceil(size(bam, "G")) * 4
         String dockerImage = "quay.io/biocontainers/mosdepth:0.3.10--h4e814b3_1"
     }

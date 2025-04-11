@@ -10,7 +10,19 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ MultiQC image updated to version 1.28
++ Samtools merge now has options added for merging RG and PG headers.
++ Samtools merge default thread count increased based on the number of files.
++ Update docker images in samtools.wdl
++ Add threads and compression levels to applicable tasks in samtools. Default to 
+  compression level 1.
++ samtools BgzipAndIndex and Tabix "type" parameter changed to "preset" as is 
+  the name of the flag.
++ Unused javaXmx parameter removed from samtools DictAndFaidx
++ Update Picard images
 + Add Mosdepth task.
++ pbmm2 loses the sort parameter. Output is now always sorted.
++ pbmm2 gets an unmapped parameter.
 + Allow pbmm2 to work with a set output prefix for the BAM file.
 + Update pbmm2 docker container to version 1.17
 + Add VEP task.

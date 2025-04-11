@@ -86,8 +86,6 @@ task Mapping {
         File queryFile
         
         Int compressionLevel = 1 
-        Int additionalSortThreads = 1
-        Int sortMemoryGb = 1
         Boolean nameSorted = false
         # MM, ML, MN -> Methylation flags
         # Also keep the following flags for Sequali to be able to run on the mapped bam file and get ONT information.
@@ -112,6 +110,8 @@ task Mapping {
         String? howToFindGTAG
         String? readgroup
 
+        Int sortThreads = 2
+        Int sortMemoryGb = 1
         Int cores = 8
         String memory = "24GiB"
         Int timeMinutes = 1 + ceil(size(queryFile, "G") * 200 / cores)
@@ -147,7 +147,7 @@ task Mapping {
         - \
         | samtools sort \
         ~{true="-N" false="" nameSorted} \
-        -@ ~{additionalSortThreads} \
+        --threads ~{sortThreads - 1} \
         -l ~{compressionLevel} \
         -m ~{sortMemoryGb}G \
         -o ~{outputPrefix}.bam 
@@ -184,7 +184,7 @@ task Mapping {
         tagsToKeep: {description: "Tags to keep from the input unaligned BAM file.", category: "Advanced"}
         howToFindGTAG: {description: "How to find GT-AG. f:transcript strand, b:both strands, n:don't match GT-AG.", category: "common"}
         compressionLevel: {description: "compressionLevel for the output file", category: "advanced"}
-        additionalSortThreads: {description: "Extra sorting threads used for samtools sort", category: "advanced"}
+        sortThreads: {description: "Extra sorting threads used for samtools sort", category: "advanced"}
         sortMemoryGb: {description: "Amount of memory set for sorting", category: "advanced"}
         nameSorted: {description: "Output a name sorted file instead", category: "common"}
 
