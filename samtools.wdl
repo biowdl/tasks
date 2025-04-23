@@ -177,7 +177,6 @@ task Fastq {
         mkdir -p "$(dirname ~{outputRead1})"
         samtools collate -u -O ~{inputBam} | \
         samtools fastq \
-        ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
         ~{"-1 " + outputRead1} \
         ~{"-2 " + outputRead2} \
         ~{"-0 " + outputRead0} \
