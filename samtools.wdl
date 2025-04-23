@@ -157,6 +157,7 @@ task Fastq {
         String outputRead1
         String? outputRead2
         String? outputRead0
+        String? outputReadS
         Boolean appendReadNumber = false
         Boolean outputQuality = false
 
@@ -177,8 +178,10 @@ task Fastq {
         samtools collate -u -O ~{inputBam} | \
         samtools fastq \
         ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
+        ~{"-1 " + outputRead1} \
         ~{"-2 " + outputRead2} \
         ~{"-0 " + outputRead0} \
+        ~{"-s " + outputReadS} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
@@ -192,6 +195,7 @@ task Fastq {
         File read1 = outputRead1
         File? read2 = outputRead2
         File? read0 = outputRead0
+        File? readS = outputReadS
     }
 
     runtime {
@@ -207,6 +211,7 @@ task Fastq {
         outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
         outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
         outputRead0: {description: "The location the unpaired reads should be written to (in case of paired-end sequenicng).", category: "advanced"}
+        outputReadS: {description: "The location singleton reads should be written to.", category: "advanced"}
         appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`.", category: "advanced"}
         outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
         includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`.", category: "advanced"}
