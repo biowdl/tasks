@@ -571,6 +571,9 @@ task Split {
     command {
         set -e
         mkdir -p "~{outputPath}/rg/"
+
+        export XDG_CACHE_HOME=$PWD/.cache/
+        export REF_CACHE=$PWD/.cache/hts-ref/%2s/%2s/%s
         samtools split \
             --output-fmt bam \
             --output-fmt-option level=~{compressionLevel} \
