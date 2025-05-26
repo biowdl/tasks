@@ -32,6 +32,7 @@ task SnpEff {
         Boolean hgvs = true
         Boolean lof = true
         Boolean noDownstream = false
+        Boolean noUpstream = false
         Boolean noIntergenic = false
         Boolean noShiftHgvs = false
         Int? upDownStreamLen
@@ -39,7 +40,7 @@ task SnpEff {
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 60
-        String dockerImage = "quay.io/biocontainers/snpeff:5.0--0"
+        String dockerImage = "quay.io/biocontainers/snpeff:5.2--hdfd78af_1"
     }
 
     command {
@@ -55,6 +56,7 @@ task SnpEff {
         ~{true="-hgvs" false="-noHgvs" hgvs} \
         ~{true="-lof" false="-noLof" lof} \
         ~{true="-no-downstream" false="" noDownstream} \
+        ~{true="-no-upstream" false="" noUpstream} \
         ~{true="-no-intergenic" false="" noIntergenic} \
         ~{true="-noShiftHgvs" false="" noShiftHgvs} \
         ~{"-upDownStreamLen " + upDownStreamLen} \
@@ -82,6 +84,7 @@ task SnpEff {
         hgvs: {description: "Equivalent to `-hgvs` if true or `-noHgvs` if false.", category: "advanced"}
         lof: {description: "Equivalent to `-lof` if true or `-noLof` if false.", category: "advanced"}
         noDownstream: {description: "Equivalent to the `-no-downstream` flag.", category: "advanced"}
+        noUpstream: {description: "Equivalent to the `-no-upstream` flag.", category: "advanced"}
         noIntergenic: {description: "Equivalent to the `-no-intergenic` flag.", category: "advanced"}
         noShiftHgvs: {description: "Equivalent to the `-noShiftHgvs` flag.", category: "advanced"}
         upDownStreamLen: {descriptoin: "Equivalent to the `-upDownStreamLen` option.", category: "advanced"}
