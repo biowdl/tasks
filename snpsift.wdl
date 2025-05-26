@@ -36,6 +36,8 @@ task Filter {
     }
 
     command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
         SnpSift -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         filter \
         "~{filterExpression}" \

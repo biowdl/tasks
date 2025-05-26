@@ -349,6 +349,7 @@ task View {
 
         String? exclude
         String? include
+        String? region
         Array[String] samples = []
 
         String memory = "256MiB"
@@ -368,7 +369,8 @@ task View {
         ~{if length(samples) > 0 then "-s" else ""} ~{sep="," samples} \
         -o ~{outputPath} \
         -O ~{true="z" false="v" compressed} \
-        ~{inputFile}
+        ~{inputFile} \
+        ~{region}
 
         ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
     }
@@ -390,6 +392,7 @@ task View {
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
+        region: {description: "The region to retrieve from the VCF file.", category: "common"}
         excludeUncalled: {description: "Exclude sites without a called genotype (see man page for details).", category: "advanced"}
         samples: {description: "A list of sample names to include.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
