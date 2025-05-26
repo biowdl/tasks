@@ -10,6 +10,8 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Added a task for SnpSift filter.
++ Updated the snpEff task to allow setting the `-no-upstream` flag.
 + Update vt task to allow a filter expression and compress and index the output.
 + MultiQC image updated to version 1.28
 + Samtools merge now has options added for merging RG and PG headers.
