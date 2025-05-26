@@ -344,6 +344,7 @@ task Stats {
 task View {
     input {
         File inputFile
+        File? inputFileIndex
         String outputPath = "output.vcf"
         Boolean excludeUncalled = false
 
@@ -389,6 +390,7 @@ task View {
     parameter_meta {
         # inputs
         inputFile: {description: "A vcf or bcf file.", category: "required"}
+        inputFileIndex: {description: "the index for the input file.", category: "common"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}

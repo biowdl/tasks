@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Updated the bcftools view task with an input for an index file.
 + Updated the bcftools view task to allow specifying a region.
 + Added a task for SnpSift filter.
 + Updated the snpEff task to allow setting the `-no-upstream` flag.
