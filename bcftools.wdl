@@ -111,7 +111,7 @@ task Annotate {
         collapse: {description: "Treat as identical records with <snps|indels|both|all|some|none>, see man page for details.", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
         headerLines: {description: "Lines to append to the VCF header (see man page for details).", category: "advanced"}
-        newId: {description: "Assign ID on the fly (e.g. --set-id +'%CHROM\_%POS').", category: "advanced"}
+        newId: {description: "Assign ID on the fly (e.g. --set-id +'%CHROM\\_%POS').", category: "advanced"}
         include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
         markSites: {description: "Annotate sites which are present ('+') or absent ('-') in the -a file with a new INFO/TAG flag.", category: "advanced"}
         regions: {description: "Restrict to comma-separated list of regions.", category: "advanced"}
