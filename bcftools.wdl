@@ -362,6 +362,8 @@ task View {
 
     command {
         set -e
+        ls ~{inputFileIndex}
+
         mkdir -p "$(dirname ~{outputPath})"
         bcftools view \
         ~{"--exclude " + exclude} \
