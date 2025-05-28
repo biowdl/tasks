@@ -37,6 +37,8 @@ task SnpSiftFilter {
 
     command {
         set -e
+        ls ~{vcf} ~{vcfIndex}
+
         mkdir -p "$(dirname ~{outputPath})"
         SnpSift -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
         filter \

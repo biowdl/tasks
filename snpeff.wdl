@@ -45,6 +45,7 @@ task SnpEff {
 
     command {
         set -e
+        ls ~{vcf} ~{vcfIndex}
         mkdir -p "$(dirname ~{outputPath})"
         unzip ~{datadirZip}
         snpEff -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \

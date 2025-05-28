@@ -362,7 +362,7 @@ task View {
 
     command {
         set -e
-        ls ~{inputFileIndex}
+        ls ~{inputFile} ~{inputFileIndex}
 
         mkdir -p "$(dirname ~{outputPath})"
         bcftools view \
