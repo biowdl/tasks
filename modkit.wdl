@@ -129,7 +129,7 @@ task Summary {
         Int? seed
 
         Int threads = 4
-        String memory = ceil(size(bam, "GiB") * 110) + 40 # Based on a linear model with some fudge (memory = 107 * file_size - 1.8).
+        String memory = ceil(size(bam, "GiB") * 115) + 4 # Based on a linear model with some fudge (memory = 107 * file_size - 1.8).
         Int timeMinutes = 2880 / threads  # 2 Days / threads
         String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
     }
