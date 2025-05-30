@@ -43,7 +43,7 @@ task Pileup {
         Int threads = 8
         String memory = "4GiB"
         Int timeMinutes = 2880 / threads  # 2 Days / threads
-        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
     }
 
     command <<<
@@ -131,7 +131,7 @@ task Summary {
         Int threads = 4
         String memory = ceil(size(bam, "GiB") * 0.1) + 5 # Based on a linear model with some fudge (memory = 0.07540 * file_size - 0.6).
         Int timeMinutes = 2880 / threads  # 2 Days / threads
-        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.2--hcdda2d0_0"
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
     }
 
     command <<<
