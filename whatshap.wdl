@@ -39,7 +39,21 @@ task Phase {
         String? ped
 
         String memory = "4GiB"
-        Int timeMinutes = 120
+
+        # BAM Size: 104G
+        # VCF Size: 96M
+        # == SUMMARY ==
+        # Maximum memory usage: 2.911 GB
+        # Time spent reading BAM/CRAM:                 1556.3 s
+        # Time spent parsing VCF:                        56.6 s
+        # Time spent selecting reads:                   902.5 s
+        # Time spent phasing:                          10064.8 s
+        # Time spent writing VCF:                        82.2 s
+        # Time spent finding components:                 72.7 s
+        # Time spent on rest:                           666.2 s
+        # Total elapsed time:                          13401.3 s
+        Int timeMinutes = 300
+
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
     }
