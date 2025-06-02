@@ -25,16 +25,18 @@ task Pileup {
         File bam
         File bamIndex
         String outputBed = "output.bedMethyl"
+        String outputBedGraph = "combined.bedgraph"
         File referenceFasta
         File referenceFastaFai
 
         Int? intervalSize
         File? includeBed
+        String? filterThreshold
+        String? filterPercentile
 
         Boolean cpg = false
         Boolean combineMods = false
         Boolean combineStrands = false
-        Boolean bedgraph = false
         String? ignore
         String logFilePath = "modkit.log"
 
@@ -42,7 +44,6 @@ task Pileup {
         String memory = "4GiB"
         Int timeMinutes = 2880 / threads  # 2 Days / threads
         String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
-
     }
 
     command <<<
@@ -58,15 +59,22 @@ task Pileup {
         ~{true="--cpg" false="" cpg} \
         ~{true="--combine-mods" false="" combineMods} \
         ~{true="--combine-strands" false="" combineStrands} \
-        ~{true="--bedgraph" false="" bedgraph} \
+        ~{"--filter-percentile " + filterPercentile} \
+        ~{"--filter-threshold " + filterThreshold} \
         --log-filepath ~{logFilePath} \
         ~{bam} \
-        ~{outputBed} 
+         - | tee ~{outputBed} | awk -v OFS="\t" '{print $1, $2, $3, $11, $10 >> "~{outputBedGraph}_"$4"_"$6".bedGraph"}'
+        # Separately generate the combined file as well, so users can have a choice.
+        cat ~{outputBed} | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > ~{outputBedGraph}
     >>>
 
+    # You can use modkit pileup ${bam_path} - | tee out.bedmethyl | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > out.bg to get both outputs at once without running anything twice.
+    # https://github.com/nanoporetech/modkit/issues/210#issuecomment-2181706374
+
     output {
-        File? out = outputBed  # Normal mode
-        Array[File] outFiles = glob(outputBed + "/*")  # Bedgraph mode
+        File out = outputBed  # Normal mode
+        File outGraph = outputBedGraph  # Normal mode
+        Array[File] outFiles = glob(outputBedGraph + "*.bedGraph")  # Bedgraph mode
         File logFile = logFilePath
     }
 
@@ -83,25 +91,89 @@ task Pileup {
         bamIndex: {description: "The index for the input alignment file", category: "required"}
         referenceFasta: {description: "The reference fasta file.", category: "required"}
         referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
-        outputBed: {description: "The output name where the data should be placed.", category: "common"}
+        outputBed: {description: "The output name where the bedMethyl file should be placed.", category: "common"}
+        outputBedGraph: {description: "The output name where the bedgraph file should be placed", category: "common"}
 
         intervalSize: {description: "Sets the interval size", category: "advanced"}
         includeBed: {description: "Bed file with regions to include", category: "advanced"}
         cpg: {description: "Whether to call only at cpg sites", category: "advanced"}
         combineMods: {description: "Whether to combine modifications in the output", category: "advanced"}
         combineStrands: {description: "Whether to combine strands in the output", category: "advanced"}
-        bedgraph: {description: "Whether to create a folder instead with a bedgraph file", category: "advanced"}
         ignore: {description: "Modification type to ignore. For example 'h'.", category: "advanced"}
         logFilePath: {description: "Path where the log file should be written.", category: "advanced"}
+        filterThreshold: {description: "Global filter threshold can be specified with by a decimal number (e.g. 0.75). Otherwise the automatic filter percentile will be used.", category: "advanced"}
+        filterPercentile: {description: "This defaults to 0.1, to remove the lowest 10% confidence modification calls, but can be manually adjusted", category: "advanced"}
 
         threads: {description: "The number of threads to use for variant calling.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"} 
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-    
+
         # output
         out: {description: "The output bed files. Not available when bedgraph = true."}
         outFiles: {description: "Output files when bedgraph = true."}
         logFile: {description: "The generated log file."}
+    }
+}
+
+task Summary {
+    input {
+        File bam
+        File bamIndex
+
+        String summary = "modkit.summary.txt"
+
+        Boolean sample = true
+        Int? numReads # = 10042
+        Float? samplingFrac # = 0.1
+        Int? seed
+
+        Int threads = 4
+        String memory = ceil(size(bam, "GiB") * 0.1) + 5 # Based on a linear model with some fudge (memory = 0.07540 * file_size - 0.6).
+        Int timeMinutes = 2880 / threads  # 2 Days / threads
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
+    }
+
+    command <<<
+        set -e
+        mkdir -p $(dirname ~{summary})
+
+        modkit summary \
+        --threads ~{threads} \
+        ~{true="" false="--no-sampling" sample} \
+        ~{"--num-reads " + numReads} \
+        ~{"--sampling-frac " + samplingFrac} \
+        ~{"--seed " + seed} \
+        ~{bam} > ~{summary}
+    >>>
+
+    output {
+        File summaryReport = summary # Normal mode
+    }
+
+    runtime {
+        docker: dockerImage
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # input
+        bam: {description: "The input alignment file", category: "required"}
+        bamIndex: {description: "The index for the input alignment file", category: "required"}
+
+        sample: {description: "Allows you to disable sampling and report stats for the whole file.", category: "advanced"}
+        numReads: {description: "By default a fixed amount of reads are read, you can set this to change the number of reads to sample.", category: "advanced"}
+        samplingFrac: {description: "Use a fixed percentage of reads, rather than a fixed number of reads, for sampling.", category: "advanced"}
+        seed: {description: "A seed can be provided for reproducibility in the sampling fraction case.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # output
+        summaryReport: {description: "The output modkit summary."}
     }
 }
