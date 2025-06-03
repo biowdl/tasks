@@ -40,8 +40,11 @@ task SnpEff {
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 60
-        String dockerImage = "quay.io/biocontainers/snpeff:5.2--hdfd78af_1"
+        # Multicontainer with snpeff 5.2 and bgzip/tabix 1.19.1
+        String dockerImage = "quay.io/biocontainers/mulled-v2-2fe536b56916bd1d61a6a1889eb2987d9ea0cd2f:c51b2e46bf63786b2d9a7a7d23680791163ab39a-0"
     }
+
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
 
     command {
         set -e
@@ -61,12 +64,15 @@ task SnpEff {
         ~{true="-no-intergenic" false="" noIntergenic} \
         ~{true="-noShiftHgvs" false="" noShiftHgvs} \
         ~{"-upDownStreamLen " + upDownStreamLen} \
-        > ~{outputPath}
+        ~{if compressed then "| bgzip " else ""} > ~{outputPath}
+
+        ~{if compressed then "tabix ~{outputPath}" else ""}
         rm -r $PWD/data
     }
 
     output {
         File outputVcf = outputPath
+        File? outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {

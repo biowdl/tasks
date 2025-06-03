@@ -44,11 +44,14 @@ task SnpSiftFilter {
         filter \
         "~{filterExpression}" \
         ~{vcf} \
-        > ~{outputPath}
+        ~{if compressed then "| bgzip " else ""} > ~{outputPath}
+
+        ~{if compressed then "tabix ~{outputPath}" else ""}
     }
 
     output {
         File outputVcf = outputPath
+        File? outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
