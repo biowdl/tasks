@@ -32,8 +32,11 @@ task SnpSiftFilter {
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 60
-        String dockerImage = "quay.io/biocontainers/snpsift:5.2--hdfd78af_0"
+        # Multicontainer with SnpSift 5.2 and bgzip/tabix 1.22
+        String dockerImage = "quay.io/biocontainers/mulled-v2-d4bc0c23eb1d95c7ecff7f0e8b3a4255503fd5d4:c51b2e46bf63786b2d9a7a7d23680791163ab39a-0"
     }
+
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
 
     command {
         set -e
