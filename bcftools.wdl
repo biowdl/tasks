@@ -191,7 +191,7 @@ task Norm {
         Boolean splitMultiallelicSites = false
 
         String memory = "2GiB"
-        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        Int timeMinutes = 1 + ceil(size(inputFile, "G")) * 2
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
