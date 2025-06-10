@@ -190,7 +190,7 @@ task Norm {
         String? regions
         Boolean splitMultiallelicSites = false
 
-        String memory = "2GiB"
+        String memory = "10GiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
