@@ -29,7 +29,7 @@ task Sequali {
         Int threads = 2
         String memory = "4GiB"
         String dockerImage = "quay.io/biocontainers/sequali:0.12.0--py312hf67a6ed_0"
-        Int timeMinutes = 59
+        Int timeMinutes = 10 + ceil(size(reads, "GiB") + size(mate_reads, "GiB")) * 4 
     } 
 
     command <<<

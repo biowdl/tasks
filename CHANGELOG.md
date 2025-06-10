@@ -10,7 +10,20 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Update vt task to allow a filter expression and compress and index the output.
++ MultiQC image updated to version 1.28
++ Samtools merge now has options added for merging RG and PG headers.
++ Samtools merge default thread count increased based on the number of files.
++ Update docker images in samtools.wdl
++ Add threads and compression levels to applicable tasks in samtools. Default to 
+  compression level 1.
++ samtools BgzipAndIndex and Tabix "type" parameter changed to "preset" as is 
+  the name of the flag.
++ Unused javaXmx parameter removed from samtools DictAndFaidx
++ Update Picard images
 + Add Mosdepth task.
++ pbmm2 loses the sort parameter. Output is now always sorted.
++ pbmm2 gets an unmapped parameter.
 + Allow pbmm2 to work with a set output prefix for the BAM file.
 + Update pbmm2 docker container to version 1.17
 + Add VEP task.
@@ -31,6 +44,9 @@ version 6.0.0-dev
 + Update `bedtools.Intersect` to support `-wa`, `-wb`, and `-s` flags.
 + Add `biopet.ValidateFastq` to check your fastq files for pairing and other correctness.
 + **Breaking**: `samtools.Fastq` now requires defining your singleton read location. This only affects you if you were previously using this task with only a single output read file.
++ Deprecate `modkit.Pileup`'s bedGraph option, it is now output by default.
++ Add support for filterThreshold/filterPercent for `modkit.Pileup`.
++ Add `modkit.Summary` task.
 
 version 5.2.0
 ---------------------------
