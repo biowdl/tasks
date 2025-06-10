@@ -207,7 +207,8 @@ task Norm {
         -O ~{true="z" false="v" compressed} \
         ~{"--regions " + regions} \
         ~{"--fasta " + fasta} \
-        ~{if splitMultiallelicSites then "--multiallelics -both" else ""}
+        ~{if splitMultiallelicSites then "--multiallelics -both" else ""} \
+        ~{inputFile}
         
         ~{if compressed then "bcftools index --tbi ~{outputPath}" else ""}
     }
