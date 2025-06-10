@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Add a task for bcftools norm.
 + Add support for outputting compressed files to snpeff and snpsift.
 + Fixed an issue with the parameter_meta section of bcftools annotate
   which caused wdlTools to error on parsing the file.
