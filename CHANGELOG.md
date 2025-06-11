@@ -45,6 +45,7 @@ version 6.0.0-dev
 + Deprecate `modkit.Pileup`'s bedGraph option, it is now output by default.
 + Add support for filterThreshold/filterPercent for `modkit.Pileup`.
 + Add `modkit.Summary` task.
++ Disable the one-click GDPR dataleak button in MultiQC `--no-ai` by default.
 
 version 5.2.0
 ---------------------------
