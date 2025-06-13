@@ -39,6 +39,7 @@ task MultiQC {
         # This must be actively enabled in my opinion.
         # The tools default is to upload.
         Boolean megaQCUpload = false
+        Boolean enableAi = false
 
         Int? dirsDepth
         String? title
@@ -124,6 +125,7 @@ task MultiQC {
         ~{true="--lint" false="" lint} \
         ~{true="--pdf" false="" pdf} \
         ~{false="--no-megaqc-upload" true="" megaQCUpload} \
+        ~{false="--no-ai" true="" enableAi} \
         ~{"--config " + config} \
         ~{"--cl-config " + clConfig } \
         ~{reportDir}
@@ -159,6 +161,7 @@ task MultiQC {
         lint: {description: "Equivalent to MultiQC's `--lint` flag.", category: "advanced"}
         pdf: {description: "Equivalent to MultiQC's `--pdf` flag.", category: "advanced"}
         megaQCUpload: {description: "Opposite to MultiQC's `--no-megaqc-upload` flag.", category: "advanced"}
+        enableAi: {description: "Opposite to MultiQC's `--no-ai` flag.", category: "advanced"}
         dirsDepth: {description: "Equivalent to MultiQC's `--dirs-depth` option.", category: "advanced"}
         title: {description: "Equivalent to MultiQC's `--title` option.", category: "advanced"}
         comment: {description: "Equivalent to MultiQC's `--comment` option.", category: "advanced"}
