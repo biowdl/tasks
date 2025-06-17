@@ -46,6 +46,7 @@ version 6.0.0-dev
 + Add support for filterThreshold/filterPercent for `modkit.Pileup`.
 + Add `modkit.Summary` task.
 + Disable the one-click GDPR dataleak button in MultiQC `--no-ai` by default.
++ Support providing additional reports to MultiQC in workflow configuration.
 
 version 5.2.0
 ---------------------------
