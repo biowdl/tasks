@@ -80,7 +80,7 @@ task MultiQC {
     # strategy. Using python's builtin hash is unique enough
     # for these purposes.
 
-    Array[File] allReports = flatten([reports, select_all([additionalReports])])
+    Array[File] allReports = flatten([reports, flatten(select_all([additionalReports]))])
 
     command {
         python3 <<CODE
