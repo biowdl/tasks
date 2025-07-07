@@ -10,6 +10,7 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ bedtools.Sort: bumped container version to permit use of `faidx`.
 + Update vt task to allow a filter expression and compress and index the output.
 + MultiQC image updated to version 1.28
 + Samtools merge now has options added for merging RG and PG headers.

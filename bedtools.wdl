@@ -224,7 +224,7 @@ task Sort {
         ~{true="-chrThenScoreA" false="" chrThenScoreA} \
         ~{true="-chrThenScoreD" false="" chrThenScoreD} \
         ~{"-g " + genome} \
-        ~{"-faidx" + faidx} \
+        ~{"-faidx " + faidx} \
         > ~{outputBed}
     }
 
