@@ -209,7 +209,7 @@ task Sort {
 
         String memory = "~{512 + ceil(size(inputBed, "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size(inputBed, "GiB"))
-        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.31.1--hf5e1c6e_2"
     }
 
     command {
