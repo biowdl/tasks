@@ -10,6 +10,11 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ Added tasks for GEVA:
+  + ConvertToBin
+  + Geva
+  + EstimateAge
++ Updated bcftools view task with an input to provide a samples file.
 + Add a task for bcftools norm.
 + Add support for outputting compressed files to snpeff and snpsift.
 + Fixed an issue with the parameter_meta section of bcftools annotate
