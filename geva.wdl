@@ -7,7 +7,7 @@ task ConvertToBin {
 
         String memory = "4GiB"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4 "
+        String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
     }
 
     command {
@@ -53,7 +53,7 @@ task EstimateAge {
 
         String memory = "4GiB"
         Int timeMinutes = 30
-        String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4 "
+        String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
     }
 
     command {
@@ -96,7 +96,7 @@ task Geva {
 
         String memory = "32GiB" # According to GEVA's README this is dependant on AF, so hard to figure out on the fly.
         Int timeMinutes = 120
-        String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4 "
+        String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
     }
 
     command {
