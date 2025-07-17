@@ -50,6 +50,10 @@ version 6.0.0-dev
 + Fixed bug whereby `samtools.Fastq` could produce out of sync R1/R2 when used with an unsorted bam input. `samtools collate` is now used by default to group reads by readname in order to avoid this issue.
 + New samtools task: split.
 + Update `bedtools.Intersect` to support `-wa`, `-wb`, and `-s` flags.
++ Deprecate `modkit.Pileup`'s bedGraph option, it is now output by default.
++ Add support for filterThreshold/filterPercent for `modkit.Pileup`.
++ Add `modkit.Summary` task.
++ Disable the one-click GDPR dataleak button in MultiQC `--no-ai` by default.
 
 version 5.2.0
 ---------------------------
