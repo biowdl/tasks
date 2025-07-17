@@ -190,8 +190,9 @@ task Norm {
         String? regions
         Boolean splitMultiallelicSites = false
 
-        String memory = "64GiB"
+        String memory = "4GiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        Int diskGb = ceil(2.1 * size(inputFile, "G") + size(fasta, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
@@ -199,7 +200,7 @@ task Norm {
 
     command {
         set -e
-        ls ~{inputFile} ~{inputFileIndex} # dxCompiler localization workaroud
+        ls ~{inputFile} ~{inputFileIndex}  # dxCompiler localization workaroud
 
         mkdir -p "$(dirname ~{outputPath})"
         bcftools norm \
@@ -222,6 +223,7 @@ task Norm {
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
+        disks: "local-disk ~{diskGb} SSD" # Based on an example in dxCompiler docs
     }
 
     parameter_meta {
@@ -234,11 +236,12 @@ task Norm {
 
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        diskGb: {description: "The amount of disk space needed for this job in GiB.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        outputVcf: {description: "Sorted VCF file."}
-        outputVcfIndex: {description: "Index of sorted VCF file."}
+        outputVcf: {description: "Normalized VCF file."}
+        outputVcfIndex: {description: "Index of Normalized VCF file."}
     } 
 }
 
@@ -424,7 +427,7 @@ task View {
 
     command {
         set -e
-        ls ~{inputFile} ~{inputFileIndex}
+        ls ~{inputFile} ~{inputFileIndex}  # dxCompiler localization workaroud
 
         mkdir -p "$(dirname ~{outputPath})"
         bcftools view \

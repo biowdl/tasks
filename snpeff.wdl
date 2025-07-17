@@ -48,7 +48,7 @@ task SnpEff {
 
     command {
         set -e
-        ls ~{vcf} ~{vcfIndex}
+        ls ~{vcf} ~{vcfIndex}  # dxCompiler localization workaroud
         mkdir -p "$(dirname ~{outputPath})"
         unzip ~{datadirZip}
         snpEff -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
@@ -82,6 +82,7 @@ task SnpEff {
     }
 
     parameter_meta {
+        # inputs
         vcf: {description: "A VCF file to analyse.", category: "required"}
         vcfIndex: {description: "The index for the VCF file.", category: "required"}
         genomeVersion: {description: "The version of the genome to be used. The database for this genome must be present in the datadirZip.", category: "required"}
@@ -102,5 +103,9 @@ task SnpEff {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Annotated VCF file."}
+        outputVcfIndex: {description: "Index of annotated VCF file."}
     }
 }

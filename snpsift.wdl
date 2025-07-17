@@ -40,7 +40,7 @@ task SnpSiftFilter {
 
     command {
         set -e
-        ls ~{vcf} ~{vcfIndex}
+        ls ~{vcf} ~{vcfIndex}  # dxCompiler localization workaroud
 
         mkdir -p "$(dirname ~{outputPath})"
         SnpSift -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
@@ -64,6 +64,7 @@ task SnpSiftFilter {
     }
 
     parameter_meta {
+        # inputs
         vcf: {description: "A VCF file to filter.", category: "required"}
         vcfIndex: {description: "The index for the VCF file.", category: "common"}
         filterExpression: {description: "The SnpSift filtering expression.", category: "required"}
@@ -75,5 +76,9 @@ task SnpSiftFilter {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Filtered VCF file."}
+        outputVcfIndex: {description: "Index of filtered VCF file."}
     }
 }
