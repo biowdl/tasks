@@ -38,9 +38,6 @@ task Phase {
         String? threshold
         String? ped
 
-        String memory = "4GiB"
-        Int timeMinutes = 120
-
         String memory = 2 + ceil(size(phaseInput, "G") / 20 )
         Int timeMinutes = 400 + ceil(size(phaseInput, "G") * 0.9 )
 
@@ -183,7 +180,6 @@ task Haplotag {
         String memory = 2 + ceil(size(alignments, "G") / 50 )
         Int timeMinutes = 50 + ceil(size(alignments, "G") * 2 )
 
-        Int timeMinutes = 120
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
     }
