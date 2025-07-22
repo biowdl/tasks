@@ -56,6 +56,9 @@ version 6.0.0-dev
 + Disable the one-click GDPR dataleak button in MultiQC `--no-ai` by default.
 + Update clair3 version from 1.0.11 to 1.1.0
 + Improve whatshap runtime/memory usage for our cluster.
++ Add `Modkit.SampleProbs`
++ Add `Modkit.DmrMulti`
++ Add `Modkit.DmrMultiInputPrep` to construct the command line for `Modkit.DmrMulti`
 
 version 5.2.0
 ---------------------------
