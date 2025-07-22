@@ -229,6 +229,7 @@ task SampleProbs {
         # input
         bam: {description: "The input alignment file", category: "required"}
         bamIndex: {description: "The index for the input alignment file", category: "required"}
+        summary: {description: "A folder for the outputs", category: "required"}
 
         sample: {description: "Allows you to disable sampling and report stats for the whole file.", category: "advanced"}
         numReads: {description: "By default a fixed amount of reads are read, you can set this to change the number of reads to sample.", category: "advanced"}
@@ -241,6 +242,9 @@ task SampleProbs {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # output
-        summaryReport: {description: "The output modkit summary."}
+        reportCounts: {description: "The output html report of counts"}
+        reportProportion: {description: "The output html report of proportions"}
+        reportProbabilitiesTsv: {description: "The output TSV of Probabilities"}
+        reportThresholdsTsv: {description: "The output TSV of thresholds"}
     }
 }
