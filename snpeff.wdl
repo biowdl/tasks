@@ -32,6 +32,7 @@ task SnpEff {
         Boolean hgvs = true
         Boolean lof = true
         Boolean noDownstream = false
+        Boolean noUpstream = false
         Boolean noIntergenic = false
         Boolean noShiftHgvs = false
         Int? upDownStreamLen
@@ -39,11 +40,15 @@ task SnpEff {
         String memory = "9GiB"
         String javaXmx = "8G"
         Int timeMinutes = 60
-        String dockerImage = "quay.io/biocontainers/snpeff:5.0--0"
+        # Multicontainer with snpeff 5.2 and bgzip/tabix 1.19.1
+        String dockerImage = "quay.io/biocontainers/mulled-v2-2fe536b56916bd1d61a6a1889eb2987d9ea0cd2f:c51b2e46bf63786b2d9a7a7d23680791163ab39a-0"
     }
+
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
 
     command {
         set -e
+        ls ~{vcf} ~{vcfIndex}  # dxCompiler localization workaroud
         mkdir -p "$(dirname ~{outputPath})"
         unzip ~{datadirZip}
         snpEff -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
@@ -55,15 +60,19 @@ task SnpEff {
         ~{true="-hgvs" false="-noHgvs" hgvs} \
         ~{true="-lof" false="-noLof" lof} \
         ~{true="-no-downstream" false="" noDownstream} \
+        ~{true="-no-upstream" false="" noUpstream} \
         ~{true="-no-intergenic" false="" noIntergenic} \
         ~{true="-noShiftHgvs" false="" noShiftHgvs} \
         ~{"-upDownStreamLen " + upDownStreamLen} \
-        > ~{outputPath}
+        ~{if compressed then "| bgzip " else ""} > ~{outputPath}
+
+        ~{if compressed then "tabix ~{outputPath}" else ""}
         rm -r $PWD/data
     }
 
     output {
         File outputVcf = outputPath
+        File? outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -73,6 +82,7 @@ task SnpEff {
     }
 
     parameter_meta {
+        # inputs
         vcf: {description: "A VCF file to analyse.", category: "required"}
         vcfIndex: {description: "The index for the VCF file.", category: "required"}
         genomeVersion: {description: "The version of the genome to be used. The database for this genome must be present in the datadirZip.", category: "required"}
@@ -82,6 +92,7 @@ task SnpEff {
         hgvs: {description: "Equivalent to `-hgvs` if true or `-noHgvs` if false.", category: "advanced"}
         lof: {description: "Equivalent to `-lof` if true or `-noLof` if false.", category: "advanced"}
         noDownstream: {description: "Equivalent to the `-no-downstream` flag.", category: "advanced"}
+        noUpstream: {description: "Equivalent to the `-no-upstream` flag.", category: "advanced"}
         noIntergenic: {description: "Equivalent to the `-no-intergenic` flag.", category: "advanced"}
         noShiftHgvs: {description: "Equivalent to the `-noShiftHgvs` flag.", category: "advanced"}
         upDownStreamLen: {descriptoin: "Equivalent to the `-upDownStreamLen` option.", category: "advanced"}
@@ -92,5 +103,9 @@ task SnpEff {
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
                       category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Annotated VCF file."}
+        outputVcfIndex: {description: "Index of annotated VCF file."}
     }
 }

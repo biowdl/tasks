@@ -11,6 +11,14 @@ that users understand how the changes affect the new version.
 version 6.0.0-dev
 ---------------------------
 + bedtools.Sort: bumped container version to permit use of `faidx`.
++ Add a task for bcftools norm.
++ Add support for outputting compressed files to snpeff and snpsift.
++ Fixed an issue with the parameter_meta section of bcftools annotate
+  which caused wdlTools to error on parsing the file.
++ Updated the bcftools view task with an input for an index file.
++ Updated the bcftools view task to allow specifying a region.
++ Added a task for SnpSift filter.
++ Updated the snpEff task to allow setting the `-no-upstream` flag.
 + Update vt task to allow a filter expression and compress and index the output.
 + MultiQC image updated to version 1.28
 + Samtools merge now has options added for merging RG and PG headers.
