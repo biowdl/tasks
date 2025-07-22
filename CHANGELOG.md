@@ -54,6 +54,7 @@ version 6.0.0-dev
 + Add support for filterThreshold/filterPercent for `modkit.Pileup`.
 + Add `modkit.Summary` task.
 + Disable the one-click GDPR dataleak button in MultiQC `--no-ai` by default.
++ Update clair3 version from 1.0.11 to 1.1.0
 
 version 5.2.0
 ---------------------------
