@@ -40,12 +40,19 @@ task Phase {
 
         String memory = "4GiB"
         Int timeMinutes = 120
+
+        String memory = 2 + ceil(size(bam, "G") / 20 )
+        Int timeMinutes = 400 + ceil(size(bam, "G") * 0.9 )
+
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
     }
 
     command {
         set -e
+
+        mkdir -p $(dirname ~{outputVCF})
+
         whatshap phase \
         ~{vcf} \
         ~{phaseInput} \
@@ -110,12 +117,16 @@ task Stats {
         String? chromosome
 
         String memory = "4GiB"
-        Int timeMinutes = 120
+        Int timeMinutes = 30
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
       }
 
     command {
+        set -e
+
+        mkdir -p $(dirname ~{tsv})
+
         whatshap stats \
         ~{vcf} \
         ~{if defined(gtf) then ("--gtf " +  '"' + gtf + '"') else ""} \
@@ -169,7 +180,9 @@ task Haplotag {
         String? regions
         String? sample
 
-        String memory = "4GiB"
+        String memory = 2 + ceil(size(bam, "G") / 50 )
+        Int timeMinutes = 50 + ceil(size(bam, "G") * 2 )
+
         Int timeMinutes = 120
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
@@ -177,6 +190,9 @@ task Haplotag {
 
     command {
         set -e
+
+        mkdir -p $(dirname ~{outputFile})
+
         whatshap haplotag \
         ~{vcf} \
         ~{alignments} \
