@@ -7,6 +7,7 @@ task ConvertToBin {
 
         String memory = "4GiB"
         Int timeMinutes = 30
+        Int diskGb = 1 + ceil(2.1 * size(inputVcf, "G"))
         String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
     }
 
@@ -26,6 +27,7 @@ task ConvertToBin {
     runtime {
         memory: memory
         time_minutes: timeMinutes
+        disks: "local-disk ~{diskGb} SSD" # Based on an example in dxCompiler docs
         docker: dockerImage
     }
 
@@ -35,6 +37,7 @@ task ConvertToBin {
         prefix: {description: "Prefix (including path) for the output files.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        diskGb: {description: "The amount of disk space needed for this job in GiB.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -53,6 +56,7 @@ task EstimateAge {
 
         String memory = "4GiB"
         Int timeMinutes = 30
+        Int diskGb = 1 + ceil(2 * size(pairs, "G"))
         String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
     }
 
@@ -71,6 +75,7 @@ task EstimateAge {
     runtime {
         memory: memory
         time_minutes: timeMinutes
+        disks: "local-disk ~{diskGb} SSD" # Based on an example in dxCompiler docs
         docker: dockerImage
     }
 
@@ -81,6 +86,7 @@ task EstimateAge {
         outputPath: {description: "Path for the output file.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        diskGb: {description: "The amount of disk space needed for this job in GiB.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
@@ -96,6 +102,7 @@ task Geva {
 
         String memory = "32GiB" # According to GEVA's README this is dependant on AF, so hard to figure out on the fly.
         Int timeMinutes = 120
+        Int diskGb = 1 + ceil(2 * size(bin, "G"))
         String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
     }
 
@@ -116,6 +123,7 @@ task Geva {
     runtime {
         memory: memory
         time_minutes: timeMinutes
+        disks: "local-disk ~{diskGb} SSD" # Based on an example in dxCompiler docs
         docker: dockerImage
     }
 
@@ -126,6 +134,7 @@ task Geva {
         prefix: {description: "Prefix (including path) for the output files.", category: "common"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        diskGb: {description: "The amount of disk space needed for this job in GiB.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs

@@ -192,7 +192,7 @@ task Norm {
 
         String memory = "4GiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
-        Int diskGb = ceil(2.1 * size(inputFile, "G") + size(fasta, "G"))
+        Int diskGb = 1 + ceil(2.1 * size(inputFile, "G") + size(fasta, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
@@ -421,6 +421,7 @@ task View {
 
         String memory = "256MiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        Int diskGb = 1 + ceil(2.1 * size(inputFile, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
 
@@ -453,6 +454,7 @@ task View {
     runtime {
         memory: memory
         time_minutes: timeMinutes
+        disks: "local-disk ~{diskGb} SSD" # Based on an example in dxCompiler docs
         docker: dockerImage
     }
 
@@ -469,6 +471,7 @@ task View {
         samplesFile: {description: "File of samples to include.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        diskGb: {description: "The amount of disk space needed for this job in GiB.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
