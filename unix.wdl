@@ -52,8 +52,6 @@ task Awk {
 		cpu: threads
 		memory: "1GiB"
 		time_minutes: timeMinutes
-		partition: "short"
-		slurm_partition: "short"
 		docker: dockerImage
 	}
 
