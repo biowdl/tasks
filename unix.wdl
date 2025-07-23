@@ -66,7 +66,6 @@ task Awk {
 		
 		outputPrefix: {description: "Output directory path + output file prefix.", category: "required"}
 		threads: {description: "The number of threads to use. Only used if the split input is not set.", category: "advanced"}
-		memory: {description: "The amount of memory available to the job.", category: "advanced"}
 		timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
 		dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
