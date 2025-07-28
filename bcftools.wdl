@@ -133,8 +133,8 @@ task Annotate {
 
 task Concat {
     input {
-        Array[file]+ vcfFiles
-        Array[file]+ vcfIndexes
+        Array[File]+ vcfFiles
+        Array[File]+ vcfIndexes
         String outputPath
         Boolean naive = false
 
