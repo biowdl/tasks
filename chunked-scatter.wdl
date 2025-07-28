@@ -59,7 +59,7 @@ task ChunkedScatter {
 
     parameter_meta {
         # inputs
-        inputFile: {description: "Either a bed file describing regiosn of intrest or a sequence dictionary.", category: "required"}
+        inputFile: {description: "Either a bed file describing regions of interest or a sequence dictionary.", category: "required"}
         prefix: {description: "The prefix for the output files.", category: "advanced"}
         splitContigs: {description: "If set, contigs are allowed to be split up over multiple files.", category: "advanced"}
         chunkSize: {description: "Equivalent to chunked-scatter's `-c` option.", category: "advanced"}
