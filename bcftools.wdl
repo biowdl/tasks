@@ -161,8 +161,8 @@ task Concat {
     }
 
     output {
-        File concatenatedVcf = outputPath
-        File concatenatedVcfIndex = outputPath + ".tbi"
+        File outputVcf = outputPath
+        File outputVcfIndex = outputPath + ".tbi"
     }
 
     runtime {
@@ -186,8 +186,8 @@ task Concat {
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
         # outputs
-        concatenatedVcf: {description: "VCF file."}
-        concatenatedVcfIndex: {description: "Index of VCF file."}
+        outputVcf: {description: "VCF file."}
+        outputVcfIndex: {description: "Index of VCF file."}
     }
 }
 
