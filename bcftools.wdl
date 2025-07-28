@@ -140,7 +140,7 @@ task Concat {
 
         Int threads = 0
         String memory = "4GiB"
-        Int timeMinutes = 10 + ceil(size(inputFile, "G"))
+        Int timeMinutes = 10 + ceil(size(vcfFiles, "G"))
         Int diskGb = ceil(2.1 * size(vcfFiles, "G"))
         String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
     }
