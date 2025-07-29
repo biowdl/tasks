@@ -111,7 +111,7 @@ task Annotate {
         collapse: {description: "Treat as identical records with <snps|indels|both|all|some|none>, see man page for details.", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
         headerLines: {description: "Lines to append to the VCF header (see man page for details).", category: "advanced"}
-        newId: {description: "Assign ID on the fly (e.g. --set-id +'%CHROM\_%POS').", category: "advanced"}
+        newId: {description: "Assign ID on the fly (e.g. --set-id +'%CHROM\\_%POS').", category: "advanced"}
         include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
         markSites: {description: "Annotate sites which are present ('+') or absent ('-') in the -a file with a new INFO/TAG flag.", category: "advanced"}
         regions: {description: "Restrict to comma-separated list of regions.", category: "advanced"}
@@ -178,6 +178,71 @@ task Filter {
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
     }
+}
+
+task Norm {
+    input {
+        File inputFile
+        File? inputFileIndex
+        String outputPath = "output.vcf.gz"
+
+        File? fasta
+        String? regions
+        Boolean splitMultiallelicSites = false
+
+        String memory = "4GiB"
+        Int timeMinutes = 1 + ceil(size(inputFile, "G"))
+        Int diskGb = ceil(2.1 * size(inputFile, "G") + size(fasta, "G"))
+        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+    }
+
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
+
+    command {
+        set -e
+        ls ~{inputFile} ~{inputFileIndex}  # dxCompiler localization workaroud
+
+        mkdir -p "$(dirname ~{outputPath})"
+        bcftools norm \
+        -o ~{outputPath} \
+        -O ~{true="z" false="v" compressed} \
+        ~{"--regions " + regions} \
+        ~{"--fasta " + fasta} \
+        ~{if splitMultiallelicSites then "--multiallelics -both" else ""} \
+        ~{inputFile}
+        
+        ~{if compressed then "bcftools index --tbi ~{outputPath}" else ""}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File? outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+        disks: "local-disk ~{diskGb} SSD" # Based on an example in dxCompiler docs
+    }
+
+    parameter_meta {
+        # inputs
+        inputFile: {description: "A vcf or bcf file.", category: "required"}
+        outputPath: {description: "The location the output VCF file should be written.", category: "common"}
+        fasta: {description: "Equivalent to bcftools norm's `--fasta` option.", category: "advanced"}
+        regions: {description: "Equivalent to bcftools norm's `--regions` option.", category: "advanced"}
+        splitMultiallelicSites: {description: "Whether multiallelic lines should be split up.", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        diskGb: {description: "The amount of disk space needed for this job in GiB.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Normalized VCF file."}
+        outputVcfIndex: {description: "Index of Normalized VCF file."}
+    } 
 }
 
 task Sort {
@@ -344,11 +409,13 @@ task Stats {
 task View {
     input {
         File inputFile
+        File? inputFileIndex
         String outputPath = "output.vcf"
         Boolean excludeUncalled = false
 
         String? exclude
         String? include
+        String? region
         Array[String] samples = []
 
         String memory = "256MiB"
@@ -360,6 +427,8 @@ task View {
 
     command {
         set -e
+        ls ~{inputFile} ~{inputFileIndex}  # dxCompiler localization workaroud
+
         mkdir -p "$(dirname ~{outputPath})"
         bcftools view \
         ~{"--exclude " + exclude} \
@@ -368,7 +437,8 @@ task View {
         ~{if length(samples) > 0 then "-s" else ""} ~{sep="," samples} \
         -o ~{outputPath} \
         -O ~{true="z" false="v" compressed} \
-        ~{inputFile}
+        ~{inputFile} \
+        ~{region}
 
         ~{if compressed then 'bcftools index --tbi ~{outputPath}' else ''}
     }
@@ -387,9 +457,11 @@ task View {
     parameter_meta {
         # inputs
         inputFile: {description: "A vcf or bcf file.", category: "required"}
+        inputFileIndex: {description: "the index for the input file.", category: "common"}
         outputPath: {description: "The location the output VCF file should be written.", category: "common"}
         include: {description: "Select sites for which the expression is true (see man page for details).", category: "advanced"}
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
+        region: {description: "The region to retrieve from the VCF file.", category: "common"}
         excludeUncalled: {description: "Exclude sites without a called genotype (see man page for details).", category: "advanced"}
         samples: {description: "A list of sample names to include.", category: "advanced"}
         memory: {description: "The amount of memory this job will use.", category: "advanced"}

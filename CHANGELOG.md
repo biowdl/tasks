@@ -10,6 +10,15 @@ that users understand how the changes affect the new version.
 
 version 6.0.0-dev
 ---------------------------
++ bedtools.Sort: bumped container version to permit use of `faidx`.
++ Add a task for bcftools norm.
++ Add support for outputting compressed files to snpeff and snpsift.
++ Fixed an issue with the parameter_meta section of bcftools annotate
+  which caused wdlTools to error on parsing the file.
++ Updated the bcftools view task with an input for an index file.
++ Updated the bcftools view task to allow specifying a region.
++ Added a task for SnpSift filter.
++ Updated the snpEff task to allow setting the `-no-upstream` flag.
 + Update vt task to allow a filter expression and compress and index the output.
 + MultiQC image updated to version 1.28
 + Samtools merge now has options added for merging RG and PG headers.
@@ -42,11 +51,16 @@ version 6.0.0-dev
 + Fixed bug whereby `samtools.Fastq` could produce out of sync R1/R2 when used with an unsorted bam input. `samtools collate` is now used by default to group reads by readname in order to avoid this issue.
 + New samtools task: split.
 + Update `bedtools.Intersect` to support `-wa`, `-wb`, and `-s` flags.
++ Add `biopet.ValidateFastq` to check your fastq files for pairing and other correctness.
++ **Breaking**: `samtools.Fastq` now requires defining your singleton read location. This only affects you if you were previously using this task with only a single output read file.
 + Deprecate `modkit.Pileup`'s bedGraph option, it is now output by default.
 + Add support for filterThreshold/filterPercent for `modkit.Pileup`.
 + Add `modkit.Summary` task.
 + Disable the one-click GDPR dataleak button in MultiQC `--no-ai` by default.
 + Support providing additional reports to MultiQC in workflow configuration.
++ Update clair3 version from 1.0.11 to 1.1.0
++ Improve whatshap runtime/memory usage for our cluster.
++ Add `Modkit.SampleProbs`
 
 version 5.2.0
 ---------------------------

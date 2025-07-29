@@ -209,7 +209,7 @@ task Sort {
 
         String memory = "~{512 + ceil(size(inputBed, "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size(inputBed, "GiB"))
-        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.31.1--hf5e1c6e_2"
     }
 
     command {
@@ -224,7 +224,7 @@ task Sort {
         ~{true="-chrThenScoreA" false="" chrThenScoreA} \
         ~{true="-chrThenScoreD" false="" chrThenScoreD} \
         ~{"-g " + genome} \
-        ~{"-faidx" + faidx} \
+        ~{"-faidx " + faidx} \
         > ~{outputBed}
     }
 
@@ -270,10 +270,11 @@ task Intersect {
         Boolean writeA = false
         Boolean writeB = false
         Boolean stranded = false
+        Boolean nonamecheck = false
 
         String memory = "~{512 + ceil(size([regionsA, regionsB], "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size([regionsA, regionsB], "GiB"))
-        String dockerImage = "quay.io/biocontainers/bedtools:2.23.0--hdbcaa40_3"
+        String dockerImage = "quay.io/biocontainers/bedtools:2.31.1--hf5e1c6e_2"
     }
 
     Boolean sorted = defined(faidx)
@@ -289,6 +290,7 @@ task Intersect {
         ~{true="-wb" false="" writeB} \
         ~{true="-s" false="" stranded} \
         ~{true="-sorted" false="" sorted} \
+        ~{true="-nonamecheck" false="" nonamecheck} \
         ~{true="-g sorted.genome" false="" sorted} \
         > ~{outputBed}
     }
@@ -313,6 +315,7 @@ task Intersect {
         writeA: {description: "Write the original entry in A for each overlap.", category: "advanced"}
         writeB: {description: "Write the original entry in B for each overlap. Useful for knowing what A overlaps.", category: "advanced"}
         stranded: {description: "Force “strandedness”. That is, only report hits in B that overlap A on the same strand. By default, overlaps are reported without respect to strand.", category: "advanced"}
+        nonamecheck: {description: "Disable the bedtools intersect name check. This is used to catch chr1 vs chr01 or chr1 vs 1 naming inconsistencies. However, it throws an error for GIAB hg38 which has capital letters. https://github.com/arq5x/bedtools2/issues/648", category: "advanced"}
 
         memory: {description: "The amount of memory needed for the job.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
