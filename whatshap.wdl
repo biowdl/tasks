@@ -231,3 +231,79 @@ task Haplotag {
         bamIndex: {description: "Index of the tagged BAM file."}
     }
 }
+
+workflow Whatshap {
+    input {
+        File vcf
+        File vcfIndex
+        File phaseInput
+        File phaseInputIndex
+        File referenceFasta
+        File referenceFastaIndex
+
+        String outputPrefix = "results"
+    }
+
+    call Phase as whatshapPhase { input:
+        vcf = vcf,
+        vcfIndex = vcfIndex,
+        phaseInput = phaseInput,
+        phaseInputIndex = phaseInputIndex,
+        indels = true,
+        reference = referenceFasta,
+        referenceIndex = referenceFastaIndex,
+        outputVCF = "~{outputPrefix}.phased.vcf.gz",
+    }
+
+    call Stats as whatshapStats { input:
+        vcf = whatshapPhase.phasedVCF,
+        gtf = "~{outputPrefix}.phased.gtf",
+        tsv = "~{outputPrefix}.phased.tsv",
+        blockList = "~{outputPrefix}.phased.blocklist"
+    }
+
+    call Haplotag as whatshapHaplotag { input:
+        outputFile = "~{outputPrefix}.haplotagged.bam",
+        reference = referenceFasta,
+        referenceFastaIndex = referenceFastaIndex,
+        vcf = whatshapPhase.phasedVCF,
+        vcfIndex = whatshapPhase.phasedVCFIndex,
+        alignments = bam,
+        alignmentsIndex = bamIndex,
+    }
+
+    output {
+        File phasedVCF = whatshapPhase.phasedVCF
+        File phasedVCFIndex = whatshapPhase.phasedVCFIndex
+
+        File phasedGTF = select_first([whatshapStats.phasedGTF])
+        File phasedTSV = select_first([whatshapStats.phasedTSV])
+        File phasedBlockList = select_first([whatshapStats.phasedBlockList])
+
+        File phasedBam = whatshapHaplotag.bam
+        File phasedBamIndex = whatshapHaplotag.bamIndex
+    }
+
+    parameter_meta {
+        # inputs
+        vcf: {description: "VCF or BCF file with variants to be phased (can be gzip-compressed).", category: "required"}
+        vcfIndex: {description: "Index for the VCF or BCF file with variants to be phased.", category: "required"}
+        phaseInput: {description: "BAM, CRAM, VCF or BCF file(s) with phase information, either through sequencing reads (BAM, CRAM) or through phased blocks (VCF, BCF).", category: "required"}
+        phaseInputIndex: {description: "Index of BAM, CRAM, VCF or BCF file(s) with phase information.", category: "required"}
+        reference: {description: "Reference file. Provide this to detect alleles through re-alignment. If no index (.fai) exists, it will be created.", category: "common"}
+        referenceIndex: {description: "Index of reference file.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        phasedVCF: {description: "VCF file containing phased variants."}
+        phasedVCFIndex: {description: "Index of phased VCF file."}
+        phasedGTF: {description: "Phasing statistics for a single VCF file."}
+        phasedTSV: {description: "Statistics in a tab-separated value format."}
+        phasedBlockList: {description: "List of the total number of phase sets/blocks."}
+        phasedBam: {description: "BAM file containing tagged reads for haplotype."}
+        phasedBamIndex: {description: "Index of the tagged BAM file."}
+    }
+}
