@@ -53,6 +53,7 @@ task MultiQC {
         File? fileList
         Array[String]+? exclude
         Array[String]+? module
+        Array[File]+? additionalReports
         String? dataFormat
         File? config  # A directory
         String? clConfig
@@ -79,13 +80,15 @@ task MultiQC {
     # strategy. Using python's builtin hash is unique enough
     # for these purposes.
 
+    Array[File] allReports = flatten([reports, flatten(select_all([additionalReports]))])
+
     command {
         python3 <<CODE
         import os
         from pathlib import Path 
         from typing import List
 
-        reports: List[str] = ["~{sep='","' reports}"]
+        reports: List[str] = ["~{sep='","' allReports}"]
         report_dir: Path = Path("~{reportDir}")
         
         for report in reports:
@@ -174,6 +177,7 @@ task MultiQC {
         fileList: {description: "Equivalent to MultiQC's `--file-list` option.", category: "advanced"}
         exclude: {description: "Equivalent to MultiQC's `--exclude` option.", category: "advanced"}
         module: {description: "Equivalent to MultiQC's `--module` option.", category: "advanced"}
+        additionalReports: {description: "Additional reports (e.g. customisation) which multiqc should run on.", category: "advanced"}
         dataFormat: {description: "Equivalent to MultiQC's `--data-format` option.", category: "advanced"}
         config: {description: "Equivalent to MultiQC's `--config` option.", category: "advanced"}
         clConfig: {description: "Equivalent to MultiQC's `--cl-config` option.", category: "advanced"}
