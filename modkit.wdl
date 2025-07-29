@@ -130,7 +130,7 @@ task Summary {
 
         Int threads = 4
         String memory = ceil(size(bam, "GiB") * 0.1) + 5 # Based on a linear model with some fudge (memory = 0.07540 * file_size - 0.6).
-        Int timeMinutes = 2880 / threads  # 2 Days / threads
+        Int timeMinutes = 60 # originally this was set at "2 Days / threads" but with 4 threads and that much ram, it's pretty fast.
         String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
     }
 
@@ -175,5 +175,76 @@ task Summary {
 
         # output
         summaryReport: {description: "The output modkit summary."}
+    }
+}
+
+task SampleProbs {
+    input {
+        File bam
+        File bamIndex
+
+        String summary = "modkit-sample-probs"
+
+        Boolean sample = true
+        Int? numReads # = 10042
+        Float? samplingFrac # = 0.1
+        Int? seed
+
+        Int threads = 4
+        String memory = "32G"
+        Int timeMinutes = 60
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
+    }
+
+    command <<<
+        set -e
+        mkdir -p ~{summary}
+
+        modkit sample-probs \
+            --threads ~{threads} \
+            --out-dir ~{summary} \
+            ~{true="" false="--no-sampling" sample} \
+            ~{"--num-reads " + numReads} \
+            ~{"--sampling-frac " + samplingFrac} \
+            ~{"--seed " + seed} \
+            --hist \
+            ~{bam}
+    >>>
+
+    output {
+        File reportCounts = "~{summary}/counts.html"
+        File reportProportion = "~{summary}/proportion.html"
+        File reportProbabilitiesTsv = "~{summary}/probabilities.tsv"
+        File reportThresholdsTsv = "~{summary}/thresholds.tsv"
+    }
+
+    runtime {
+        docker: dockerImage
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # input
+        bam: {description: "The input alignment file", category: "required"}
+        bamIndex: {description: "The index for the input alignment file", category: "required"}
+        summary: {description: "A folder for the outputs", category: "required"}
+
+        sample: {description: "Allows you to disable sampling and report stats for the whole file.", category: "advanced"}
+        numReads: {description: "By default a fixed amount of reads are read, you can set this to change the number of reads to sample.", category: "advanced"}
+        samplingFrac: {description: "Use a fixed percentage of reads, rather than a fixed number of reads, for sampling.", category: "advanced"}
+        seed: {description: "A seed can be provided for reproducibility in the sampling fraction case.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # output
+        reportCounts: {description: "The output html report of counts"}
+        reportProportion: {description: "The output html report of proportions"}
+        reportProbabilitiesTsv: {description: "The output TSV of Probabilities"}
+        reportThresholdsTsv: {description: "The output TSV of thresholds"}
     }
 }
