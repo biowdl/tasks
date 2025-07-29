@@ -300,9 +300,10 @@ task Flagstat {
     command {
         set -e
         mkdir -p "$(dirname ~{outputPath})"
+
         samtools flagstat \
-        --threads ~{threads - 1}
-        ~{inputBam} > ~{outputPath}
+            --threads ~{threads - 1} \
+            ~{inputBam} > ~{outputPath}
     }
 
     output {
