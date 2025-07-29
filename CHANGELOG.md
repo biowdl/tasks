@@ -51,10 +51,15 @@ version 6.0.0-dev
 + Fixed bug whereby `samtools.Fastq` could produce out of sync R1/R2 when used with an unsorted bam input. `samtools collate` is now used by default to group reads by readname in order to avoid this issue.
 + New samtools task: split.
 + Update `bedtools.Intersect` to support `-wa`, `-wb`, and `-s` flags.
++ Add `biopet.ValidateFastq` to check your fastq files for pairing and other correctness.
++ **Breaking**: `samtools.Fastq` now requires defining your singleton read location. This only affects you if you were previously using this task with only a single output read file.
 + Deprecate `modkit.Pileup`'s bedGraph option, it is now output by default.
 + Add support for filterThreshold/filterPercent for `modkit.Pileup`.
 + Add `modkit.Summary` task.
 + Disable the one-click GDPR dataleak button in MultiQC `--no-ai` by default.
++ Update clair3 version from 1.0.11 to 1.1.0
++ Improve whatshap runtime/memory usage for our cluster.
++ Add `Modkit.SampleProbs`
 
 version 5.2.0
 ---------------------------
