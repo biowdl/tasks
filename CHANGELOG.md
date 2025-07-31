@@ -47,6 +47,8 @@ version 6.0.0-dev
 + Use softlinks to localise the database for centrifuge.
 + Added the FastqFilter task.
 + Added a new input `revcomp` to cutadapt to set the `--revcomp` flag, defaults to `false`.
++ Added a new `unix.Awk` task to enable arbitrary awk transformations of input data.
++ Added `methylasso.Methylasso`, a DMR discovery tool for BiSeq and LR methylation data.
 + Added `samtools.Quickcheck` to allow failing on truncated files early.
 + Fixed bug whereby `samtools.Fastq` could produce out of sync R1/R2 when used with an unsorted bam input. `samtools collate` is now used by default to group reads by readname in order to avoid this issue.
 + New samtools task: split.
