@@ -7,7 +7,9 @@ task ConvertToBin {
 
         String memory = "4GiB"
         Int timeMinutes = 30
-        Int diskGb = 1 + ceil(2.1 * size(inputVcf, "G"))
+        # Disk usage should be about 1 byte, per variant per sample, but this is hard to estimate from compressed file sizes.
+        # The output file is written to disk in temporary chunks, which then get concatenated so we actually need twice that.
+        Int diskGb = 400
         String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
     }
 
