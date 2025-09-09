@@ -37,19 +37,17 @@ task Phase {
         String? chromosome
         String? threshold
         String? ped
+        Boolean ignoreReadGroup = false
 
-        String memory = 2 + ceil(size(phaseInput, "G") / 20 )
-        Int timeMinutes = 400 + ceil(size(phaseInput, "G") * 0.9 )
-
+        String memory = "4GiB"
+        Int timeMinutes = 120
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
     }
 
     command {
         set -e
-
-        mkdir -p $(dirname ~{outputVCF})
-
+	mkdir -p "$(dirname "~{outputVCF}")"
         whatshap phase \
         ~{vcf} \
         ~{phaseInput} \
@@ -61,7 +59,8 @@ task Phase {
         ~{if defined(sample) then ("--sample " +  '"' + sample + '"') else ""} \
         ~{if defined(chromosome) then ("--chromosome " +  '"' + chromosome + '"') else ""} \
         ~{if defined(threshold) then ("--threshold " +  '"' + threshold + '"') else ""} \
-        ~{if defined(ped) then ("--ped " +  '"' + ped + '"') else ""}
+        ~{if defined(ped) then ("--ped " +  '"' + ped + '"') else ""} \
+        ~{if ignoreReadGroup then ("--ignore-read-groups") else ""}
 
         tabix -p vcf ~{outputVCF}
     }
@@ -114,16 +113,14 @@ task Stats {
         String? chromosome
 
         String memory = "4GiB"
-        Int timeMinutes = 30
+        Int timeMinutes = 120
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
       }
 
     command {
-        set -e
-
-        mkdir -p $(dirname ~{tsv})
-
+	set -e
+	mkdir -p "$(dirname "~{gtf}")" "$(dirname "~{tsv}")" "$(dirname "~{blockList}")"
         whatshap stats \
         ~{vcf} \
         ~{if defined(gtf) then ("--gtf " +  '"' + gtf + '"') else ""} \
@@ -177,17 +174,15 @@ task Haplotag {
         String? regions
         String? sample
 
-        String memory = 2 + ceil(size(alignments, "G") / 50 )
-        Int timeMinutes = 50 + ceil(size(alignments, "G") * 2 )
-
+        String memory = "4GiB"
+        Int timeMinutes = 120
         # Whatshap 1.0, tabix 0.2.5.
         String dockerImage = "quay.io/biocontainers/mulled-v2-5c61fe1d8c284dd05d26238ce877aa323205bf82:89b4005d04552bdd268e8af323df83357e968d83-0"
     }
 
     command {
         set -e
-
-        mkdir -p $(dirname ~{outputFile})
+	mkdir -p "$(dirname "~{outputFile}")"
 
         whatshap haplotag \
         ~{vcf} \
@@ -229,5 +224,59 @@ task Haplotag {
         # outputs
         bam: {description: "BAM file containing tagged reads for haplotype."}
         bamIndex: {description: "Index of the tagged BAM file."}
+    }
+}
+
+workflow Whatshap {
+    input {
+        File vcf
+        File vcfIndex
+        File bam
+        File bamIndex
+        File referenceFasta
+        File referenceFastaIndex
+
+        String outputPrefix = "results"
+    }
+
+    call Phase as whatshapPhase { input:
+        vcf = vcf,
+        vcfIndex = vcfIndex,
+        phaseInput = bam,
+        phaseInputIndex = bamIndex,
+        indels = true,
+        reference = referenceFasta,
+        referenceIndex = referenceFastaIndex,
+        outputVCF = "~{outputPrefix}.phased.vcf.gz",
+    }
+
+    call Stats as whatshapStats { input:
+        vcf = whatshapPhase.phasedVCF,
+        gtf = "~{outputPrefix}.phased.gtf",
+        tsv = "~{outputPrefix}.phased.tsv",
+        blockList = "~{outputPrefix}.phased.blocklist"
+    }
+
+    call Haplotag as whatshapHaplotag { input:
+        outputFile = "~{outputPrefix}.haplotagged.bam",
+        # https://github.com/HKU-BAL/Clair3/issues/276#issuecomment-2461488782
+        reference = referenceFasta,
+        referenceFastaIndex = referenceFastaIndex,
+        vcf = whatshapPhase.phasedVCF,
+        vcfIndex = whatshapPhase.phasedVCFIndex,
+        alignments = bam,
+        alignmentsIndex = bamIndex,
+    }
+
+    output {
+        File phasedVCF = whatshapPhase.phasedVCF
+        File phasedVCFIndex = whatshapPhase.phasedVCFIndex
+
+        File phasedGTF = select_first([whatshapStats.phasedGTF])
+        File phasedTSV = select_first([whatshapStats.phasedTSV])
+        File phasedBlockList = select_first([whatshapStats.phasedBlockList])
+
+        File phasedBam = whatshapHaplotag.bam
+        File phasedBamIndex = whatshapHaplotag.bamIndex
     }
 }

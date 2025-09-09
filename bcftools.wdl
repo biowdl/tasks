@@ -473,3 +473,4 @@ task View {
         outputVcfIndex: {description: "Index of VCF file."}
     }
 }
+

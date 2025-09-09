@@ -177,8 +177,8 @@ task Fastq {
         Int compressionLevel = 1
 
         Int threads = 1
-        String memory = "1GiB"
-        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 2)
+        String memory = "12GiB"
+        Int timeMinutes = 40 + ceil(size(inputBam, "GiB") * 2)
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
@@ -196,8 +196,7 @@ task Fastq {
         ~{"-G " + excludeSpecificFilter} \
         ~{true="-N" false="-n" appendReadNumber} \
         ~{true="-O" false="" outputQuality} \
-        -c ~{compressionLevel} \
-        "--threads "  ~{threads - 1}
+        -c ~{compressionLevel}
     }
 
     output {
@@ -711,6 +710,7 @@ task View {
         Int? excludeFilter
         Int? excludeSpecificFilter
         Int? MAPQthreshold
+        String? filterExpression
         File? targetFile
 
         Boolean fast = true  # Sets compression level to 1.
@@ -733,6 +733,7 @@ task View {
         ~{"-o " + outputFileName} \
         ~{true="--fast" false="" fast} \
         ~{true="-u " false="" uncompressedBamOutput} \
+        ~{"-e " + filterExpression} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
