@@ -479,6 +479,7 @@ task View {
         String? include
         String? region
         File? regionsFile
+        String? regionsOverlap
         Array[String] samples = []
         File? samplesFile
 
@@ -504,6 +505,7 @@ task View {
         ~{if length(samples) > 0 then "-s" else ""} ~{sep="," samples} \
         ~{"--samples-file " + samplesFile} \
         ~{"--regions-file " + regionsFile} \
+        ~{"--regions-overlap " + regionsOverlap } \
         -o ~{outputPath} \
         -O ~{true="z" false="v" compressed} \
         ~{inputFile} \
@@ -534,6 +536,7 @@ task View {
         exclude: {description: "Exclude sites for which the expression is true (see man page for details).", category: "advanced"}
         region: {description: "The region to retrieve from the VCF file.", category: "common"}
         regionsFile: {description: "File of regions to include.", category: "advanced"}
+        regionsOverlap: {description: "Equivalent to the bcftools' view `--region-overlap` option.", category: "advanced"}
         excludeUncalled: {description: "Exclude sites without a called genotype (see man page for details).", category: "advanced"}
         samples: {description: "A list of sample names to include.", category: "advanced"}
         samplesFile: {description: "File of samples to include.", category: "advanced"}
