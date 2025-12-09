@@ -102,7 +102,7 @@ task Geva {
         Int position
         String prefix = "./geva.~{position}"
 
-        String memory = "750GiB" # According to GEVA's README this is dependant on AF, so hard to figure out on the fly.
+        String memory = "1500GiB" # According to GEVA's README this is dependant on AF, so hard to figure out on the fly.
         Int timeMinutes = 120
         Int diskGb = 1 + ceil(2 * size(bin, "G"))
         String dockerImage = "quay.io/davycats/pkalbers-geva:5363c3db11c6b2ea2e24528affb6b68b0a939df4"
