@@ -42,7 +42,7 @@ task Pileup {
 
         Int threads = 8
         String memory = "4GiB"
-        Int timeMinutes = 2880 / threads  # 2 Days / threads
+        Int timeMinutes = 59  # 2 Days / threads
         String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
     }
 
@@ -115,6 +115,108 @@ task Pileup {
         logFile: {description: "The generated log file."}
     }
 }
+
+# THIS DOES NOT WORK YET.
+# --phased doesn't wrk at all
+# --modified-bases 5mC doens't work at all
+# --duplex (conflicts with modified-bases) will produce outputs but then it's everything
+#task Pileup_v0.6.1+ {
+#    input {
+#        File bam
+#        File bamIndex
+#        String outputDirectory = "output"
+#        File referenceFasta
+#        File referenceFastaFai
+#
+#        Int? intervalSize
+#        File? includeBed
+#        String? filterThreshold
+#        String? filterPercentile
+#	# Space separated, e.g. 5mC 5hmC 6mA
+#        String? modifiedBases
+#
+#        Boolean cpg = false
+#        Boolean combineMods = false
+#        Boolean combineStrands = false
+#        Boolean phased = false
+#        String logFilePath = "modkit.log"
+#
+#        Int threads = 8
+#        String memory = "16GiB"
+#        Int timeMinutes = 59
+#        String dockerImage = "quay.io/biocontainers/ont-modkit:0.6.1--hcdda2d0_0"
+#    }
+#
+#    command <<<
+#        set -e
+#        mkdir -p $(dirname ~{outputBed})
+#        mkdir -p $(dirname ~{logFilePath})
+#        modkit pileup \
+#        --threads ~{threads} \
+#        ~{"--interval-size " + intervalSize} \
+#        ~{"--include-bed " + includeBed} \
+#        ~{"--modified-bases " + modifiedBases} \
+#        --ref ~{referenceFasta} \
+#        ~{true="--cpg" false="" cpg} \
+#        ~{true="--combine-mods" false="" combineMods} \
+#        ~{true="--combine-strands" false="" combineStrands} \
+#        ~{true="--phased" false="" phased} \
+#        ~{"--filter-percentile " + filterPercentile} \
+#        ~{"--filter-threshold " + filterThreshold} \
+#        --log-filepath ~{logFilePath} \
+#        ~{bam} \
+#	~{outputBed}
+#
+#	# modkit bedmethyl tobigwig
+#    >>>
+#
+#    # You can use modkit pileup ${bam_path} - | tee out.bedmethyl | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > out.bg to get both outputs at once without running anything twice.
+#    # https://github.com/nanoporetech/modkit/issues/210#issuecomment-2181706374
+#
+#    output {
+#        File? hp1 = "~{outputDirectory}/hp1.bedmethyl"
+#        File? hp2 = "~{outputDirectory}/hp2.bedmethyl"
+#        File bedmethyl = "~{outputDirectory}/combined.bedmethyl"
+#        File logFile = logFilePath
+#    }
+#
+#    runtime {
+#        docker: dockerImage
+#        cpu: threads
+#        memory: memory
+#        time_minutes: timeMinutes
+#    }
+#
+#    parameter_meta {
+#        # input
+#        bam: {description: "The input alignment file", category: "required"}
+#        bamIndex: {description: "The index for the input alignment file", category: "required"}
+#        referenceFasta: {description: "The reference fasta file.", category: "required"}
+#        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+#        outputBed: {description: "The output name where the bedMethyl file should be placed.", category: "common"}
+#        outputBedGraph: {description: "The output name where the bedgraph file should be placed", category: "common"}
+#
+#        intervalSize: {description: "Sets the interval size", category: "advanced"}
+#        includeBed: {description: "Bed file with regions to include", category: "advanced"}
+#        cpg: {description: "Whether to call only at cpg sites", category: "advanced"}
+#        combineMods: {description: "Whether to combine modifications in the output", category: "advanced"}
+#        combineStrands: {description: "Whether to combine strands in the output", category: "advanced"}
+#        ignore: {description: "Modification type to ignore. For example 'h'.", category: "advanced"}
+#        logFilePath: {description: "Path where the log file should be written.", category: "advanced"}
+#        filterThreshold: {description: "Global filter threshold can be specified with by a decimal number (e.g. 0.75). Otherwise the automatic filter percentile will be used.", category: "advanced"}
+#        filterPercentile: {description: "This defaults to 0.1, to remove the lowest 10% confidence modification calls, but can be manually adjusted", category: "advanced"}
+#
+#        threads: {description: "The number of threads to use for variant calling.", category: "advanced"}
+#        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+#        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+#        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+#
+#        # output
+#        out: {description: "The output bed files. Not available when bedgraph = true."}
+#        outFiles: {description: "Output files when bedgraph = true."}
+#        logFile: {description: "The generated log file."}
+#    }
+#}
 
 task Summary {
     input {

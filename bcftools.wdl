@@ -189,7 +189,10 @@ task Norm {
         File? fasta
         String? regions
         Boolean splitMultiallelicSites = false
+	String? removeDuplicates
+	String? checkRefOption
 
+	Int threads = 2
         String memory = "4GiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
         Int diskGb = ceil(2.1 * size(inputFile, "G") + size(fasta, "G"))
@@ -206,9 +209,12 @@ task Norm {
         bcftools norm \
         -o ~{outputPath} \
         -O ~{true="z" false="v" compressed} \
+	~{"--rm-dup " + removeDuplicates} \
+	~{"--check-ref " + checkRefOption} \
         ~{"--regions " + regions} \
         ~{"--fasta " + fasta} \
         ~{if splitMultiallelicSites then "--multiallelics -both" else ""} \
+	--threads ~{threads} \
         ~{inputFile}
         
         ~{if compressed then "bcftools index --tbi ~{outputPath}" else ""}
