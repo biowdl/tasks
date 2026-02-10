@@ -207,8 +207,8 @@ task Sort {
         File? genome
         File? faidx
 
-        String memory = "~{512 + ceil(size(inputBed, "MiB"))}MiB"
-        Int timeMinutes = 1 + ceil(size(inputBed, "GiB"))
+        String memory = "~{16000 + (30 * ceil(size(inputBed, "MiB")))}MiB"
+        Int timeMinutes = 10 + ceil(size(inputBed, "GiB"))
         String dockerImage = "quay.io/biocontainers/bedtools:2.31.1--hf5e1c6e_2"
     }
 
