@@ -146,10 +146,10 @@ task MultiQC {
 
     String reportFilename = if (defined(fileName))
         then sub(select_first([fileName]), "\.html$", "")
-        else "multiqc"
+        else "multiqc_report"
 
     output {
-        File multiqcReport = outDir + "/" + reportFilename + "_report.html"
+        File multiqcReport = outDir + "/" + reportFilename + ".html"
         File? multiqcDataDirZip = outDir + "/" +reportFilename + "_data.zip"
     }
 
