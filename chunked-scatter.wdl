@@ -126,3 +126,55 @@ task ScatterRegions {
         scatters: {description: "Bed file where the contigs add up approximately to the given scatter size."}
     }
 }
+
+workflow chunk_string_2 {
+	input {
+		Array[String] i
+		Int batch_size = 20
+	}
+
+	Int items = length(i)
+	Int batch_count = 1 + (items / batch_size)
+
+	scatter (batch_no in range(batch_count)) {
+		Int offset = batch_no * batch_size
+
+		scatter (i in range(batch_size)) {
+			if ((offset + i) < items ){
+				String f = i[offset + i]
+			}
+		}
+
+		Array[String] sub_results = select_all(f)
+	}
+
+	output {
+		Array[Array[String]] out = sub_results
+	}
+}
+
+workflow chunk_file_2 {
+	input {
+		Array[File] i
+		Int batch_size = 20
+	}
+
+	Int items = length(i)
+	Int batch_count = 1 + (items / batch_size)
+
+	scatter (batch_no in range(batch_count)) {
+		Int offset = batch_no * batch_size
+
+		scatter (i in range(batch_size)) {
+			if ((offset + i) < items ){
+				File f = i[offset + i]
+			}
+		}
+
+		Array[File] sub_results = select_all(f)
+	}
+
+	output {
+		Array[Array[File]] out = sub_results
+	}
+}
