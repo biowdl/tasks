@@ -22,6 +22,78 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+task SnpSiftAnnotate {
+    input {
+        File vcf
+        File? vcfIndex
+        File dbVcf
+        File? dbVcfIndex
+        String outputPath = "./annotated.vcf"
+
+        String? info
+        Boolean annotateId = true
+
+        String memory = "9GiB"
+        String javaXmx = "8G"
+        Int timeMinutes = 60
+        Int diskGb = 1 + ceil(2 * size(vcf, "G") + size(dbVcf, "G"))
+        # Multicontainer with SnpSift 5.2 and bgzip/tabix 1.22
+        String dockerImage = "quay.io/biocontainers/mulled-v2-d4bc0c23eb1d95c7ecff7f0e8b3a4255503fd5d4:c51b2e46bf63786b2d9a7a7d23680791163ab39a-0"
+    }
+
+    Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
+
+    command {
+        set -e
+        ls ~{vcf} ~{vcfIndex} ~{dbVcf} ~{dbVcfIndex}  # dxCompiler localization workaroud
+
+        mkdir -p "$(dirname ~{outputPath})"
+        SnpSift -Xmx~{javaXmx} -XX:ParallelGCThreads=1 \
+        annotate \
+        ~{"-info " + info} \
+        ~{if ! annotateId then "-noId" else ""} \
+        ~{dbVcf} \
+        ~{vcf} \
+        ~{if compressed then "| bgzip " else ""} > ~{outputPath}
+
+        ~{if compressed then "tabix ~{outputPath}" else ""}
+    }
+
+    output {
+        File outputVcf = outputPath
+        File? outputVcfIndex = outputPath + ".tbi"
+    }
+
+    runtime {
+        docker: dockerImage
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        memory: memory
+        disks: "local-disk ~{diskGb} SSD" # Based on an example in dxCompiler docs
+    }
+
+    parameter_meta {
+        # inputs
+        vcf: {description: "A VCF file to annotate.", category: "required"}
+        vcfIndex: {description: "The index for the VCF file.", category: "common"}
+        dbVcf: {description: "A VCF file to retrieve annotations from.", category: "required"}
+        dbVcfIndex: {description: "The index for the database VCF file.", category: "common"}
+        info: {description: "The info fields to use.", category: "common"}
+        annotateId: {description: "Whether the ID should get annotated.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.",
+                  category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        diskGb: {description: "The amount of disk space needed for this job in GiB.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+
+        # outputs
+        outputVcf: {description: "Annotated VCF file."}
+        outputVcfIndex: {description: "Index of annotated VCF file."}
+    }
+}
+
 task SnpSiftFilter {
     input {
         File vcf

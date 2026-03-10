@@ -21,7 +21,7 @@ version 6.0.0-dev
   which caused wdlTools to error on parsing the file.
 + Updated the bcftools view task with an input for an index file.
 + Updated the bcftools view task to allow specifying a region.
-+ Added a task for SnpSift filter.
++ Added a task for SnpSift filter and SnpSift annotate.
 + Updated the snpEff task to allow setting the `-no-upstream` flag.
 + Update vt task to allow a filter expression and compress and index the output.
 + MultiQC image updated to version 1.28
