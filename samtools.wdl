@@ -289,6 +289,7 @@ task Flagstat {
     input {
         File inputBam
         String outputPath
+	String? format # Blank by default, 'tsv' and 'json' are acceptable values.
 
         Int threads = 1
 
@@ -303,6 +304,7 @@ task Flagstat {
 
         samtools flagstat \
             --threads ~{threads - 1} \
+	    ~{"--output-fmt " + format} \
             ~{inputBam} > ~{outputPath}
     }
 
