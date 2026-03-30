@@ -780,6 +780,10 @@ task View {
         Int? MAPQthreshold
         String? filterExpression
         File? targetFile
+	File? qnameFile # -N
+	# Would be better:
+	#Pair[String, String]? requireTag
+	String? requireTagValue
 
         Boolean fast = true  # Sets compression level to 1.
 
@@ -802,9 +806,11 @@ task View {
         ~{true="--fast" false="" fast} \
         ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-e " + filterExpression} \
+        ~{"--tag " + requireTagValue} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
+	~{"--qname-file " + qnameFile} \
         ~{"-q " + MAPQthreshold} \
         --threads ~{threads - 1} \
         ~{"--target-file " + targetFile} \
