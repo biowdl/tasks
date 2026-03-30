@@ -541,6 +541,7 @@ task Sort {
         Boolean sortByName = false
 	Boolean multiIndex = false
         Int compressionLevel = 1
+	Boolean index = true
 
         Int memoryPerThreadGb = 4
         Int threads = 1
@@ -562,14 +563,17 @@ task Sort {
         -m ~{memoryPerThreadGb}G \
         -o ~{outputPath} \
         ~{inputBam}
-        samtools index ~{true="-M" false="" multiIndex} \
-        --threads ~{threads - 1} \
-        ~{outputPath} ~{bamIndexPath}
+
+        if [[ "true" == "~{index}" ]] && [[ "true" != "~{sortByName}" ]]; then
+            samtools index ~{true="-M" false="" multiIndex} \
+            --threads ~{threads - 1} \
+            ~{outputPath} ~{bamIndexPath}
+        fi
     }
 
     output {
         File outputBam = outputPath
-        File outputBamIndex = bamIndexPath
+        File? outputBamIndex = bamIndexPath
     }
 
     runtime {
