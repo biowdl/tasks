@@ -167,7 +167,6 @@ task Fastq {
         String outputRead1
         String? outputRead2
         String? outputRead0
-        String? outputReadS
         Boolean appendReadNumber = false
         Boolean outputQuality = false
 
@@ -187,10 +186,9 @@ task Fastq {
         mkdir -p "$(dirname ~{outputRead1})"
         samtools collate -u -O ~{inputBam} | \
         samtools fastq \
-        ~{"-1 " + outputRead1} \
+        ~{true="-1" false="-s" defined(outputRead2)} ~{outputRead1} \
         ~{"-2 " + outputRead2} \
         ~{"-0 " + outputRead0} \
-        ~{"-s " + outputReadS} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
@@ -203,7 +201,6 @@ task Fastq {
         File read1 = outputRead1
         File? read2 = outputRead2
         File? read0 = outputRead0
-        File? readS = outputReadS
     }
 
     runtime {
@@ -219,7 +216,6 @@ task Fastq {
         outputRead1: {description: "The location the reads (first reads for pairs, in case of paired-end sequencing) should be written to.", category: "required"}
         outputRead2: {description: "The location the second reads from pairs should be written to.", category: "common"}
         outputRead0: {description: "The location the unpaired reads should be written to (in case of paired-end sequenicng).", category: "advanced"}
-        outputReadS: {description: "The location singleton reads should be written to.", category: "advanced"}
         appendReadNumber: {description: "Append /1 and /2 to the read name, or don't. Corresponds to `-n/N`.", category: "advanced"}
         outputQuality: {description: "Equivalent to samtools fastq's `-O` flag.", category: "advanced"}
         includeFilter: {description: "Include reads with ALL of these flags. Corresponds to `-f`.", category: "advanced"}
@@ -348,18 +344,11 @@ task Index {
     String bamIndexPath = sub(outputPath, "\.bam$", ".bai")
 
     command {
-        bash -c '
-        set -e
-        # Make sure outputBamPath does not exist.
-        if [ ! -f ~{outputPath} ]
-        then
-            mkdir -p "$(dirname ~{outputPath})"
-            ln ~{bamFile} ~{outputPath} || cp ~{bamFile} ~{outputPath}
-        fi
+        mkdir -p "$(dirname ~{outputPath})"
+
         samtools index \
         --threads ~{threads -1} \
-        ~{outputPath} ~{bamIndexPath}
-        '
+        ~{bamFile} ~{bamIndexPath}
     }
 
     output {
@@ -611,7 +600,6 @@ task Split {
     command {
         set -e
         mkdir -p "~{outputPath}/rg/"
-
         samtools split \
             --output-fmt bam \
             --output-fmt-option level=~{compressionLevel} \
@@ -776,5 +764,40 @@ task View {
         # outputs
         outputBam: {description: "Processed input file."}
         outputBamIndex: {description: "Index of the processed input file."}
+    }
+}
+
+task Reset {
+    input {
+        File bamFile
+        String outputBamPath = "reset.bam"
+
+        Int threads = 1
+
+        String memory = "2GiB"
+        Int timeMinutes = 1 + ceil(size(bamFile, "GiB") * 4)
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
+    }
+
+	command {
+		mkdir -p "$(dirname ~{outputBamPath})"
+
+		samtools reset -o "~{outputBamPath}" "~{bamFile}"
+
+		samtools index \
+			--threads ~{threads -1} \
+			~{outputBamPath}
+	}
+
+    output {
+        File bam = outputBamPath
+        File index = outputBamPath + ".bai"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
     }
 }
