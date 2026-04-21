@@ -290,6 +290,7 @@ task Flagstat {
         File inputBam
         String outputPath
 	String? format # Blank by default, 'tsv' and 'json' are acceptable values.
+	File? reference
 
         Int threads = 1
 
@@ -303,6 +304,7 @@ task Flagstat {
         mkdir -p "$(dirname ~{outputPath})"
 
         samtools flagstat \
+	    ~{"-T " + reference} \
             --threads ~{threads - 1} \
 	    ~{"--output-fmt " + format} \
             ~{inputBam} > ~{outputPath}

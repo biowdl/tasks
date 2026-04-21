@@ -63,7 +63,8 @@ task Merge {
 
     parameter_meta {
         # inputs
-        filePaths: {description: "An array of VCF files (predictions) to be merged by SURVIVOR.", category: "required"}
+        # https://github.com/fritzsedlazeck/SURVIVOR/issues/176#issuecomment-1584706325
+        filePaths: {description: "An array of uncompressed VCF files (predictions) to be merged by SURVIVOR. VCF.GZ is NOT SUPPORTED.", category: "required"}
         breakpointDistance: {description: "The distance between pairwise breakpoints between SVs.", category: "advanced"}
         suppVecs: {description: "The minimum number of SV callers to support the merging.", category: "advanced"}
         svType: {description: "A boolean to include the type SV to be merged.", category: "advanced"}
