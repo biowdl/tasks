@@ -42,7 +42,7 @@ task Pileup {
 
         Int threads = 8
         String memory = "4GiB"
-        Int timeMinutes = 2880 / threads  # 2 Days / threads
+        Int timeMinutes = 59  # 2 Days / threads
         String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
     }
 
@@ -115,6 +115,108 @@ task Pileup {
         logFile: {description: "The generated log file."}
     }
 }
+
+# THIS DOES NOT WORK YET.
+# --phased doesn't wrk at all
+# --modified-bases 5mC doens't work at all
+# --duplex (conflicts with modified-bases) will produce outputs but then it's everything
+#task Pileup_v0.6.1+ {
+#    input {
+#        File bam
+#        File bamIndex
+#        String outputDirectory = "output"
+#        File referenceFasta
+#        File referenceFastaFai
+#
+#        Int? intervalSize
+#        File? includeBed
+#        String? filterThreshold
+#        String? filterPercentile
+#	# Space separated, e.g. 5mC 5hmC 6mA
+#        String? modifiedBases
+#
+#        Boolean cpg = false
+#        Boolean combineMods = false
+#        Boolean combineStrands = false
+#        Boolean phased = false
+#        String logFilePath = "modkit.log"
+#
+#        Int threads = 8
+#        String memory = "16GiB"
+#        Int timeMinutes = 59
+#        String dockerImage = "quay.io/biocontainers/ont-modkit:0.6.1--hcdda2d0_0"
+#    }
+#
+#    command <<<
+#        set -e
+#        mkdir -p $(dirname ~{outputBed})
+#        mkdir -p $(dirname ~{logFilePath})
+#        modkit pileup \
+#        --threads ~{threads} \
+#        ~{"--interval-size " + intervalSize} \
+#        ~{"--include-bed " + includeBed} \
+#        ~{"--modified-bases " + modifiedBases} \
+#        --ref ~{referenceFasta} \
+#        ~{true="--cpg" false="" cpg} \
+#        ~{true="--combine-mods" false="" combineMods} \
+#        ~{true="--combine-strands" false="" combineStrands} \
+#        ~{true="--phased" false="" phased} \
+#        ~{"--filter-percentile " + filterPercentile} \
+#        ~{"--filter-threshold " + filterThreshold} \
+#        --log-filepath ~{logFilePath} \
+#        ~{bam} \
+#	~{outputBed}
+#
+#	# modkit bedmethyl tobigwig
+#    >>>
+#
+#    # You can use modkit pileup ${bam_path} - | tee out.bedmethyl | awk -v OFS="\t" '{print $1, $2, $3, $11, $10}' > out.bg to get both outputs at once without running anything twice.
+#    # https://github.com/nanoporetech/modkit/issues/210#issuecomment-2181706374
+#
+#    output {
+#        File? hp1 = "~{outputDirectory}/hp1.bedmethyl"
+#        File? hp2 = "~{outputDirectory}/hp2.bedmethyl"
+#        File bedmethyl = "~{outputDirectory}/combined.bedmethyl"
+#        File logFile = logFilePath
+#    }
+#
+#    runtime {
+#        docker: dockerImage
+#        cpu: threads
+#        memory: memory
+#        time_minutes: timeMinutes
+#    }
+#
+#    parameter_meta {
+#        # input
+#        bam: {description: "The input alignment file", category: "required"}
+#        bamIndex: {description: "The index for the input alignment file", category: "required"}
+#        referenceFasta: {description: "The reference fasta file.", category: "required"}
+#        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
+#        outputBed: {description: "The output name where the bedMethyl file should be placed.", category: "common"}
+#        outputBedGraph: {description: "The output name where the bedgraph file should be placed", category: "common"}
+#
+#        intervalSize: {description: "Sets the interval size", category: "advanced"}
+#        includeBed: {description: "Bed file with regions to include", category: "advanced"}
+#        cpg: {description: "Whether to call only at cpg sites", category: "advanced"}
+#        combineMods: {description: "Whether to combine modifications in the output", category: "advanced"}
+#        combineStrands: {description: "Whether to combine strands in the output", category: "advanced"}
+#        ignore: {description: "Modification type to ignore. For example 'h'.", category: "advanced"}
+#        logFilePath: {description: "Path where the log file should be written.", category: "advanced"}
+#        filterThreshold: {description: "Global filter threshold can be specified with by a decimal number (e.g. 0.75). Otherwise the automatic filter percentile will be used.", category: "advanced"}
+#        filterPercentile: {description: "This defaults to 0.1, to remove the lowest 10% confidence modification calls, but can be manually adjusted", category: "advanced"}
+#
+#        threads: {description: "The number of threads to use for variant calling.", category: "advanced"}
+#        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+#        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+#        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+#
+#        # output
+#        out: {description: "The output bed files. Not available when bedgraph = true."}
+#        outFiles: {description: "Output files when bedgraph = true."}
+#        logFile: {description: "The generated log file."}
+#    }
+#}
 
 task Summary {
     input {
@@ -246,5 +348,127 @@ task SampleProbs {
         reportProportion: {description: "The output html report of proportions"}
         reportProbabilitiesTsv: {description: "The output TSV of Probabilities"}
         reportThresholdsTsv: {description: "The output TSV of thresholds"}
+    }
+}
+
+task DmrMultiInputPrep {
+    input {
+        Array[File] control
+        Array[File] condition
+        String controlName
+        String conditionName
+
+        Int threads = 1
+        String memory = "1G"
+        Int timeMinutes = 5
+        String dockerImage = "quay.io/biocontainers/multiqc:1.28--pyhdfd78af_0"
+    }
+
+    command <<<
+	cat > modkit_dmr.py <<'CODE'
+	#!/usr/bin/env python3
+	import argparse
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--control_n', type=str, default='control')
+	parser.add_argument('--control_f', type=str,nargs='+')
+	parser.add_argument('--condition_n', type=str, default='condition')
+	parser.add_argument('--condition_f', type=str,nargs='+')
+	args = parser.parse_args()
+	modkit = []
+	for i, x in enumerate(args.control_f):
+	    modkit.extend(['-s', x, f'{args.control_n}{i}'])
+	for i, x in enumerate(args.condition_f):
+	    modkit.extend(['-s', x, f'{args.condition_n}{i}'])
+	print(' '.join(modkit), end='')
+	CODE
+
+        python modkit_dmr.py \
+		--control_n ~{controlName} \
+		--control_f ~{sep=" " control} \
+		--condition_n ~{conditionName} \
+		--condition_f ~{sep=" " condition}
+    >>>
+
+	output {
+		String params = select_first(read_lines(stdout()))
+	}
+
+    runtime {
+        docker: dockerImage
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+    }
+}
+
+
+task DmrMulti {
+    input {
+	String dmrMultiArguments
+        Array[File] control
+        Array[File] condition
+
+        Array[File] controlIndex
+        Array[File] conditionIndex
+
+        String controlName
+        String conditionName
+
+        File referenceFasta
+        File referenceFastaFai
+        String dmr_dir = "results"
+
+        File? cpg_islands
+
+        Int threads = 4
+        String memory = "32G"
+        Int timeMinutes = 600
+        String dockerImage = "quay.io/biocontainers/ont-modkit:0.4.3--hcdda2d0_0"
+    }
+
+    command <<<
+        set -e
+        mkdir -p ~{dmr_dir}
+
+	modkit dmr multi \
+		~{dmrMultiArguments} \
+		--out-dir ~{dmr_dir} \
+		~{"--regions-bed " + cpg_islands} \
+		--ref ~{referenceFasta} \
+		--base C \
+		--threads ~{threads} \
+		--header \
+		--log-filepath dmr_multi.log
+    >>>
+
+	output {
+		# TODO: other files
+		File log = "dmr_multi.log"
+	}
+
+    runtime {
+        docker: dockerImage
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+    }
+
+    parameter_meta {
+        # input
+        bam: {description: "The input alignment file", category: "required"}
+        bamIndex: {description: "The index for the input alignment file", category: "required"}
+
+        sample: {description: "Allows you to disable sampling and report stats for the whole file.", category: "advanced"}
+        numReads: {description: "By default a fixed amount of reads are read, you can set this to change the number of reads to sample.", category: "advanced"}
+        samplingFrac: {description: "Use a fixed percentage of reads, rather than a fixed number of reads, for sampling.", category: "advanced"}
+        seed: {description: "A seed can be provided for reproducibility in the sampling fraction case.", category: "advanced"}
+
+        threads: {description: "The number of threads to use.", category: "advanced"}
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # output
+        summaryReport: {description: "The output modkit summary."}
     }
 }

@@ -1074,7 +1074,7 @@ task SortVcf {
 
     output {
         File outputVcf = outputVcfPath
-        File outputVcfIndex = outputVcfPath + ".tbi"
+     #   File outputVcfIndex = outputVcfPath + ".tbi"
     }
 
     runtime {

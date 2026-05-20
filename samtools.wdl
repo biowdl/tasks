@@ -284,6 +284,7 @@ task Flagstat {
     input {
         File inputBam
         String outputPath
+	String? format # Blank by default, 'tsv' and 'json' are acceptable values.
 
         Int threads = 1
 
@@ -298,6 +299,7 @@ task Flagstat {
 
         samtools flagstat \
             --threads ~{threads - 1} \
+	    ~{"--output-fmt " + format} \
             ~{inputBam} > ~{outputPath}
     }
 
@@ -525,7 +527,9 @@ task Sort {
         File inputBam
         String outputPath = basename(inputBam, "\.bam") + ".sorted.bam"
         Boolean sortByName = false
+	Boolean multiIndex = false
         Int compressionLevel = 1
+	Boolean index = true
 
         Int memoryPerThreadGb = 4
         Int threads = 1
@@ -547,14 +551,77 @@ task Sort {
         -m ~{memoryPerThreadGb}G \
         -o ~{outputPath} \
         ~{inputBam}
-        samtools index \
-        --threads ~{threads - 1} \
-        ~{outputPath} ~{bamIndexPath}
+
+        if [[ "true" == "~{index}" ]] && [[ "true" != "~{sortByName}" ]]; then
+            samtools index ~{true="-M" false="" multiIndex} \
+            --threads ~{threads - 1} \
+            ~{outputPath} ~{bamIndexPath}
+        fi
     }
 
     output {
         File outputBam = outputPath
-        File outputBamIndex = bamIndexPath
+        File? outputBamIndex = bamIndexPath
+    }
+
+    runtime {
+        cpu: threads
+        memory: "~{memoryGb}GiB"
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        # inputs
+        inputBam: {description: "The input SAM file.", category: "required"}
+        outputPath: {description: "Output directory path + output file.", category: "required"}
+        sortByName: {description: "Sort the inputBam by read name instead of position.", category: "advanced"}
+        compressionLevel: {description: "Compression level from 0 (uncompressed) to 9 (best).", category: "advanced"}
+        memoryPerThreadGb: {description: "The amount of memory used per sort thread in gigabytes.", category: "advanced"}
+        threads: {description: "The number of threads that will be used for this task.", category: "advanced"}
+        memoryGb: {description: "The amount of memory available to the job in gigabytes.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # outputs
+        outputBam: {description: "Sorted BAM file."}
+        outputBamIndex: {description: "Sorted BAM file index."}
+    }
+}
+
+task SortNoIndex {
+    input {
+        File inputBam
+        String outputPath = basename(inputBam, "\.bam") + ".sorted.bam"
+        Boolean sortByName = true
+	Boolean multiIndex = false
+        Int compressionLevel = 1
+
+        Int memoryPerThreadGb = 4
+        Int threads = 1
+        Int memoryGb = 1 + threads * memoryPerThreadGb
+        Int timeMinutes = 1 + ceil(size(inputBam, "GiB") * 3)
+        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
+    }
+
+    # Select first needed as outputPath is optional input (bug in cromwell).
+    String bamIndexPath = sub(select_first([outputPath]), "\.bam$", ".bai")
+
+    command {
+        set -e
+        mkdir -p "$(dirname ~{outputPath})"
+
+        samtools sort \
+            -l ~{compressionLevel} \
+            ~{true="-n" false="" sortByName} \
+            ~{"--threads " + threads} \
+            -m ~{memoryPerThreadGb}G \
+            -o ~{outputPath} \
+            ~{inputBam}
+    }
+
+    output {
+        File outputBam = outputPath
     }
 
     runtime {
@@ -700,6 +767,10 @@ task View {
         Int? MAPQthreshold
         String? filterExpression
         File? targetFile
+	File? qnameFile # -N
+	# Would be better:
+	#Pair[String, String]? requireTag
+	String? requireTagValue
 
         Boolean fast = true  # Sets compression level to 1.
 
@@ -722,9 +793,11 @@ task View {
         ~{true="--fast" false="" fast} \
         ~{true="-u " false="" uncompressedBamOutput} \
         ~{"-e " + filterExpression} \
+        ~{"--tag " + requireTagValue} \
         ~{"-f " + includeFilter} \
         ~{"-F " + excludeFilter} \
         ~{"-G " + excludeSpecificFilter} \
+	~{"--qname-file " + qnameFile} \
         ~{"-q " + MAPQthreshold} \
         --threads ~{threads - 1} \
         ~{"--target-file " + targetFile} \
@@ -770,28 +843,109 @@ task View {
 task Reset {
     input {
         File bamFile
-        String outputBamPath = "reset.bam"
+        String outputUbamPath = "reset.bam"
+        String outputFormat = "BAM"
 
         Int threads = 1
 
         String memory = "2GiB"
         Int timeMinutes = 1 + ceil(size(bamFile, "GiB") * 4)
-        String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
+        String dockerImage = "quay.io/biocontainers/samtools:1.22.1--h96c455f_0"
     }
 
 	command {
-		mkdir -p "$(dirname ~{outputBamPath})"
+		set -e
+		mkdir -p "$(dirname ~{outputUbamPath})"
 
-		samtools reset -o "~{outputBamPath}" "~{bamFile}"
+		samtools reset \
+			"~{bamFile}" \
+			-o "~{outputUbamPath}" \
+			~{"-O " + outputFormat}
 
 		samtools index \
 			--threads ~{threads -1} \
-			~{outputBamPath}
+			~{outputUbamPath}
 	}
 
     output {
-        File bam = outputBamPath
-        File index = outputBamPath + ".bai"
+        File ubam = outputUbamPath
+        File index = outputUbamPath + ".bai"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+}
+
+task ResetCram {
+    input {
+        File bamFile
+	File referenceFasta
+        String outputUbamPath = "reset.bam"
+        String outputFormat = "BAM"
+
+        Int threads = 1
+
+        String memory = "2GiB"
+        Int timeMinutes = 59
+        String dockerImage = "quay.io/biocontainers/samtools:1.22.1--h96c455f_0"
+    }
+
+	command {
+		set -e
+		mkdir -p "$(dirname ~{outputUbamPath})"
+
+
+		samtools collate -O -u \
+			~{bamFile} \
+			--reference ~{referenceFasta} |
+		samtools reset \
+			-o "~{outputUbamPath}" \
+			~{"-O " + outputFormat}
+
+		samtools index \
+			--threads ~{threads -1} \
+			~{outputUbamPath}
+	}
+
+    output {
+        File ubam = outputUbamPath
+        File index = outputUbamPath + ".bai"
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+}
+
+task Stats {
+    input {
+        File bamFile
+        String outputFileName = "view.stats"
+
+        Int threads = 1
+
+        String memory = "16GiB"
+        Int timeMinutes = 59
+        String dockerImage = "quay.io/biocontainers/samtools:1.22.1--h96c455f_0"
+    }
+
+	command {
+		set -e
+		mkdir -p "$(dirname ~{outputFileName})"
+
+		samtools stats \
+			~{bamFile} > ~{outputFileName}
+	}
+
+    output {
+        File stats = outputFileName
     }
 
     runtime {

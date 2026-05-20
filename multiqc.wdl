@@ -20,6 +20,13 @@ version 1.0
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+struct MultiQCConfig {
+	String? title
+	String? subtitle
+	String? intro_text
+	Array[Map[String, String]]? report_header_info
+}
+
 task MultiQC {
     input {
         # Use a string here so cromwell does not relocate an entire
@@ -56,6 +63,7 @@ task MultiQC {
         String? dataFormat
         File? config  # A directory
         String? clConfig
+	MultiQCConfig? mqcConfig
 
         String? memory
         Int timeMinutes = 10 + ceil(size(reports, "GiB") * 8)
@@ -78,6 +86,10 @@ task MultiQC {
     # from other directories get their own directory. Cromwell also uses this 
     # strategy. Using python's builtin hash is unique enough
     # for these purposes.
+
+    Array[File] allReports = flatten([reports, flatten(select_all([additionalReports]))])
+
+    String? clConfigVal = if defined(mqcConfig) then write_json(mqcConfig) else clConfig
 
     command {
         python3 <<CODE
@@ -127,16 +139,16 @@ task MultiQC {
         ~{false="--no-megaqc-upload" true="" megaQCUpload} \
         ~{false="--no-ai" true="" enableAi} \
         ~{"--config " + config} \
-        ~{"--cl-config " + clConfig } \
+        ~{"--cl-config " + clConfigVal } \
         ~{reportDir}
     }
 
     String reportFilename = if (defined(fileName))
         then sub(select_first([fileName]), "\.html$", "")
-        else "multiqc"
+        else "multiqc_report"
 
     output {
-        File multiqcReport = outDir + "/" + reportFilename + "_report.html"
+        File multiqcReport = outDir + "/" + reportFilename + ".html"
         File? multiqcDataDirZip = outDir + "/" +reportFilename + "_data.zip"
     }
 
