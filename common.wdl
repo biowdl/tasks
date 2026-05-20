@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 # Copyright (c) 2017 Leiden University Medical Center
 #
@@ -351,3 +351,49 @@ struct CaseControl {
 struct CaseControls {
     Array[CaseControl] caseControls
 }
+
+task JoinTables {
+    input {
+        File a # tabular data.
+        File b
+        File sep= ','
+
+        Boolean has_header = true
+        Array[String] join_on = ["column_1", "column_2"] # example
+
+        String outputPrefix = "results.csv"
+
+        # 1.29 includes polars.
+        String dockerImage = "quay.io/biocontainers/multiqc:1.29--pyhdfd78af_0"
+    }
+
+    command <<<
+        mkdir -p "~{outputPrefix}"
+
+        cat > h_m_join.py <<'CODE'
+        import polars
+        import sys
+        a = polars.read_csv("~{a}", separator="~{sep}", has_header="~{has_header}" == 'true')
+        b = polars.read_csv("~{b}", separator="~{sep}", has_header="~{has_header}" == 'true')
+
+        c = a.join(b, on=[~{sep=", " quote(join_on)}])
+
+        c.write_csv('~{outputPrefix}')
+
+        CODE
+
+        python h_m_join.py
+    >>>
+
+    output {
+        File merged = outputPrefix
+    }
+
+    runtime {
+        cpu: 1
+        memory: "16G"
+        time_minutes: 10
+        docker: dockerImage
+    }
+}
+
