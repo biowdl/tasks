@@ -30,6 +30,8 @@ task Vep {
         Array[String] plugins = []
         Boolean refseq = false 
         Boolean merged = false
+	Boolean per_gene = false
+	String? fields
 
         Boolean everything = false
         Boolean symbol = false
@@ -60,6 +62,8 @@ task Vep {
         ~{true="--plugin" false="" length(plugins) > 0} ~{sep=" --plugin " plugins} \
         --vcf \
         --compress_output bgzip \
+        ~{true="--per_gene" false="" per_gene} \
+        ~{"--fields " + fields} \
         ~{true="--refseq" false="" refseq} \
         ~{true="--merged" false="" merged} \
         ~{true="--everything" false="" everything} \
