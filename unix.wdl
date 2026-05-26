@@ -8,7 +8,7 @@ task fileGrep {
 		String outputPrefix
 		Int threads = 1
 		Int timeMinutes = 10 + ceil(size(f, "GiB"))
-		String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
+		String dockerImage = "quay.io/biocontainers/coreutils:9.5"
 	}
 
 	command <<<
@@ -16,8 +16,8 @@ task fileGrep {
         mkdir -p "$(dirname ~{outputPrefix})"
 
 	grep -f ~{patterns} \
-		~{true="--fixed-strings" false
-		="" fixedStrings} \
+		~{true="-F" false="" fixedStrings
+	} \
 		~{f} > ~{outputPrefix}
     >>>
 
@@ -52,9 +52,7 @@ task Awk {
 		cat ~{inp} | \
 		    awk \
 		        ~{"-F " + sep} \
-		        ~{
-		awk
-	} \
+		        ~{awk} \
 		        > ~{outputPrefix}
 	>>>
 
