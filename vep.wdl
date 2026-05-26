@@ -35,6 +35,7 @@ task Vep {
 
         Boolean everything = false
         Boolean symbol = false
+	Boolean compressOutput = true
 
         String memory = "8GiB"
         # Account time for unpacking the cache.
@@ -61,7 +62,7 @@ task Vep {
         --offline \
         ~{true="--plugin" false="" length(plugins) > 0} ~{sep=" --plugin " plugins} \
         --vcf \
-        --compress_output bgzip \
+        ~{true="--compress_output bgzip" false="" compressOutput} \
         ~{true="--per_gene" false="" per_gene} \
         ~{"--fields " + fields} \
         ~{true="--refseq" false="" refseq} \
