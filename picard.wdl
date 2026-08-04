@@ -736,7 +736,8 @@ task MarkDuplicates {
         String outputBamPath
         String metricsPath
         Boolean createMd5File = false
-        
+        Boolean removeDuplicates = false
+
         Int compressionLevel = 1
         Boolean useJdkInflater = false
         Boolean useJdkDeflater = true  # Achieves much better compression rates than the intel deflater
@@ -778,6 +779,7 @@ task MarkDuplicates {
         CREATE_INDEX=true \
         ADD_PG_TAG_TO_READS=false \
         CREATE_MD5_FILE=~{true="true" false="false" createMd5File} \
+        ~{if removeDuplicates then "REMOVE_DUPLICATES=true" else ""}
     }
 
     output {
