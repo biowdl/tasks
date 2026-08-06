@@ -39,7 +39,7 @@ task Vep {
 
         String memory = "8GiB"
         # Account time for unpacking the cache.
-        Int timeMinutes = 1 + ceil(size(cacheTar, "GiB")) + ceil(size(inputFile, "MiB") * 15)
+        Int timeMinutes = 15 + ceil(size(cacheTar, "GiB")) + ceil(size(inputFile, "MiB") * 25)
         String dockerImage = "quay.io/biocontainers/ensembl-vep:113.3--pl5321h2a3209d_0"
     }
 

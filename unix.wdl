@@ -5,24 +5,75 @@ task fileGrep {
 		File f
 		File patterns
 		Boolean fixedStrings = true
-		String outputPrefix
+		Boolean extended = false
+		Boolean onlyMatching = false
+		Boolean invert = false
+		Boolean exitOnError = true
+		String outputPath
 		Int threads = 1
 		Int timeMinutes = 10 + ceil(size(f, "GiB"))
 		String dockerImage = "quay.io/biocontainers/coreutils:9.5"
 	}
 
 	command <<<
-        set -e
-        mkdir -p "$(dirname ~{outputPrefix})"
+	~{true="set -e" false="" exitOnError}
+        mkdir -p "$(dirname ~{outputPath})"
 
 	grep -f ~{patterns} \
-		~{true="-F" false="" fixedStrings
-	} \
-		~{f} > ~{outputPrefix}
+		~{true="-F" false="" fixedStrings} \
+		~{true="-E" false="" extended} \
+		~{true="-o" false="" onlyMatching} \
+		~{true="-v" false="" invert} \
+		~{f} > ~{outputPath}
+
+	~{true="" false="exit 0" exitOnError}
     >>>
 
 	output {
-		File out = outputPrefix
+		File out = outputPath
+	}
+
+	runtime {
+		cpu: threads
+		memory: "1GiB"
+		time_minutes: timeMinutes
+		docker: dockerImage
+	}
+}
+
+task Grep {
+	input {
+		File f
+		String pattern
+
+		Boolean fixedStrings = false
+		Boolean exitOnError = false
+		Boolean extended = false
+		Boolean onlyMatching = false
+		Boolean invert = false
+
+		String outputPath = "out.txt"
+		Int threads = 1
+		Int timeMinutes = 10 + ceil(size(f, "GiB"))
+		String dockerImage = "quay.io/biocontainers/coreutils:9.5"
+	}
+
+	command <<<
+	~{true="set -e" false="" exitOnError}
+        mkdir -p "$(dirname ~{outputPath})"
+
+	grep ~{pattern} \
+		~{true="-F" false="" fixedStrings} \
+		~{true="-E" false="" extended} \
+		~{true="-o" false="" onlyMatching} \
+		~{true="-v" false="" invert} \
+		~{f} > ~{outputPath}
+
+	~{true="" false="exit 0" exitOnError}
+    >>>
+
+	output {
+		File out = outputPath
 	}
 
 	runtime {
