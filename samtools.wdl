@@ -772,6 +772,7 @@ task Tabix {
 task View {
     input {
         File inFile
+        File? inFileIndex
         String outputFileName = "view.bam"
         Boolean uncompressedBamOutput = false
 
@@ -782,6 +783,7 @@ task View {
         Int? MAPQthreshold
         String? filterExpression
         File? targetFile
+        File? regionFile
 	File? qnameFile # -N
 	# Would be better:
 	#Pair[String, String]? requireTag
@@ -816,6 +818,7 @@ task View {
         ~{"-q " + MAPQthreshold} \
         --threads ~{threads - 1} \
         ~{"--target-file " + targetFile} \
+        ~{"--region-file " + regionFile} \
         ~{inFile}
         samtools index ~{outputFileName} ~{outputIndexPath}
     }
