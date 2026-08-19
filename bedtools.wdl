@@ -24,7 +24,7 @@ task Complement {
     input {
         File faidx
         File inputBed
-        String outputBed = basename(inputBed, "\.bed") + ".complement.bed"
+        String outputBed = basename(inputBed, ".bed") + ".complement.bed"
 
         String memory = "~{512 + ceil(size([inputBed, faidx], "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size([inputBed, faidx], "G"))
