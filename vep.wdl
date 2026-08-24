@@ -45,10 +45,11 @@ task Vep {
 
     command <<< 
         set -eu
-        mkdir vep_cache
+        VEP_CACHE=$(mktemp -d /tmp/vep_cache.XXXXXXXXX)
         mkdir -p "$(dirname ~{outputPath})"
-        tar -x --directory vep_cache -f ~{cacheTar}
-        ~{"tar -x --directory vep_cache -f " + pluginsTar}
+
+        tar -x --directory ${VEP_CACHE} -f ~{cacheTar}
+        ~{"tar -x --directory ${VEP_CACHE} -f " + pluginsTar}
 
         # Make sure vep can error, so the removal always succeeds.
         set +e 
@@ -58,7 +59,7 @@ task Vep {
         --output_file ~{outputPath} \
         ~{"--species " + species} \
         --stats_html --stats_text \
-        --dir vep_cache \
+	--dir ${VEP_CACHE} \
         --offline \
         ~{true="--plugin" false="" length(plugins) > 0} ~{sep=" --plugin " plugins} \
         --vcf \
@@ -73,7 +74,7 @@ task Vep {
         VEP_EXIT_CODE=$?
         set -e
         # Cleanup the tar extract to save filesystem space
-        rm -rf vep_cache
+        rm -rf ${VEP_CACHE}
         
         exit $VEP_EXIT_CODE
     >>>
