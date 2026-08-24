@@ -259,7 +259,7 @@ task Sort {
 
         String memory = "5GiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G")) * 5
-        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+        String dockerImage = "quay.io/biocontainers/bcftools:1.24--h118bc1c_2"
     }
 
     Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
