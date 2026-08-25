@@ -973,3 +973,38 @@ task Stats {
         docker: dockerImage
     }
 }
+
+task Bedcov {
+    input {
+        File bam
+        File bamIndex
+        File bed
+
+        String outputFileName = "cov.bed"
+
+        Int threads = 1
+
+        String memory = "16GiB"
+        Int timeMinutes = 59
+        String dockerImage = "quay.io/biocontainers/samtools:1.22.1--h96c455f_0"
+    }
+
+	command {
+		set -e
+		mkdir -p "$(dirname ~{outputFileName})"
+
+		samtools bedcov ~{bed} \
+			~{bam} > ~{outputFileName}
+	}
+
+    output {
+        File stats = outputFileName
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+}
