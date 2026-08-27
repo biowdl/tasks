@@ -426,7 +426,7 @@ task View {
 
         String memory = "256MiB"
         Int timeMinutes = 1 + ceil(size(inputFile, "G"))
-        String dockerImage = "quay.io/biocontainers/bcftools:1.10.2--h4f4756c_2"
+        String dockerImage = "quay.io/biocontainers/bcftools:1.24--h118bc1c_2"
     }
 
     Boolean compressed = basename(outputPath) != basename(outputPath, ".gz")
