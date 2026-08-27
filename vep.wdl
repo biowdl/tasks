@@ -113,3 +113,84 @@ task Vep {
         statsTxt: {description: "The VEP summary stats TXT file."}
     }
 }
+
+task VepLocal {
+    input {
+        File inputFile
+        String outputPath = "vep.annotated.vcf.gz"
+        String cachePath
+        String? species 
+        Array[String] plugins = []
+        Boolean refseq = false 
+        Boolean merged = false
+	Boolean per_gene = false
+	String? fields
+
+        Boolean everything = false
+        Boolean symbol = false
+	Boolean compressOutput = true
+
+        String memory = "8GiB"
+        # Account time for unpacking the cache.
+        Int timeMinutes = 20 + ceil(size(cacheTar, "GiB")) + ceil(size(inputFile, "MiB") * 25)
+        String dockerImage = "quay.io/biocontainers/ensembl-vep:113.3--pl5321h2a3209d_0"
+    }
+
+    command <<< 
+        set -eu
+        mkdir -p "$(dirname ~{outputPath})"
+
+        # Output all stats files by default for MultiQC integration
+        vep \
+        --input_file ~{inputFile} \
+        --output_file ~{outputPath} \
+        ~{"--species " + species} \
+        --stats_html --stats_text \
+        --dir ~{cachePath} \
+        --offline \
+        ~{true="--plugin" false="" length(plugins) > 0} ~{sep=" --plugin " plugins} \
+        --vcf \
+        ~{true="--compress_output bgzip" false="" compressOutput} \
+        ~{true="--per_gene" false="" per_gene} \
+        ~{"--fields " + fields} \
+        ~{true="--refseq" false="" refseq} \
+        ~{true="--merged" false="" merged} \
+        ~{true="--everything" false="" everything} \
+        ~{true="--symbol" false="" symbol} 
+    >>>
+
+    output {
+        File outputFile = outputPath
+        File statsHtml = outputPath + "_summary.html"
+        File statsTxt = outputPath + "_summary.txt"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+
+    parameter_meta {
+         # input
+        inputFile: {description: "The VCF to annotate.", category: "required"}
+        outputPath: {description: "Where to put the output file", category: "advanced"}
+        cacheTar: {description: "A TAR archive containing the cache. The TAR archives from the VEP website work (http://www.ensembl.org/info/docs/tools/vep/script/vep_cache.html)", category: "required"}
+        pluginsTar: {description: "A TAR file with custom plugins.", category: "advanced"}
+        species: {description: "Which species cache to use", category: "common"}
+        plugins: {description: "Which plugins to use", category: "common"}
+        refseq: {description: "Use the refseq cache", category: "common"}
+        merged: {description: "Use the merged cache", category: "common"}
+        everything: {description: "Use all annotation sources bundeld with vep.", category: "common"}
+        symbol: {description: "Add the gene symbol to the output where available", category: "advanced"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
+
+        # output
+        outputFile: {description: "The annotated VEP VCF file."}
+        statsHtml: {description: "The VEP summary stats HTML file."}
+        statsTxt: {description: "The VEP summary stats TXT file."}
+    }
+}
