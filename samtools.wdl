@@ -780,7 +780,7 @@ task View {
         String dockerImage = "quay.io/biocontainers/samtools:1.21--h96c455f_1"
     }
 
-    String outputIndexPath = basename(outputFileName) + ".bai"
+    String outputIndexPath = outputFileName + ".bai"
 
     # Always output to bam and output header.
     # -u should be after --fast, and will override it in that case.
