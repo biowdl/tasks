@@ -955,3 +955,66 @@ task Stats {
         docker: dockerImage
     }
 }
+
+task GetRg {
+    input {
+        File bamFile
+
+        Int threads = 1
+
+        String memory = "16GiB"
+        Int timeMinutes = 10
+        String dockerImage = "quay.io/biocontainers/samtools:1.22.1--h96c455f_0"
+    }
+
+	command {
+		set -e
+        samtools head ~{bamFile} | grep '@RG'
+	}
+
+    output {
+        String header = select_first(read_lines(stdout()))
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+}
+
+
+task AddReplaceRg {
+    input {
+        File bamFile
+        String newReadGroup
+        String outputPrefix = "out.bam"
+		Boolean replace = true
+
+        Int threads = 1
+
+        String memory = "16GiB"
+        Int timeMinutes = 59
+        String dockerImage = "quay.io/biocontainers/samtools:1.22.1--h96c455f_0"
+    }
+
+	command {
+		set -e
+		mkdir -p "$(dirname ~{outputPrefix})"
+
+		samtools addreplacerg -r '~{newReadGroup}' ~{true="-w" false="" replace}\
+			-O BAM -o ~{outputPrefix} ~{bamFile}
+	}
+
+    output {
+        File bam = outputPrefix
+    }
+
+    runtime {
+        cpu: threads
+        memory: memory
+        time_minutes: timeMinutes
+        docker: dockerImage
+    }
+}
