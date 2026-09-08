@@ -24,10 +24,10 @@ task Freec {
     input {
         File bamFile
         File bamIndex
-        File referenceFai
+        File referenceFastaFai
         File mappability
         Array[File]+ chrFiles
-        String outputDir
+        String outputDir = "./"
 
         String sex = "XX"
 
@@ -51,7 +51,7 @@ task Freec {
 
     samtools=/usr/local/bin/samtools
 
-    chrLenFile=~{referenceFai}
+    chrLenFile=~{referenceFastaFai}
     chrFiles=$(dirname ~{chrFiles[0]})
     gemMappabilityFile=~{mappability}
     uniqueMatch=FALSE
@@ -77,7 +77,7 @@ task Freec {
         File cnv = "~{outputDir}/~{basename(bamFile)}_CNVs"
         File info = "~{outputDir}/~{basename(bamFile)}_info.txt"
         File ratio = "~{outputDir}/~{basename(bamFile)}_ratio.txt"
-        File sampleCpn= "~{outputDir}/~{basename(bamFile)}_sample.cpn"
+        File sampleCpn = "~{outputDir}/~{basename(bamFile)}_sample.cpn"
     }
 
     runtime {
@@ -89,10 +89,10 @@ task Freec {
     parameter_meta {
         bamFile: {description: "The bam file to analyse.", category: "required"}
         bamIndex: {description: "The index for the bam file.", category: "required"}
-        referenceFai: {description: "The index for the reference fasta file.", category: "required"}
+        referenceFastaFai: {description: "The index for the reference fasta file.", category: "required"}
         mappability: {description: "The gem mappability file for the reference genome.", category: "required"}
         chrFiles: {description: "Fasta files containing one chromosome each.", category: "required"}
-        outputDir: {description: "The directory to write the output to.", category: "required"}
+        outputDir: {description: "The directory to write the output to.", category: "common"}
         sex: {description: "The sample's sex.", category: "common"}
         
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
