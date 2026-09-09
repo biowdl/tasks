@@ -34,7 +34,7 @@ task Index {
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
-        gem-mappability \
+        indexer \
         -T ~{threads} \
         -i ~{fasta} \
         -o ~{outputPath}
@@ -78,8 +78,8 @@ task Mappability {
         set -e
         mkdir -p $(dirname ~{outputPath})
         gem-mappability \
-        -t ~{threads} \
-        -i ~{gemIndex} \
+        -T ~{threads} \
+        -I ~{gemIndex} \
         -o ~{outputPath} \
         -l ~{readLength}
     }
