@@ -34,7 +34,7 @@ task Index {
     command {
         set -e
         mkdir -p $(dirname ~{outputPath})
-        indexer \
+        gem-indexer \
         -T ~{threads} \
         -i ~{fasta} \
         -o ~{outputPath}
