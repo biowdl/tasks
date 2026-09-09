@@ -41,7 +41,7 @@ task Index {
     }
 
     output {
-        File gemIndex = outputPath
+        File gemIndex = outputPath + ".gem"
     }
 
     runtime {
