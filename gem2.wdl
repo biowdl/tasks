@@ -65,7 +65,7 @@ task Index {
 task Mappability {
     input {
         File gemIndex
-        String outputPath = basename(gemIndex, ".gem_index") + ".gem_mappability_~{readLength}"
+        String outputPath = basename(gemIndex, ".gem_index.gem") + ".gem_mappability_~{readLength}"
         Int readLength = 150
 
         Int threads = 10
