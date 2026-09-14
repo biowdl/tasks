@@ -85,7 +85,7 @@ task Mappability {
     }
 
     output {
-        File mappability = outputPath
+        File mappability = "~{outputPath}.mappability"
     }
 
     runtime {
