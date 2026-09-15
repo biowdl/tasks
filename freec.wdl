@@ -37,6 +37,9 @@ task Freec {
     }
 
     command <<<
+    set -e
+    mkdir -p ~{outputDir}
+
     echo "
     [general]
 
