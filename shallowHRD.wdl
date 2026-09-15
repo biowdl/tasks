@@ -41,6 +41,7 @@ task ShallowHRD_hg19_controlfreec_chrX {
         ~{ratioTxt} \
         ~{outputDir} \
         /usr/share/shallowHRD/cytoband_adapted_hg19.csv
+        mv Rplots.pdf -t ~{outputDir}
     }
 
     output {
