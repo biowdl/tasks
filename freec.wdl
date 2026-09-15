@@ -69,7 +69,7 @@ task Freec {
     matesOrientation=FR
     " > ./freec_config
 
-    freec -conf ./freec_conf
+    freec -conf ./freec_config
     >>>
 
     output {
