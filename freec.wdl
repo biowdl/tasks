@@ -30,6 +30,7 @@ task Freec {
         String outputDir = "./"
 
         String sex = "XX"
+        Boolean pairedEnd = true
 
         String memory = "16GiB"
         String dockerImage = "quay.io/biocontainers/control-freec:11.6b--hdbdd923_0"
@@ -69,7 +70,7 @@ task Freec {
 
     mateFile=~{bamFile}
     inputFormat=BAM
-    matesOrientation=FR
+    matesOrientation=~{if pairedEnd then "FR" else "0"}
     " > ./freec_config
 
     freec -conf ./freec_config
@@ -97,6 +98,7 @@ task Freec {
         chrFiles: {description: "Fasta files containing one chromosome each.", category: "required"}
         outputDir: {description: "The directory to write the output to.", category: "common"}
         sex: {description: "The sample's sex.", category: "common"}
+        pairedEnd: {description: "Whether the sample is paired-end (true) or single-end (false).", category: "advanced"}
         
         memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
