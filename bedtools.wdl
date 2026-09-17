@@ -332,7 +332,9 @@ task IntersectVcfBed {
         File bed
         String outputBed = "intersect.bed"
 
+        Boolean vcfHeader = true
         Boolean stranded = false
+        Boolean onlyIds = true
 
         String memory = "~{512 + ceil(size([vcf, bed], "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size([vcf, bed], "GiB"))
@@ -343,14 +345,16 @@ task IntersectVcfBed {
         set -e
         mkdir -p "$(dirname ~{outputBed})"
 
-	grep '^#' ~{vcf} > ~{outputBed}
+	if [ "~{vcfHeader}" == "true" ]; then
+		grep '^#' ~{vcf} > ~{outputBed}
+	fi
 
         bedtools intersect \
-        -a ~{vcf} \
-        -b ~{bed} \
-	-u \
-        ~{true="-s" false="" stranded} \
-        >> ~{outputBed}
+		-a ~{vcf} \
+		-b ~{bed} \
+		-u \
+		~{true="-s" false="" stranded} ~{true=" | cut -f 3" false="" onlyIds} \
+		>> ~{outputBed}
     }
 
     output {
@@ -361,25 +365,5 @@ task IntersectVcfBed {
         memory: memory
         time_minutes: timeMinutes
         docker: dockerImage
-    }
-
-    parameter_meta {
-        # inputs
-        regionsA: {description: "Region file a to intersect.", category: "required"}
-        regionsB: {description: "Region file b to intersect.", category: "required"}
-        outputBed: {description: "The path to write the output to.", category: "advanced"}
-        faidx: {description: "The fasta index (.fai) file that is used to create the genome file required for sorted output. Implies sorted option.", category: "common"}
-
-        writeA: {description: "Write the original entry in A for each overlap.", category: "advanced"}
-        writeB: {description: "Write the original entry in B for each overlap. Useful for knowing what A overlaps.", category: "advanced"}
-        stranded: {description: "Force “strandedness”. That is, only report hits in B that overlap A on the same strand. By default, overlaps are reported without respect to strand.", category: "advanced"}
-        nonamecheck: {description: "Disable the bedtools intersect name check. This is used to catch chr1 vs chr01 or chr1 vs 1 naming inconsistencies. However, it throws an error for GIAB hg38 which has capital letters. https://github.com/arq5x/bedtools2/issues/648", category: "advanced"}
-
-        memory: {description: "The amount of memory needed for the job.", category: "advanced"}
-        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
-        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
-
-        # outputs
-        intersectedBed: {description: "The intersected bed file."}
     }
 }
