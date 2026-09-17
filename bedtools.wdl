@@ -334,7 +334,7 @@ task IntersectVcfBed {
 
         Boolean vcfHeader = true
         Boolean stranded = false
-        Boolean onlyIds = true
+        Boolean onlyIds = false
 
         String memory = "~{512 + ceil(size([vcf, bed], "MiB"))}MiB"
         Int timeMinutes = 1 + ceil(size([vcf, bed], "GiB"))
