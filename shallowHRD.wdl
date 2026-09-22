@@ -45,36 +45,36 @@ task ShallowHRD_hg19_controlfreec_chrX {
     }
 
     output {
-        File dedup_II = "~{outputDir}/~{sampleName}_II.jpeg"
-        File dedup_III = "~{outputDir}/~{sampleName}_III.jpeg"
-        File dedup_IV = "~{outputDir}/~{sampleName}_IV.jpeg"
-        File dedup_IV_txt = "~{outputDir}/~{sampleName}_IV.txt"
-        File dedup_LGAs = "~{outputDir}/~{sampleName}_LGAs.jpeg"
-        File dedup_LGAs_txt = "~{outputDir}/~{sampleName}_LGAs.txt"
-        File dedup_LGAs_intermediary = "~{outputDir}/~{sampleName}_LGAs_intermediary.jpeg"
-        File dedup_THR = "~{outputDir}/~{sampleName}_THR.jpeg"
-        File dedup_THR_intermediary = "~{outputDir}/~{sampleName}_THR_intermediary.jpeg"
-        File dedup_amplification_deletion_table = "~{outputDir}/~{sampleName}_amplification_deletion_table.txt"
-        File dedup_amplifications_deletions = "~{outputDir}/~{sampleName}_amplifications_deletions.jpeg"
-        File dedup_beginning_segmentation = "~{outputDir}/~{sampleName}_beginning_segmentation.jpeg"
-        File dedup_final_segmentation = "~{outputDir}/~{sampleName}_final_segmentation.jpeg"
-        File dedup_final_segmentation_txt = "~{outputDir}/~{sampleName}_final_segmentation.txt"
-        File dedup_final_segmentation_intermediary = "~{outputDir}/~{sampleName}_final_segmentation_intermediary.jpeg"
-        File dedup_final_segmentation_visual = "~{outputDir}/~{sampleName}_final_segmentation_visual.jpeg"
-        File dedup_final_segmentation_zoomed = "~{outputDir}/~{sampleName}_final_segmentation_zoomed.jpeg"
-        File dedup_normalised_read_count = "~{outputDir}/~{sampleName}_normalised_read_count.jpeg"
-        File dedup_number_LGAs = "~{outputDir}/~{sampleName}_number_LGAs.txt"
-        File dedup_ratio_median_gathered = "~{outputDir}/~{sampleName}_ratio_median_gathered.txt"
-        File dedup_summary_plot = "~{outputDir}/~{sampleName}_summary_plot.jpeg"
+        File II = "~{outputDir}/~{sampleName}_II.jpeg"
+        File III = "~{outputDir}/~{sampleName}_III.jpeg"
+        File IV = "~{outputDir}/~{sampleName}_IV.jpeg"
+        File IV_txt = "~{outputDir}/~{sampleName}_IV.txt"
+        File LGAs = "~{outputDir}/~{sampleName}_LGAs.jpeg"
+        File LGAs_txt = "~{outputDir}/~{sampleName}_LGAs.txt"
+        File LGAs_intermediary = "~{outputDir}/~{sampleName}_LGAs_intermediary.jpeg"
+        File THR = "~{outputDir}/~{sampleName}_THR.jpeg"
+        File THR_intermediary = "~{outputDir}/~{sampleName}_THR_intermediary.jpeg"
+        File amplification_deletion_table = "~{outputDir}/~{sampleName}_amplification_deletion_table.txt"
+        File amplifications_deletions = "~{outputDir}/~{sampleName}_amplifications_deletions.jpeg"
+        File beginning_segmentation = "~{outputDir}/~{sampleName}_beginning_segmentation.jpeg"
+        File final_segmentation = "~{outputDir}/~{sampleName}_final_segmentation.jpeg"
+        File final_segmentation_txt = "~{outputDir}/~{sampleName}_final_segmentation.txt"
+        File final_segmentation_intermediary = "~{outputDir}/~{sampleName}_final_segmentation_intermediary.jpeg"
+        File final_segmentation_visual = "~{outputDir}/~{sampleName}_final_segmentation_visual.jpeg"
+        File final_segmentation_zoomed = "~{outputDir}/~{sampleName}_final_segmentation_zoomed.jpeg"
+        File normalised_read_count = "~{outputDir}/~{sampleName}_normalised_read_count.jpeg"
+        File number_LGAs = "~{outputDir}/~{sampleName}_number_LGAs.txt"
+        File ratio_median_gathered = "~{outputDir}/~{sampleName}_ratio_median_gathered.txt"
+        File summary_plot = "~{outputDir}/~{sampleName}_summary_plot.jpeg"
         File rplots = "~{outputDir}/Rplots.pdf"
-        Array[File] all = [dedup_II, dedup_III, dedup_IV, dedup_IV, dedup_LGAs, dedup_LGAs,
-                           dedup_LGAs_intermediary, dedup_THR, dedup_THR_intermediary,
-                           dedup_amplification_deletion_table, dedup_amplifications_deletions,
-                           dedup_beginning_segmentation, dedup_final_segmentation,
-                           dedup_final_segmentation, dedup_final_segmentation_intermediary,
-                           dedup_final_segmentation_visual, dedup_final_segmentation_zoomed,
-                           dedup_normalised_read_count, dedup_number_LGAs, dedup_ratio_median_gathered,
-                           dedup_summary_plot, rplots]
+        Array[File] all = [II, III, IV, IV, LGAs, LGAs,
+                           LGAs_intermediary, THR, THR_intermediary,
+                           amplification_deletion_table, amplifications_deletions,
+                           beginning_segmentation, final_segmentation,
+                           final_segmentation, final_segmentation_intermediary,
+                           final_segmentation_visual, final_segmentation_zoomed,
+                           normalised_read_count, number_LGAs, ratio_median_gathered,
+                           summary_plot, rplots]
     }
 
     runtime {
