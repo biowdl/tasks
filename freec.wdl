@@ -106,3 +106,42 @@ task Freec {
                       category: "advanced"}
     }
 }
+
+task makeGraph2_0 {
+    input {
+        File ratio
+        String outputDir = "./"
+
+        String memory = "4GiB"
+        String dockerImage = "quay.io/biocontainers/control-freec:11.6b--hdbdd923_0"
+        Int timeMinutes = 30
+    }
+
+    command {
+        set -e
+        mkdir -p ~{outputDir}
+        cp ~{ratio} -t .
+        cat /usr/local/bin/makeGraph2.0.R | R --slave --args ~{ratio}
+        mv ~{ratio}.png  -t ~{outputDir}
+    }
+
+    output {
+        File ratioPng = "~{outputDir}/~{basename(ratio)}.png"
+    }
+
+    runtime {
+        memory: memory
+        time_minutes: timeMinutes # !UnknownRuntimeKey
+        docker: dockerImage
+    }
+
+    parameter_meta {
+        ratio: {description: "The ratio.txt file produced by FREEC. This path must contain `ratio.txt`.", category: "required"}
+        outputDir: {description: "The directory to write the output to.", category: "common"}
+
+        memory: {description: "The amount of memory this job will use.", category: "advanced"}
+        timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
+        dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.",
+                      category: "advanced"}
+    }
+}
