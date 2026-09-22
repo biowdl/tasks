@@ -87,8 +87,6 @@ task MultiQC {
     # strategy. Using python's builtin hash is unique enough
     # for these purposes.
 
-    Array[File] allReports = flatten([reports, flatten(select_all([additionalReports]))])
-
     String? clConfigVal = if defined(mqcConfig) then write_json(mqcConfig) else clConfig
 
     command {
