@@ -120,9 +120,9 @@ task makeGraph2_0 {
     command {
         set -e
         mkdir -p ~{outputDir}
-        cp ~{ratio} -t .
+        cp ~{ratio} .
         cat /usr/local/bin/makeGraph2.0.R | R --slave --args ~{ratio}
-        mv ~{ratio}.png  -t ~{outputDir}
+        mv ~{ratio}.png ~{outputDir}
     }
 
     output {
