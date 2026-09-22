@@ -44,7 +44,7 @@ task Freec {
     echo "
     [general]
 
-    ploidy = 2,4
+    ploidy = 2
     sex=~{sex}
 
     window=100000
