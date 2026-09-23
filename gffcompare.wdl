@@ -105,13 +105,13 @@ task GffCompare {
         File loci = totalPrefix + ".loci"
         File stats = totalPrefix + ".stats"
         File tracking = totalPrefix + ".tracking"
-        Array[File] allFiles = select_all([annotated, loci, stats, tracking, redundant, missedIntrons])
         File? redundant = if createRedundant
             then totalPrefix + ".redundant.gtf"
             else noneFile
         File? missedIntrons = if debugMode
             then totalPrefix + ".missed_introns.gtf"
             else noneFile
+        Array[File] allFiles = select_all([annotated, loci, stats, tracking, redundant, missedIntrons])
     }
 
     runtime {
