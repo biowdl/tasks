@@ -49,9 +49,9 @@ task ShallowHRD_hg19_controlfreec_chrX {
         File III = "~{outputDir}/~{sampleName}_III.jpeg"
         File IV = "~{outputDir}/~{sampleName}_IV.jpeg"
         File IV_txt = "~{outputDir}/~{sampleName}_IV.txt"
-        File LGAs = "~{outputDir}/~{sampleName}_LGAs.jpeg"
-        File LGAs_txt = "~{outputDir}/~{sampleName}_LGAs.txt"
-        File LGAs_intermediary = "~{outputDir}/~{sampleName}_LGAs_intermediary.jpeg"
+        File? LGAs = "~{outputDir}/~{sampleName}_LGAs.jpeg"
+        File? LGAs_txt = "~{outputDir}/~{sampleName}_LGAs.txt"
+        File? LGAs_intermediary = "~{outputDir}/~{sampleName}_LGAs_intermediary.jpeg"
         File THR = "~{outputDir}/~{sampleName}_THR.jpeg"
         File THR_intermediary = "~{outputDir}/~{sampleName}_THR_intermediary.jpeg"
         File amplification_deletion_table = "~{outputDir}/~{sampleName}_amplification_deletion_table.txt"
@@ -67,14 +67,14 @@ task ShallowHRD_hg19_controlfreec_chrX {
         File ratio_median_gathered = "~{outputDir}/~{sampleName}_ratio_median_gathered.txt"
         File summary_plot = "~{outputDir}/~{sampleName}_summary_plot.jpeg"
         File rplots = "~{outputDir}/Rplots.pdf"
-        Array[File] all = [II, III, IV, IV, LGAs, LGAs,
+        Array[File] all = select_all([II, III, IV, IV_txt, LGAs, LGAs_txt,
                            LGAs_intermediary, THR, THR_intermediary,
                            amplification_deletion_table, amplifications_deletions,
                            beginning_segmentation, final_segmentation,
                            final_segmentation, final_segmentation_intermediary,
                            final_segmentation_visual, final_segmentation_zoomed,
                            normalised_read_count, number_LGAs, ratio_median_gathered,
-                           summary_plot, rplots]
+                           summary_plot, rplots])
     }
 
     runtime {
