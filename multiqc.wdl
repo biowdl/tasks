@@ -81,7 +81,6 @@ task MultiQC {
     # for these purposes.
 
     Array[File] allReports = flatten([reports, flatten(select_all([additionalReports]))])
-    File reportsListing = write_lines(allReports)
 
     command {
         python3 <<CODE
@@ -89,10 +88,10 @@ task MultiQC {
         from pathlib import Path 
         from typing import List
 
+        reports: List[str] = ["~{sep='","' allReports}"]
         report_dir: Path = Path("~{reportDir}")
         
-        for line in open("~{reportsListing}", "r"):
-            report = line.strip()
+        for report in reports:
             report_path = Path(report)
             hashed_parent = str(hash(str(report_path.parent)))
             new_path = report_dir / hashed_parent / report_path.name
